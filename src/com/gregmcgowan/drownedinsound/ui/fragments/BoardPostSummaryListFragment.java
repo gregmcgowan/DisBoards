@@ -41,7 +41,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     private String boardUrl;
     private ProgressBar progressBar;
     private ArrayList<BoardPostSummary> boardPostSummaries;
-    private BoardPostListAdapater adapter;
+    private BoardPostSummaryListAdapater adapter;
     private View rootView;
     private boolean requestOnStart;
     private boolean loadedList; 
@@ -74,7 +74,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	super.onActivityCreated(savedInstanceState);
 	progressBar = (ProgressBar) rootView
 		.findViewById(R.id.board_list_progress_bar);	
-	adapter = new BoardPostListAdapater(getSherlockActivity(),R.layout.board_list_row,boardPostSummaries);
+	adapter = new BoardPostSummaryListAdapater(getSherlockActivity(),R.layout.board_list_row,boardPostSummaries);
 	setListAdapter(adapter);
 	setRetainInstance(true);
 	
@@ -139,11 +139,11 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	}
     }
     
-    private class BoardPostListAdapater extends ArrayAdapter<BoardPostSummary> {
+    private class BoardPostSummaryListAdapater extends ArrayAdapter<BoardPostSummary> {
 
 	private List<BoardPostSummary> summaries;
 
-	public BoardPostListAdapater(Context context, int textViewResourceId,
+	public BoardPostSummaryListAdapater(Context context, int textViewResourceId,
 		List<BoardPostSummary> boardPostSummaries) {
 	    super(context, textViewResourceId);
 	    this.summaries = boardPostSummaries;

@@ -58,6 +58,16 @@ public class BoardPost implements Parcelable {
 	    if (boardPostTreeNodes == null) {
 		boardPostTreeNodes = new ArrayList<BoardPostCommentTreeNode>();
 	    }
+
+	    //Add a comment for the initial post details as we are using them in a list
+	    BoardPostComment boardPostComment = new BoardPostComment();
+	    boardPostComment.setAuthorUsername(getAuthorUsername());
+	    boardPostComment.setCommentLevel(0);
+	    boardPostComment.setDateAndTimeOfComment(getDateOfPost());
+	    boardPostComment.setContent(getContent());
+	    boardPostComment.setTitle(getTitle());
+	    commentsCache.add(boardPostComment);
+	    
 	    for (BoardPostCommentTreeNode node : boardPostTreeNodes) {
 		commentsCache.addAll(node.getCommentAndAllChildren());
 	    }

@@ -66,7 +66,9 @@ public class BoardPostActivity extends SherlockFragmentActivity {
 	if (savedInstanceState == null) {
 	    boardPostUrl = (String) getIntent().getExtras().get(
 		    DisBoardsConstants.BOARD_POST_URL);
+	    
 	} else {
+	    requestBoardPost = false;
 	    boardPostUrl = (String) savedInstanceState
 		    .getString(DisBoardsConstants.BOARD_POST_URL);
 	}
