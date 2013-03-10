@@ -24,6 +24,8 @@ import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.gregmcgowan.drownedinsound.network.UrlConstants;
 import com.gregmcgowan.drownedinsound.network.handlers.RetrieveBoardSummaryListHandler;
+import com.gregmcgowan.drownedinsound.network.service.DisWebService;
+import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
 import com.gregmcgowan.drownedinsound.utils.FileUtils;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
@@ -161,12 +163,14 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 
     public void requestBoardSummaryPage(int page) {
 	setProgressBarVisiblity(true);
-	HttpClient.requestBoardSummary(
-		getSherlockActivity(),
-		boardUrl,
-		boardId,
-		new RetrieveBoardSummaryListHandler(FileUtils
-			.createTempFile(getSherlockActivity()), boardId), 1);
+	Intent disWebServiceIntent = new Intent(getSherlockActivity(),
+		DisWebService.class);
+	disWebServiceIntent.putExtra(
+		DisWebServiceConstants.SERVICE_REQUESTED_ID,
+		DisWebServiceConstants.GET_POSTS_SUMMARY_LIST_ID);
+	disWebServiceIntent.putExtra(DisBoardsConstants.BOARD_ID, boardId);
+	disWebServiceIntent.putExtra(DisBoardsConstants.BOARD_URL, boardUrl);
+	getSherlockActivity().startService(disWebServiceIntent);
     }
 
     private void setProgressBarVisiblity(boolean visible) {

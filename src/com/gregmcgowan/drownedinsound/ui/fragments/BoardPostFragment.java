@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.TextUtils;
@@ -25,6 +26,8 @@ import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.gregmcgowan.drownedinsound.network.handlers.RetrieveBoardPostHandler;
+import com.gregmcgowan.drownedinsound.network.service.DisWebService;
+import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.utils.FileUtils;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
@@ -155,13 +158,16 @@ public class BoardPostFragment extends SherlockListFragment {
 	super.onResume();
 	if (!unattachedFragment && !requestingPost && boardPost == null) {
 	    setProgressBarAndFragmentVisibility(true);
-	    HttpClient
-		    .requestBoardPost(
-			    getSherlockActivity(),
-			    boardPostUrl,
-			    new RetrieveBoardPostHandler(FileUtils
-				    .createTempFile(getSherlockActivity()),
-				    boardPostId));
+	    Intent disWebServiceIntent = new Intent(getSherlockActivity(),
+		    DisWebService.class);
+	    disWebServiceIntent.putExtra(
+		    DisWebServiceConstants.SERVICE_REQUESTED_ID,
+		    DisWebServiceConstants.GET_BOARD_POST_ID);
+	    disWebServiceIntent.putExtra(DisBoardsConstants.BOARD_POST_ID,
+		    boardPostId);
+	    disWebServiceIntent.putExtra(DisBoardsConstants.BOARD_POST_URL,
+		    boardPostUrl);
+	    getSherlockActivity().startService(disWebServiceIntent);
 	    requestingPost = true;
 	}
     }

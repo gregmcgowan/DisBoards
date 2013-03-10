@@ -21,6 +21,8 @@ import com.gregmcgowan.drownedinsound.events.LoginResponseEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.gregmcgowan.drownedinsound.network.UrlConstants;
 import com.gregmcgowan.drownedinsound.network.handlers.LoginResponseHandler;
+import com.gregmcgowan.drownedinsound.network.service.DisWebService;
+import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.utils.FileUtils;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 import com.gregmcgowan.drownedinsound.R;
@@ -134,8 +136,14 @@ public class LoginActivity extends Activity {
     private void attemptLogin(String username, String password) {
 	UiUtils.hideSoftKeyboard(this, loginButton.getApplicationWindowToken());	
 	setProgressVisibility(true); 
-	HttpClient.makeLoginRequest(this, username, password,
-		UrlConstants.SOCIAL_URL, new LoginResponseHandler(FileUtils.createTempFile(this)));
+	Intent disWebServiceIntent = new Intent(this,
+		DisWebService.class);
+	disWebServiceIntent.putExtra(
+		DisWebServiceConstants.SERVICE_REQUESTED_ID,
+		DisWebServiceConstants.GET_POSTS_SUMMARY_LIST_ID);
+	disWebServiceIntent.putExtra(DisBoardsConstants.USERNAME, username);
+	disWebServiceIntent.putExtra(DisBoardsConstants.PASSWORD, password);
+	startService(disWebServiceIntent);
     }
 
     private void setProgressVisibility(boolean visible) {
