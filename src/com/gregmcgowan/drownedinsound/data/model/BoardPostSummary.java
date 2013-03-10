@@ -23,7 +23,7 @@ public class BoardPostSummary implements Parcelable {
     private String lastPosterUsername;
     private boolean alreadyRead;
     private int numberOfReplies;
-    private String postUrlpostfix;
+    private String boardPostId;
     private boolean isSticky;
 
     public BoardPostSummary(){
@@ -37,7 +37,7 @@ public class BoardPostSummary implements Parcelable {
         lastPosterUsername = in.readString();
         alreadyRead = in.readByte() != 0x00;
         numberOfReplies = in.readInt();
-        postUrlpostfix = in.readString();
+        boardPostId = in.readString();
         isSticky = in.readByte() != 0x00;
     }
 
@@ -52,7 +52,7 @@ public class BoardPostSummary implements Parcelable {
         dest.writeString(lastPosterUsername);
         dest.writeByte((byte) (alreadyRead ? 0x01 : 0x00));
         dest.writeInt(numberOfReplies);
-        dest.writeString(postUrlpostfix);
+        dest.writeString(boardPostId);
         dest.writeByte((byte) (isSticky ? 0x01 : 0x00));
     }
 
@@ -130,12 +130,12 @@ public class BoardPostSummary implements Parcelable {
 	this.numberOfReplies = numberOfReplies;
     }
 
-    public String getPostUrlPostfix() {
-	return postUrlpostfix;
+    public String getBoardPostId() {
+	return boardPostId;
     }
 
-    public void setPostUrlPostfix(String postUrlPostfix) {
-	this.postUrlpostfix = postUrlPostfix;
+    public void setBoardPostId(String postUrlPostfix) {
+	this.boardPostId = postUrlPostfix;
     }
 
     public boolean isSticky() {

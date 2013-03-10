@@ -21,9 +21,12 @@ import de.greenrobot.event.EventBus;
 
 public class RetrieveBoardPostHandler extends
 	FileAsyncBackgroundThreadHttpResponseHandler {
-
-    public RetrieveBoardPostHandler(File file) {
+    
+    private String boardPostId;
+    
+    public RetrieveBoardPostHandler(File file,String boardPostId) {
 	super(file);
+	this.boardPostId = boardPostId;
     }
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
@@ -42,7 +45,7 @@ public class RetrieveBoardPostHandler extends
 		}
 	    }
 	    if (parsedDocument != null) {
-		BoardPostParser boardPostParser = new BoardPostParser(parsedDocument);
+		BoardPostParser boardPostParser = new BoardPostParser(parsedDocument,boardPostId);
 		boardPost = boardPostParser.parseDocument();
 
 	    }

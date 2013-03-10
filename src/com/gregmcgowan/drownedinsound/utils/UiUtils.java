@@ -3,6 +3,8 @@ package com.gregmcgowan.drownedinsound.utils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.IBinder;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.inputmethod.InputMethodManager;
 
@@ -14,6 +16,8 @@ import android.view.inputmethod.InputMethodManager;
  */
 public class UiUtils {
 
+    public static final int MIN_WITH_DP_FOR_DUAL_MODE = 600;
+    
     /**
      * This will attempt to hide the softkeyboard if it is displayed at the
      * moment
@@ -55,4 +59,18 @@ public class UiUtils {
 	);
 	
     }
+    
+    /**
+     * Converts a value from pixels to dp
+     * 
+     * @param resources
+     * @param pixels
+     * @return
+     */
+    public static int convertPixelsToDp(Resources resources, int pixels){
+	DisplayMetrics metrics = resources.getDisplayMetrics();
+	float logicalDensity = metrics.density;	
+	return (int) (pixels / logicalDensity  + 0.5);
+    }
+    
 }

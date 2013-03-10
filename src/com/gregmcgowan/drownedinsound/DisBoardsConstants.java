@@ -22,5 +22,7 @@ public class DisBoardsConstants {
 
     public static final String BOARD_POST_KEY = "BOARD_POST";
     public static final String BOARD_POST_URL = "BoardPostUrl";
+    public static final String REQUESTING_POST = "RequestingPost";
+    public static final String BOARD_POST_ID = "BOARD_POST_ID";
 
 }

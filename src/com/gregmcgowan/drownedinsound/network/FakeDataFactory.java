@@ -30,6 +30,7 @@ public class FakeDataFactory {
 	}
 	boardPost.setComments(getFakeComments());
 	boardPost.setDateOfPost(new Date());
+	boardPost.setId(String.valueOf(currentTime));
 	// boardPost.setContent("Here is a board)
 	return boardPost;
     }
@@ -355,6 +356,7 @@ public class FakeDataFactory {
 		    .setTitle("Here is a drowned in sound post no " + i);
 	    boardPostSummary.setNumberOfReplies(10);
 	    boardPostSummary.setLastPostDate(new Date());
+	    boardPostSummary.setBoardPostId(String.valueOf(i));
 	    list.add(boardPostSummary);
 	}
 

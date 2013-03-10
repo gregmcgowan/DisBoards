@@ -1,11 +1,13 @@
 package com.gregmcgowan.drownedinsound.ui.fragments;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +22,13 @@ import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
+import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
+import com.gregmcgowan.drownedinsound.network.HttpClient;
+import com.gregmcgowan.drownedinsound.network.handlers.RetrieveBoardPostHandler;
+import com.gregmcgowan.drownedinsound.utils.FileUtils;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Represents a board fragment. This will consist of the board post and all the
@@ -37,17 +45,32 @@ public class BoardPostFragment extends SherlockListFragment {
     private BoardPost boardPost;
     private View rootView;
     private ProgressBar progressBar;
-    private List<BoardPostComment> boardPostComments;
-
+    private List<BoardPostComment> boardPostComments = new ArrayList<BoardPostComment>();
     private BoardPostListAdapater adapter;
+    private boolean unattachedFragment;
+    private boolean requestingPost;
+    private String boardPostUrl;
+    private String boardPostId;
 
     public BoardPostFragment() {
 
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	EventBus.getDefault().register(this);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	    Bundle savedInstanceState) {
+	// In dual mode the fragment will be recreated but will not be used
+	// anywhere
+	if (container == null) {
+	    unattachedFragment = true;
+	    return null;
+	}
 	inflater = (LayoutInflater) inflater.getContext().getSystemService(
 		Context.LAYOUT_INFLATER_SERVICE);
 	rootView = inflater.inflate(R.layout.board_post_layout, null);
@@ -57,18 +80,105 @@ public class BoardPostFragment extends SherlockListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
 	super.onActivityCreated(savedInstanceState);
-	setRetainInstance(true);
-	boardPost = getArguments().getParcelable(
-		DisBoardsConstants.BOARD_POST_KEY);
-	if (boardPost != null) {
-	    boardPostComments = boardPost.getComments();
-	    adapter = new BoardPostListAdapater(getSherlockActivity(),
-		    R.layout.board_post_comment_layout, boardPostComments);
-	    setListAdapter(adapter);
+	if (rootView != null) {
+	    progressBar = (ProgressBar) rootView
+		    .findViewById(R.id.board_post_progress_bar);
+	}
+	adapter = new BoardPostListAdapater(getSherlockActivity(),
+		R.layout.board_post_comment_layout, boardPostComments);
+	setListAdapter(adapter);
+	initliase(savedInstanceState);
+    }
+
+    private void initliase(Bundle savedInstanceState) {
+	if (savedInstanceState == null) {
+	    boardPostUrl = (String) getArguments().get(
+		    DisBoardsConstants.BOARD_POST_URL);
+	    boardPostId = (String) getArguments().get(
+		    DisBoardsConstants.BOARD_POST_URL);
 	} else {
+	    boardPostUrl = savedInstanceState
+		    .getString(DisBoardsConstants.BOARD_POST_URL);
+	    boardPostId = savedInstanceState
+		    .getString(DisBoardsConstants.BOARD_POST_ID);
+	    requestingPost = savedInstanceState
+		    .getBoolean(DisBoardsConstants.REQUESTING_POST);
+	    boardPost = savedInstanceState
+		    .getParcelable(DisBoardsConstants.BOARD_POST_KEY);
+	    if (boardPost != null) {
+		updateComments(boardPost.getComments());
+	    }
+	    if (requestingPost) {
+		setProgressBarAndFragmentVisibility(true);
+	    }
 
 	}
 
+	if (boardPostUrl == null) {
+	    Log.d(TAG, "Board post url is null");
+	}
+    }
+
+    private void updateComments(List<BoardPostComment> comments) {
+	boardPostComments.clear();
+	boardPostComments.addAll(comments);
+	adapter.notifyDataSetChanged();
+    }
+
+    public String getBoardPostId() {
+	String boardPostId = null;
+	if (boardPost != null) {
+	    boardPostId = boardPost.getId();
+	}
+	return boardPostId;
+    }
+
+    public void onEventMainThread(RetrievedBoardPostEvent event) {
+	BoardPost boardPost = event.getBoardPost();
+	if (boardPost != null && !unattachedFragment) {
+	    this.boardPost = boardPost;
+	    this.requestingPost = false;
+	    updateComments(boardPost.getComments());
+	}
+	setProgressBarAndFragmentVisibility(false);
+    }
+
+    public void setProgressBarAndFragmentVisibility(boolean visible) {
+	if (progressBar != null) {
+	    int progressBarVisiblity = visible ? View.VISIBLE : View.INVISIBLE;
+	    progressBar.setVisibility(progressBarVisiblity);
+	}
+    }
+
+    @Override
+    public void onResume() {
+	super.onResume();
+	if (!unattachedFragment && !requestingPost && boardPost == null) {
+	    setProgressBarAndFragmentVisibility(true);
+	    HttpClient
+		    .requestBoardPost(
+			    getSherlockActivity(),
+			    boardPostUrl,
+			    new RetrieveBoardPostHandler(FileUtils
+				    .createTempFile(getSherlockActivity()),
+				    boardPostId));
+	    requestingPost = true;
+	}
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+	super.onSaveInstanceState(outState);
+	outState.putBoolean(DisBoardsConstants.REQUESTING_POST, requestingPost);
+	outState.putParcelable(DisBoardsConstants.BOARD_POST_KEY, boardPost);
+	outState.putString(DisBoardsConstants.BOARD_POST_ID, boardPostId);
+	outState.putString(DisBoardsConstants.BOARD_POST_URL, boardPostUrl);
+    }
+
+    @Override
+    public void onDestroy() {
+	super.onDestroy();
+	EventBus.getDefault().unregister(this);
     }
 
     private class BoardPostListAdapater extends ArrayAdapter<BoardPostComment> {
@@ -152,11 +262,11 @@ public class BoardPostFragment extends SherlockListFragment {
 		    boardPostCommentHolder.commentAuthorTextView
 			    .setText(author);
 		    boardPostCommentHolder.commentTitleTextView.setText(title);
-		    if(content != null){
-			boardPostCommentHolder.commentContentTextView.setText(Html
-				    .fromHtml(content));
+		    if (content != null) {
+			boardPostCommentHolder.commentContentTextView
+				.setText(Html.fromHtml(content));
 		    }
-		    
+
 		    String usersWhoThised = getUserWhoThisString(comment
 			    .getUsersWhoHaveThissed());
 		    boardPostCommentHolder.commentThisSectionTextView
@@ -183,18 +293,18 @@ public class BoardPostFragment extends SherlockListFragment {
 			    .fromHtml(content));
 		}
 
-	    } 
+	    }
 	    return boardPostSummaryRowView;
 	}
 
 	public String getUserWhoThisString(String[] usersWhoThisd) {
-	    String userWhoThis = "";
+	    String userWhoThisString = "";
 	    if (usersWhoThisd != null && usersWhoThisd.length > 0) {
 		String users = TextUtils.join(",", usersWhoThisd);
-		users += " this'd this";
+		userWhoThisString = users + " this'd this";
 
 	    }
-	    return userWhoThis;
+	    return userWhoThisString;
 	}
     }
 

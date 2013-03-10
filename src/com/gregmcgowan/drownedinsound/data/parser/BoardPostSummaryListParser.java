@@ -103,7 +103,7 @@ public class BoardPostSummaryListParser {
 	BoardPostSummary boardPostSummary = new BoardPostSummary();
 	boardPostSummary.setAuthorUsername(authorUsername);
 	boardPostSummary.setTitle(postTitle);
-	boardPostSummary.setPostUrlPostfix(postId);
+	boardPostSummary.setBoardPostId(postId);
 
 	return boardPostSummary;
     }

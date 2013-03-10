@@ -5,7 +5,9 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,7 @@ import com.gregmcgowan.drownedinsound.network.UrlConstants;
 import com.gregmcgowan.drownedinsound.network.handlers.RetrieveBoardSummaryListHandler;
 import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
 import com.gregmcgowan.drownedinsound.utils.FileUtils;
+import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
 import de.greenrobot.event.EventBus;
 
@@ -37,20 +40,29 @@ import de.greenrobot.event.EventBus;
  */
 public class BoardPostSummaryListFragment extends SherlockListFragment {
 
-    private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX  + "BoardListFragment";
+    private static final String CURRENTLY_SELECTED_BOARD_POST = "currentlySelectedBoardPost";
+    private static final String WAS_IN_DUAL_PANE_MODE = "WasInDualPaneMode";
+    private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
+	    + "BoardListFragment";
     private String boardUrl;
     private ProgressBar progressBar;
-    private ArrayList<BoardPostSummary> boardPostSummaries;
+    private ArrayList<BoardPostSummary> boardPostSummaries = new ArrayList<BoardPostSummary>();
     private BoardPostSummaryListAdapater adapter;
     private View rootView;
     private boolean requestOnStart;
-    private boolean loadedList; 
+    private boolean loadedList;
     private String boardId;
-    
-    public BoardPostSummaryListFragment(){
+    private boolean dualPaneMode;
+    private boolean wasInDualPaneMode;
+    private int currentlySelectedPost;
+    private String postId;
+    private String postUrl;
+
+    public BoardPostSummaryListFragment() {
     }
-    
-    public static BoardPostSummaryListFragment newInstance(String boardUrl,String boardId,boolean requestDataOnStart) {
+
+    public static BoardPostSummaryListFragment newInstance(String boardUrl,
+	    String boardId, boolean requestDataOnStart) {
 	BoardPostSummaryListFragment boardListFragment = new BoardPostSummaryListFragment();
 	boardListFragment.boardUrl = boardUrl;
 	boardListFragment.requestOnStart = requestDataOnStart;
@@ -58,8 +70,6 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	return boardListFragment;
     }
 
-    
-    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	    Bundle savedInstanceState) {
@@ -73,21 +83,68 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
 	super.onActivityCreated(savedInstanceState);
 	progressBar = (ProgressBar) rootView
-		.findViewById(R.id.board_list_progress_bar);	
-	adapter = new BoardPostSummaryListAdapater(getSherlockActivity(),R.layout.board_list_row,boardPostSummaries);
+		.findViewById(R.id.board_list_progress_bar);
+	adapter = new BoardPostSummaryListAdapater(getSherlockActivity(),
+		R.layout.board_list_row, boardPostSummaries);
 	setListAdapter(adapter);
 	setRetainInstance(true);
-	
-	if(requestOnStart && !loadedList){
+
+	if (requestOnStart && !loadedList) {
 	    requestBoardSummaryPage(1);
 	}
+
+	// Check to see if we have a frame in which to embed the details
+	// fragment directly in the containing UI.
+	int screenWidthPixels = getResources().getDisplayMetrics().widthPixels;
+	int screenWidthDp = UiUtils.convertPixelsToDp(getResources(),
+		screenWidthPixels);
+	int currentOrientation = getResources().getConfiguration().orientation;
+	dualPaneMode = currentOrientation == Configuration.ORIENTATION_LANDSCAPE
+		&& screenWidthDp >= UiUtils.MIN_WITH_DP_FOR_DUAL_MODE;
+
+	if (savedInstanceState != null) {
+	    // Restore last state for checked position.
+	    currentlySelectedPost = savedInstanceState.getInt(
+		    CURRENTLY_SELECTED_BOARD_POST, -1);
+	    wasInDualPaneMode = savedInstanceState.getBoolean(
+		    WAS_IN_DUAL_PANE_MODE, false);
+	    postUrl = savedInstanceState
+		    .getString(DisBoardsConstants.BOARD_POST_URL);
+	    postId = savedInstanceState
+		    .getString(DisBoardsConstants.BOARD_POST_ID);
+	}
+
+	if (dualPaneMode && loadedList && currentlySelectedPost != -1) {
+	    getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+	    showBoardPost(currentlySelectedPost);
+	}
+
+	
+	//TODO This does not work at the moment. SavedInstanceState always seems to be null
+	if (wasInDualPaneMode
+		&& currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+	    Intent viewPostIntent = new Intent(getSherlockActivity(),
+		    BoardPostActivity.class);
+	    viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_URL, postUrl);
+	    viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_ID, postId);
+	    startActivity(viewPostIntent);
+	}
+
     }
- 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
-	boardPostSummaries = new ArrayList<BoardPostSummary>();
 	EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+	super.onSaveInstanceState(outState);
+	outState.putInt(CURRENTLY_SELECTED_BOARD_POST, currentlySelectedPost);
+	outState.putBoolean(WAS_IN_DUAL_PANE_MODE, dualPaneMode);
+	outState.putString(DisBoardsConstants.BOARD_POST_ID, postUrl);
+	outState.putString(DisBoardsConstants.BOARD_POST_URL, postId);
     }
 
     @Override
@@ -96,16 +153,20 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	EventBus.getDefault().unregister(this);
     }
 
-    public void loadListIfNotAlready(int page){
-	if(!loadedList){
+    public void loadListIfNotAlready(int page) {
+	if (!loadedList) {
 	    requestBoardSummaryPage(page);
 	}
     }
-    
-    public void requestBoardSummaryPage(int page){
+
+    public void requestBoardSummaryPage(int page) {
 	setProgressBarVisiblity(true);
-	HttpClient.requestBoardSummary(getSherlockActivity(), boardUrl,boardId,
-		new RetrieveBoardSummaryListHandler(FileUtils.createTempFile(getSherlockActivity()),boardId), 1);
+	HttpClient.requestBoardSummary(
+		getSherlockActivity(),
+		boardUrl,
+		boardId,
+		new RetrieveBoardSummaryListHandler(FileUtils
+			.createTempFile(getSherlockActivity()), boardId), 1);
     }
 
     private void setProgressBarVisiblity(boolean visible) {
@@ -114,7 +175,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	progressBar.setVisibility(progressBarVisiblity);
 	getListView().setVisibility(listVisibility);
     }
-  
+
     public void onEventMainThread(RetrievedBoardPostSummaryListEvent event) {
 	String eventBoardId = event.getBoardId();
 	if (eventBoardId != null && eventBoardId.equals(boardId)) {
@@ -125,25 +186,60 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	    setProgressBarVisiblity(false);
 	}
     }
-    
-    
+
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
+	showBoardPost(position);
+    }
+
+    private void showBoardPost(int position) {
+	currentlySelectedPost = position;
 	BoardPostSummary boardPostSummary = boardPostSummaries.get(position);
-	if(boardPostSummary != null){
-	    String postUrlPrefix = boardPostSummary.getPostUrlPostfix();
-	    String postUrl = UrlConstants.BASE_URL + postUrlPrefix;
-	    Intent viewPostIntent = new Intent(getSherlockActivity(),BoardPostActivity.class);
-	    viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_URL, postUrl);
-	    startActivity(viewPostIntent);
+	if (boardPostSummary != null) {
+	    postId = boardPostSummary.getBoardPostId();
+	    postUrl = UrlConstants.BASE_URL + "/" + postId;
+
+	    if (dualPaneMode) {
+		getListView().setItemChecked(position, true);
+		BoardPostFragment boardPostFragment = (BoardPostFragment) getFragmentManager()
+			.findFragmentById(R.id.board_post_details);
+		if (boardPostFragment == null
+			|| !postId.equals(boardPostFragment.getBoardPostId())) {
+		    boardPostFragment = new BoardPostFragment();
+		    Bundle arguments = new Bundle();
+		    arguments.putString(DisBoardsConstants.BOARD_POST_ID,
+			    postId);
+		    arguments.putString(DisBoardsConstants.BOARD_POST_URL,
+			    postUrl);
+		    boardPostFragment.setArguments(arguments);
+		    // Execute a transaction, replacing any existing fragment
+		    // with this one inside the frame.
+		    FragmentTransaction ft = getFragmentManager()
+			    .beginTransaction();
+		    ft.replace(R.id.board_post_details, boardPostFragment);
+		    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+		    ft.commit();
+		}
+
+	    } else {
+		Intent viewPostIntent = new Intent(getSherlockActivity(),
+			BoardPostActivity.class);
+		viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_URL,
+			postUrl);
+		viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_ID,
+			postId);
+		startActivity(viewPostIntent);
+	    }
 	}
     }
-    
-    private class BoardPostSummaryListAdapater extends ArrayAdapter<BoardPostSummary> {
+
+    private class BoardPostSummaryListAdapater extends
+	    ArrayAdapter<BoardPostSummary> {
 
 	private List<BoardPostSummary> summaries;
 
-	public BoardPostSummaryListAdapater(Context context, int textViewResourceId,
+	public BoardPostSummaryListAdapater(Context context,
+		int textViewResourceId,
 		List<BoardPostSummary> boardPostSummaries) {
 	    super(context, textViewResourceId);
 	    this.summaries = boardPostSummaries;
@@ -158,7 +254,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	public long getItemId(int position) {
 	    return super.getItemId(position);
 	}
-	
+
 	@Override
 	public int getCount() {
 	    return summaries.size();
@@ -177,8 +273,10 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	    if (summary != null) {
 		String title = summary.getTitle();
 		String authorusername = "by " + summary.getAuthorUsername();
-		setTextForTextView(boardPostSummaryRowView, R.id.board_post_list_row_title,title);
-		setTextForTextView(boardPostSummaryRowView, R.id.board_post_list_row_author,authorusername);
+		setTextForTextView(boardPostSummaryRowView,
+			R.id.board_post_list_row_title, title);
+		setTextForTextView(boardPostSummaryRowView,
+			R.id.board_post_list_row_author, authorusername);
 	    }
 	    return boardPostSummaryRowView;
 	}
@@ -192,5 +290,4 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	}
     }
 
-    
 }

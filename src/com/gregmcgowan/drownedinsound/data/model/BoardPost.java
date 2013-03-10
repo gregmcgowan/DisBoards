@@ -17,6 +17,7 @@ import android.os.Parcelable;
  */
 public class BoardPost implements Parcelable {
 
+    private String id;
     private String title;
     private String content;
     private String authorUsername;
@@ -144,7 +145,9 @@ public class BoardPost implements Parcelable {
 	    time = dateOfPost.getTime();
 	}
 	parcel.writeLong(time);
-	// TODO comments
+	parcel.writeString(id);
+	List<BoardPostComment> comments = getComments();
+	parcel.writeParcelableArray(comments.toArray(new BoardPostComment[comments.size()]), flag);
     }
 
     private void createFromParcel(Parcel parcel) {
@@ -156,7 +159,17 @@ public class BoardPost implements Parcelable {
 	if (time != -1) {
 	    dateOfPost = new Date();
 	}
-	// TODO comments
+	this.id = parcel.readString();
+	List<BoardPostComment> comments = parcel.readArrayList(BoardPostComment.class.getClassLoader());
+	setComments(comments);
+    }
+
+    public String getId() {
+	return id;
+    }
+
+    public void setId(String id) {
+	this.id = id;
     }
 
     public static final Parcelable.Creator<BoardPost> CREATOR = new Parcelable.Creator<BoardPost>() {

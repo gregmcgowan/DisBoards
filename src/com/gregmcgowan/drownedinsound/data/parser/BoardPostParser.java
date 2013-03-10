@@ -18,9 +18,11 @@ public class BoardPostParser {
 	    + "BoardPostParser";
 
     private Document boardPostDocument;
-
-    public BoardPostParser(Document document) {
+    private String boardPostId;
+    
+    public BoardPostParser(Document document,String boardId) {
 	this.boardPostDocument = document;
+	this.boardPostId = boardId;
     }
 
     public BoardPost parseDocument() {
@@ -58,6 +60,7 @@ public class BoardPostParser {
 	    boardPost = new BoardPost();
 	    boardPost.setContent(content);
 	    boardPost.setTitle(title);
+	    boardPost.setId(boardPostId);
 	 //   boardPost.setNoOfReplies(replies);
 	    
 	}

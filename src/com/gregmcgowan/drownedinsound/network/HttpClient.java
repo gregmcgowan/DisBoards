@@ -36,7 +36,7 @@ public class HttpClient {
 
     private static AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
 
-    private static final boolean useFakeData = true;
+    private static final boolean useFakeData = false;
     
     /**
      * Cancels all requests associated with the context provided. This should
