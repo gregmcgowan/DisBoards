@@ -18,29 +18,41 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
-			<View
+<!-- 			<View
                 android:id="@+id/board_post_comment_content_divider_top"
                 android:layout_height="1dip"
                 android:layout_width="match_parent"
-                android:background="@color/background_gradient_end"/>
+                android:background="@color/background_gradient_end"/> -->
             <TextView
                 android:id="@+id/board_post_comment_content_title"
                 android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_margin="@dimen/margin_medium"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:layout_marginBottom="@dimen/margin_medium"
                 android:textColor="@color/dark_grey"
                 android:textSize="@dimen/text_micro"
-                 android:textStyle="bold"
+                android:textStyle="bold"
+                android:text="HERE IS A TEST HEADER"
+                android:paddingLeft="10dip"
+                android:paddingTop="10dip"
+                android:paddingBottom="10dip"
+               	android:background="@drawable/board_post_heading_background"
                 android:textIsSelectable="true"/>
             <TextView
                 android:id="@+id/board_post_comment_content"
                 android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_marginLeft="@dimen/margin_medium"
                 android:layout_marginRight="@dimen/margin_medium"
-                android:layout_marginBottom="@dimen/margin_medium"
                 android:textColor="@color/lighter_grey"
                 android:textSize="@dimen/text_micro"
+                android:text="Here is a test comment"
+				android:paddingLeft="10dip"
+                android:paddingTop="10dip"
+                android:paddingBottom="10dip"
+                
                 android:textIsSelectable="true"/>
             <RelativeLayout
 				android:id="@+id/board_post_comment_info_section"
@@ -50,9 +62,10 @@
                     	android:id="@+id/board_post_comment_author_section"
 						android:layout_height="wrap_content"
                 		android:layout_width="wrap_content"
+                		android:layout_marginTop="@dimen/margin_medium"
+                		android:layout_marginBottom="@dimen/margin_medium"
                 		android:layout_marginLeft="@dimen/margin_medium"
                 		android:layout_marginRight="@dimen/margin_medium"
-                		android:layout_marginBottom="@dimen/margin_medium"
                 		android:layout_alignParentRight="true" 
                 		android:orientation="horizontal">
                     <TextView
