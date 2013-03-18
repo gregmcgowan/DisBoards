@@ -29,7 +29,7 @@ public class FakeDataFactory {
 	    boardPost.setContent(MEDIUM_BOARD_POST);
 	}
 	boardPost.setComments(getFakeComments());
-	boardPost.setDateOfPost(new Date());
+	boardPost.setDateOfPost("Some time");
 	boardPost.setId(String.valueOf(currentTime));
 	// boardPost.setContent("Here is a board)
 	return boardPost;

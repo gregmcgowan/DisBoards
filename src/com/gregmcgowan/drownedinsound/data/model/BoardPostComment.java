@@ -18,7 +18,7 @@ public class BoardPostComment implements Parcelable {
     private String content;
     private String authorUsername;
     private String[] usersWhoHaveThissed;
-    private Date dateAndTimeOfComment;
+    private String dateAndTimeOfComment;
     private BoardPostCommentTreeNode treeNode;
     private String commentId;
     
@@ -61,10 +61,10 @@ public class BoardPostComment implements Parcelable {
     public void setUsersWhoHaveThissed(String[] usersWhoHaveThissed) {
         this.usersWhoHaveThissed = usersWhoHaveThissed;
     }
-    public Date getDateAndTimeOfComment() {
+    public String getDateAndTimeOfComment() {
         return dateAndTimeOfComment;
     }
-    public void setDateAndTimeOfComment(Date dateAndTimeOfComment) {
+    public void setDateAndTimeOfComment(String dateAndTimeOfComment) {
         this.dateAndTimeOfComment = dateAndTimeOfComment;
     }
     public BoardPostCommentTreeNode getTreeNode() {
@@ -96,6 +96,7 @@ public class BoardPostComment implements Parcelable {
         authorUsername = in.readString();
         commentId = in.readString();
         commentLevel = in.readInt();
+        dateAndTimeOfComment = in.readString();
     }
     
     public void writeToParcel(Parcel dest, int flags) {
@@ -104,6 +105,7 @@ public class BoardPostComment implements Parcelable {
         dest.writeString(authorUsername);
         dest.writeString(commentId);
         dest.writeInt(commentLevel);
+        dest.writeString(dateAndTimeOfComment);
     }
 
     public static final Parcelable.Creator<BoardPostComment> CREATOR = new Parcelable.Creator<BoardPostComment>() {

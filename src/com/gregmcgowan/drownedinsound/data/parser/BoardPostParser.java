@@ -6,6 +6,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
@@ -19,14 +20,15 @@ public class BoardPostParser {
 
     private Document boardPostDocument;
     private String boardPostId;
-    
-    public BoardPostParser(Document document,String boardId) {
+
+    public BoardPostParser(Document document, String boardId) {
 	this.boardPostDocument = document;
 	this.boardPostId = boardId;
     }
 
     public BoardPost parseDocument() {
 	BoardPost boardPost = null;
+	long startTime = System.currentTimeMillis();
 	if (boardPostDocument != null) {
 	    // First get the info about the initial post
 	    // Title
@@ -43,7 +45,7 @@ public class BoardPostParser {
 
 	    // Replies and date
 	    String replies = byLineElements.get(5).text();
-	    String date =  byLineElements.get(6).text();
+	    String date = byLineElements.get(6).text();
 	    Log.d(TAG, "Replies = " + replies + " date = " + date);
 
 	    Element contentElement = originalPostElements.get(12);
@@ -51,34 +53,155 @@ public class BoardPostParser {
 	    Log.d(TAG, "Content = " + content);
 
 	    // Next get all the comments
-	    int commentLevel = 0;
+	    ArrayList<BoardPostComment> boardPostComments = new ArrayList<BoardPostComment>();
 	    Elements threadElements = boardPostDocument
 		    .getElementsByClass("thread");
+	    if (threadElements.size() > 0) {
+		Element topLevel = threadElements.get(0);
+		Elements children = topLevel.children();
+		if (children.size() > 0) {
+		    boardPostComments = getListOfComments(0, boardPostComments,
+			    children);
+		}
+	    }
 
-	    ArrayList<BoardPostComment> boardPostComments = getListOfComments(0,new ArrayList<BoardPostComment>(), threadElements);
-	    //TODO check we have the required fields
+	    // TODO check we have the required fields
 	    boardPost = new BoardPost();
 	    boardPost.setContent(content);
 	    boardPost.setTitle(title);
+	    boardPost.setAuthorUsername(author);
+	    boardPost.setDateOfPost(date);
 	    boardPost.setId(boardPostId);
-	 //   boardPost.setNoOfReplies(replies);
-	    
-	}
+	    boardPost.setComments(boardPostComments);
+	    // boardPost.setNoOfReplies(replies);
 
+	}
+	Log.d(TAG, "Parsed post in "+ (System.currentTimeMillis() - startTime) +" ms");
 	return boardPost;
     }
-    
-    
-    private ArrayList<BoardPostComment> getListOfComments(int currentLevel,ArrayList<BoardPostComment> boardPosts, Elements threadElements){
-	    for (Element threadElement : threadElements) {
-		if (threadElement.children().size() == 1) {
-		    Log.d(TAG, "This should be a comment with no sub comments at "+currentLevel);
-		    BoardPostComment boardPostComment = new BoardPostComment();
-		} else {
-		    boardPosts.addAll(getListOfComments(currentLevel++, boardPosts, threadElement.children()));
+
+    private ArrayList<BoardPostComment> getListOfComments(int currentLevel,
+	    ArrayList<BoardPostComment> boardPosts, Elements threadElements) {
+	for (Element threadElement : threadElements) {
+	    Elements children = threadElement.children();
+	    int noOfChildren = children.size();
+	    if (noOfChildren == 1) {
+		Elements titleElements = threadElement.select("h3");
+		String title = "";
+		if (titleElements.size() > 0) {
+		    title = titleElements.get(0).text();
+		}
+
+		Elements contentElements = threadElement
+			.select("div.comment_content");
+		String content = "";
+		if (contentElements.size() > 0) {
+		    content = contentElements.get(0).html();
+		}
+
+		Elements authorAndDateElements = children.get(0).select(
+			"div.comment_footer");
+		String author = "";
+		String dateAndTime = "";
+		if (authorAndDateElements != null) {
+		    String combinedDateAndTime = authorAndDateElements.text();
+		    if (!TextUtils.isEmpty(combinedDateAndTime)) {
+			Log.d(TAG, "combined = "+combinedDateAndTime);
+			String[] combinedDateAndTimeBits = combinedDateAndTime
+				.split("\\s|\\s");
+			if (combinedDateAndTimeBits != null
+				&& combinedDateAndTimeBits.length >= 2) {
+			    author = combinedDateAndTimeBits[0].trim();
+			    dateAndTime = combinedDateAndTimeBits[1].trim();
+			}
+		    }
+		}
+		
+		if (DisBoardsConstants.DEBUG) {
+		    Log.d(TAG, "title [" + title + "]");
+		    Log.d(TAG, "content [" + content + "]");
+		    Log.d(TAG, "comment Level [" + currentLevel + "]");
+		    Log.d(TAG, "author [" + author+"]");
+		    Log.d(TAG, "dateAndTime [" + dateAndTime +"]");
+		}
+
+		BoardPostComment boardPostComment = new BoardPostComment();
+		boardPostComment.setTitle(title);
+		boardPostComment.setContent(content);
+		boardPostComment.setCommentLevel(currentLevel);
+		boardPostComment.setAuthorUsername(author);
+		boardPosts.add(boardPostComment);
+
+	    } else if (noOfChildren > 1) {
+		Elements titleElements = children.get(0).select("h3");
+		String title = "";
+		if (titleElements.size() > 0) {
+		    title = titleElements.get(0).text();
+		}
+
+		Elements contentElements = children.get(0).select(
+			"div.comment_content");
+		String content = "";
+		if (contentElements.size() > 0) {
+		    content = contentElements.get(0).html();
+		}
+
+		Elements authorAndDateElements = children.get(0).select(
+			"div.comment_footer");
+		String author = "";
+		String dateAndTime = "";
+		if (authorAndDateElements != null) {
+		    String combinedDateAndTime = authorAndDateElements.text();
+		    if (!TextUtils.isEmpty(combinedDateAndTime)) {
+			Log.d(TAG, "combined = "+combinedDateAndTime);
+			String[] combinedDateAndTimeBits = combinedDateAndTime
+				.split("\\s|\\s");
+			if (combinedDateAndTimeBits != null
+				&& combinedDateAndTimeBits.length >= 2) {
+			    author = combinedDateAndTimeBits[0].trim();
+			    dateAndTime = combinedDateAndTimeBits[1].trim();
+			}
+		    }
+		}
+
+		Element possiblyThisElement = children.get(1);
+		Log.d(TAG, "Element = " + possiblyThisElement.className());
+		boolean thisPresent = "this".equals(possiblyThisElement
+			.className());
+
+		if (DisBoardsConstants.DEBUG) {
+		    Log.d(TAG, "title [" + title + "]");
+		    Log.d(TAG, "content [" + content + "]");
+		    Log.d(TAG, "comment Level [" + currentLevel + "]");
+		    Log.d(TAG, "thisPresent [" + thisPresent+"]");
+		    Log.d(TAG, "author [" + author+"]");
+		    Log.d(TAG, "dateAndTime [" + dateAndTime +"]");
+		}
+
+		BoardPostComment boardPostComment = new BoardPostComment();
+		boardPostComment.setTitle(title);
+		boardPostComment.setContent(content);
+		boardPostComment.setCommentLevel(currentLevel);
+		boardPostComment.setAuthorUsername(author);
+		boardPosts.add(boardPostComment);
+
+		// Get responses
+		Elements comments = null;
+		if (thisPresent && noOfChildren == 3) {
+		    comments = threadElement.children().get(2).children();
+		} else if (!thisPresent && noOfChildren == 2) {
+		    comments = threadElement.children().get(1).children();
+		}
+
+		if (comments != null && comments.size() > 0) {
+		    boardPosts.addAll(getListOfComments(currentLevel + 1,
+			    new ArrayList<BoardPostComment>(), comments));
+
 		}
 	    }
-	    return boardPosts;
+
+	}
+	return boardPosts;
     }
-    
+
 }

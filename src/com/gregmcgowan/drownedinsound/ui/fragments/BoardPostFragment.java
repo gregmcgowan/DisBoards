@@ -275,6 +275,7 @@ public class BoardPostFragment extends SherlockListFragment {
 
 		    String usersWhoThised = getUserWhoThisString(comment
 			    .getUsersWhoHaveThissed());
+		    
 		    boardPostCommentHolder.commentThisSectionTextView
 			    .setText(usersWhoThised);
 

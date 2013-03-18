@@ -22,7 +22,7 @@ public class BoardPost implements Parcelable {
     private String content;
     private String authorUsername;
     private String noOfReplies;
-    private Date dateOfPost;
+    private String dateOfPost;
     private List<BoardPostCommentTreeNode> boardPostTreeNodes;
     private transient List<BoardPostComment> commentsCache;
 
@@ -122,11 +122,11 @@ public class BoardPost implements Parcelable {
     }
 
 
-    public Date getDateOfPost() {
+    public String getDateOfPost() {
 	return dateOfPost;
     }
 
-    public void setDateOfPost(Date dateOfPost) {
+    public void setDateOfPost(String dateOfPost) {
 	this.dateOfPost = dateOfPost;
     }
 
@@ -140,11 +140,7 @@ public class BoardPost implements Parcelable {
 	parcel.writeString(content);
 	parcel.writeString(authorUsername);
 	parcel.writeString(noOfReplies);
-	long time = -1;
-	if (dateOfPost != null) {
-	    time = dateOfPost.getTime();
-	}
-	parcel.writeLong(time);
+	parcel.writeString(dateOfPost);
 	parcel.writeString(id);
 	List<BoardPostComment> comments = getComments();
 	parcel.writeParcelableArray(comments.toArray(new BoardPostComment[comments.size()]), flag);
@@ -155,11 +151,8 @@ public class BoardPost implements Parcelable {
 	content = parcel.readString();
 	authorUsername = parcel.readString();
 	noOfReplies = parcel.readString();
-	long time = parcel.readLong();
-	if (time != -1) {
-	    dateOfPost = new Date();
-	}
-	this.id = parcel.readString();
+	dateOfPost = parcel.readString();
+	id = parcel.readString();
 	List<BoardPostComment> comments = parcel.readArrayList(BoardPostComment.class.getClassLoader());
 	setComments(comments);
     }
