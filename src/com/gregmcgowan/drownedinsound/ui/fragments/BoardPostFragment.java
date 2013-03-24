@@ -17,18 +17,19 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
-import com.gregmcgowan.drownedinsound.network.HttpClient;
-import com.gregmcgowan.drownedinsound.network.handlers.RetrieveBoardPostHandler;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
-import com.gregmcgowan.drownedinsound.utils.FileUtils;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
 import de.greenrobot.event.EventBus;
@@ -54,7 +55,8 @@ public class BoardPostFragment extends SherlockListFragment {
     private boolean requestingPost;
     private String boardPostUrl;
     private String boardPostId;
-
+    private boolean inDualPaneMode;
+    
     public BoardPostFragment() {
 
     }
@@ -63,6 +65,8 @@ public class BoardPostFragment extends SherlockListFragment {
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	EventBus.getDefault().register(this);
+	setRetainInstance(true);
+	setHasOptionsMenu(true);
     }
 
     @Override
@@ -99,6 +103,7 @@ public class BoardPostFragment extends SherlockListFragment {
 		    DisBoardsConstants.BOARD_POST_URL);
 	    boardPostId = (String) getArguments().get(
 		    DisBoardsConstants.BOARD_POST_URL);
+	    inDualPaneMode = getArguments().getBoolean(DisBoardsConstants.DUAL_PANE_MODE);
 	} else {
 	    boardPostUrl = savedInstanceState
 		    .getString(DisBoardsConstants.BOARD_POST_URL);
@@ -108,6 +113,8 @@ public class BoardPostFragment extends SherlockListFragment {
 		    .getBoolean(DisBoardsConstants.REQUESTING_POST);
 	    boardPost = savedInstanceState
 		    .getParcelable(DisBoardsConstants.BOARD_POST_KEY);
+	    inDualPaneMode = savedInstanceState.getBoolean(DisBoardsConstants.DUAL_PANE_MODE);
+	    
 	    if (boardPost != null) {
 		updateComments(boardPost.getComments());
 	    }
@@ -149,14 +156,22 @@ public class BoardPostFragment extends SherlockListFragment {
     public void setProgressBarAndFragmentVisibility(boolean visible) {
 	if (progressBar != null) {
 	    int progressBarVisiblity = visible ? View.VISIBLE : View.INVISIBLE;
+	    int listVisibility = visible ? View.INVISIBLE : View.VISIBLE;
 	    progressBar.setVisibility(progressBarVisiblity);
+	    getListView().setVisibility(listVisibility);
 	}
     }
 
     @Override
     public void onResume() {
 	super.onResume();
-	if (!unattachedFragment && !requestingPost && boardPost == null) {
+	if(boardPost == null) {
+	    fetchBoardPost();
+	}	
+    }
+
+    private void fetchBoardPost(){
+	if (!unattachedFragment && !requestingPost) {
 	    setProgressBarAndFragmentVisibility(true);
 	    Intent disWebServiceIntent = new Intent(getSherlockActivity(),
 		    DisWebService.class);
@@ -171,7 +186,7 @@ public class BoardPostFragment extends SherlockListFragment {
 	    requestingPost = true;
 	}
     }
-
+    
     @Override
     public void onSaveInstanceState(Bundle outState) {
 	super.onSaveInstanceState(outState);
@@ -179,12 +194,47 @@ public class BoardPostFragment extends SherlockListFragment {
 	outState.putParcelable(DisBoardsConstants.BOARD_POST_KEY, boardPost);
 	outState.putString(DisBoardsConstants.BOARD_POST_ID, boardPostId);
 	outState.putString(DisBoardsConstants.BOARD_POST_URL, boardPostUrl);
+	outState.putBoolean(DisBoardsConstants.DUAL_PANE_MODE, inDualPaneMode);
     }
 
     @Override
     public void onDestroy() {
 	super.onDestroy();
 	EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	if(!inDualPaneMode) {
+	    inflater.inflate(R.menu.board_post_menu, menu);   
+	}
+	
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+	int itemId = item.getItemId();
+	switch(itemId) {
+		case R.id.menu_post_refresh:
+		    doRefreshAction();
+		    return true;
+		case R.id.menu_post_reply :
+		    doReplyAction();
+		    return true;
+		 default:
+		     return super.onOptionsItemSelected(item);    
+	}
+    }
+    
+    private void doReplyAction() {
+	Toast.makeText(getSherlockActivity(), "Reply to post",Toast.LENGTH_SHORT).show();
+	Log.d(DisBoardsConstants.LOG_TAG_PREFIX,  "Reply to  post");
+    }
+
+    private void doRefreshAction() {
+	fetchBoardPost();
+	Log.d(DisBoardsConstants.LOG_TAG_PREFIX,  "Refresh  post");
     }
 
     private class BoardPostListAdapater extends ArrayAdapter<BoardPostComment> {

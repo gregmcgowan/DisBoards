@@ -17,15 +17,11 @@ import android.widget.Toast;
 
 import com.gregmcgowan.drownedinsound.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.events.LoginResponseEvent;
-import com.gregmcgowan.drownedinsound.network.HttpClient;
-import com.gregmcgowan.drownedinsound.network.UrlConstants;
-import com.gregmcgowan.drownedinsound.network.handlers.LoginResponseHandler;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
-import com.gregmcgowan.drownedinsound.utils.FileUtils;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
-import com.gregmcgowan.drownedinsound.R;
 
 import de.greenrobot.event.EventBus;
 

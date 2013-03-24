@@ -17,17 +17,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.model.BoardPostSummary;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
-import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.gregmcgowan.drownedinsound.network.UrlConstants;
-import com.gregmcgowan.drownedinsound.network.handlers.RetrieveBoardSummaryListHandler;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
-import com.gregmcgowan.drownedinsound.utils.FileUtils;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
 import de.greenrobot.event.EventBus;
@@ -89,7 +89,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	adapter = new BoardPostSummaryListAdapater(getSherlockActivity(),
 		R.layout.board_list_row, boardPostSummaries);
 	setListAdapter(adapter);
-	setRetainInstance(true);
+	
 
 	if (requestOnStart && !loadedList) {
 	    requestBoardSummaryPage(1);
@@ -137,6 +137,8 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
+	setRetainInstance(true);
+	setHasOptionsMenu(true);
 	EventBus.getDefault().register(this);
     }
 
@@ -155,6 +157,29 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	EventBus.getDefault().unregister(this);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.main_community_activity_menu, menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+	int itemId = item.getItemId();
+	switch(itemId) {
+		case R.id.menu_list_refresh:
+		    doRefreshAction();
+		    return true;
+		 default:
+		     return super.onOptionsItemSelected(item);
+	}	
+    }
+    
+
+    private void doRefreshAction() {
+	requestBoardSummaryPage(1);
+    }
+    
     public void loadListIfNotAlready(int page) {
 	if (!loadedList) {
 	    requestBoardSummaryPage(page);
@@ -215,6 +240,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 			    postId);
 		    arguments.putString(DisBoardsConstants.BOARD_POST_URL,
 			    postUrl);
+		    arguments.putBoolean(DisBoardsConstants.DUAL_PANE_MODE, true);
 		    boardPostFragment.setArguments(arguments);
 		    // Execute a transaction, replacing any existing fragment
 		    // with this one inside the frame.

@@ -6,10 +6,13 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.ui.adapter.BoardsFragmentAdapter;
 import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
-import com.gregmcgowan.drownedinsound.R;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
@@ -36,7 +39,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 
 	mPager = (ViewPager) findViewById(R.id.boards_pager);
 	mPager.setAdapter(mAdapter);
-
+	mPager.getCurrentItem();
 	mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
 	mIndicator.setViewPager(mPager);
 	
@@ -61,4 +64,11 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 	    
 	});
     }
+
+
+ 
+    
+    
+    
+    
 }

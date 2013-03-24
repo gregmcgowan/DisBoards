@@ -30,4 +30,6 @@ public class DisBoardsConstants {
     public static final String USERNAME = "Username";
     public static final String PASSWORD = "Password";
 
+    public static final String DUAL_PANE_MODE = "DUAL_PANE_MODE";
+
 }

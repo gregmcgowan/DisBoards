@@ -7,4 +7,6 @@
 	<string name="password">Password</string>
 	<string name="drowned_in_sound_logo">Drowned in sound logo</string>
 	<string name="login">login</string>
+	<string name="refresh_text">refresh</string>
+	<string name="reply_text">reply</string>
 </resources>
