@@ -1,7 +1,5 @@
 package com.gregmcgowan.drownedinsound.data.model;
 
-import java.util.Date;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 

@@ -2,9 +2,7 @@ package com.gregmcgowan.drownedinsound.ui.activity;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.widget.ProgressBar;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
@@ -20,9 +18,7 @@ import com.gregmcgowan.drownedinsound.utils.UiUtils;
  * 
  */
 public class BoardPostActivity extends SherlockFragmentActivity {
-
-   
-
+    
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
 	    + "BoardPostActivity";
 
@@ -54,5 +50,8 @@ public class BoardPostActivity extends SherlockFragmentActivity {
 	}
 
     }
+
+   
+
 
 }
