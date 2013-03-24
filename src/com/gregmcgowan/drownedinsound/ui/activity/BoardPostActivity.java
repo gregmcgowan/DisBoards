@@ -24,13 +24,15 @@ public class BoardPostActivity extends SherlockFragmentActivity {
 
     private FragmentManager fragmentManager;
 
+    private BoardPostFragment boardPostFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 
 	fragmentManager = getSupportFragmentManager();
 
-	getSupportActionBar().setHomeButtonEnabled(true);
+	getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	int screenWidthPixels = getResources().getDisplayMetrics().widthPixels;
 	int screenWidthDp = UiUtils.convertPixelsToDp(getResources(), screenWidthPixels);
 	if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && 
@@ -43,15 +45,17 @@ public class BoardPostActivity extends SherlockFragmentActivity {
 
 	if (savedInstanceState == null) {
 	    // During initial setup, plug in the details fragment.
-	    BoardPostFragment details = new BoardPostFragment();
-	    details.setArguments(getIntent().getExtras());
+	    boardPostFragment = new BoardPostFragment();
+	    boardPostFragment.setArguments(getIntent().getExtras());
 	    fragmentManager.beginTransaction()
-		    .add(android.R.id.content, details).commit();
+		    .add(android.R.id.content, boardPostFragment).commit();
 	}
 
     }
 
-   
+   public void removeBoardPostFragment(){
+       finish();
+   }
 
 
 }

@@ -35,22 +35,31 @@ public class BoardPostParser {
 	    Elements originalPostElements = boardPostDocument
 		    .getElementsByClass("content").get(1).getAllElements();
 	    String title = originalPostElements.get(2).text();
-	    Log.d(TAG, "Title = " + title);
-
+	    if(DisBoardsConstants.DEBUG){
+		Log.d(TAG, "Title = " + title);
+	    }
+	    
 	    // Author username
 	    Elements byLineElements = originalPostElements.get(5)
 		    .getAllElements();
 	    String author = byLineElements.get(1).text();
-	    Log.d(TAG, "Author = " + author);
+	    if(DisBoardsConstants.DEBUG){
+		Log.d(TAG, "Author = " + author);
+	    }
 
 	    // Replies and date
 	    String replies = byLineElements.get(5).text();
 	    String date = byLineElements.get(6).text();
-	    Log.d(TAG, "Replies = " + replies + " date = " + date);
-
+	    if(DisBoardsConstants.DEBUG){
+		Log.d(TAG, "Replies = " + replies + " date = " + date);
+	    }
+	    
 	    Element contentElement = originalPostElements.get(12);
 	    String content = contentElement.html();
-	    Log.d(TAG, "Content = " + content);
+	    if(DisBoardsConstants.DEBUG){
+		Log.d(TAG, "Content = " + content);
+	    }
+	
 
 	    // Next get all the comments
 	    ArrayList<BoardPostComment> boardPostComments = new ArrayList<BoardPostComment>();
@@ -73,7 +82,6 @@ public class BoardPostParser {
 	    boardPost.setDateOfPost(date);
 	    boardPost.setId(boardPostId);
 	    boardPost.setComments(boardPostComments);
-	    // boardPost.setNoOfReplies(replies);
 
 	}
 	Log.d(TAG, "Parsed post in "+ (System.currentTimeMillis() - startTime) +" ms");
@@ -106,9 +114,8 @@ public class BoardPostParser {
 		if (authorAndDateElements != null) {
 		    String combinedDateAndTime = authorAndDateElements.text();
 		    if (!TextUtils.isEmpty(combinedDateAndTime)) {
-			Log.d(TAG, "combined = "+combinedDateAndTime);
 			String[] combinedDateAndTimeBits = combinedDateAndTime
-				.split("\\s|\\s");
+				.split("\\Q|\\E");
 			if (combinedDateAndTimeBits != null
 				&& combinedDateAndTimeBits.length >= 2) {
 			    author = combinedDateAndTimeBits[0].trim();
@@ -130,6 +137,7 @@ public class BoardPostParser {
 		boardPostComment.setContent(content);
 		boardPostComment.setCommentLevel(currentLevel);
 		boardPostComment.setAuthorUsername(author);
+		boardPostComment.setDateAndTimeOfComment(dateAndTime);
 		boardPosts.add(boardPostComment);
 
 	    } else if (noOfChildren > 1) {
@@ -153,9 +161,8 @@ public class BoardPostParser {
 		if (authorAndDateElements != null) {
 		    String combinedDateAndTime = authorAndDateElements.text();
 		    if (!TextUtils.isEmpty(combinedDateAndTime)) {
-			Log.d(TAG, "combined = "+combinedDateAndTime);
 			String[] combinedDateAndTimeBits = combinedDateAndTime
-				.split("\\s|\\s");
+				.split("\\Q|\\E");
 			if (combinedDateAndTimeBits != null
 				&& combinedDateAndTimeBits.length >= 2) {
 			    author = combinedDateAndTimeBits[0].trim();
@@ -165,10 +172,14 @@ public class BoardPostParser {
 		}
 
 		Element possiblyThisElement = children.get(1);
-		Log.d(TAG, "Element = " + possiblyThisElement.className());
+		
+		String thisCombinedText = "";
 		boolean thisPresent = "this".equals(possiblyThisElement
 			.className());
-
+		if(thisPresent) {
+		    thisCombinedText = possiblyThisElement.text();
+		}
+	
 		if (DisBoardsConstants.DEBUG) {
 		    Log.d(TAG, "title [" + title + "]");
 		    Log.d(TAG, "content [" + content + "]");
@@ -176,6 +187,7 @@ public class BoardPostParser {
 		    Log.d(TAG, "thisPresent [" + thisPresent+"]");
 		    Log.d(TAG, "author [" + author+"]");
 		    Log.d(TAG, "dateAndTime [" + dateAndTime +"]");
+		    Log.d(TAG, "This element  = " + thisCombinedText);
 		}
 
 		BoardPostComment boardPostComment = new BoardPostComment();
@@ -183,6 +195,7 @@ public class BoardPostParser {
 		boardPostComment.setContent(content);
 		boardPostComment.setCommentLevel(currentLevel);
 		boardPostComment.setAuthorUsername(author);
+		boardPostComment.setDateAndTimeOfComment(dateAndTime);
 		boardPosts.add(boardPostComment);
 
 		// Get responses

@@ -30,6 +30,7 @@ import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
+import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
 import de.greenrobot.event.EventBus;
@@ -56,7 +57,7 @@ public class BoardPostFragment extends SherlockListFragment {
     private String boardPostUrl;
     private String boardPostId;
     private boolean inDualPaneMode;
-    
+
     public BoardPostFragment() {
 
     }
@@ -103,7 +104,8 @@ public class BoardPostFragment extends SherlockListFragment {
 		    DisBoardsConstants.BOARD_POST_URL);
 	    boardPostId = (String) getArguments().get(
 		    DisBoardsConstants.BOARD_POST_URL);
-	    inDualPaneMode = getArguments().getBoolean(DisBoardsConstants.DUAL_PANE_MODE);
+	    inDualPaneMode = getArguments().getBoolean(
+		    DisBoardsConstants.DUAL_PANE_MODE);
 	} else {
 	    boardPostUrl = savedInstanceState
 		    .getString(DisBoardsConstants.BOARD_POST_URL);
@@ -113,8 +115,9 @@ public class BoardPostFragment extends SherlockListFragment {
 		    .getBoolean(DisBoardsConstants.REQUESTING_POST);
 	    boardPost = savedInstanceState
 		    .getParcelable(DisBoardsConstants.BOARD_POST_KEY);
-	    inDualPaneMode = savedInstanceState.getBoolean(DisBoardsConstants.DUAL_PANE_MODE);
-	    
+	    inDualPaneMode = savedInstanceState
+		    .getBoolean(DisBoardsConstants.DUAL_PANE_MODE);
+
 	    if (boardPost != null) {
 		updateComments(boardPost.getComments());
 	    }
@@ -165,12 +168,12 @@ public class BoardPostFragment extends SherlockListFragment {
     @Override
     public void onResume() {
 	super.onResume();
-	if(boardPost == null) {
+	if (boardPost == null) {
 	    fetchBoardPost();
-	}	
+	}
     }
 
-    private void fetchBoardPost(){
+    private void fetchBoardPost() {
 	if (!unattachedFragment && !requestingPost) {
 	    setProgressBarAndFragmentVisibility(true);
 	    Intent disWebServiceIntent = new Intent(getSherlockActivity(),
@@ -186,7 +189,7 @@ public class BoardPostFragment extends SherlockListFragment {
 	    requestingPost = true;
 	}
     }
-    
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
 	super.onSaveInstanceState(outState);
@@ -205,36 +208,43 @@ public class BoardPostFragment extends SherlockListFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-	if(!inDualPaneMode) {
-	    inflater.inflate(R.menu.board_post_menu, menu);   
+	if (!inDualPaneMode) {
+	    inflater.inflate(R.menu.board_post_menu, menu);
 	}
-	
-    }
 
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 	int itemId = item.getItemId();
-	switch(itemId) {
-		case R.id.menu_post_refresh:
-		    doRefreshAction();
-		    return true;
-		case R.id.menu_post_reply :
-		    doReplyAction();
-		    return true;
-		 default:
-		     return super.onOptionsItemSelected(item);    
+	switch (itemId) {
+	case android.R.id.home:
+	    hideFragment();
+	    return true;
+	case R.id.menu_post_refresh:
+	    doRefreshAction();
+	    return true;
+	case R.id.menu_post_reply:
+	    doReplyAction();
+	    return true;
+	default:
+	    return super.onOptionsItemSelected(item);
 	}
     }
-    
+
+    private void hideFragment() {
+	((BoardPostActivity)getSherlockActivity()).removeBoardPostFragment();
+    }
+
     private void doReplyAction() {
-	Toast.makeText(getSherlockActivity(), "Reply to post",Toast.LENGTH_SHORT).show();
-	Log.d(DisBoardsConstants.LOG_TAG_PREFIX,  "Reply to  post");
+	Toast.makeText(getSherlockActivity(), "Reply to post",
+		Toast.LENGTH_SHORT).show();
+	Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Reply to  post");
     }
 
     private void doRefreshAction() {
 	fetchBoardPost();
-	Log.d(DisBoardsConstants.LOG_TAG_PREFIX,  "Refresh  post");
+	Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Refresh  post");
     }
 
     private class BoardPostListAdapater extends ArrayAdapter<BoardPostComment> {
@@ -311,8 +321,7 @@ public class BoardPostFragment extends SherlockListFragment {
 		String title = comment.getTitle();
 		String author = comment.getAuthorUsername();
 		String content = comment.getContent();
-		// TODO date and time
-		// String dateTime = summary.getDateAndTimeOfComment()
+		String dateAndTime = comment.getDateAndTimeOfComment();
 
 		if (!isFirstComment) {
 		    boardPostCommentHolder.commentAuthorTextView
@@ -325,9 +334,21 @@ public class BoardPostFragment extends SherlockListFragment {
 
 		    String usersWhoThised = getUserWhoThisString(comment
 			    .getUsersWhoHaveThissed());
-		    
-		    boardPostCommentHolder.commentThisSectionTextView
-			    .setText(usersWhoThised);
+		    if (!TextUtils.isEmpty(usersWhoThised)) {
+			boardPostCommentHolder.commentThisSectionTextView
+				.setText(usersWhoThised);
+			boardPostCommentHolder.commentThisSectionTextView
+				.setVisibility(View.VISIBLE);
+		    } else {
+			boardPostCommentHolder.commentThisSectionTextView
+				.setVisibility(View.GONE);
+		    }
+
+		    if (TextUtils.isEmpty(dateAndTime)) {
+			dateAndTime = "Unknown";
+		    }
+		    boardPostCommentHolder.commentDateTimeTextView
+			    .setText(dateAndTime);
 
 		    int level = comment.getCommentLevel();
 		    boardPostCommentHolder.whitespaceLayout.removeAllViews();
@@ -343,11 +364,17 @@ public class BoardPostFragment extends SherlockListFragment {
 		    }
 
 		} else {
+		    dateAndTime = boardPost.getDateOfPost();
+		    String numberOfReplies = boardPost.getNoOfReplies();
 		    boardPostInitialHolder.commentAuthorTextView
 			    .setText(author);
 		    boardPostInitialHolder.commentTitleTextView.setText(title);
 		    boardPostInitialHolder.commentContentTextView.setText(Html
 			    .fromHtml(content));
+		    boardPostInitialHolder.commentDateTimeTextView
+			    .setText(dateAndTime);
+		    boardPostInitialHolder.noOfCommentsTextView
+			    .setText(numberOfReplies);
 		}
 
 	    }
@@ -395,8 +422,10 @@ public class BoardPostFragment extends SherlockListFragment {
 		.findViewById(R.id.board_post_initial_comment_author_subheading);
 	boardPostInitialHolder.commentContentTextView = (TextView) rowView
 		.findViewById(R.id.board_post_initial_comment_text);
-	// TODO
-	// Board date and time and number of comments
+	boardPostInitialHolder.commentDateTimeTextView = (TextView) rowView
+		.findViewById(R.id.board_post_initial_comment_date_time_subheading);
+	boardPostInitialHolder.noOfCommentsTextView = (TextView) rowView
+		.findViewById(R.id.board_post_initial_comment_replies_subheading);
 	rowView.setTag(boardPostInitialHolder);
 	return boardPostInitialHolder;
     }

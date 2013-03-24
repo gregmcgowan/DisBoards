@@ -14,17 +14,47 @@
         android:textColor="@color/dark_grey"
         android:textIsSelectable="true"
         android:textSize="@dimen/text_medium"
-        android:textStyle="bold" />
+        android:textStyle="bold" 
+        android:text="Here is a title"/>
 
-    <TextView
-        android:id="@+id/board_post_initial_comment_author_subheading"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|left"
-        android:layout_margin="@dimen/margin_medium"
-        android:textColor="@color/highlighted_blue"
-        android:textIsSelectable="true"
-        android:textSize="@dimen/text_micro" />
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/board_post_initial_comment_author_subheading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="@dimen/margin_medium"
+            android:textColor="@color/highlighted_blue"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/text_really_micro" 
+            android:text="Test"/>
+
+        <TextView
+            android:id="@+id/board_post_initial_comment_date_time_subheading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center|left"
+            android:layout_margin="@dimen/margin_medium"
+            android:textColor="@color/dark_grey"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/text_really_micro" />
+
+        <TextView
+            android:id="@+id/board_post_initial_comment_replies_subheading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/board_post_initial_comment_date_time_subheading"
+            android:layout_gravity="center|left"
+            android:layout_margin="@dimen/margin_medium"
+            android:textColor="@color/dark_grey"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/text_really_micro" />
+    </RelativeLayout>>
 
     <TextView
         android:id="@+id/board_post_initial_comment_text"
