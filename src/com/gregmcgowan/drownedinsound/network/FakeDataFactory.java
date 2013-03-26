@@ -1,12 +1,10 @@
 package com.gregmcgowan.drownedinsound.network;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
-import com.gregmcgowan.drownedinsound.data.model.BoardPostSummary;
 
 public class FakeDataFactory {
 
@@ -341,22 +339,22 @@ public class FakeDataFactory {
 			"SOMEONEELSE", "SOMEONEELSE", "SOMEONEELSE",
 			"SOMEONEELSE", "SOMEONEELSE" };
 	    }
-	    boardPostComment.setUsersWhoHaveThissed(users);
+	   // boardPostComment.setUsersWhoHaveThissed(users);
 	}
 	return boardPostComment;
     }
 
-    public static ArrayList<BoardPostSummary> generateRandomBoardPostSummaryList() {
-	ArrayList<BoardPostSummary> list = new ArrayList<BoardPostSummary>();
+    public static ArrayList<BoardPost> generateRandomBoardPostSummaryList() {
+	ArrayList<BoardPost> list = new ArrayList<BoardPost>();
 
 	for (int i = 0; i < 20; i++) {
-	    BoardPostSummary boardPostSummary = new BoardPostSummary();
+	    BoardPost boardPostSummary = new BoardPost();
 	    boardPostSummary.setAuthorUsername(USER_NAME);
 	    boardPostSummary
 		    .setTitle("Here is a drowned in sound post no " + i);
 	    boardPostSummary.setNumberOfReplies(10);
-	    boardPostSummary.setLastPostDate(new Date());
-	    boardPostSummary.setBoardPostId(String.valueOf(i));
+	    //boardPostSummary.setLastPostDate(new Date());
+	    boardPostSummary.setId(String.valueOf(i));
 	    list.add(boardPostSummary);
 	}
 

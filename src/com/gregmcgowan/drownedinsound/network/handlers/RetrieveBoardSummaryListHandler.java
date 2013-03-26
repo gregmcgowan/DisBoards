@@ -11,7 +11,7 @@ import org.jsoup.nodes.Document;
 import android.util.Log;
 
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
-import com.gregmcgowan.drownedinsound.data.model.BoardPostSummary;
+import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.parser.BoardPostSummaryListParser;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
@@ -35,7 +35,7 @@ public class RetrieveBoardSummaryListHandler extends
 
     @Override
     public void onSuccess(int statusCode, File file) {
-	List<BoardPostSummary> boardPostSummaries = null;
+	List<BoardPost> boardPostSummaries = null;
 	if(DisBoardsConstants.DEBUG){
 	    Log.d(TAG, "Got response");
 	}

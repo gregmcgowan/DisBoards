@@ -11,7 +11,8 @@ import org.jsoup.select.Elements;
 import android.util.Log;
 
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
-import com.gregmcgowan.drownedinsound.data.model.BoardPostSummary;
+import com.gregmcgowan.drownedinsound.data.model.BoardPost;
+
 
 /**
  * This will parse the document provider into a list of BoardPostSummary objects
@@ -29,8 +30,8 @@ public class BoardPostSummaryListParser {
 	this.document = document;
     }
 
-    public List<BoardPostSummary> parseDocument() {
-	List<BoardPostSummary> list = new ArrayList<BoardPostSummary>();
+    public List<BoardPost> parseDocument() {
+	List<BoardPost> list = new ArrayList<BoardPost>();
 	if(DisBoardsConstants.DEBUG){
 	    Log.d(TAG, "Starting parsing");
 	}
@@ -44,7 +45,7 @@ public class BoardPostSummaryListParser {
 		int count = 0;
 		for (Element rowElement : tableRowsElements) {
 		    if (count > 0) {
-			BoardPostSummary postSummary = getPostInfoFromElement(rowElement);
+			BoardPost postSummary = getPostInfoFromElement(rowElement);
 			if (postSummary != null) {
 			    list.add(postSummary);
 			}
@@ -59,7 +60,7 @@ public class BoardPostSummaryListParser {
 	return list;
     }
 
-    private BoardPostSummary getPostInfoFromElement(Element element) {
+    private BoardPost getPostInfoFromElement(Element element) {
 	String postTitle = null;
 	String authorUsername = null;
 	Date postCreationDate = null;
@@ -100,10 +101,10 @@ public class BoardPostSummaryListParser {
 	Element repliesElement = childElements.get(2);
 	Element lastPostElement = childElements.get(3);
 	// TODO validate we are all the required data;
-	BoardPostSummary boardPostSummary = new BoardPostSummary();
+	BoardPost  boardPostSummary = new BoardPost();
 	boardPostSummary.setAuthorUsername(authorUsername);
 	boardPostSummary.setTitle(postTitle);
-	boardPostSummary.setBoardPostId(postId);
+	boardPostSummary.setId(postId);
 
 	return boardPostSummary;
     }

@@ -18,13 +18,18 @@ public class BoardPost implements Parcelable {
 
     private String id;
     private String title;
+    private boolean isSticky;
+    private String summary;
     private String content;
     private String authorUsername;
-    private String noOfReplies;
     private String dateOfPost;
+    private int numberOfReplies;
+    private BoardPostStatus boardPostStatus;
+    private long lastViewedTime;
+    
     private List<BoardPostCommentTreeNode> boardPostTreeNodes;
     private transient List<BoardPostComment> commentsCache;
-
+    
     public BoardPost() {
 	boardPostTreeNodes = new ArrayList<BoardPostCommentTreeNode>();
     }
@@ -120,7 +125,6 @@ public class BoardPost implements Parcelable {
 	return getComments().size() + " replies";
     }
 
-
     public String getDateOfPost() {
 	return dateOfPost;
     }
@@ -130,30 +134,7 @@ public class BoardPost implements Parcelable {
     }
 
     public int describeContents() {
-	// TODO Auto-generated method stub
 	return 0;
-    }
-
-    public void writeToParcel(Parcel parcel, int flag) {
-	parcel.writeString(title);
-	parcel.writeString(content);
-	parcel.writeString(authorUsername);
-	parcel.writeString(noOfReplies);
-	parcel.writeString(dateOfPost);
-	parcel.writeString(id);
-	List<BoardPostComment> comments = getComments();
-	parcel.writeParcelableArray(comments.toArray(new BoardPostComment[comments.size()]), flag);
-    }
-
-    private void createFromParcel(Parcel parcel) {
-	title = parcel.readString();
-	content = parcel.readString();
-	authorUsername = parcel.readString();
-	noOfReplies = parcel.readString();
-	dateOfPost = parcel.readString();
-	id = parcel.readString();
-	List<BoardPostComment> comments = parcel.readArrayList(BoardPostComment.class.getClassLoader());
-	setComments(comments);
     }
 
     public String getId() {
@@ -164,6 +145,76 @@ public class BoardPost implements Parcelable {
 	this.id = id;
     }
 
+    public String getSummary() {
+	return summary;
+    }
+
+    public void setSummary(String summary) {
+	this.summary = summary;
+    }
+
+    public boolean isSticky() {
+	return isSticky;
+    }
+
+    public void setSticky(boolean isSticky) {
+	this.isSticky = isSticky;
+    }
+
+    public int getNumberOfReplies() {
+	return numberOfReplies;
+    }
+
+    public void setNumberOfReplies(int numberOfReplies) {
+	this.numberOfReplies = numberOfReplies;
+    }
+
+    public BoardPostStatus getBoardPostStatus() {
+        return boardPostStatus;
+    }
+
+    public void setBoardPostStatus(BoardPostStatus boardPostStatus) {
+        this.boardPostStatus = boardPostStatus;
+    }
+    
+    public long getLastViewedTime() {
+	return lastViewedTime;
+    }
+
+    public void setLastViewedTime(long lastViewedTime) {
+	this.lastViewedTime = lastViewedTime;
+    }
+       
+    public void writeToParcel(Parcel parcel, int flag) {
+	parcel.writeString(id);
+	parcel.writeString(title);
+	parcel.writeString(summary);
+	parcel.writeInt(isSticky ? 1 : 0);
+	parcel.writeString(content);
+	parcel.writeString(authorUsername);
+	parcel.writeString(dateOfPost);
+	parcel.writeInt(numberOfReplies);
+	parcel.writeSerializable(boardPostStatus);
+	parcel.writeLong(lastViewedTime);
+	List<BoardPostComment> comments = getComments();
+	parcel.writeParcelableArray(comments.toArray(new BoardPostComment[comments.size()]), flag);
+    }
+
+    private void createFromParcel(Parcel parcel) {
+	id = parcel.readString();
+	title = parcel.readString();
+	summary = parcel.readString();
+	isSticky = parcel.readInt() == 1;
+	content = parcel.readString();
+	authorUsername = parcel.readString();
+	dateOfPost = parcel.readString();
+	numberOfReplies = parcel.readInt();
+	boardPostStatus = (BoardPostStatus) parcel.readSerializable();
+	lastViewedTime = parcel.readLong();
+	List<BoardPostComment> comments = parcel.readArrayList(BoardPostComment.class.getClassLoader());
+	setComments(comments);
+    }
+    
     public static final Parcelable.Creator<BoardPost> CREATOR = new Parcelable.Creator<BoardPost>() {
 	public BoardPost createFromParcel(Parcel in) {
 	    return new BoardPost(in);

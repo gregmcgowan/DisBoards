@@ -196,6 +196,7 @@ public class BoardPostParser {
 		boardPostComment.setCommentLevel(currentLevel);
 		boardPostComment.setAuthorUsername(author);
 		boardPostComment.setDateAndTimeOfComment(dateAndTime);
+		boardPostComment.setUsersWhoHaveThissed(thisCombinedText);
 		boardPosts.add(boardPostComment);
 
 		// Get responses

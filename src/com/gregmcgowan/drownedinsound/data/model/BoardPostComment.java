@@ -15,10 +15,16 @@ public class BoardPostComment implements Parcelable {
     private String title;
     private String content;
     private String authorUsername;
-    private String[] usersWhoHaveThissed;
+    private String usersWhoHaveThissed;
     private String dateAndTimeOfComment;
     private BoardPostCommentTreeNode treeNode;
     private String commentId;
+    /**
+     * Indicates if the comment is a top level one (level would be 0) or if
+     * it is a reply to another comment. So level 1 would be reply to a level 0
+     * comment, level 2 a reply to a level 1 comment etc etc
+     */
+    private int commentLevel;
     
     public BoardPostComment(){
 	
@@ -27,14 +33,7 @@ public class BoardPostComment implements Parcelable {
     protected BoardPostComment(Parcel in) {
 	readFromParcel(in);
     }
-    
-    /**
-     * Indicates if the comment is a top level one (level would be 0) or if
-     * it is a reply to another comment. So level 1 would be reply to a level 0
-     * comment, level 2 a reply to a level 1 comment etc etc
-     */
-    private int commentLevel;
-    
+        
     public String getTitle() {
         return title;
     }
@@ -53,10 +52,10 @@ public class BoardPostComment implements Parcelable {
     public void setAuthorUsername(String authorUsername) {
         this.authorUsername = authorUsername;
     }
-    public String[] getUsersWhoHaveThissed() {
+    public String getUsersWhoHaveThissed() {
         return usersWhoHaveThissed;
     }
-    public void setUsersWhoHaveThissed(String[] usersWhoHaveThissed) {
+    public void setUsersWhoHaveThissed(String usersWhoHaveThissed) {
         this.usersWhoHaveThissed = usersWhoHaveThissed;
     }
     public String getDateAndTimeOfComment() {

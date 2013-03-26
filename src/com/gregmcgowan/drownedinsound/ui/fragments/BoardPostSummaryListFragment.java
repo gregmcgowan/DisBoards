@@ -22,7 +22,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
-import com.gregmcgowan.drownedinsound.data.model.BoardPostSummary;
+import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.network.UrlConstants;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
@@ -48,7 +48,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	    + "BoardListFragment";
     private String boardUrl;
     private ProgressBar progressBar;
-    private ArrayList<BoardPostSummary> boardPostSummaries = new ArrayList<BoardPostSummary>();
+    private ArrayList<BoardPost> boardPostSummaries = new ArrayList<BoardPost>();
     private BoardPostSummaryListAdapater adapter;
     private View rootView;
     private boolean requestOnStart;
@@ -90,7 +90,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 		R.layout.board_list_row, boardPostSummaries);
 	setListAdapter(adapter);
 	
-
+	
 	if (requestOnStart && !loadedList) {
 	    requestBoardSummaryPage(1);
 	}
@@ -223,9 +223,9 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 
     private void showBoardPost(int position) {
 	currentlySelectedPost = position;
-	BoardPostSummary boardPostSummary = boardPostSummaries.get(position);
+	BoardPost boardPostSummary = boardPostSummaries.get(position);
 	if (boardPostSummary != null) {
-	    postId = boardPostSummary.getBoardPostId();
+	    postId = boardPostSummary.getId();
 	    postUrl = UrlConstants.BASE_URL + "/" + postId;
 
 	    if (dualPaneMode) {
@@ -264,19 +264,19 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     }
 
     private class BoardPostSummaryListAdapater extends
-	    ArrayAdapter<BoardPostSummary> {
+	    ArrayAdapter<BoardPost> {
 
-	private List<BoardPostSummary> summaries;
+	private List<BoardPost> summaries;
 
 	public BoardPostSummaryListAdapater(Context context,
 		int textViewResourceId,
-		List<BoardPostSummary> boardPostSummaries) {
+		List<BoardPost> boardPostSummaries) {
 	    super(context, textViewResourceId);
 	    this.summaries = boardPostSummaries;
 	}
 
 	@Override
-	public BoardPostSummary getItem(int position) {
+	public BoardPost  getItem(int position) {
 	    return summaries.get(position);
 	}
 
@@ -299,7 +299,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 		boardPostSummaryRowView = vi.inflate(R.layout.board_list_row,
 			null);
 	    }
-	    BoardPostSummary summary = summaries.get(position);
+	    BoardPost summary = summaries.get(position);
 	    if (summary != null) {
 		String title = summary.getTitle();
 		String authorusername = "by " + summary.getAuthorUsername();

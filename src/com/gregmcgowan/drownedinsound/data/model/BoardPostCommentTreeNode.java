@@ -7,7 +7,7 @@ import android.os.Parcelable;
 
 /**
  * Represents a board post comment which may be a reply to an
- * existing commment and/or have children comments 
+ * existing comment and/or have children comments 
  * 
  * @author Greg
  *

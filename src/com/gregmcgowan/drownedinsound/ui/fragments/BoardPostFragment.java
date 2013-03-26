@@ -332,8 +332,7 @@ public class BoardPostFragment extends SherlockListFragment {
 				.setText(Html.fromHtml(content));
 		    }
 
-		    String usersWhoThised = getUserWhoThisString(comment
-			    .getUsersWhoHaveThissed());
+		    String usersWhoThised = comment.getUsersWhoHaveThissed();
 		    if (!TextUtils.isEmpty(usersWhoThised)) {
 			boardPostCommentHolder.commentThisSectionTextView
 				.setText(usersWhoThised);
@@ -381,15 +380,6 @@ public class BoardPostFragment extends SherlockListFragment {
 	    return boardPostSummaryRowView;
 	}
 
-	public String getUserWhoThisString(String[] usersWhoThisd) {
-	    String userWhoThisString = "";
-	    if (usersWhoThisd != null && usersWhoThisd.length > 0) {
-		String users = TextUtils.join(",", usersWhoThisd);
-		userWhoThisString = users + " this'd this";
-
-	    }
-	    return userWhoThisString;
-	}
     }
 
     private BoardPostCommentHolder inflateBoardPostCommentHolder(View rowView) {
