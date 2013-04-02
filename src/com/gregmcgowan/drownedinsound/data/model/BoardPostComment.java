@@ -3,118 +3,155 @@ package com.gregmcgowan.drownedinsound.data.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 /**
- * Represents a comment that has been made against a drowned in sound
- * board post
+ * Represents a comment that has been made against a drowned in sound board post
  * 
  * @author Greg
- *
+ * 
  */
+@DatabaseTable(tableName = "boardPostComment")
 public class BoardPostComment implements Parcelable {
-    
-    private String title;
-    private String content;
-    private String authorUsername;
-    private String usersWhoHaveThissed;
-    private String dateAndTimeOfComment;
-    private BoardPostCommentTreeNode treeNode;
+
+    private static final String ID_FIELD = "_id";
+
+    @DatabaseField(columnName = ID_FIELD, generatedId = false)
     private String commentId;
+    @DatabaseField
+    private String title;
+    @DatabaseField
+    private String content;
+    @DatabaseField
+    private String authorUsername;
+    @DatabaseField
+    private String usersWhoHaveThissed;
+    @DatabaseField
+    private String dateAndTimeOfComment;
+    @DatabaseField(canBeNull = false, foreign = true)
+    private BoardPost boardPost;
+
     /**
-     * Indicates if the comment is a top level one (level would be 0) or if
-     * it is a reply to another comment. So level 1 would be reply to a level 0
+     * Indicates if the comment is a top level one (level would be 0) or if it
+     * is a reply to another comment. So level 1 would be reply to a level 0
      * comment, level 2 a reply to a level 1 comment etc etc
      */
+    @DatabaseField
     private int commentLevel;
-    
-    public BoardPostComment(){
-	
+
+    private BoardPostCommentTreeNode treeNode;
+
+    public BoardPostComment() {
+
     }
-    
+
     protected BoardPostComment(Parcel in) {
 	readFromParcel(in);
     }
-        
+
     public String getTitle() {
-        return title;
+	return title;
     }
+
     public void setTitle(String title) {
-        this.title = title;
+	this.title = title;
     }
+
     public String getContent() {
-        return content;
+	return content;
     }
+
     public void setContent(String content) {
-        this.content = content;
+	this.content = content;
     }
+
     public String getAuthorUsername() {
-        return authorUsername;
+	return authorUsername;
     }
+
     public void setAuthorUsername(String authorUsername) {
-        this.authorUsername = authorUsername;
+	this.authorUsername = authorUsername;
     }
+
     public String getUsersWhoHaveThissed() {
-        return usersWhoHaveThissed;
+	return usersWhoHaveThissed;
     }
+
     public void setUsersWhoHaveThissed(String usersWhoHaveThissed) {
-        this.usersWhoHaveThissed = usersWhoHaveThissed;
+	this.usersWhoHaveThissed = usersWhoHaveThissed;
     }
+
     public String getDateAndTimeOfComment() {
-        return dateAndTimeOfComment;
+	return dateAndTimeOfComment;
     }
+
     public void setDateAndTimeOfComment(String dateAndTimeOfComment) {
-        this.dateAndTimeOfComment = dateAndTimeOfComment;
+	this.dateAndTimeOfComment = dateAndTimeOfComment;
     }
+
     public BoardPostCommentTreeNode getTreeNode() {
-        return treeNode;
+	return treeNode;
     }
+
     public void setTreeNode(BoardPostCommentTreeNode treeNode) {
-        this.treeNode = treeNode;
+	this.treeNode = treeNode;
     }
+
     public String getCommentId() {
-        return commentId;
+	return commentId;
     }
+
     public void setCommentId(String commentId) {
-        this.commentId = commentId;
+	this.commentId = commentId;
     }
+
     public int getCommentLevel() {
 	return commentLevel;
     }
+
     public void setCommentLevel(int commentLevel) {
 	this.commentLevel = commentLevel;
     }
-    
+
+    public BoardPost getBoardPost() {
+	return boardPost;
+    }
+
+    public void setBoardPost(BoardPost boardPost) {
+	this.boardPost = boardPost;
+    }
+
     public int describeContents() {
-        return 0;
+	return 0;
     }
 
     private void readFromParcel(Parcel in) {
-        title = in.readString();
-        content = in.readString();
-        authorUsername = in.readString();
-        commentId = in.readString();
-        commentLevel = in.readInt();
-        dateAndTimeOfComment = in.readString();
+	title = in.readString();
+	content = in.readString();
+	authorUsername = in.readString();
+	commentId = in.readString();
+	commentLevel = in.readInt();
+	dateAndTimeOfComment = in.readString();
     }
-    
+
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(title);
-        dest.writeString(content);
-        dest.writeString(authorUsername);
-        dest.writeString(commentId);
-        dest.writeInt(commentLevel);
-        dest.writeString(dateAndTimeOfComment);
+	dest.writeString(title);
+	dest.writeString(content);
+	dest.writeString(authorUsername);
+	dest.writeString(commentId);
+	dest.writeInt(commentLevel);
+	dest.writeString(dateAndTimeOfComment);
     }
 
     public static final Parcelable.Creator<BoardPostComment> CREATOR = new Parcelable.Creator<BoardPostComment>() {
-        public BoardPostComment createFromParcel(Parcel in) {
-            return new BoardPostComment(in);
-        }
+	public BoardPostComment createFromParcel(Parcel in) {
+	    return new BoardPostComment(in);
+	}
 
-        public BoardPostComment[] newArray(int size) {
-            return new BoardPostComment[size];
-        }
+	public BoardPostComment[] newArray(int size) {
+	    return new BoardPostComment[size];
+	}
     };
-    
-    
-    
+
 }

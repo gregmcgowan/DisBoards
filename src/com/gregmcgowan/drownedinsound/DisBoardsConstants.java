@@ -8,7 +8,7 @@ package com.gregmcgowan.drownedinsound;
  */
 public class DisBoardsConstants {
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String LOG_TAG_PREFIX = "Dis";
     
@@ -22,7 +22,7 @@ public class DisBoardsConstants {
 
     public static final String BOARD_POST_KEY = "BOARD_POST";
     public static final String BOARD_URL = "BoardUrl";
-    public static final String BOARD_ID = "BoardId";
+    public static final String BOARD_TYPE_ID = "BoardId";
     public static final String BOARD_POST_URL = "BoardPostUrl";
     public static final String REQUESTING_POST = "RequestingPost";
     public static final String BOARD_POST_ID = "BOARD_POST_ID";
@@ -31,5 +31,7 @@ public class DisBoardsConstants {
     public static final String PASSWORD = "Password";
 
     public static final String DUAL_PANE_MODE = "DUAL_PANE_MODE";
+
+    public static final String CRITTERCISM_APP_ID = "51521dba97c8f23caf000005";
 
 }

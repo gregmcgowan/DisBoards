@@ -89,8 +89,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	adapter = new BoardPostSummaryListAdapater(getSherlockActivity(),
 		R.layout.board_list_row, boardPostSummaries);
 	setListAdapter(adapter);
-	
-	
+
 	if (requestOnStart && !loadedList) {
 	    requestBoardSummaryPage(1);
 	}
@@ -121,8 +120,8 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	    showBoardPost(currentlySelectedPost);
 	}
 
-	
-	//TODO This does not work at the moment. SavedInstanceState always seems to be null
+	// TODO This does not work at the moment. SavedInstanceState always
+	// seems to be null
 	if (wasInDualPaneMode
 		&& currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
 	    Intent viewPostIntent = new Intent(getSherlockActivity(),
@@ -159,27 +158,25 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.main_community_activity_menu, menu);
+	inflater.inflate(R.menu.main_community_activity_menu, menu);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 	int itemId = item.getItemId();
-	switch(itemId) {
-		case R.id.menu_list_refresh:
-		    doRefreshAction();
-		    return true;
-		 default:
-		     return super.onOptionsItemSelected(item);
-	}	
+	switch (itemId) {
+	case R.id.menu_list_refresh:
+	    doRefreshAction();
+	    return true;
+	default:
+	    return super.onOptionsItemSelected(item);
+	}
     }
-    
 
     private void doRefreshAction() {
 	requestBoardSummaryPage(1);
     }
-    
+
     public void loadListIfNotAlready(int page) {
 	if (!loadedList) {
 	    requestBoardSummaryPage(page);
@@ -193,7 +190,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	disWebServiceIntent.putExtra(
 		DisWebServiceConstants.SERVICE_REQUESTED_ID,
 		DisWebServiceConstants.GET_POSTS_SUMMARY_LIST_ID);
-	disWebServiceIntent.putExtra(DisBoardsConstants.BOARD_ID, boardId);
+	disWebServiceIntent.putExtra(DisBoardsConstants.BOARD_TYPE_ID, boardId);
 	disWebServiceIntent.putExtra(DisBoardsConstants.BOARD_URL, boardUrl);
 	getSherlockActivity().startService(disWebServiceIntent);
     }
@@ -240,7 +237,10 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 			    postId);
 		    arguments.putString(DisBoardsConstants.BOARD_POST_URL,
 			    postUrl);
-		    arguments.putBoolean(DisBoardsConstants.DUAL_PANE_MODE, true);
+		    arguments.putBoolean(DisBoardsConstants.DUAL_PANE_MODE,
+			    true);
+		    arguments.putString(DisBoardsConstants.BOARD_TYPE_ID,
+			    boardId);
 		    boardPostFragment.setArguments(arguments);
 		    // Execute a transaction, replacing any existing fragment
 		    // with this one inside the frame.
@@ -263,20 +263,18 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	}
     }
 
-    private class BoardPostSummaryListAdapater extends
-	    ArrayAdapter<BoardPost> {
+    private class BoardPostSummaryListAdapater extends ArrayAdapter<BoardPost> {
 
 	private List<BoardPost> summaries;
 
 	public BoardPostSummaryListAdapater(Context context,
-		int textViewResourceId,
-		List<BoardPost> boardPostSummaries) {
+		int textViewResourceId, List<BoardPost> boardPostSummaries) {
 	    super(context, textViewResourceId);
 	    this.summaries = boardPostSummaries;
 	}
 
 	@Override
-	public BoardPost  getItem(int position) {
+	public BoardPost getItem(int position) {
 	    return summaries.get(position);
 	}
 

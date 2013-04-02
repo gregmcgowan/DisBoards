@@ -25,9 +25,12 @@ public class BoardPostSummaryListParser {
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX + "BoardPostSummaryListParser";
     
     private Document document;
-
-    public BoardPostSummaryListParser(Document document) {
+    
+    private String boardTypeId;
+    
+    public BoardPostSummaryListParser(Document document, String boardTypeId) {
 	this.document = document;
+	this.boardTypeId = boardTypeId;
     }
 
     public List<BoardPost> parseDocument() {
@@ -105,6 +108,7 @@ public class BoardPostSummaryListParser {
 	boardPostSummary.setAuthorUsername(authorUsername);
 	boardPostSummary.setTitle(postTitle);
 	boardPostSummary.setId(postId);
+	boardPostSummary.setBoardTypeId(boardTypeId);
 
 	return boardPostSummary;
     }

@@ -23,10 +23,12 @@ public class RetrieveBoardPostHandler extends
 	FileAsyncBackgroundThreadHttpResponseHandler {
     
     private String boardPostId;
+    private String boardPostTypeId;
     
-    public RetrieveBoardPostHandler(File file,String boardPostId) {
+    public RetrieveBoardPostHandler(File file,String boardPostId, String boardPostTypeId) {
 	super(file);
 	this.boardPostId = boardPostId;
+	this.boardPostTypeId = boardPostTypeId;
     }
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
@@ -45,7 +47,7 @@ public class RetrieveBoardPostHandler extends
 		}
 	    }
 	    if (parsedDocument != null) {
-		BoardPostParser boardPostParser = new BoardPostParser(parsedDocument,boardPostId);
+		BoardPostParser boardPostParser = new BoardPostParser(parsedDocument,boardPostId,boardPostTypeId);
 		boardPost = boardPostParser.parseDocument();
 
 	    }

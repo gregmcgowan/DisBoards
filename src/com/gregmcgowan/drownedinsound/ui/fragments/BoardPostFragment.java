@@ -56,6 +56,8 @@ public class BoardPostFragment extends SherlockListFragment {
     private boolean requestingPost;
     private String boardPostUrl;
     private String boardPostId;
+    private String boardTypeId;
+
     private boolean inDualPaneMode;
 
     public BoardPostFragment() {
@@ -106,6 +108,8 @@ public class BoardPostFragment extends SherlockListFragment {
 		    DisBoardsConstants.BOARD_POST_URL);
 	    inDualPaneMode = getArguments().getBoolean(
 		    DisBoardsConstants.DUAL_PANE_MODE);
+	    boardTypeId = (String) getArguments().getString(
+		    DisBoardsConstants.BOARD_TYPE_ID);
 	} else {
 	    boardPostUrl = savedInstanceState
 		    .getString(DisBoardsConstants.BOARD_POST_URL);
@@ -117,6 +121,8 @@ public class BoardPostFragment extends SherlockListFragment {
 		    .getParcelable(DisBoardsConstants.BOARD_POST_KEY);
 	    inDualPaneMode = savedInstanceState
 		    .getBoolean(DisBoardsConstants.DUAL_PANE_MODE);
+	    boardTypeId = savedInstanceState
+		    .getString(DisBoardsConstants.BOARD_TYPE_ID);
 
 	    if (boardPost != null) {
 		updateComments(boardPost.getComments());
@@ -185,6 +191,8 @@ public class BoardPostFragment extends SherlockListFragment {
 		    boardPostId);
 	    disWebServiceIntent.putExtra(DisBoardsConstants.BOARD_POST_URL,
 		    boardPostUrl);
+	    disWebServiceIntent.putExtra(DisBoardsConstants.BOARD_TYPE_ID,
+		    boardTypeId);
 	    getSherlockActivity().startService(disWebServiceIntent);
 	    requestingPost = true;
 	}
@@ -198,6 +206,7 @@ public class BoardPostFragment extends SherlockListFragment {
 	outState.putString(DisBoardsConstants.BOARD_POST_ID, boardPostId);
 	outState.putString(DisBoardsConstants.BOARD_POST_URL, boardPostUrl);
 	outState.putBoolean(DisBoardsConstants.DUAL_PANE_MODE, inDualPaneMode);
+	outState.putString(DisBoardsConstants.BOARD_TYPE_ID, boardTypeId);
     }
 
     @Override
@@ -233,7 +242,7 @@ public class BoardPostFragment extends SherlockListFragment {
     }
 
     private void hideFragment() {
-	((BoardPostActivity)getSherlockActivity()).removeBoardPostFragment();
+	((BoardPostActivity) getSherlockActivity()).removeBoardPostFragment();
     }
 
     private void doReplyAction() {

@@ -6,6 +6,10 @@ import java.util.List;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
+import com.j256.ormlite.table.DatabaseTable;
+
 /**
  * This represents a board post. Board post contains the title, content, author
  * username the number of comments made, the actual comments and the date of the
@@ -14,22 +18,39 @@ import android.os.Parcelable;
  * @author Greg
  * 
  */
+@DatabaseTable(tableName = "BoardPosts")
 public class BoardPost implements Parcelable {
 
+    private static final String ID_FIELD = "_id";
+
+    @DatabaseField(columnName = ID_FIELD, generatedId = false)
     private String id;
+    @DatabaseField
     private String title;
+    @DatabaseField
     private boolean isSticky;
+    @DatabaseField
     private String summary;
+    @DatabaseField
     private String content;
+    @DatabaseField
     private String authorUsername;
+    @DatabaseField
     private String dateOfPost;
+    @DatabaseField
     private int numberOfReplies;
+    @DatabaseField
     private BoardPostStatus boardPostStatus;
-    private long lastViewedTime;
+    @DatabaseField
+    private long lastViewedTime;    
+    @DatabaseField
+    private String boardTypeId;
+    
+    @ForeignCollectionField 
+    private transient List<BoardPostComment> comments;
     
     private List<BoardPostCommentTreeNode> boardPostTreeNodes;
-    private transient List<BoardPostComment> commentsCache;
-    
+   
     public BoardPost() {
 	boardPostTreeNodes = new ArrayList<BoardPostCommentTreeNode>();
     }
@@ -37,47 +58,53 @@ public class BoardPost implements Parcelable {
     public BoardPost(List<BoardPostComment> comments) {
 	setComments(comments);
     }
- 
+
     public BoardPost(Parcel in) {
 	boardPostTreeNodes = new ArrayList<BoardPostCommentTreeNode>();
 	createFromParcel(in);
     }
 
-    public void setComments(List<BoardPostComment> comments){
+    public void setComments(List<BoardPostComment> comments) {
 	boardPostTreeNodes = new ArrayList<BoardPostCommentTreeNode>();
 	for (BoardPostComment comment : comments) {
-	    if (comment.getCommentLevel() == 0){
+	    if (comment.getCommentLevel() == 0) {
 		boardPostTreeNodes.add(makeTreeNode(comment, comments));
 	    }
 	}
+	populateCommentsCache() ;
     }
-    
+
     public List<BoardPostCommentTreeNode> getTreeNodes() {
 	return boardPostTreeNodes;
     }
 
     public List<BoardPostComment> getComments() {
-	if (commentsCache == null) {
-	    commentsCache = new ArrayList<BoardPostComment>();
-
+	if (comments == null) {
 	    if (boardPostTreeNodes == null) {
 		boardPostTreeNodes = new ArrayList<BoardPostCommentTreeNode>();
 	    }
-
-	    //Add a comment for the initial post details as we are using them in a list
-	    BoardPostComment boardPostComment = new BoardPostComment();
-	    boardPostComment.setAuthorUsername(getAuthorUsername());
-	    boardPostComment.setCommentLevel(0);
-	    boardPostComment.setDateAndTimeOfComment(getDateOfPost());
-	    boardPostComment.setContent(getContent());
-	    boardPostComment.setTitle(getTitle());
-	    commentsCache.add(boardPostComment);
-	    
-	    for (BoardPostCommentTreeNode node : boardPostTreeNodes) {
-		commentsCache.addAll(node.getCommentAndAllChildren());
-	    }
+	    populateCommentsCache() ;
 	}
-	return commentsCache;
+	return comments;
+    }
+
+    private void populateCommentsCache() {
+	if (comments == null) {
+	    comments = new ArrayList<BoardPostComment>();
+	}
+	// Add a comment for the initial post details as we are using them in a
+	// list
+	BoardPostComment boardPostComment = new BoardPostComment();
+	boardPostComment.setAuthorUsername(getAuthorUsername());
+	boardPostComment.setCommentLevel(0);
+	boardPostComment.setDateAndTimeOfComment(getDateOfPost());
+	boardPostComment.setContent(getContent());
+	boardPostComment.setTitle(getTitle());
+	comments.add(boardPostComment);
+
+	for (BoardPostCommentTreeNode node : boardPostTreeNodes) {
+	    comments.addAll(node.getCommentAndAllChildren());
+	}
     }
 
     private BoardPostCommentTreeNode makeTreeNode(BoardPostComment comment,
@@ -170,13 +197,13 @@ public class BoardPost implements Parcelable {
     }
 
     public BoardPostStatus getBoardPostStatus() {
-        return boardPostStatus;
+	return boardPostStatus;
     }
 
     public void setBoardPostStatus(BoardPostStatus boardPostStatus) {
-        this.boardPostStatus = boardPostStatus;
+	this.boardPostStatus = boardPostStatus;
     }
-    
+
     public long getLastViewedTime() {
 	return lastViewedTime;
     }
@@ -184,7 +211,15 @@ public class BoardPost implements Parcelable {
     public void setLastViewedTime(long lastViewedTime) {
 	this.lastViewedTime = lastViewedTime;
     }
-       
+
+    public String getBoardTypeId() {
+        return boardTypeId;
+    }
+
+    public void setBoardTypeId(String boardTypeId) {
+        this.boardTypeId = boardTypeId;
+    }
+
     public void writeToParcel(Parcel parcel, int flag) {
 	parcel.writeString(id);
 	parcel.writeString(title);
@@ -196,8 +231,10 @@ public class BoardPost implements Parcelable {
 	parcel.writeInt(numberOfReplies);
 	parcel.writeSerializable(boardPostStatus);
 	parcel.writeLong(lastViewedTime);
+	parcel.writeString(boardTypeId);
 	List<BoardPostComment> comments = getComments();
-	parcel.writeParcelableArray(comments.toArray(new BoardPostComment[comments.size()]), flag);
+	parcel.writeParcelableArray(
+		comments.toArray(new BoardPostComment[comments.size()]), flag);
     }
 
     private void createFromParcel(Parcel parcel) {
@@ -211,10 +248,13 @@ public class BoardPost implements Parcelable {
 	numberOfReplies = parcel.readInt();
 	boardPostStatus = (BoardPostStatus) parcel.readSerializable();
 	lastViewedTime = parcel.readLong();
-	List<BoardPostComment> comments = parcel.readArrayList(BoardPostComment.class.getClassLoader());
+	boardTypeId = parcel.readString();
+	
+	List<BoardPostComment> comments = parcel
+		.readArrayList(BoardPostComment.class.getClassLoader());
 	setComments(comments);
     }
-    
+
     public static final Parcelable.Creator<BoardPost> CREATOR = new Parcelable.Creator<BoardPost>() {
 	public BoardPost createFromParcel(Parcel in) {
 	    return new BoardPost(in);

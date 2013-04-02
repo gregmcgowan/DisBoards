@@ -83,18 +83,22 @@
                 	    android:textColor="@color/lighter_grey"
                 	    android:textIsSelectable="true"/>
                 </LinearLayout>                	
+
 				<TextView
-                	    android:id="@+id/board_post_comment_this_view"
-						android:layout_height="wrap_content"
-                		android:layout_width="match_parent"
-                		android:layout_marginLeft="@dimen/margin_small"
-                		android:layout_marginRight="@dimen/margin_small"
-                		android:layout_marginBottom="@dimen/margin_small"
-                		android:layout_below="@id/board_post_comment_author_section"
-                		android:layout_alignParentRight="true"
-                	    android:textSize="@dimen/text_really_micro"
-                	    android:textColor="@color/lighter_grey"
-                	    android:textIsSelectable="true"/>
+				    android:id="@+id/board_post_comment_this_view"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:layout_alignParentRight="true"
+				    android:layout_below="@id/board_post_comment_author_section"
+				    android:layout_marginBottom="@dimen/margin_small"
+				    android:layout_marginLeft="@dimen/margin_medium"
+				    android:layout_marginRight="@dimen/margin_medium"
+				    android:gravity="right"
+				    android:text="User, User, A  User, A User, A User, A User, A User, A User, A user all this&apos;d this"
+				    android:textColor="@color/lighter_grey"
+				    android:textIsSelectable="true"
+				    android:textSize="@dimen/text_really_micro" />
+
                 </RelativeLayout>
 
         </LinearLayout>

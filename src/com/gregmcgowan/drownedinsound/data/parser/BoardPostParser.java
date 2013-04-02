@@ -20,10 +20,12 @@ public class BoardPostParser {
 
     private Document boardPostDocument;
     private String boardPostId;
-
-    public BoardPostParser(Document document, String boardId) {
+    private String boardTypeId;
+    
+    public BoardPostParser(Document document, String boardId, String boardTypeId) {
 	this.boardPostDocument = document;
 	this.boardPostId = boardId;
+	this.boardTypeId = boardTypeId;
     }
 
     public BoardPost parseDocument() {
@@ -81,6 +83,7 @@ public class BoardPostParser {
 	    boardPost.setAuthorUsername(author);
 	    boardPost.setDateOfPost(date);
 	    boardPost.setId(boardPostId);
+	    boardPost.setBoardTypeId(boardTypeId);
 	    boardPost.setComments(boardPostComments);
 
 	}
@@ -93,6 +96,11 @@ public class BoardPostParser {
 	for (Element threadElement : threadElements) {
 	    Elements children = threadElement.children();
 	    int noOfChildren = children.size();
+	    String id =  threadElement.children().get(0).id().substring(1);
+	    if(DisBoardsConstants.DEBUG) {
+		Log.d(TAG, "Board post id ["+ id +"]");
+	    }
+	    
 	    if (noOfChildren == 1) {
 		Elements titleElements = threadElement.select("h3");
 		String title = "";
@@ -138,6 +146,7 @@ public class BoardPostParser {
 		boardPostComment.setCommentLevel(currentLevel);
 		boardPostComment.setAuthorUsername(author);
 		boardPostComment.setDateAndTimeOfComment(dateAndTime);
+		boardPostComment.setCommentId(id);
 		boardPosts.add(boardPostComment);
 
 	    } else if (noOfChildren > 1) {
@@ -197,6 +206,7 @@ public class BoardPostParser {
 		boardPostComment.setAuthorUsername(author);
 		boardPostComment.setDateAndTimeOfComment(dateAndTime);
 		boardPostComment.setUsersWhoHaveThissed(thisCombinedText);
+		boardPostComment.setCommentId(id);
 		boardPosts.add(boardPostComment);
 
 		// Get responses

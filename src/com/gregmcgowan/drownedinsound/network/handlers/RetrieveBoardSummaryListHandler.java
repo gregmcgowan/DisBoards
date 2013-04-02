@@ -49,7 +49,7 @@ public class RetrieveBoardSummaryListHandler extends
 		}
 	    }
 	    if (document != null) {
-		BoardPostSummaryListParser parser = new BoardPostSummaryListParser(document);
+		BoardPostSummaryListParser parser = new BoardPostSummaryListParser(document,boardId);
 		boardPostSummaries = parser.parseDocument();
 
 	    }

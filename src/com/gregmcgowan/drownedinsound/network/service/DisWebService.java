@@ -51,15 +51,17 @@ public class DisWebService extends IntentService {
 		.getStringExtra(DisBoardsConstants.BOARD_POST_URL);
 	String boardPostId = intent
 		.getStringExtra(DisBoardsConstants.BOARD_POST_ID);
+	String boardPostTypeIdString = intent.getStringExtra(DisBoardsConstants.BOARD_TYPE_ID);
+	
 	HttpClient.requestBoardPost(this, boardPostUrl,
 		new RetrieveBoardPostHandler(FileUtils.createTempFile(this),
-			boardPostId));
+			boardPostId,boardPostTypeIdString));
 
     }
 
     private void handleGetPostSummaryList(Intent intent) {
 	String boardUrl = intent.getStringExtra(DisBoardsConstants.BOARD_URL);
-	String boardId = intent.getStringExtra(DisBoardsConstants.BOARD_ID);
+	String boardId = intent.getStringExtra(DisBoardsConstants.BOARD_TYPE_ID);
 
 	HttpClient.requestBoardSummary(
 		this,
