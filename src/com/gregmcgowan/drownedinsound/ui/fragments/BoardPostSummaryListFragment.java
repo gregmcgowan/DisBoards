@@ -46,6 +46,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     private static final String WAS_IN_DUAL_PANE_MODE = "WasInDualPaneMode";
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
 	    + "BoardListFragment";
+
     private String boardUrl;
     private ProgressBar progressBar;
     private ArrayList<BoardPost> boardPostSummaries = new ArrayList<BoardPost>();
@@ -53,7 +54,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     private View rootView;
     private boolean requestOnStart;
     private boolean loadedList;
-    private String boardId;
+    private String boardTypeId;
     private boolean dualPaneMode;
     private boolean wasInDualPaneMode;
     private int currentlySelectedPost;
@@ -68,7 +69,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	BoardPostSummaryListFragment boardListFragment = new BoardPostSummaryListFragment();
 	boardListFragment.boardUrl = boardUrl;
 	boardListFragment.requestOnStart = requestDataOnStart;
-	boardListFragment.boardId = boardId;
+	boardListFragment.boardTypeId = boardId;
 	return boardListFragment;
     }
 
@@ -113,6 +114,10 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 		    .getString(DisBoardsConstants.BOARD_POST_URL);
 	    postId = savedInstanceState
 		    .getString(DisBoardsConstants.BOARD_POST_ID);
+	    boardTypeId = savedInstanceState
+		    .getString(DisBoardsConstants.BOARD_TYPE_ID);
+	    boardUrl = savedInstanceState
+		    .getString(DisBoardsConstants.BOARD_URL);
 	}
 
 	if (dualPaneMode && loadedList && currentlySelectedPost != -1) {
@@ -146,8 +151,10 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	super.onSaveInstanceState(outState);
 	outState.putInt(CURRENTLY_SELECTED_BOARD_POST, currentlySelectedPost);
 	outState.putBoolean(WAS_IN_DUAL_PANE_MODE, dualPaneMode);
-	outState.putString(DisBoardsConstants.BOARD_POST_ID, postUrl);
-	outState.putString(DisBoardsConstants.BOARD_POST_URL, postId);
+	outState.putString(DisBoardsConstants.BOARD_POST_ID, postId);
+	outState.putString(DisBoardsConstants.BOARD_POST_URL, postUrl);
+	outState.putString(DisBoardsConstants.BOARD_TYPE_ID, boardTypeId);
+	outState.putString(DisBoardsConstants.BOARD_URL, boardUrl);
     }
 
     @Override
@@ -190,7 +197,8 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	disWebServiceIntent.putExtra(
 		DisWebServiceConstants.SERVICE_REQUESTED_ID,
 		DisWebServiceConstants.GET_POSTS_SUMMARY_LIST_ID);
-	disWebServiceIntent.putExtra(DisBoardsConstants.BOARD_TYPE_ID, boardId);
+	disWebServiceIntent.putExtra(DisBoardsConstants.BOARD_TYPE_ID,
+		boardTypeId);
 	disWebServiceIntent.putExtra(DisBoardsConstants.BOARD_URL, boardUrl);
 	getSherlockActivity().startService(disWebServiceIntent);
     }
@@ -204,7 +212,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 
     public void onEventMainThread(RetrievedBoardPostSummaryListEvent event) {
 	String eventBoardId = event.getBoardId();
-	if (eventBoardId != null && eventBoardId.equals(boardId)) {
+	if (eventBoardId != null && eventBoardId.equals(boardTypeId)) {
 	    loadedList = true;
 	    boardPostSummaries.clear();
 	    boardPostSummaries.addAll(event.getBoardPostSummaryList());
@@ -240,7 +248,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 		    arguments.putBoolean(DisBoardsConstants.DUAL_PANE_MODE,
 			    true);
 		    arguments.putString(DisBoardsConstants.BOARD_TYPE_ID,
-			    boardId);
+			    boardTypeId);
 		    boardPostFragment.setArguments(arguments);
 		    // Execute a transaction, replacing any existing fragment
 		    // with this one inside the frame.
