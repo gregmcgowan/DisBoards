@@ -2,6 +2,7 @@ package com.gregmcgowan.drownedinsound.data;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -9,9 +10,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.gregmcgowan.drownedinsound.DisBoardsConstants;
-import com.gregmcgowan.drownedinsound.data.model.BoardPost;
-import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.Dao.CreateOrUpdateStatus;
@@ -56,7 +54,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     public void onCreate(SQLiteDatabase arg0, ConnectionSource arg1) {
 	for (Class<?> dataClass : DATA_CLASSES) {
 	    try {
-		TableUtils.clearTable(connectionSource, dataClass);
+		TableUtils.createTable(connectionSource, dataClass);
 	    } catch (SQLException e) {
 		if (DisBoardsConstants.DEBUG) {
 		    Log.e(TAG, "Cannot create database");
@@ -67,6 +65,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     }
 
+    public void clearAllTables(){
+	try {
+	    for (Class<?> dataClass : DATA_CLASSES) {
+		TableUtils.clearTable(connectionSource, dataClass);
+	    }
+	} catch (SQLException e) {
+	    if (DisBoardsConstants.DEBUG) {
+		Log.e(TAG, "Can't clear databases", e);
+	    }
+	}
+    }
+    
+    
     /**
      * This is called when your application is upgraded and it has a higher
      * version number. This allows you to adjust the various data to match the
@@ -150,9 +161,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			    .createOrUpdate(boardPost);
 		    if (DisBoardsConstants.DEBUG) {
 			Log.d(TAG, " Create or update board post status "
-				+ status.toString());
+				+ status.getNumLinesChanged());
 		    }
-		    List<BoardPostComment> boardPostComments = boardPost
+		    Collection<BoardPostComment> boardPostComments = boardPost
 			    .getComments();
 		    if (boardPostComments != null) {
 			for (BoardPostComment boardPostComment : boardPostComments) {

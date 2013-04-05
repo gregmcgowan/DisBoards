@@ -17,8 +17,8 @@ public class BoardPostComment implements Parcelable {
 
     private static final String ID_FIELD = "_id";
 
-    @DatabaseField(columnName = ID_FIELD, generatedId = false)
-    private String commentId;
+    @DatabaseField(id = true, columnName = ID_FIELD, generatedId = false)
+    private String id;
     @DatabaseField
     private String title;
     @DatabaseField
@@ -98,12 +98,12 @@ public class BoardPostComment implements Parcelable {
 	this.treeNode = treeNode;
     }
 
-    public String getCommentId() {
-	return commentId;
+    public String getId() {
+	return id;
     }
 
-    public void setCommentId(String commentId) {
-	this.commentId = commentId;
+    public void setId(String commentId) {
+	this.id = commentId;
     }
 
     public int getCommentLevel() {
@@ -130,7 +130,7 @@ public class BoardPostComment implements Parcelable {
 	title = in.readString();
 	content = in.readString();
 	authorUsername = in.readString();
-	commentId = in.readString();
+	id = in.readString();
 	commentLevel = in.readInt();
 	dateAndTimeOfComment = in.readString();
     }
@@ -139,7 +139,7 @@ public class BoardPostComment implements Parcelable {
 	dest.writeString(title);
 	dest.writeString(content);
 	dest.writeString(authorUsername);
-	dest.writeString(commentId);
+	dest.writeString(id);
 	dest.writeInt(commentLevel);
 	dest.writeString(dateAndTimeOfComment);
     }
