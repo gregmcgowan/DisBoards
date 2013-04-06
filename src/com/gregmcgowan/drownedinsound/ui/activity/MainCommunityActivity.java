@@ -6,8 +6,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.crittercism.app.Crittercism;
-import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.ui.adapter.BoardsFragmentAdapter;
 import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
@@ -33,7 +31,6 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.community_layout);
-	Crittercism.init(getApplicationContext(), DisBoardsConstants.CRITTERCISM_APP_ID);
 	
 	mAdapter = new BoardsFragmentAdapter(getSupportFragmentManager());
 

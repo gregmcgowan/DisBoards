@@ -4,13 +4,16 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.http.cookie.Cookie;
-
-import com.gregmcgowan.drownedinsound.network.HttpClient;
-import com.loopj.android.http.PersistentCookieStore;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
+
+import com.crittercism.app.Crittercism;
+import com.gregmcgowan.drownedinsound.network.HttpClient;
+import com.loopj.android.http.PersistentCookieStore;
 
 public class DisBoardsApp extends Application {
 
@@ -25,6 +28,25 @@ public class DisBoardsApp extends Application {
     public void onCreate() {
 	super.onCreate();
 	setupCookies();
+	initliaseCrittercism();
+    }
+
+    private void initliaseCrittercism() {
+	Crittercism.init(getApplicationContext(), DisBoardsConstants.CRITTERCISM_APP_ID);
+	// create the JSONObject. (Do not forget to import org.json.JSONObject!)
+	JSONObject crittercismConfig = new JSONObject();
+	try {
+	    crittercismConfig.put("shouldCollectLogcat", true); // send logcat
+								// data for
+								// devices with
+								// API Level 16
+								// and higher
+	} catch (JSONException je) {
+	}
+
+	Crittercism.init(getApplicationContext(),
+		DisBoardsConstants.CRITTERCISM_APP_ID, crittercismConfig);
+
     }
 
     private void setupCookies() {
@@ -56,6 +78,5 @@ public class DisBoardsApp extends Application {
 	// TODO Auto-generated method stub
 	super.onTerminate();
     }
-
 
 }
