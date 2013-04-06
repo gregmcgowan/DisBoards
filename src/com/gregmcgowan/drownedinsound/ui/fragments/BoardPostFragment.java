@@ -11,11 +11,14 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +35,9 @@ import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.Animator.AnimatorListener;
+import com.nineoldandroids.animation.ObjectAnimator;
 
 import de.greenrobot.event.EventBus;
 
@@ -296,7 +302,8 @@ public class BoardPostFragment extends SherlockListFragment {
 		if (!isFirstComment) {
 		    boardPostSummaryRowView = inflater.inflate(
 			    R.layout.board_post_comment_layout, null);
-		    boardPostCommentHolder = inflateBoardPostCommentHolder(boardPostSummaryRowView);
+		    boardPostCommentHolder = inflateBoardPostCommentHolder(
+			    boardPostSummaryRowView, position);
 		} else {
 		    boardPostSummaryRowView = inflater.inflate(
 			    R.layout.board_post_initial_comment_layout, null);
@@ -318,7 +325,8 @@ public class BoardPostFragment extends SherlockListFragment {
 		    if (boardPostSummaryRowView.getTag() instanceof BoardPostInitialCommentHolder) {
 			boardPostSummaryRowView = inflater.inflate(
 				R.layout.board_post_comment_layout, null);
-			boardPostCommentHolder = inflateBoardPostCommentHolder(boardPostSummaryRowView);
+			boardPostCommentHolder = inflateBoardPostCommentHolder(
+				boardPostSummaryRowView, position);
 		    } else {
 			boardPostCommentHolder = (BoardPostCommentHolder) boardPostSummaryRowView
 				.getTag();
@@ -370,6 +378,25 @@ public class BoardPostFragment extends SherlockListFragment {
 			boardPostCommentHolder.whitespaceLayout.addView(spacer,
 				i);
 		    }
+		    // Set ActionVisibility
+		    boardPostSummaryRowView.setOnClickListener(null);
+		    boardPostSummaryRowView
+			    .setOnClickListener(new CommentSectionClickListener(
+				    position,
+				    new AllCommentClickListener(
+					    boardPostCommentHolder.actionRelativeLayout)));
+
+		    boolean actionSectionVisible = comment
+			    .isActionSectionVisible();
+		    Log.d(TAG, "Setting postion " + position + " to "
+			    + actionSectionVisible);
+		    if (actionSectionVisible) {
+			boardPostCommentHolder.actionRelativeLayout
+				.setVisibility(View.VISIBLE);
+		    } else {
+			boardPostCommentHolder.actionRelativeLayout
+				.setVisibility(View.GONE);
+		    }
 
 		} else {
 		    dateAndTime = boardPost.getDateOfPost();
@@ -391,7 +418,9 @@ public class BoardPostFragment extends SherlockListFragment {
 
     }
 
-    private BoardPostCommentHolder inflateBoardPostCommentHolder(View rowView) {
+    private BoardPostCommentHolder inflateBoardPostCommentHolder(View rowView,
+	    int listPosition) {
+
 	BoardPostCommentHolder boardPostCommentHolder = new BoardPostCommentHolder();
 	boardPostCommentHolder.commentTitleTextView = (TextView) rowView
 		.findViewById(R.id.board_post_comment_content_title);
@@ -405,8 +434,14 @@ public class BoardPostFragment extends SherlockListFragment {
 		.findViewById(R.id.board_post_comment_this_view);
 	boardPostCommentHolder.whitespaceLayout = (LinearLayout) rowView
 		.findViewById(R.id.board_post_comment_whitespace_section);
+	boardPostCommentHolder.actionRelativeLayout = (RelativeLayout) rowView
+		.findViewById(R.id.board_post_comment_action_section);
 
 	rowView.setTag(boardPostCommentHolder);
+	rowView.setOnClickListener(null);
+	rowView.setOnClickListener(new CommentSectionClickListener(
+		listPosition, new AllCommentClickListener(
+			boardPostCommentHolder.actionRelativeLayout)));
 	return boardPostCommentHolder;
     }
 
@@ -436,6 +471,9 @@ public class BoardPostFragment extends SherlockListFragment {
 	private TextView commentDateTimeTextView;
 	private TextView commentThisSectionTextView;
 	private LinearLayout whitespaceLayout;
+	private RelativeLayout actionRelativeLayout;
+	private TextView thisTextView;
+	private TextView replyTextView;
     }
 
     private class BoardPostInitialCommentHolder {
@@ -445,6 +483,86 @@ public class BoardPostFragment extends SherlockListFragment {
 	private TextView commentDateTimeTextView;
 	private TextView noOfCommentsTextView;
 
+    }
+
+    private void animateActionLayout(final RelativeLayout actionLayout,
+	    int position, final boolean setVisible) {
+	BoardPostComment comment = adapter.getItem(position);
+	if (comment != null) {
+	    comment.setActionSectionVisible(setVisible);
+	}
+
+	float[] offset = setVisible ? new float[] { 0, 0.5f, 1 } : new float[] {
+		1, 0.5f, 0 };
+
+	actionLayout.setVisibility(View.VISIBLE);
+	ObjectAnimator removeObjectAnimator = ObjectAnimator.ofFloat(
+		actionLayout, "scaleY", offset);
+	removeObjectAnimator.setDuration(500);
+	removeObjectAnimator.setInterpolator(new AccelerateInterpolator());
+	removeObjectAnimator.addListener(new AnimatorListener() {
+
+	    public void onAnimationStart(Animator animation) {
+	    }
+
+	    public void onAnimationEnd(Animator animation) {
+		if (setVisible) {
+		    actionLayout.setVisibility(View.VISIBLE);
+		} else {
+		    actionLayout.setVisibility(View.GONE);
+		}
+
+	    }
+
+	    public void onAnimationCancel(Animator animation) {
+	    }
+
+	    public void onAnimationRepeat(Animator animation) {
+	    }
+
+	});
+	removeObjectAnimator.start();
+    }
+
+    public class AllCommentClickListener implements CommentSectionClickHandler {
+
+	RelativeLayout actionLayout;
+
+	public AllCommentClickListener(RelativeLayout actionLayout) {
+	    this.actionLayout = actionLayout;
+	}
+
+	@Override
+	public void doCommentClickAction(View parentView, int position) {
+	    if (actionLayout != null) {
+		boolean initallyVisible = actionLayout.getVisibility() == View.VISIBLE;
+		animateActionLayout(actionLayout, position, !initallyVisible);
+	    }
+	}
+    }
+
+    private class CommentSectionClickListener implements OnClickListener {
+
+	private int listPosition;
+	private CommentSectionClickHandler commentClickHandler;
+
+	CommentSectionClickListener(int listPosition,
+		CommentSectionClickHandler commentClickHandler) {
+	    this.listPosition = listPosition;
+	    this.commentClickHandler = commentClickHandler;
+	}
+
+	@Override
+	public void onClick(View v) {
+	    if (commentClickHandler != null) {
+		commentClickHandler.doCommentClickAction(v, listPosition);
+	    }
+	}
+
+    }
+
+    interface CommentSectionClickHandler {
+	public void doCommentClickAction(View parentView, int position);
     }
 
 }

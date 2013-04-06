@@ -40,6 +40,8 @@ public class BoardPostComment implements Parcelable {
     @DatabaseField
     private int commentLevel;
 
+    
+    private boolean actionSectionVisible;
     private BoardPostCommentTreeNode treeNode;
 
     public BoardPostComment() {
@@ -126,6 +128,14 @@ public class BoardPostComment implements Parcelable {
 	return 0;
     }
 
+    public boolean isActionSectionVisible() {
+	return actionSectionVisible;
+    }
+
+    public void setActionSectionVisible(boolean actionSectionVisible) {
+	this.actionSectionVisible = actionSectionVisible;
+    }
+
     private void readFromParcel(Parcel in) {
 	title = in.readString();
 	content = in.readString();
@@ -133,6 +143,7 @@ public class BoardPostComment implements Parcelable {
 	id = in.readString();
 	commentLevel = in.readInt();
 	dateAndTimeOfComment = in.readString();
+	actionSectionVisible = in.readInt() == 1 ;
     }
 
     public void writeToParcel(Parcel dest, int flags) {
@@ -142,6 +153,7 @@ public class BoardPostComment implements Parcelable {
 	dest.writeString(id);
 	dest.writeInt(commentLevel);
 	dest.writeString(dateAndTimeOfComment);
+	dest.writeInt(actionSectionVisible ? 1 : 0);
     }
 
     public static final Parcelable.Creator<BoardPostComment> CREATOR = new Parcelable.Creator<BoardPostComment>() {
