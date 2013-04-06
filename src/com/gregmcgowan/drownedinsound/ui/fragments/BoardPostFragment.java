@@ -1,6 +1,7 @@
 package com.gregmcgowan.drownedinsound.ui.fragments;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import android.content.Context;
@@ -144,7 +145,7 @@ public class BoardPostFragment extends SherlockListFragment {
 	}
     }
 
-    private void updateComments(List<BoardPostComment> comments) {
+    private void updateComments(Collection<BoardPostComment> comments) {
 	boardPostComments.clear();
 	boardPostComments.addAll(comments);
 	adapter.notifyDataSetChanged();
@@ -400,7 +401,7 @@ public class BoardPostFragment extends SherlockListFragment {
 
 		} else {
 		    dateAndTime = boardPost.getDateOfPost();
-		    String numberOfReplies = boardPost.getNoOfReplies();
+		    String numberOfReplies = boardPost.getNumberOfReplies() +" replies";
 		    boardPostInitialHolder.commentAuthorTextView
 			    .setText(author);
 		    boardPostInitialHolder.commentTitleTextView.setText(title);

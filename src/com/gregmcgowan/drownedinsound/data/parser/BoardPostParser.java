@@ -146,7 +146,7 @@ public class BoardPostParser {
 		boardPostComment.setCommentLevel(currentLevel);
 		boardPostComment.setAuthorUsername(author);
 		boardPostComment.setDateAndTimeOfComment(dateAndTime);
-		boardPostComment.setCommentId(id);
+		boardPostComment.setId(id);
 		boardPosts.add(boardPostComment);
 
 	    } else if (noOfChildren > 1) {
@@ -206,7 +206,7 @@ public class BoardPostParser {
 		boardPostComment.setAuthorUsername(author);
 		boardPostComment.setDateAndTimeOfComment(dateAndTime);
 		boardPostComment.setUsersWhoHaveThissed(thisCombinedText);
-		boardPostComment.setCommentId(id);
+		boardPostComment.setId(id);
 		boardPosts.add(boardPostComment);
 
 		// Get responses
