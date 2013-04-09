@@ -20,38 +20,51 @@ import com.j256.ormlite.table.DatabaseTable;
  * @author Greg
  * 
  */
-@DatabaseTable(tableName = "BoardPosts")
+@DatabaseTable(tableName = "board_post")
 public class BoardPost implements Parcelable {
+
+    public static final String BOARD_TYPE_FIELD = "board_type";
 
     private static final String ID_FIELD = "_id";
 
-    @DatabaseField(id = true,columnName = ID_FIELD, generatedId = false)
+    @DatabaseField(id = true, columnName = ID_FIELD, generatedId = false)
     private String id;
+
     @DatabaseField
     private String title;
+
     @DatabaseField
     private boolean isSticky;
+
     @DatabaseField
     private String summary;
+
     @DatabaseField
     private String content;
+
     @DatabaseField
     private String authorUsername;
+
     @DatabaseField
     private String dateOfPost;
+
     @DatabaseField
     private int numberOfReplies;
+
     @DatabaseField
     private BoardPostStatus boardPostStatus;
+
     @DatabaseField
-    private long lastViewedTime;    
-    @DatabaseField
-    private String boardTypeId;   
-    @ForeignCollectionField 
+    private long lastViewedTime;
+
+    @DatabaseField(columnName = BOARD_TYPE_FIELD)
+    private BoardType boardType;
+
+    @ForeignCollectionField
     private transient Collection<BoardPostComment> comments;
-    
+
     private List<BoardPostCommentTreeNode> boardPostTreeNodes;
-   
+
     public BoardPost() {
 	boardPostTreeNodes = new ArrayList<BoardPostCommentTreeNode>();
     }
@@ -65,14 +78,20 @@ public class BoardPost implements Parcelable {
 	createFromParcel(in);
     }
 
-    public void setComments(Collection<BoardPostComment> comments) {
+    public void setComments(Collection<BoardPostComment> newComents) {
 	boardPostTreeNodes = new ArrayList<BoardPostCommentTreeNode>();
-	for (BoardPostComment comment : comments) {
+	for (BoardPostComment comment : newComents) {
 	    if (comment.getCommentLevel() == 0) {
-		boardPostTreeNodes.add(makeTreeNode(comment, comments));
+		boardPostTreeNodes.add(makeTreeNode(comment, newComents));
 	    }
 	}
-	populateCommentsCache() ;
+	if (comments == null) {
+	    comments = new ArrayList<BoardPostComment>();
+	}
+	comments.clear();
+	for (BoardPostCommentTreeNode node : boardPostTreeNodes) {
+	    comments.addAll(node.getCommentAndAllChildren());
+	}
     }
 
     public List<BoardPostCommentTreeNode> getTreeNodes() {
@@ -84,43 +103,26 @@ public class BoardPost implements Parcelable {
 	    if (boardPostTreeNodes == null) {
 		boardPostTreeNodes = new ArrayList<BoardPostCommentTreeNode>();
 	    }
-	    populateCommentsCache() ;
+	    if (comments == null) {
+		comments = new ArrayList<BoardPostComment>();
+	    }
+	    for (BoardPostCommentTreeNode node : boardPostTreeNodes) {
+		comments.addAll(node.getCommentAndAllChildren());
+	    }
 	}
 	return comments;
     }
 
-    private void populateCommentsCache() {
-	if (comments == null) {
-	    comments = new ArrayList<BoardPostComment>();
-	}
-	// Add a comment for the initial post details as we are using them in a
-	// list
-	if (!isSummaryPost()) {
-	    BoardPostComment boardPostComment = new BoardPostComment();
-	    boardPostComment.setId(getId());
-	    boardPostComment.setAuthorUsername(getAuthorUsername());
-	    boardPostComment.setCommentLevel(0);
-	    boardPostComment.setDateAndTimeOfComment(getDateOfPost());
-	    boardPostComment.setContent(getContent());
-	    boardPostComment.setTitle(getTitle());
-	    boardPostComment.setBoardPost(this);
-	    comments.add(boardPostComment);
-	}
-
-	for (BoardPostCommentTreeNode node : boardPostTreeNodes) {
-	    comments.addAll(node.getCommentAndAllChildren());
-	}
-    }
-
-    private boolean isSummaryPost(){
+    private boolean isSummaryPost() {
 	return TextUtils.isEmpty(content);
     }
-    
+
     private BoardPostCommentTreeNode makeTreeNode(BoardPostComment comment,
 	    Collection<BoardPostComment> allComments) {
 	BoardPostCommentTreeNode node = new BoardPostCommentTreeNode(comment);
 	int nodeLevel = comment.getCommentLevel();
-	List<BoardPostComment> allCommentsList = new ArrayList<BoardPostComment>(allComments);
+	List<BoardPostComment> allCommentsList = new ArrayList<BoardPostComment>(
+		allComments);
 	int nodeIndex = allCommentsList.indexOf(comment);
 	comment.setTreeNode(node);
 	for (int i = nodeIndex + 1; i < allCommentsList.size(); i++) {
@@ -218,12 +220,12 @@ public class BoardPost implements Parcelable {
 	this.lastViewedTime = lastViewedTime;
     }
 
-    public String getBoardTypeId() {
-        return boardTypeId;
+    public BoardType getBoardType() {
+	return boardType;
     }
 
-    public void setBoardTypeId(String boardTypeId) {
-        this.boardTypeId = boardTypeId;
+    public void setBoardType(BoardType boardType) {
+	this.boardType = boardType;
     }
 
     public void writeToParcel(Parcel parcel, int flag) {
@@ -237,7 +239,7 @@ public class BoardPost implements Parcelable {
 	parcel.writeInt(numberOfReplies);
 	parcel.writeSerializable(boardPostStatus);
 	parcel.writeLong(lastViewedTime);
-	parcel.writeString(boardTypeId);
+	parcel.writeSerializable(boardType);
 	Collection<BoardPostComment> comments = getComments();
 	parcel.writeParcelableArray(
 		comments.toArray(new BoardPostComment[comments.size()]), flag);
@@ -254,8 +256,8 @@ public class BoardPost implements Parcelable {
 	numberOfReplies = parcel.readInt();
 	boardPostStatus = (BoardPostStatus) parcel.readSerializable();
 	lastViewedTime = parcel.readLong();
-	boardTypeId = parcel.readString();
-	
+	boardType = (BoardType) parcel.readSerializable();
+
 	List<BoardPostComment> comments = parcel
 		.readArrayList(BoardPostComment.class.getClassLoader());
 	setComments(comments);

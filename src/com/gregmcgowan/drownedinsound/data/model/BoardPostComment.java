@@ -12,7 +12,7 @@ import com.j256.ormlite.table.DatabaseTable;
  * @author Greg
  * 
  */
-@DatabaseTable(tableName = "boardPostComment")
+@DatabaseTable(tableName = "board_post_comment")
 public class BoardPostComment implements Parcelable {
 
     private static final String ID_FIELD = "_id";

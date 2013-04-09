@@ -15,6 +15,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.loopj.android.http.AsyncHttpClient;
@@ -125,13 +126,13 @@ public class HttpClient {
      * @param boardUrl
      * @param responseHandler
      */
-    public static void requestBoardSummary(Context context, String boardUrl,String boardId,
+    public static void requestBoardSummary(Context context, String boardUrl,BoardType boardType,
 	    AsyncHttpResponseHandler responseHandler, int pageNumber) {
 	if(DisBoardsConstants.DEBUG){
 	    Log.d(TAG, "Going to request = "+boardUrl);   
 	}
 	if(useFakeData){
-	    makeFakeRequest(new RetrievedBoardPostSummaryListEvent(FakeDataFactory.generateRandomBoardPostSummaryList(),boardId));
+	    makeFakeRequest(new RetrievedBoardPostSummaryListEvent(FakeDataFactory.generateRandomBoardPostSummaryList(),boardType,false));
 	} else {
 		asyncHttpClient.get(context, boardUrl, getMandatoryDefaultHeaders(),
 			null, responseHandler);	    
@@ -151,7 +152,7 @@ public class HttpClient {
 	    Log.d(TAG, "Going to request = "+boardPostUrl);   
 	}
 	if(useFakeData){
-	    makeFakeRequest(new RetrievedBoardPostEvent(FakeDataFactory.generateRandomBoardPost()));
+	    makeFakeRequest(new RetrievedBoardPostEvent(FakeDataFactory.generateRandomBoardPost(),false));
 	} else {
 	    asyncHttpClient.get(context, boardPostUrl,
 			getMandatoryDefaultHeaders(), null, responseHandler);   

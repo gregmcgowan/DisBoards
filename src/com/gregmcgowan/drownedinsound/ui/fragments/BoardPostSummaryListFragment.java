@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
@@ -23,6 +24,8 @@ import com.actionbarsherlock.view.MenuItem;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
+import com.gregmcgowan.drownedinsound.data.model.BoardType;
+import com.gregmcgowan.drownedinsound.data.model.BoardTypeInfo;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.network.UrlConstants;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
@@ -49,27 +52,28 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 
     private String boardUrl;
     private ProgressBar progressBar;
+    private TextView connectionErrorTextView;
     private ArrayList<BoardPost> boardPostSummaries = new ArrayList<BoardPost>();
     private BoardPostSummaryListAdapater adapter;
     private View rootView;
     private boolean requestOnStart;
     private boolean loadedList;
-    private String boardTypeId;
+    private BoardType boardType;
     private boolean dualPaneMode;
     private boolean wasInDualPaneMode;
     private int currentlySelectedPost;
     private String postId;
     private String postUrl;
-
+    private boolean requestingBoardList;
     public BoardPostSummaryListFragment() {
     }
 
-    public static BoardPostSummaryListFragment newInstance(String boardUrl,
-	    String boardId, boolean requestDataOnStart) {
+    public static BoardPostSummaryListFragment newInstance(
+	    BoardTypeInfo boardTypeInfo, boolean requestDataOnStart) {
 	BoardPostSummaryListFragment boardListFragment = new BoardPostSummaryListFragment();
-	boardListFragment.boardUrl = boardUrl;
+	boardListFragment.boardUrl = boardTypeInfo.getUrl();
 	boardListFragment.requestOnStart = requestDataOnStart;
-	boardListFragment.boardTypeId = boardId;
+	boardListFragment.boardType = boardTypeInfo.getBoardType();
 	return boardListFragment;
     }
 
@@ -78,7 +82,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	    Bundle savedInstanceState) {
 	inflater = (LayoutInflater) inflater.getContext().getSystemService(
 		Context.LAYOUT_INFLATER_SERVICE);
-	rootView = inflater.inflate(R.layout.board_layout, null);
+	rootView = inflater.inflate(R.layout.board_list_layout, null);
 	return rootView;
     }
 
@@ -87,6 +91,9 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	super.onActivityCreated(savedInstanceState);
 	progressBar = (ProgressBar) rootView
 		.findViewById(R.id.board_list_progress_bar);
+	connectionErrorTextView = (TextView) rootView
+		.findViewById(R.id.board_list_connection_error_text_view);
+	connectionErrorTextView.setVisibility(View.GONE);
 	adapter = new BoardPostSummaryListAdapater(getSherlockActivity(),
 		R.layout.board_list_row, boardPostSummaries);
 	setListAdapter(adapter);
@@ -114,8 +121,8 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 		    .getString(DisBoardsConstants.BOARD_POST_URL);
 	    postId = savedInstanceState
 		    .getString(DisBoardsConstants.BOARD_POST_ID);
-	    boardTypeId = savedInstanceState
-		    .getString(DisBoardsConstants.BOARD_TYPE_ID);
+	    boardType = (BoardType) savedInstanceState
+		    .getSerializable(DisBoardsConstants.BOARD_TYPE);
 	    boardUrl = savedInstanceState
 		    .getString(DisBoardsConstants.BOARD_URL);
 	}
@@ -153,7 +160,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	outState.putBoolean(WAS_IN_DUAL_PANE_MODE, dualPaneMode);
 	outState.putString(DisBoardsConstants.BOARD_POST_ID, postId);
 	outState.putString(DisBoardsConstants.BOARD_POST_URL, postUrl);
-	outState.putString(DisBoardsConstants.BOARD_TYPE_ID, boardTypeId);
+	outState.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
 	outState.putString(DisBoardsConstants.BOARD_URL, boardUrl);
     }
 
@@ -161,6 +168,15 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     public void onDestroy() {
 	super.onDestroy();
 	EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onResume() {
+	super.onResume();
+	int showErrorText = boardPostSummaries.size() > 0
+		||  requestingBoardList ? View.GONE
+		: View.VISIBLE;
+	connectionErrorTextView.setVisibility(showErrorText);
     }
 
     @Override
@@ -191,15 +207,19 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     }
 
     public void requestBoardSummaryPage(int page) {
+	requestingBoardList = true;
+	connectionErrorTextView.setVisibility(View.GONE);
 	setProgressBarVisiblity(true);
 	Intent disWebServiceIntent = new Intent(getSherlockActivity(),
 		DisWebService.class);
-	disWebServiceIntent.putExtra(
-		DisWebServiceConstants.SERVICE_REQUESTED_ID,
+	Bundle parametersBundle = new Bundle();
+
+	parametersBundle.putInt(DisWebServiceConstants.SERVICE_REQUESTED_ID,
 		DisWebServiceConstants.GET_POSTS_SUMMARY_LIST_ID);
-	disWebServiceIntent.putExtra(DisBoardsConstants.BOARD_TYPE_ID,
-		boardTypeId);
-	disWebServiceIntent.putExtra(DisBoardsConstants.BOARD_URL, boardUrl);
+	parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
+		boardType);
+	parametersBundle.putString(DisBoardsConstants.BOARD_URL, boardUrl);
+	disWebServiceIntent.putExtras(parametersBundle);
 	getSherlockActivity().startService(disWebServiceIntent);
     }
 
@@ -211,14 +231,31 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     }
 
     public void onEventMainThread(RetrievedBoardPostSummaryListEvent event) {
-	String eventBoardId = event.getBoardId();
-	if (eventBoardId != null && eventBoardId.equals(boardTypeId)) {
-	    loadedList = true;
-	    boardPostSummaries.clear();
-	    boardPostSummaries.addAll(event.getBoardPostSummaryList());
-	    adapter.notifyDataSetChanged();
+	BoardType eventBoardType = event.getBoardType();
+	requestingBoardList = false;
+	if (eventBoardType != null && eventBoardType.equals(boardType)) {
+	    List<BoardPost> summaries = event.getBoardPostSummaryList();
+	    if (summaries != null && summaries.size() > 0) {
+		loadedList = true;
+		boardPostSummaries.clear();
+		boardPostSummaries.addAll(event.getBoardPostSummaryList());
+		adapter.notifyDataSetChanged();
+
+		if (event.isCached()) {
+		    displayIsCachedPopup();
+		}
+		connectionErrorTextView.setVisibility(View.GONE);
+	    } else {
+		connectionErrorTextView.setVisibility(View.VISIBLE);
+		loadedList = false;
+	    }
 	    setProgressBarVisiblity(false);
 	}
+    }
+
+    private void displayIsCachedPopup() {
+	Toast.makeText(getSherlockActivity(), "This is an cached version",
+		Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -231,7 +268,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	BoardPost boardPostSummary = boardPostSummaries.get(position);
 	if (boardPostSummary != null) {
 	    postId = boardPostSummary.getId();
-	    postUrl = UrlConstants.BASE_URL + "/" + postId;
+	    postUrl = boardUrl + "/" + postId;
 
 	    if (dualPaneMode) {
 		getListView().setItemChecked(position, true);
@@ -247,8 +284,8 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 			    postUrl);
 		    arguments.putBoolean(DisBoardsConstants.DUAL_PANE_MODE,
 			    true);
-		    arguments.putString(DisBoardsConstants.BOARD_TYPE_ID,
-			    boardTypeId);
+		    arguments.putSerializable(DisBoardsConstants.BOARD_TYPE,
+			    boardType);
 		    boardPostFragment.setArguments(arguments);
 		    // Execute a transaction, replacing any existing fragment
 		    // with this one inside the frame.
@@ -262,10 +299,15 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	    } else {
 		Intent viewPostIntent = new Intent(getSherlockActivity(),
 			BoardPostActivity.class);
-		viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_URL,
+		Bundle parametersBundle = new Bundle();
+		parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
 			postUrl);
-		viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_ID,
+		parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
 			postId);
+		parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
+			boardType);
+		viewPostIntent.putExtras(parametersBundle);
+
 		startActivity(viewPostIntent);
 	    }
 	}

@@ -9,4 +9,5 @@
 	<string name="login">login</string>
 	<string name="refresh_text">refresh</string>
 	<string name="reply_text">reply</string>
+	<string name="connection_error_text">Cannot connect to Drowned in Sound. Check your internet connection</string>
 </resources>

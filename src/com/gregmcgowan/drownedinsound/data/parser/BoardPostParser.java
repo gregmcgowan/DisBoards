@@ -12,6 +12,7 @@ import android.util.Log;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
+import com.gregmcgowan.drownedinsound.data.model.BoardType;
 
 public class BoardPostParser {
 
@@ -20,12 +21,12 @@ public class BoardPostParser {
 
     private Document boardPostDocument;
     private String boardPostId;
-    private String boardTypeId;
+    private BoardType boardType;
     
-    public BoardPostParser(Document document, String boardId, String boardTypeId) {
+    public BoardPostParser(Document document, String boardId, BoardType boardType) {
 	this.boardPostDocument = document;
 	this.boardPostId = boardId;
-	this.boardTypeId = boardTypeId;
+	this.boardType = boardType;
     }
 
     public BoardPost parseDocument() {
@@ -62,20 +63,6 @@ public class BoardPostParser {
 		Log.d(TAG, "Content = " + content);
 	    }
 	
-
-	    // Next get all the comments
-	    ArrayList<BoardPostComment> boardPostComments = new ArrayList<BoardPostComment>();
-	    Elements threadElements = boardPostDocument
-		    .getElementsByClass("thread");
-	    if (threadElements.size() > 0) {
-		Element topLevel = threadElements.get(0);
-		Elements children = topLevel.children();
-		if (children.size() > 0) {
-		    boardPostComments = getListOfComments(0, boardPostComments,
-			    children);
-		}
-	    }
-
 	    // TODO check we have the required fields
 	    boardPost = new BoardPost();
 	    boardPost.setContent(content);
@@ -83,16 +70,43 @@ public class BoardPostParser {
 	    boardPost.setAuthorUsername(author);
 	    boardPost.setDateOfPost(date);
 	    boardPost.setId(boardPostId);
-	    boardPost.setBoardTypeId(boardTypeId);
-	    boardPost.setComments(boardPostComments);
+	    boardPost.setBoardType(boardType);
+	    
 
+	    // And add the post content as first comment
+	    ArrayList<BoardPostComment> boardPostComments = new ArrayList<BoardPostComment>();
+	    BoardPostComment boardPostComment = new BoardPostComment();
+	    boardPostComment.setId(boardPostId);
+	    boardPostComment.setAuthorUsername(author);
+	    boardPostComment.setCommentLevel(0);
+	    boardPostComment.setDateAndTimeOfComment(date);
+	    boardPostComment.setContent(content);
+	    boardPostComment.setTitle(title);
+	    boardPostComment.setBoardPost(boardPost);
+	    
+	    boardPostComments.add(boardPostComment);
+	    
+	    //And add the rest of the comments
+	    Elements threadElements = boardPostDocument
+		    .getElementsByClass("thread");
+	    if (threadElements.size() > 0) {
+		Element topLevel = threadElements.get(0);
+		Elements children = topLevel.children();
+		if (children.size() > 0) {
+		    boardPostComments = getListOfComments(0, boardPostComments,
+			    children,boardPost);
+		}
+	    }
+	    //Don't forgot to add it to the boardPost
+	    boardPost.setComments(boardPostComments);
+	    boardPost.setNumberOfReplies(boardPostComments.size());
 	}
 	Log.d(TAG, "Parsed post in "+ (System.currentTimeMillis() - startTime) +" ms");
 	return boardPost;
     }
 
     private ArrayList<BoardPostComment> getListOfComments(int currentLevel,
-	    ArrayList<BoardPostComment> boardPosts, Elements threadElements) {
+	    ArrayList<BoardPostComment> boardPosts, Elements threadElements,BoardPost boardPostParent) {
 	for (Element threadElement : threadElements) {
 	    Elements children = threadElement.children();
 	    int noOfChildren = children.size();
@@ -147,6 +161,7 @@ public class BoardPostParser {
 		boardPostComment.setAuthorUsername(author);
 		boardPostComment.setDateAndTimeOfComment(dateAndTime);
 		boardPostComment.setId(id);
+		boardPostComment.setBoardPost(boardPostParent);
 		boardPosts.add(boardPostComment);
 
 	    } else if (noOfChildren > 1) {
@@ -207,6 +222,7 @@ public class BoardPostParser {
 		boardPostComment.setDateAndTimeOfComment(dateAndTime);
 		boardPostComment.setUsersWhoHaveThissed(thisCombinedText);
 		boardPostComment.setId(id);
+		boardPostComment.setBoardPost(boardPostParent);
 		boardPosts.add(boardPostComment);
 
 		// Get responses
@@ -219,7 +235,7 @@ public class BoardPostParser {
 
 		if (comments != null && comments.size() > 0) {
 		    boardPosts.addAll(getListOfComments(currentLevel + 1,
-			    new ArrayList<BoardPostComment>(), comments));
+			    new ArrayList<BoardPostComment>(), comments,boardPostParent));
 
 		}
 	    }

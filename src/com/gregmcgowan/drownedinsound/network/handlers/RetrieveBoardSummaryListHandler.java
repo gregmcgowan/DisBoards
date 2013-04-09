@@ -11,7 +11,9 @@ import org.jsoup.nodes.Document;
 import android.util.Log;
 
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
+import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.data.parser.BoardPostSummaryListParser;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
@@ -23,11 +25,14 @@ import de.greenrobot.event.EventBus;
 public class RetrieveBoardSummaryListHandler extends
 	FileAsyncBackgroundThreadHttpResponseHandler {
 
-    private String boardId;
-    
-    public RetrieveBoardSummaryListHandler(File file, String boardId) {
+    private BoardType boardType;
+    private DatabaseHelper databaseHelper;
+
+    public RetrieveBoardSummaryListHandler(File file, BoardType boardType,
+	    DatabaseHelper databaseHelper) {
 	super(file);
-	this.boardId = boardId;
+	this.boardType = boardType;
+	this.databaseHelper = databaseHelper;
     }
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
@@ -36,26 +41,33 @@ public class RetrieveBoardSummaryListHandler extends
     @Override
     public void onSuccess(int statusCode, File file) {
 	List<BoardPost> boardPostSummaries = null;
-	if(DisBoardsConstants.DEBUG){
+	if (DisBoardsConstants.DEBUG) {
 	    Log.d(TAG, "Got response");
 	}
 	if (file != null && file.exists()) {
 	    Document document = null;
 	    try {
-		document = Jsoup.parse(file,HttpClient.CONTENT_ENCODING, UrlConstants.BASE_URL);
+		document = Jsoup.parse(file, HttpClient.CONTENT_ENCODING,
+			UrlConstants.BASE_URL);
 	    } catch (IOException e) {
 		if (DisBoardsConstants.DEBUG) {
 		    e.printStackTrace();
 		}
 	    }
 	    if (document != null) {
-		BoardPostSummaryListParser parser = new BoardPostSummaryListParser(document,boardId);
+		BoardPostSummaryListParser parser = new BoardPostSummaryListParser(
+			document, boardType);
 		boardPostSummaries = parser.parseDocument();
+	    }
 
+	    if (boardPostSummaries.size() > 0) {
+		databaseHelper.setBoardPosts(boardPostSummaries);
 	    }
 	}
 	deleteFile();
-	EventBus.getDefault().post(new RetrievedBoardPostSummaryListEvent(boardPostSummaries,boardId));
+	EventBus.getDefault().post(
+		new RetrievedBoardPostSummaryListEvent(boardPostSummaries,
+			boardType,false));
 
     }
 
@@ -73,6 +85,7 @@ public class RetrieveBoardSummaryListHandler extends
 	    }
 	}
 	deleteFile();
-	EventBus.getDefault().post(new RetrievedBoardPostSummaryListEvent(null,boardId));
+	EventBus.getDefault().post(
+		new RetrievedBoardPostSummaryListEvent(null, boardType,false));
     }
 }

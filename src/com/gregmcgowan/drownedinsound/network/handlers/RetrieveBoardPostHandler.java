@@ -10,7 +10,9 @@ import org.jsoup.nodes.Document;
 import android.util.Log;
 
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
+import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.data.parser.BoardPostParser;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
@@ -21,14 +23,17 @@ import de.greenrobot.event.EventBus;
 
 public class RetrieveBoardPostHandler extends
 	FileAsyncBackgroundThreadHttpResponseHandler {
-    
+
     private String boardPostId;
-    private String boardPostTypeId;
-    
-    public RetrieveBoardPostHandler(File file,String boardPostId, String boardPostTypeId) {
+    private BoardType boardPostType;
+    private DatabaseHelper databaseHelper;
+
+    public RetrieveBoardPostHandler(File file, String boardPostId,
+	    BoardType boardType, DatabaseHelper databaseHelper) {
 	super(file);
 	this.boardPostId = boardPostId;
-	this.boardPostTypeId = boardPostTypeId;
+	this.boardPostType = boardType;
+	this.databaseHelper = databaseHelper;
     }
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
@@ -40,20 +45,24 @@ public class RetrieveBoardPostHandler extends
 	if (file != null && file.exists()) {
 	    Document parsedDocument = null;
 	    try {
-		parsedDocument = Jsoup.parse(file,HttpClient.CONTENT_ENCODING, UrlConstants.BASE_URL);
+		parsedDocument = Jsoup.parse(file, HttpClient.CONTENT_ENCODING,
+			UrlConstants.BASE_URL);
 	    } catch (IOException e) {
 		if (DisBoardsConstants.DEBUG) {
 		    e.printStackTrace();
 		}
 	    }
 	    if (parsedDocument != null) {
-		BoardPostParser boardPostParser = new BoardPostParser(parsedDocument,boardPostId,boardPostTypeId);
+		BoardPostParser boardPostParser = new BoardPostParser(
+			parsedDocument, boardPostId, boardPostType);
 		boardPost = boardPostParser.parseDocument();
-
+		if(boardPost != null) {
+		    databaseHelper.setBoardPost(boardPost);
+		}
 	    }
 	}
 	deleteFile();
-	EventBus.getDefault().post(new RetrievedBoardPostEvent(boardPost));
+	EventBus.getDefault().post(new RetrievedBoardPostEvent(boardPost,false));
 
     }
 
@@ -71,7 +80,7 @@ public class RetrieveBoardPostHandler extends
 	    }
 	}
 	deleteFile();
-	EventBus.getDefault().post(new RetrievedBoardPostEvent(null));
+	EventBus.getDefault().post(new RetrievedBoardPostEvent(null,false));
     }
 
 }

@@ -3,17 +3,21 @@ package com.gregmcgowan.drownedinsound.events;
 import java.util.List;
 
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
+import com.gregmcgowan.drownedinsound.data.model.BoardType;
 
 public class RetrievedBoardPostSummaryListEvent {
 
     private List<BoardPost> boardPostSummaryList;
 
-    private String boardId;
+    private BoardType boardType;
+    
+    private boolean isCached;
     
     public RetrievedBoardPostSummaryListEvent(
-	    List<BoardPost> boardPostSummaryList, String boardId) {
+	    List<BoardPost> boardPostSummaryList, BoardType boardType, boolean isCached) {
 	setBoardPostSummaryList(boardPostSummaryList);
-	setBoardId(boardId);
+	setBoardType(boardType);
+	setCached(isCached);
     }
 
     public List<BoardPost> getBoardPostSummaryList() {
@@ -25,12 +29,20 @@ public class RetrievedBoardPostSummaryListEvent {
 	this.boardPostSummaryList = boardPostSummaryList;
     }
 
-    public String getBoardId() {
-	return boardId;
+    public BoardType getBoardType() {
+	return boardType;
     }
 
-    public void setBoardId(String boardId) {
-	this.boardId = boardId;
+    public void setBoardType(BoardType boardType) {
+	this.boardType = boardType;
+    }
+
+    public boolean isCached() {
+	return isCached;
+    }
+
+    public void setCached(boolean isCached) {
+	this.isCached = isCached;
     }
 
 }

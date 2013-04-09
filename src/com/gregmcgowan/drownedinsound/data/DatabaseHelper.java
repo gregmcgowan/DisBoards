@@ -13,6 +13,7 @@ import android.util.Log;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
+import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.Dao.CreateOrUpdateStatus;
@@ -68,7 +69,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     }
 
-    public void clearAllTables(){
+    public void clearAllTables() {
 	try {
 	    for (Class<?> dataClass : DATA_CLASSES) {
 		TableUtils.clearTable(connectionSource, dataClass);
@@ -79,8 +80,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	    }
 	}
     }
-    
-    
+
     /**
      * This is called when your application is upgraded and it has a higher
      * version number. This allows you to adjust the various data to match the
@@ -140,7 +140,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		exception.printStackTrace();
 	    }
 	}
-
+	    if (DisBoardsConstants.DEBUG) {
+		Log.d(TAG, (boardPost != null ? "Found" : "Could not find") + " board post " + postId);
+	    }
 	return boardPost;
     }
 
@@ -163,19 +165,21 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		    CreateOrUpdateStatus status = boardPostDao
 			    .createOrUpdate(boardPost);
 		    if (DisBoardsConstants.DEBUG) {
-			Log.d(TAG, " Create or update board post status "
-				+ status.getNumLinesChanged());
+			Log.d(TAG,
+				" Create or update board post lines changed "
+					+ status.getNumLinesChanged());
 		    }
 		    Collection<BoardPostComment> boardPostComments = boardPost
 			    .getComments();
-		    if (boardPostComments != null) {
+		    if (boardPostComments != null
+			    && boardPostComments.size() > 0) {
 			for (BoardPostComment boardPostComment : boardPostComments) {
 			    status = boardPostCommentDao
 				    .createOrUpdate(boardPostComment);
 			    if (DisBoardsConstants.DEBUG) {
 				Log.d(TAG,
-					" Create or update board post comment status "
-						+ status.toString());
+					" Create or update comment lines changed "
+						+ status.getNumLinesChanged());
 			    }
 			}
 		    }
@@ -192,19 +196,25 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     }
 
     /**
-     * Fetches all the boardPosts from the database
+     * Fetches all the boardPosts from the database with the suppied boardTypeId
      * 
      * @return
      */
-    public List<BoardPost> getBoardPosts(String boardTypeId) {
+    public List<BoardPost> getBoardPosts(BoardType boardType) {
 	List<BoardPost> posts = new ArrayList<BoardPost>();
-	 try {
+	try {
 	    final Dao<BoardPost, String> boardPostDao = getBoardPostDao();
-	    posts =  boardPostDao.queryForEq("boardTypeId", boardTypeId);
+	    posts = boardPostDao.queryForEq(BoardPost.BOARD_TYPE_FIELD,
+		    boardType);
 	} catch (SQLException e) {
-	    if(DisBoardsConstants.DEBUG) {
+	    if (DisBoardsConstants.DEBUG) {
 		e.printStackTrace();
-	    }    
+	    }
+	}
+	if (DisBoardsConstants.DEBUG) {
+	    Log.d(TAG,
+		    "Found "
+			    + (posts.size() + " posts for " + boardType.name()));
 	}
 	return posts;
     }

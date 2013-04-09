@@ -21,11 +21,11 @@ public class DisBoardsConstants {
     public static final String LOGGED_IN_FIELD_NAME = "logged_in";
 
     public static final String BOARD_POST_KEY = "BOARD_POST";
-    public static final String BOARD_URL = "BoardUrl";
-    public static final String BOARD_TYPE_ID = "BoardId";
-    public static final String BOARD_POST_URL = "BoardPostUrl";
+    public static final String BOARD_URL = "BOARD_URL";
+    public static final String BOARD_TYPE = "BOARD_TYPE";
+    public static final String BOARD_POST_URL = "BOARD_POST_URL";
     public static final String REQUESTING_POST = "RequestingPost";
-    public static final String BOARD_POST_ID = "BOARD_POST_ID";
+    public static final String BOARD_POST_ID = "POST_ID";
 
     public static final String USERNAME = "Username";
     public static final String PASSWORD = "Password";

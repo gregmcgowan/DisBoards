@@ -14,7 +14,7 @@
         android:textColor="@color/dark_grey"
         android:textIsSelectable="true"
         android:textSize="@dimen/text_medium"
-        android:textStyle="bold" 
+        android:textStyle="normal"
         android:text="Here is a title"/>
 
     <RelativeLayout

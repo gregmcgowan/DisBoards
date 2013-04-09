@@ -5,9 +5,11 @@ import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 public class RetrievedBoardPostEvent {
 
     private BoardPost boardPost;
+    private boolean isCached;
     
-    public RetrievedBoardPostEvent(BoardPost boardPost){
-	this.setBoardPost(boardPost);
+    public RetrievedBoardPostEvent(BoardPost boardPost, boolean isCached){
+	setBoardPost(boardPost);
+	setCached(isCached);
     }
 
     public BoardPost getBoardPost() {
@@ -16,5 +18,13 @@ public class RetrievedBoardPostEvent {
 
     private void setBoardPost(BoardPost boardPost) {
 	this.boardPost = boardPost;
+    }
+
+    public boolean isCached() {
+	return isCached;
+    }
+
+    public void setCached(boolean isCached) {
+	this.isCached = isCached;
     }
 }
