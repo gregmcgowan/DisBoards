@@ -48,17 +48,18 @@ public abstract class FileAsyncBackgroundThreadHttpResponseHandler extends
 	    buffer.close();
 
 	} catch (IOException e) {
-	    onFailure(e, this.mFile);
+	    handleFailure(e, this.mFile);
 	}
 
 	if (status.getStatusCode() >= 300) {
-	   onFailure(new HttpResponseException(
+	    handleFailure(new HttpResponseException(
 		    status.getStatusCode(), status.getReasonPhrase()),
 		    this.mFile);
 	} else {
-	    onSuccess(status.getStatusCode(), this.mFile);
+	    handleSuccess(status.getStatusCode(), this.mFile);
 	}
     }
+    
     
     protected void deleteFile(){
 	if(mFile != null){
@@ -66,19 +67,19 @@ public abstract class FileAsyncBackgroundThreadHttpResponseHandler extends
 	}
     }
     
-    public abstract void onSuccess(int statusCode, File file);
-    public abstract void onFailure(Throwable e, File response);
+    public abstract void handleSuccess(int statusCode, File file);
+    public abstract void handleFailure(Throwable e, File response);
 
 
     @Override
     protected void sendFailureMessage(Throwable e, String responseBody) {
-
+	handleFailure(e,null);
     }
 
 
     @Override
     protected void sendFailureMessage(Throwable e, byte[] responseBody) {
-
+	handleFailure(e,null);
     }
 
 

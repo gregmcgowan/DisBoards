@@ -39,7 +39,7 @@ public class RetrieveBoardSummaryListHandler extends
 	    + "RetrieveBoardSummaryListHandler";
 
     @Override
-    public void onSuccess(int statusCode, File file) {
+    public void handleSuccess(int statusCode, File file) {
 	List<BoardPost> boardPostSummaries = null;
 	if (DisBoardsConstants.DEBUG) {
 	    Log.d(TAG, "Got response");
@@ -72,7 +72,7 @@ public class RetrieveBoardSummaryListHandler extends
     }
 
     @Override
-    public void onFailure(Throwable throwable, File response) {
+    public void handleFailure(Throwable throwable, File response) {
 	if (DisBoardsConstants.DEBUG) {
 	    Log.d(TAG, "Response Body " + response);
 	    if (throwable instanceof HttpResponseException) {

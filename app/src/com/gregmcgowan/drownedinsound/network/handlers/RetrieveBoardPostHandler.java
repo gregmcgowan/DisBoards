@@ -40,7 +40,7 @@ public class RetrieveBoardPostHandler extends
 	    + "RetrieveBoardPostHandler";
 
     @Override
-    public void onSuccess(int statusCode, File file) {
+    public void handleSuccess(int statusCode, File file) {
 	BoardPost boardPost = null;
 	if (file != null && file.exists()) {
 	    Document parsedDocument = null;
@@ -67,9 +67,8 @@ public class RetrieveBoardPostHandler extends
     }
 
     @Override
-    public void onFailure(Throwable throwable, File response) {
+    public void handleFailure(Throwable throwable, File response) {
 	if (DisBoardsConstants.DEBUG) {
-	    Log.d(TAG, "Response Body " + response);
 	    if (throwable instanceof HttpResponseException) {
 		HttpResponseException exception = (HttpResponseException) throwable;
 		int statusCode = exception.getStatusCode();
@@ -81,6 +80,7 @@ public class RetrieveBoardPostHandler extends
 	}
 	deleteFile();
 	EventBus.getDefault().post(new RetrievedBoardPostEvent(null,false));
+	
     }
 
 }

@@ -31,7 +31,7 @@ public class LoginResponseHandler extends
 	    + "LoginResponseHandler";
 
     @Override
-    public void onSuccess(int statusCode, File file) {
+    public void handleSuccess(int statusCode, File file) {
 	boolean loginSucceeded = false;
 	if (file != null && file.exists()) {
 	    Document parsedDocument = null;
@@ -58,7 +58,7 @@ public class LoginResponseHandler extends
     }
 
     @Override
-    public void onFailure(Throwable throwable, File response) {
+    public void handleFailure(Throwable throwable, File response) {
 	if (DisBoardsConstants.DEBUG) {
 	    Log.d(TAG, "Response Body " + response);
 	    if (throwable instanceof HttpResponseException) {
