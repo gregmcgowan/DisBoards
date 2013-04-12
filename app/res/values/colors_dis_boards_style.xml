@@ -23,7 +23,7 @@
     <color name="heading_background"> #DDDDDD</color>
     <color name="very_dark_grey">#CCCCCC</color>
     <color name="highlighted_blue">#00ACEE</color>
-    <color name="dark_grey">#313131</color>
+    <color name="darkest_grey">#313131</color>
     <color name="lighter_grey">#222222</color>
     <color name="background_gradient_start">#FEFEFE</color>
     <color name="background_gradient_end">#DDDDDD</color>

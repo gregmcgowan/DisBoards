@@ -6,7 +6,7 @@
     android:baselineAligned="true"
     android:orientation="horizontal"
     android:id="@id/parent_layout" 
-    android:background="@drawable/background">
+    android:background="@drawable/main_gradient_background">
 
     <LinearLayout
         android:layout_width="0px"
@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:padding="10dip"
             android:textColor="@color/lighter_grey"
-            app:selectedColor="@color/dark_grey" />
+            app:selectedColor="@color/darkest_grey" />
 
         <android.support.v4.view.ViewPager
             android:id="@id/boards_pager"

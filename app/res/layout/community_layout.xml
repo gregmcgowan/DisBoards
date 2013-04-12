@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:textColor="@color/lighter_grey"
-        app:selectedColor="@color/dark_grey"
+        app:selectedColor="@color/darkest_grey"
         />
     <android.support.v4.view.ViewPager
         android:id="@+id/boards_pager"

@@ -9,4 +9,9 @@
 	<dimen name="text_large">22sp</dimen>
 	<dimen name="margin_small">4dp</dimen>
 	<dimen name="margin_medium">8dp</dimen>
+	<dimen name="comment_text_padding">5dip</dimen>
+	<dimen name= "divider_height">2dip</dimen>
+	<dimen name="comment_button_height">38dip</dimen>
+	<dimen name="comment_button_width">100dip</dimen>
+	<dimen name="comment_background_rectangle_thickness">1dip</dimen>
 </resources>

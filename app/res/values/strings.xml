@@ -8,6 +8,7 @@
 	<string name="drowned_in_sound_logo">Drowned in sound logo</string>
 	<string name="login">login</string>
 	<string name="refresh_text">refresh</string>
-	<string name="reply_text">reply</string>
+	<string name="reply_text">Reply</string>
+	<string name="this_text">^ This</string>
 	<string name="connection_error_text">Cannot connect to Drowned in Sound. Check your internet connection</string>
 </resources>
