@@ -164,11 +164,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		    CreateOrUpdateStatus status = boardPostDao
 			    .createOrUpdate(boardPost);
-		    if (DisBoardsConstants.DEBUG) {
-			Log.d(TAG,
-				" Create or update board post lines changed "
-					+ status.getNumLinesChanged());
-		    }
+//		    if (DisBoardsConstants.DEBUG) {
+//			Log.d(TAG,
+//				" Create or update board post lines changed "
+//					+ status.getNumLinesChanged());
+//		    }
 		    Collection<BoardPostComment> boardPostComments = boardPost
 			    .getComments();
 		    if (boardPostComments != null
@@ -176,11 +176,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			for (BoardPostComment boardPostComment : boardPostComments) {
 			    status = boardPostCommentDao
 				    .createOrUpdate(boardPostComment);
-			    if (DisBoardsConstants.DEBUG) {
-				Log.d(TAG,
-					" Create or update comment lines changed "
-						+ status.getNumLinesChanged());
-			    }
+//			    if (DisBoardsConstants.DEBUG) {
+//				Log.d(TAG,
+//					" Create or update comment lines changed "
+//						+ status.getNumLinesChanged());
+//			    }
 			}
 		    }
 		    return null;

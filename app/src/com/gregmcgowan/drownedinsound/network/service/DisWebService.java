@@ -8,6 +8,7 @@ import android.content.Intent;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
+import com.gregmcgowan.drownedinsound.data.model.BoardPostStatus;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
@@ -67,13 +68,13 @@ public class DisWebService extends IntentService {
 		.getStringExtra(DisBoardsConstants.BOARD_POST_ID);
 	BoardType boardType = (BoardType) intent
 		.getSerializableExtra(DisBoardsConstants.BOARD_TYPE);
-
+	BoardPost cachedPost = databaseHelper.getBoardPost(boardPostId);
+	BoardPostStatus boardPostStatus = cachedPost.getBoardPostStatus();
 	if(NetworkUtils.isConnected(this)) {
 		HttpClient.requestBoardPost(this, boardPostUrl,
 			new RetrieveBoardPostHandler(FileUtils.createTempFile(this),
 				boardPostId, boardType,databaseHelper));	    
 	} else {
-	    BoardPost cachedPost = databaseHelper.getBoardPost(boardPostId);
 	    EventBus.getDefault().post(new RetrievedBoardPostEvent(cachedPost,true));
 	}
 

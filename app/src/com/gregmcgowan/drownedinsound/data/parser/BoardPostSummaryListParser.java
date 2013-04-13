@@ -101,7 +101,6 @@ public class BoardPostSummaryListParser {
 		    postId = postHref.substring(indexOfLastForwardSlash + 1);
 		}
 	    }
-	    Log.d(TAG, "Post ID ="+postId);
 	    int authorIndex = isSticky ? 6 : 5;
 	    Element authorElement = allDescriptionElements.get(authorIndex);
 	    authorElement = authorElement.getAllElements().get(0);

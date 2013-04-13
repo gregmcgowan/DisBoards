@@ -55,8 +55,14 @@ public class BoardPost implements Parcelable {
     private BoardPostStatus boardPostStatus;
 
     @DatabaseField
-    private long lastViewedTime;
+    private long lastFetchedTime;
 
+    @DatabaseField
+    private long createdTime;
+    
+    @DatabaseField
+    private long lastUpdatedTime;
+    
     @DatabaseField(columnName = BOARD_TYPE_FIELD)
     private BoardType boardType;
 
@@ -211,13 +217,29 @@ public class BoardPost implements Parcelable {
     public void setBoardPostStatus(BoardPostStatus boardPostStatus) {
 	this.boardPostStatus = boardPostStatus;
     }
-
-    public long getLastViewedTime() {
-	return lastViewedTime;
+       
+    public long getLastFetchedTime() {
+        return lastFetchedTime;
     }
 
-    public void setLastViewedTime(long lastViewedTime) {
-	this.lastViewedTime = lastViewedTime;
+    public void setLastFetchedTime(long lastFetchedTime) {
+        this.lastFetchedTime = lastFetchedTime;
+    }
+
+    public long getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(long createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public long getLastUpdatedTime() {
+        return lastUpdatedTime;
+    }
+
+    public void setLastUpdatedTime(long lastUpdatedTime) {
+        this.lastUpdatedTime = lastUpdatedTime;
     }
 
     public BoardType getBoardType() {
@@ -238,7 +260,9 @@ public class BoardPost implements Parcelable {
 	parcel.writeString(dateOfPost);
 	parcel.writeInt(numberOfReplies);
 	parcel.writeSerializable(boardPostStatus);
-	parcel.writeLong(lastViewedTime);
+	parcel.writeLong(lastFetchedTime);
+	parcel.writeLong(createdTime);
+	parcel.writeLong(lastUpdatedTime);
 	parcel.writeSerializable(boardType);
 	Collection<BoardPostComment> comments = getComments();
 	parcel.writeParcelableArray(
@@ -255,7 +279,9 @@ public class BoardPost implements Parcelable {
 	dateOfPost = parcel.readString();
 	numberOfReplies = parcel.readInt();
 	boardPostStatus = (BoardPostStatus) parcel.readSerializable();
-	lastViewedTime = parcel.readLong();
+	lastFetchedTime = parcel.readLong();
+	createdTime = parcel.readLong();
+	lastUpdatedTime = parcel.readLong();
 	boardType = (BoardType) parcel.readSerializable();
 
 	List<BoardPostComment> comments = parcel

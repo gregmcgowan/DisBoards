@@ -19,9 +19,12 @@ public class BoardPostParser {
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
 	    + "BoardPostParser";
 
+    private static final boolean DEBUG_PARSER = false;
+    
     private Document boardPostDocument;
     private String boardPostId;
     private BoardType boardType;
+    
     
     public BoardPostParser(Document document, String boardId, BoardType boardType) {
 	this.boardPostDocument = document;
@@ -38,7 +41,7 @@ public class BoardPostParser {
 	    Elements originalPostElements = boardPostDocument
 		    .getElementsByClass("content").get(1).getAllElements();
 	    String title = originalPostElements.get(2).text();
-	    if(DisBoardsConstants.DEBUG){
+	    if(DisBoardsConstants.DEBUG && DEBUG_PARSER){
 		Log.d(TAG, "Title = " + title);
 	    }
 	    
@@ -46,20 +49,20 @@ public class BoardPostParser {
 	    Elements byLineElements = originalPostElements.get(5)
 		    .getAllElements();
 	    String author = byLineElements.get(1).text();
-	    if(DisBoardsConstants.DEBUG){
+	    if(DisBoardsConstants.DEBUG && DEBUG_PARSER) {
 		Log.d(TAG, "Author = " + author);
 	    }
 
 	    // Replies and date
 	    String replies = byLineElements.get(5).text();
 	    String date = byLineElements.get(6).text();
-	    if(DisBoardsConstants.DEBUG){
+	    if(DisBoardsConstants.DEBUG && DEBUG_PARSER){
 		Log.d(TAG, "Replies = " + replies + " date = " + date);
 	    }
 	    
 	    Element contentElement = originalPostElements.get(12);
 	    String content = contentElement.html();
-	    if(DisBoardsConstants.DEBUG){
+	    if(DisBoardsConstants.DEBUG && DEBUG_PARSER){
 		Log.d(TAG, "Content = " + content);
 	    }
 	
@@ -111,7 +114,7 @@ public class BoardPostParser {
 	    Elements children = threadElement.children();
 	    int noOfChildren = children.size();
 	    String id =  threadElement.children().get(0).id().substring(1);
-	    if(DisBoardsConstants.DEBUG) {
+	    if(DisBoardsConstants.DEBUG && DEBUG_PARSER) {
 		Log.d(TAG, "Board post id ["+ id +"]");
 	    }
 	    
@@ -146,7 +149,7 @@ public class BoardPostParser {
 		    }
 		}
 		
-		if (DisBoardsConstants.DEBUG) {
+		if (DisBoardsConstants.DEBUG && DEBUG_PARSER) {
 		    Log.d(TAG, "title [" + title + "]");
 		    Log.d(TAG, "content [" + content + "]");
 		    Log.d(TAG, "comment Level [" + currentLevel + "]");
@@ -204,7 +207,7 @@ public class BoardPostParser {
 		    thisCombinedText = possiblyThisElement.text();
 		}
 	
-		if (DisBoardsConstants.DEBUG) {
+		if (DisBoardsConstants.DEBUG && DEBUG_PARSER) {
 		    Log.d(TAG, "title [" + title + "]");
 		    Log.d(TAG, "content [" + content + "]");
 		    Log.d(TAG, "comment Level [" + currentLevel + "]");
