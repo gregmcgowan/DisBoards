@@ -94,7 +94,7 @@
                         android:textColor="@color/lighter_grey"
                         android:textSize="@dimen/text_really_micro" />
                 </LinearLayout>
-				<include layout="@layout/dotted_divider_grey"/>
+				<!-- <include layout="@layout/dotted_divider_grey"/> -->
                 <TextView
                     android:id="@+id/board_post_comment_this_view"
                     android:layout_width="match_parent"

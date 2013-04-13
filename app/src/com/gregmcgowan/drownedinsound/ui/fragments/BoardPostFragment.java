@@ -61,7 +61,7 @@ public class BoardPostFragment extends SherlockListFragment {
     private TextView connectionErrorTextView;
     private List<BoardPostComment> boardPostComments = new ArrayList<BoardPostComment>();
     private BoardPostListAdapater adapter;
-    private boolean unattachedFragment;
+    private boolean attachedFragment;
     private boolean requestingPost;
     private String boardPostUrl;
     private String boardPostId;
@@ -77,7 +77,7 @@ public class BoardPostFragment extends SherlockListFragment {
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	EventBus.getDefault().register(this);
-	setRetainInstance(true);
+	//setRetainInstance(true);
 	setHasOptionsMenu(true);
     }
 
@@ -87,9 +87,10 @@ public class BoardPostFragment extends SherlockListFragment {
 	// In dual mode the fragment will be recreated but will not be used
 	// anywhere
 	if (container == null) {
-	    unattachedFragment = true;
+	    attachedFragment = false;
 	    return null;
 	}
+	attachedFragment = true;
 	inflater = (LayoutInflater) inflater.getContext().getSystemService(
 		Context.LAYOUT_INFLATER_SERVICE);
 	rootView = inflater.inflate(R.layout.board_post_layout, null);
@@ -162,7 +163,7 @@ public class BoardPostFragment extends SherlockListFragment {
 
     public void onEventMainThread(RetrievedBoardPostEvent event) {
 	 this.requestingPost = false;
-	if(!unattachedFragment) {
+	if(attachedFragment) {
 		BoardPost boardPost = event.getBoardPost();
 		if (shouldShowBoardPost(boardPost)) {
 		    this.boardPost = boardPost;
@@ -210,7 +211,7 @@ public class BoardPostFragment extends SherlockListFragment {
     }
 
     private void fetchBoardPost() {
-	if (!unattachedFragment && !requestingPost) {
+	if (attachedFragment && !requestingPost) {
 	    setProgressBarAndFragmentVisibility(true);
 	    Intent disWebServiceIntent = new Intent(getSherlockActivity(),
 		    DisWebService.class);
