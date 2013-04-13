@@ -65,6 +65,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     private String postId;
     private String postUrl;
     private boolean requestingBoardList;
+
     public BoardPostSummaryListFragment() {
     }
 
@@ -109,7 +110,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 		screenWidthPixels);
 	int currentOrientation = getResources().getConfiguration().orientation;
 	dualPaneMode = currentOrientation == Configuration.ORIENTATION_LANDSCAPE
-		&& screenWidthDp >= UiUtils.MIN_WITH_DP_FOR_DUAL_MODE;
+		&& screenWidthDp >= UiUtils.MIN_WIDTH_DP_FOR_DUAL_MODE;
 
 	if (savedInstanceState != null) {
 	    // Restore last state for checked position.
@@ -174,8 +175,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     public void onResume() {
 	super.onResume();
 	int showErrorText = boardPostSummaries.size() > 0
-		||  requestingBoardList ? View.GONE
-		: View.VISIBLE;
+		|| requestingBoardList ? View.GONE : View.VISIBLE;
 	connectionErrorTextView.setVisibility(showErrorText);
     }
 
@@ -240,6 +240,16 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 		boardPostSummaries.clear();
 		boardPostSummaries.addAll(event.getBoardPostSummaryList());
 		adapter.notifyDataSetChanged();
+		final ListView listView = getListView();
+		listView.postDelayed(new Runnable() {
+
+		    @Override
+		    public void run() {
+			listView.smoothScrollToPosition(0);
+
+		    }
+
+		}, 250);
 
 		if (event.isCached()) {
 		    displayIsCachedPopup();

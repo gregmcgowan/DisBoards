@@ -36,7 +36,7 @@ public class BoardPostActivity extends SherlockFragmentActivity {
 	int screenWidthPixels = getResources().getDisplayMetrics().widthPixels;
 	int screenWidthDp = UiUtils.convertPixelsToDp(getResources(), screenWidthPixels);
 	if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && 
-		screenWidthDp >= UiUtils.MIN_WITH_DP_FOR_DUAL_MODE){
+		screenWidthDp >= UiUtils.MIN_WIDTH_DP_FOR_DUAL_MODE){
 	    // If the screen is now in landscape mode, we can show the
 	    // dialog in-line with the list so we don't need this activity.
 	    finish();

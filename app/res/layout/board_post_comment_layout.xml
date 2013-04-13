@@ -8,8 +8,8 @@
         android:id="@+id/board_post_comment_comment_section"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/margin_small"
-        android:layout_marginRight="@dimen/margin_small"
+        android:layout_marginLeft="@dimen/margin_medium"
+        android:layout_marginRight="@dimen/margin_medium"
         android:orientation="horizontal" >
 
         <LinearLayout
@@ -50,7 +50,8 @@
                 android:layout_marginRight="@dimen/margin_small"
                 android:text="Here is a test comment. A very interesting post"
                 android:textColor="@color/lighter_grey"
-                android:textSize="@dimen/text_micro" />
+                android:textSize="@dimen/text_micro" 
+                android:autoLink="web" />
 
 			<include layout="@layout/dotted_divider_grey"/>
 
@@ -93,13 +94,13 @@
                         android:textColor="@color/lighter_grey"
                         android:textSize="@dimen/text_really_micro" />
                 </LinearLayout>
-
+				<include layout="@layout/dotted_divider_grey"/>
                 <TextView
                     android:id="@+id/board_post_comment_this_view"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                   android:padding="@dimen/comment_text_padding"
+                  	 android:padding="@dimen/comment_text_padding"
                     android:layout_below="@id/board_post_comment_author_section"
                     android:layout_marginBottom="@dimen/margin_medium"
                     android:layout_marginLeft="@dimen/margin_medium"

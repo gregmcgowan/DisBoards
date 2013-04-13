@@ -1,10 +1,12 @@
 package com.gregmcgowan.drownedinsound.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 /**
@@ -15,7 +17,7 @@ import android.view.inputmethod.InputMethodManager;
  */
 public class UiUtils {
 
-    public static final int MIN_WITH_DP_FOR_DUAL_MODE = 600;
+    public static final int MIN_WIDTH_DP_FOR_DUAL_MODE = 600;
     
     /**
      * This will attempt to hide the softkeyboard if it is displayed at the
@@ -70,6 +72,18 @@ public class UiUtils {
 	DisplayMetrics metrics = resources.getDisplayMetrics();
 	float logicalDensity = metrics.density;	
 	return (int) (pixels / logicalDensity  + 0.5);
+    }
+    
+    /**
+     * Disables hardware rendering for the provided view
+     * 
+     * @param view
+     */
+    @SuppressLint("NewApi")
+    public static void disableHardwareRendering(View view) {
+	 if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+	            view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+	        } 
     }
     
 }

@@ -61,7 +61,7 @@ public class BoardPostFragment extends SherlockListFragment {
     private TextView connectionErrorTextView;
     private List<BoardPostComment> boardPostComments = new ArrayList<BoardPostComment>();
     private BoardPostListAdapater adapter;
-    private boolean attachedFragment;
+    private boolean unattachedFragment;
     private boolean requestingPost;
     private String boardPostUrl;
     private String boardPostId;
@@ -87,10 +87,9 @@ public class BoardPostFragment extends SherlockListFragment {
 	// In dual mode the fragment will be recreated but will not be used
 	// anywhere
 	if (container == null) {
-	    attachedFragment = false;
+	    unattachedFragment = true;
 	    return null;
 	}
-	attachedFragment = true;
 	inflater = (LayoutInflater) inflater.getContext().getSystemService(
 		Context.LAYOUT_INFLATER_SERVICE);
 	rootView = inflater.inflate(R.layout.board_post_layout, null);
@@ -163,7 +162,7 @@ public class BoardPostFragment extends SherlockListFragment {
 
     public void onEventMainThread(RetrievedBoardPostEvent event) {
 	 this.requestingPost = false;
-	if(attachedFragment) {
+	if(!unattachedFragment) {
 		BoardPost boardPost = event.getBoardPost();
 		if (shouldShowBoardPost(boardPost)) {
 		    this.boardPost = boardPost;
@@ -211,7 +210,7 @@ public class BoardPostFragment extends SherlockListFragment {
     }
 
     private void fetchBoardPost() {
-	if (attachedFragment && !requestingPost) {
+	if (!unattachedFragment && !requestingPost) {
 	    setProgressBarAndFragmentVisibility(true);
 	    Intent disWebServiceIntent = new Intent(getSherlockActivity(),
 		    DisWebService.class);
@@ -471,6 +470,9 @@ public class BoardPostFragment extends SherlockListFragment {
 	rowView.setOnClickListener(new CommentSectionClickListener(
 		listPosition, new AllCommentClickListener(
 			boardPostCommentHolder.actionRelativeLayout)));
+	//Following is a fix for dotted line bug on ICS
+	//See https://code.google.com/p/android/issues/detail?id=29944
+	UiUtils.disableHardwareRendering(rowView);
 	return boardPostCommentHolder;
     }
 
@@ -490,6 +492,9 @@ public class BoardPostFragment extends SherlockListFragment {
 	boardPostInitialHolder.noOfCommentsTextView = (TextView) rowView
 		.findViewById(R.id.board_post_initial_comment_replies_subheading);
 	rowView.setTag(boardPostInitialHolder);
+	//Following is a fix for dotted line bug on ICS
+	//See https://code.google.com/p/android/issues/detail?id=29944
+	UiUtils.disableHardwareRendering(rowView);
 	return boardPostInitialHolder;
     }
 

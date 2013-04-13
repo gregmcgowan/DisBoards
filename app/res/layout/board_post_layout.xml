@@ -2,22 +2,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-     android:background="@drawable/main_gradient_background">
-	
-    <View
-  		 android:layout_width="match_parent"
-        android:layout_height="16dip"
-        android:background="@android:color/transparent" />
-        
+    android:background="@drawable/main_gradient_background" >
+
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-		android:divider="@android:color/transparent"
- 	 	android:dividerHeight="16dip"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="@dimen/margin_large"
         android:fastScrollEnabled="true"
-        android:smoothScrollbar="true"/>
+        android:smoothScrollbar="true" />
 
     <ProgressBar
         android:id="@+id/board_post_progress_bar"
@@ -28,14 +22,14 @@
         android:indeterminate="true"
         android:visibility="invisible" >
     </ProgressBar>
-    
+
     <TextView
         android:id="@+id/board_post_connection_error_text_view"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:textSize="@dimen/text_medium"
-        android:text="@string/connection_error_text"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:gravity="center"
-        android:layout_centerInParent="true"/>
+        android:text="@string/connection_error_text"
+        android:textSize="@dimen/text_medium" />
 
 </RelativeLayout>
