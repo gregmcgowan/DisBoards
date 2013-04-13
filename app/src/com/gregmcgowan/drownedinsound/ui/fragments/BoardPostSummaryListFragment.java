@@ -207,20 +207,23 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     }
 
     public void requestBoardSummaryPage(int page) {
-	requestingBoardList = true;
-	connectionErrorTextView.setVisibility(View.GONE);
-	setProgressBarVisiblity(true);
-	Intent disWebServiceIntent = new Intent(getSherlockActivity(),
-		DisWebService.class);
-	Bundle parametersBundle = new Bundle();
+	if (!requestingBoardList) {
+	    requestingBoardList = true;
+	    connectionErrorTextView.setVisibility(View.GONE);
+	    setProgressBarVisiblity(true);
+	    Intent disWebServiceIntent = new Intent(getSherlockActivity(),
+		    DisWebService.class);
+	    Bundle parametersBundle = new Bundle();
 
-	parametersBundle.putInt(DisWebServiceConstants.SERVICE_REQUESTED_ID,
-		DisWebServiceConstants.GET_POSTS_SUMMARY_LIST_ID);
-	parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
-		boardType);
-	parametersBundle.putString(DisBoardsConstants.BOARD_URL, boardUrl);
-	disWebServiceIntent.putExtras(parametersBundle);
-	getSherlockActivity().startService(disWebServiceIntent);
+	    parametersBundle.putInt(
+		    DisWebServiceConstants.SERVICE_REQUESTED_ID,
+		    DisWebServiceConstants.GET_POSTS_SUMMARY_LIST_ID);
+	    parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
+		    boardType);
+	    parametersBundle.putString(DisBoardsConstants.BOARD_URL, boardUrl);
+	    disWebServiceIntent.putExtras(parametersBundle);
+	    getSherlockActivity().startService(disWebServiceIntent);
+	}
     }
 
     private void setProgressBarVisiblity(boolean visible) {
