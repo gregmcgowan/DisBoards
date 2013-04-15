@@ -37,7 +37,7 @@ class AsyncHttpRequest implements Runnable {
     private final AsyncHttpResponseHandler responseHandler;
     private boolean isBinaryRequest;
     private int executionCount;
-
+   
     public AsyncHttpRequest(AbstractHttpClient client, HttpContext context, HttpUriRequest request, AsyncHttpResponseHandler responseHandler) {
         this.client = client;
         this.context = context;
@@ -133,4 +133,6 @@ class AsyncHttpRequest implements Runnable {
         ex.initCause(cause);
         throw ex;
     }
+
+
 }

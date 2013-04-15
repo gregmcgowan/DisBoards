@@ -16,27 +16,28 @@ import com.gregmcgowan.drownedinsound.data.parser.HtmlConstants;
 import com.gregmcgowan.drownedinsound.events.LoginResponseEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.gregmcgowan.drownedinsound.network.UrlConstants;
-import com.loopj.android.http.FileAsyncBackgroundThreadHttpResponseHandler;
 
 import de.greenrobot.event.EventBus;
 
-public class LoginResponseHandler extends
-	FileAsyncBackgroundThreadHttpResponseHandler {
+public class LoginResponseHandler extends DisBoardAsyncNetworkHandler {
+
+    private static final String LOGIN_IDENTIFIER = "LOGIN";
 
     public LoginResponseHandler(File file) {
-	super(file);
+	super(file, LOGIN_IDENTIFIER,true);
     }
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
 	    + "LoginResponseHandler";
 
     @Override
-    public void handleSuccess(int statusCode, File file) {
+    public void doSuccessAction(int statusCode, File file) {
 	boolean loginSucceeded = false;
 	if (file != null && file.exists()) {
 	    Document parsedDocument = null;
 	    try {
-		parsedDocument = Jsoup.parse(file,HttpClient.CONTENT_ENCODING, UrlConstants.BASE_URL);
+		parsedDocument = Jsoup.parse(file, HttpClient.CONTENT_ENCODING,
+			UrlConstants.BASE_URL);
 	    } catch (IOException e) {
 		if (DisBoardsConstants.DEBUG) {
 		    e.printStackTrace();
@@ -54,11 +55,10 @@ public class LoginResponseHandler extends
 	}
 	deleteFile();
 	EventBus.getDefault().post(new LoginResponseEvent(loginSucceeded));
-
     }
 
     @Override
-    public void handleFailure(Throwable throwable, File response) {
+    public void doFailureAction(Throwable throwable, File response) {
 	if (DisBoardsConstants.DEBUG) {
 	    Log.d(TAG, "Response Body " + response);
 	    if (throwable instanceof HttpResponseException) {

@@ -38,4 +38,6 @@ public class DisBoardsConstants {
 
     public static final String BOARD_TYPE_INFO = "BOARD_TYPE_INFOS";
 
+    public static final String FORCE_FETCH = "FORCE_FETCH";
+
 }

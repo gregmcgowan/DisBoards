@@ -2,6 +2,7 @@ package com.gregmcgowan.drownedinsound.network;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -33,12 +34,52 @@ public class HttpClient {
 
     public final static String CONTENT_ENCODING = "UTF-8";
     private final static String REQUEST_CONTENT_TYPE = "application/x-www-form-urlencoded";
-    private final static String TAG = DisBoardsConstants.LOG_TAG_PREFIX + "HttpClient";
+    private final static String TAG = DisBoardsConstants.LOG_TAG_PREFIX
+	    + "HttpClient";
 
     private static AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
 
+    private static HashSet<String> requestsInProgress = new HashSet<String>();
     private static final boolean useFakeData = false;
+
     
+    
+    public static void setTimeout(int timeout){
+	asyncHttpClient.setTimeout(timeout);
+    }
+    
+    /**
+     * Indicates that the request represented by identifier has compelted
+     * 
+     * @param identifier
+     */
+    public synchronized static void requestHasCompleted(String identifier) {
+	boolean removed = requestsInProgress.remove(identifier);
+	if (DisBoardsConstants.DEBUG) {
+	    Log.d(TAG, (removed ? "Removed" : "Did not remove")
+		    + "  the request with identfifier " + identifier);
+	}
+    }
+
+    /**
+     * Identicates if the request is still in progress
+     * 
+     * @param identifier
+     * @return
+     */
+    public synchronized static boolean requestIsInProgress(String identifier) {
+	boolean inProgress = requestsInProgress.contains(identifier);
+	if (DisBoardsConstants.DEBUG) {
+	    Log.d(TAG, "Request " + identifier + " is "
+		    + (inProgress ? " in progress " : "not in progress"));
+	}
+	return inProgress;
+    }
+
+    private static synchronized void addRequest(String identifier) {
+	requestsInProgress.add(identifier);
+    }
+
     /**
      * Cancels all requests associated with the context provided. This should
      * only really be used on the onDestory method
@@ -86,14 +127,13 @@ public class HttpClient {
 	try {
 	    entity = new UrlEncodedFormEntity(pairs, CONTENT_ENCODING);
 	} catch (UnsupportedEncodingException e) {
-	    if(DisBoardsConstants.DEBUG){
-		e.printStackTrace();		
+	    if (DisBoardsConstants.DEBUG) {
+		e.printStackTrace();
 	    }
 	}
-
 	asyncHttpClient.post(context, UrlConstants.LOGIN_URL, headers, entity,
 		REQUEST_CONTENT_TYPE, responseHandler);
-	
+
     }
 
     /**
@@ -103,7 +143,7 @@ public class HttpClient {
      * @return
      */
     private static BasicHeader[] getMandatoryDefaultHeaders() {
-	//TODO tidy this up
+	// TODO tidy this up
 	BasicHeader cacheControl = new BasicHeader("Cache-Control", "max-age=0");
 	BasicHeader userAgent = new BasicHeader(
 		"User-Agent",
@@ -127,16 +167,20 @@ public class HttpClient {
      * @param boardUrl
      * @param responseHandler
      */
-    public static void requestBoardSummary(Context context, String boardUrl,BoardType boardType,
-	    AsyncHttpResponseHandler responseHandler, int pageNumber) {
-	if(DisBoardsConstants.DEBUG){
-	    Log.d(TAG, "Going to request = "+boardUrl);   
+    public static void requestBoardSummary(Context context, String boardUrl,
+	    BoardType boardType, AsyncHttpResponseHandler responseHandler,
+	    int pageNumber) {
+	if (DisBoardsConstants.DEBUG) {
+	    Log.d(TAG, "Going to request = " + boardUrl);
 	}
-	if(useFakeData){
-	    makeFakeRequest(new RetrievedBoardPostSummaryListEvent(FakeDataFactory.generateRandomBoardPostSummaryList(),boardType,false));
+	addRequest(responseHandler.getIdentifier());
+	if (useFakeData) {
+	    makeFakeRequest(new RetrievedBoardPostSummaryListEvent(
+		    FakeDataFactory.generateRandomBoardPostSummaryList(),
+		    boardType, false));
 	} else {
-		asyncHttpClient.get(context, boardUrl, getMandatoryDefaultHeaders(),
-			null, responseHandler);	    
+	    asyncHttpClient.get(context, boardUrl,
+		    getMandatoryDefaultHeaders(), null, responseHandler);
 	}
     }
 
@@ -149,36 +193,35 @@ public class HttpClient {
      */
     public static void requestBoardPost(Context context, String boardPostUrl,
 	    AsyncHttpResponseHandler responseHandler) {
-	if(DisBoardsConstants.DEBUG){
-	    Log.d(TAG, "Going to request = "+boardPostUrl);   
+	if (DisBoardsConstants.DEBUG) {
+	    Log.d(TAG, "Going to request = " + boardPostUrl);
 	}
-	if(useFakeData){
-	    makeFakeRequest(new RetrievedBoardPostEvent(FakeDataFactory.generateRandomBoardPost(),false));
+	addRequest(responseHandler.getIdentifier());
+	if (useFakeData) {
+	    makeFakeRequest(new RetrievedBoardPostEvent(
+		    FakeDataFactory.generateRandomBoardPost(), false));
 	} else {
 	    asyncHttpClient.get(context, boardPostUrl,
-			getMandatoryDefaultHeaders(), null, responseHandler);   
+		    getMandatoryDefaultHeaders(), null, responseHandler);
 	}
-	
+
     }
 
-    
-    private static void makeFakeRequest(final Object returnEvent){
-	new Thread(){
+    private static void makeFakeRequest(final Object returnEvent) {
+	new Thread() {
 
 	    @Override
 	    public void run() {
 		try {
 		    Thread.sleep(3000);
 		} catch (InterruptedException e) {
-		    // TODO Auto-generated catch block
 		    e.printStackTrace();
 		}
 		EventBus.getDefault().post(returnEvent);
-		
+
 	    }
-	    
+
 	}.start();
     }
 
-    
 }

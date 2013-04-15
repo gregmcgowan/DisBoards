@@ -77,7 +77,6 @@ public class BoardPostFragment extends SherlockListFragment {
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	EventBus.getDefault().register(this);
-	//setRetainInstance(true);
 	setHasOptionsMenu(true);
     }
 
@@ -416,8 +415,6 @@ public class BoardPostFragment extends SherlockListFragment {
 
 		    boolean actionSectionVisible = comment
 			    .isActionSectionVisible();
-		    Log.d(TAG, "Setting postion " + position + " to "
-			    + actionSectionVisible);
 		    if (actionSectionVisible) {
 			boardPostCommentHolder.actionRelativeLayout
 				.setVisibility(View.VISIBLE);

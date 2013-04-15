@@ -17,20 +17,18 @@ import com.gregmcgowan.drownedinsound.data.parser.BoardPostParser;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.gregmcgowan.drownedinsound.network.UrlConstants;
-import com.loopj.android.http.FileAsyncBackgroundThreadHttpResponseHandler;
 
 import de.greenrobot.event.EventBus;
 
-public class RetrieveBoardPostHandler extends
-	FileAsyncBackgroundThreadHttpResponseHandler {
+public class RetrieveBoardPostHandler extends DisBoardAsyncNetworkHandler {
 
     private String boardPostId;
     private BoardType boardPostType;
     private DatabaseHelper databaseHelper;
 
     public RetrieveBoardPostHandler(File file, String boardPostId,
-	    BoardType boardType, DatabaseHelper databaseHelper) {
-	super(file);
+	    BoardType boardType, boolean updateUI,DatabaseHelper databaseHelper) {
+	super(file, boardPostId,updateUI);
 	this.boardPostId = boardPostId;
 	this.boardPostType = boardType;
 	this.databaseHelper = databaseHelper;
@@ -40,7 +38,7 @@ public class RetrieveBoardPostHandler extends
 	    + "RetrieveBoardPostHandler";
 
     @Override
-    public void handleSuccess(int statusCode, File file) {
+    public void doSuccessAction(int statusCode, File file) {
 	BoardPost boardPost = null;
 	if (file != null && file.exists()) {
 	    Document parsedDocument = null;
@@ -56,18 +54,21 @@ public class RetrieveBoardPostHandler extends
 		BoardPostParser boardPostParser = new BoardPostParser(
 			parsedDocument, boardPostId, boardPostType);
 		boardPost = boardPostParser.parseDocument();
-		if(boardPost != null) {
+		if (boardPost != null) {
 		    databaseHelper.setBoardPost(boardPost);
 		}
 	    }
 	}
 	deleteFile();
-	EventBus.getDefault().post(new RetrievedBoardPostEvent(boardPost,false));
+	if(isUpdateUI())  {
+		EventBus.getDefault().post(
+			new RetrievedBoardPostEvent(boardPost, false));
+	}
 
     }
 
     @Override
-    public void handleFailure(Throwable throwable, File response) {
+    public void doFailureAction(Throwable throwable, File response) {
 	if (DisBoardsConstants.DEBUG) {
 	    if (throwable instanceof HttpResponseException) {
 		HttpResponseException exception = (HttpResponseException) throwable;
@@ -79,8 +80,9 @@ public class RetrieveBoardPostHandler extends
 	    }
 	}
 	deleteFile();
-	EventBus.getDefault().post(new RetrievedBoardPostEvent(null,false));
-	
+	if(isUpdateUI())  {
+	    EventBus.getDefault().post(new RetrievedBoardPostEvent(null, false));
+	}
     }
 
 }

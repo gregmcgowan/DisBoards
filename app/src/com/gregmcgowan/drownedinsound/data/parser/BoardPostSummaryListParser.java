@@ -154,6 +154,7 @@ public class BoardPostSummaryListParser {
 	boardPostSummary.setNumberOfReplies(numberOfReplies);
 	boardPostSummary.setBoardType(boardType);
 	boardPostSummary.setLastUpdatedTime(lastPostDateTime);
+	boardPostSummary.setLastFetchedTime(System.currentTimeMillis());
 	boardPostSummary.setSticky(isSticky);
 	
 	return boardPostSummary;

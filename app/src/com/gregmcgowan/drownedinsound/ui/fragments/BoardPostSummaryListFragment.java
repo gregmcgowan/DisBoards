@@ -27,10 +27,10 @@ import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.data.model.BoardTypeInfo;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
-import com.gregmcgowan.drownedinsound.network.UrlConstants;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
+import com.gregmcgowan.drownedinsound.utils.NetworkUtils;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
 import de.greenrobot.event.EventBus;
@@ -58,6 +58,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     private View rootView;
     private boolean requestOnStart;
     private boolean loadedList;
+    private BoardTypeInfo boardTypeInfo;
     private BoardType boardType;
     private boolean dualPaneMode;
     private boolean wasInDualPaneMode;
@@ -72,6 +73,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     public static BoardPostSummaryListFragment newInstance(
 	    BoardTypeInfo boardTypeInfo, boolean requestDataOnStart) {
 	BoardPostSummaryListFragment boardListFragment = new BoardPostSummaryListFragment();
+	boardListFragment.boardTypeInfo = boardTypeInfo;
 	boardListFragment.boardUrl = boardTypeInfo.getUrl();
 	boardListFragment.requestOnStart = requestDataOnStart;
 	boardListFragment.boardType = boardTypeInfo.getBoardType();
@@ -92,15 +94,14 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	super.onActivityCreated(savedInstanceState);
 	progressBar = (ProgressBar) rootView
 		.findViewById(R.id.board_list_progress_bar);
-	connectionErrorTextView = (TextView) rootView
-		.findViewById(R.id.board_list_connection_error_text_view);
-	connectionErrorTextView.setVisibility(View.GONE);
+	connectionErrorTextView = (TextView) rootView.findViewById(R.id.board_list_connection_error_text_view);
+//	connectionErrorTextView.setVisibility(View.GONE);
 	adapter = new BoardPostSummaryListAdapater(getSherlockActivity(),
 		R.layout.board_list_row, boardPostSummaries);
 	setListAdapter(adapter);
 
 	if (requestOnStart && !loadedList) {
-	    requestBoardSummaryPage(1);
+	    requestBoardSummaryPage(1,false);
 	}
 
 	// Check to see if we have a frame in which to embed the details
@@ -174,9 +175,16 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     @Override
     public void onResume() {
 	super.onResume();
-	int showErrorText = boardPostSummaries.size() > 0
-		|| requestingBoardList ? View.GONE : View.VISIBLE;
-	connectionErrorTextView.setVisibility(showErrorText);
+
+	int errorTextVisibility = showNetworkConnectionErrorText() ? View.VISIBLE
+		: View.GONE;
+	connectionErrorTextView.setVisibility(errorTextVisibility);
+    }
+
+    private boolean showNetworkConnectionErrorText() {
+	boolean haveNetworkConnection = NetworkUtils
+		.isConnected(getSherlockActivity());
+	return !haveNetworkConnection && boardPostSummaries.size() == 0 && !requestingBoardList;
     }
 
     @Override
@@ -197,16 +205,16 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     }
 
     private void doRefreshAction() {
-	requestBoardSummaryPage(1);
+	requestBoardSummaryPage(1,true);
     }
 
     public void loadListIfNotAlready(int page) {
 	if (!loadedList) {
-	    requestBoardSummaryPage(page);
+	    requestBoardSummaryPage(page,false);
 	}
     }
 
-    public void requestBoardSummaryPage(int page) {
+    public void requestBoardSummaryPage(int page, boolean forceUpdate) {
 	if (!requestingBoardList) {
 	    requestingBoardList = true;
 	    connectionErrorTextView.setVisibility(View.GONE);
@@ -218,9 +226,10 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	    parametersBundle.putInt(
 		    DisWebServiceConstants.SERVICE_REQUESTED_ID,
 		    DisWebServiceConstants.GET_POSTS_SUMMARY_LIST_ID);
-	    parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
-		    boardType);
-	    parametersBundle.putString(DisBoardsConstants.BOARD_URL, boardUrl);
+	    parametersBundle.putParcelable(DisBoardsConstants.BOARD_TYPE_INFO,
+		    boardTypeInfo);
+	    parametersBundle.putBoolean(DisBoardsConstants.FORCE_FETCH, forceUpdate);
+	    
 	    disWebServiceIntent.putExtras(parametersBundle);
 	    getSherlockActivity().startService(disWebServiceIntent);
 	}
@@ -245,11 +254,9 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 		adapter.notifyDataSetChanged();
 		final ListView listView = getListView();
 		listView.postDelayed(new Runnable() {
-
 		    @Override
 		    public void run() {
 			listView.smoothScrollToPosition(0);
-
 		    }
 
 		}, 250);
@@ -364,10 +371,27 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	    if (summary != null) {
 		String title = summary.getTitle();
 		String authorusername = "by " + summary.getAuthorUsername();
+		int numberOfReplies = summary.getNumberOfReplies();
+		String numberOfRepliesText = null;
+		if (numberOfReplies > 0) {
+		    numberOfRepliesText = numberOfReplies
+			    + (numberOfReplies > 1 ? " replies " : "  reply");
+		} else {
+		    numberOfRepliesText = "No replies";
+		}
+
 		setTextForTextView(boardPostSummaryRowView,
 			R.id.board_post_list_row_title, title);
 		setTextForTextView(boardPostSummaryRowView,
 			R.id.board_post_list_row_author, authorusername);
+		setTextForTextView(boardPostSummaryRowView,
+			R.id.board_post_list_row_number_of_replies,
+			numberOfRepliesText);
+		setTextForTextView(
+			boardPostSummaryRowView,
+			R.id.board_post_list_row_last_updated,
+			summary.getLastUpdatedInReadableString(getSherlockActivity()));
+
 	    }
 	    return boardPostSummaryRowView;
 	}

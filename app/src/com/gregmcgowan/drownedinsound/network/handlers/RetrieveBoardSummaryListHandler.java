@@ -18,19 +18,18 @@ import com.gregmcgowan.drownedinsound.data.parser.BoardPostSummaryListParser;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.gregmcgowan.drownedinsound.network.UrlConstants;
-import com.loopj.android.http.FileAsyncBackgroundThreadHttpResponseHandler;
 
 import de.greenrobot.event.EventBus;
 
 public class RetrieveBoardSummaryListHandler extends
-	FileAsyncBackgroundThreadHttpResponseHandler {
+	DisBoardAsyncNetworkHandler {
 
     private BoardType boardType;
     private DatabaseHelper databaseHelper;
 
     public RetrieveBoardSummaryListHandler(File file, BoardType boardType,
-	    DatabaseHelper databaseHelper) {
-	super(file);
+	    boolean updateUI, DatabaseHelper databaseHelper) {
+	super(file, boardType.name(), updateUI);
 	this.boardType = boardType;
 	this.databaseHelper = databaseHelper;
     }
@@ -39,7 +38,7 @@ public class RetrieveBoardSummaryListHandler extends
 	    + "RetrieveBoardSummaryListHandler";
 
     @Override
-    public void handleSuccess(int statusCode, File file) {
+    public void doSuccessAction(int statusCode, File file) {
 	List<BoardPost> boardPostSummaries = null;
 	if (DisBoardsConstants.DEBUG) {
 	    Log.d(TAG, "Got response");
@@ -65,14 +64,15 @@ public class RetrieveBoardSummaryListHandler extends
 	    }
 	}
 	deleteFile();
-	EventBus.getDefault().post(
-		new RetrievedBoardPostSummaryListEvent(boardPostSummaries,
-			boardType,false));
-
+	if (isUpdateUI()) {
+	    EventBus.getDefault().post(
+		    new RetrievedBoardPostSummaryListEvent(boardPostSummaries,
+			    boardType, false));
+	}
     }
 
     @Override
-    public void handleFailure(Throwable throwable, File response) {
+    public void doFailureAction(Throwable throwable, File response) {
 	if (DisBoardsConstants.DEBUG) {
 	    Log.d(TAG, "Response Body " + response);
 	    if (throwable instanceof HttpResponseException) {
@@ -85,7 +85,10 @@ public class RetrieveBoardSummaryListHandler extends
 	    }
 	}
 	deleteFile();
-	EventBus.getDefault().post(
-		new RetrievedBoardPostSummaryListEvent(null, boardType,false));
+	if (isUpdateUI()) {
+	    EventBus.getDefault().post(
+		    new RetrievedBoardPostSummaryListEvent(null, boardType,
+			    false));
+	}
     }
 }

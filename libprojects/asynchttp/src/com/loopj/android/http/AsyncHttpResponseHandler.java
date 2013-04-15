@@ -72,7 +72,8 @@ public class AsyncHttpResponseHandler {
     protected static final int FINISH_MESSAGE = 3;
 
     private Handler handler;
-
+    private String identifier;
+    
     /**
      * Creates a new AsyncHttpResponseHandler
      */
@@ -236,5 +237,13 @@ public class AsyncHttpResponseHandler {
         } else {
             sendSuccessMessage(status.getStatusCode(), responseBody);
         }
+    }
+    
+    public String getIdentifier() {
+	return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+	this.identifier = identifier;
     }
 }
