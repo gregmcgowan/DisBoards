@@ -10,6 +10,6 @@ public class NetworkUtils {
 	ConnectivityManager mgr = (ConnectivityManager) context
 		.getSystemService(Context.CONNECTIVITY_SERVICE);
 	NetworkInfo info = mgr.getActiveNetworkInfo();
-	return null != info && info.isConnectedOrConnecting();
+	return info != null && info.isConnectedOrConnecting();
     }
 }
