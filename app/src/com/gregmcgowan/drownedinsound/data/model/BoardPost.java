@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
@@ -59,10 +61,10 @@ public class BoardPost implements Parcelable {
 
     @DatabaseField
     private long createdTime;
-    
+
     @DatabaseField
     private long lastUpdatedTime;
-    
+
     @DatabaseField(columnName = BOARD_TYPE_FIELD)
     private BoardType boardType;
 
@@ -217,29 +219,42 @@ public class BoardPost implements Parcelable {
     public void setBoardPostStatus(BoardPostStatus boardPostStatus) {
 	this.boardPostStatus = boardPostStatus;
     }
-       
+
     public long getLastFetchedTime() {
-        return lastFetchedTime;
+	return lastFetchedTime;
     }
 
     public void setLastFetchedTime(long lastFetchedTime) {
-        this.lastFetchedTime = lastFetchedTime;
+	this.lastFetchedTime = lastFetchedTime;
     }
 
     public long getCreatedTime() {
-        return createdTime;
+	return createdTime;
     }
 
     public void setCreatedTime(long createdTime) {
-        this.createdTime = createdTime;
+	this.createdTime = createdTime;
     }
 
     public long getLastUpdatedTime() {
-        return lastUpdatedTime;
+	return lastUpdatedTime;
     }
 
     public void setLastUpdatedTime(long lastUpdatedTime) {
-        this.lastUpdatedTime = lastUpdatedTime;
+	this.lastUpdatedTime = lastUpdatedTime;
+    }
+
+    public String getLastUpdatedInReadableString(Context context) {
+	StringBuilder lastUpdatedBuilder = new StringBuilder();
+	if (lastUpdatedTime > 0) {
+	    CharSequence friendlyTime = DateUtils.getRelativeTimeSpanString(
+		    lastUpdatedTime, System.currentTimeMillis(),
+		    DateUtils.SECOND_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL);
+	    lastUpdatedBuilder.append("Last updated ");
+	    lastUpdatedBuilder.append(friendlyTime.toString());
+
+	}
+	return lastUpdatedBuilder.toString();
     }
 
     public BoardType getBoardType() {

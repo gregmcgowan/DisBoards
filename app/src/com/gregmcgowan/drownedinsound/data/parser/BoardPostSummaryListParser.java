@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -58,7 +59,7 @@ public class BoardPostSummaryListParser {
 		}
 	    }
 	}
-	
+
 	if (DisBoardsConstants.DEBUG) {
 	    Log.d(TAG, "Finished parsing");
 	}
@@ -68,11 +69,14 @@ public class BoardPostSummaryListParser {
     private BoardPost getPostInfoFromElement(Element element) {
 	String postTitle = null;
 	String authorUsername = null;
-	Date postCreationDate = null;
-	int numberOfReplies = 0;
+
+	int numberOfReplies = -1;
+	long lastPostDateTime = -1;
+
 	Date lastViewedDateTime = null;
-	Date lastPostDateTime = null;
+	Date postCreationDate = null;
 	String lastPostUsername = null;
+
 	String postId = null;
 	boolean isSticky = false;
 	Elements childElements = element.children();
@@ -94,10 +98,11 @@ public class BoardPostSummaryListParser {
 		isSticky = true;
 	    }
 	    int postIndex = isSticky ? 2 : 1;
-	    String postHref = titleElement.getAllElements().get(postIndex).attr("href");
-	    if(!TextUtils.isEmpty(postHref)){
+	    String postHref = titleElement.getAllElements().get(postIndex)
+		    .attr("href");
+	    if (!TextUtils.isEmpty(postHref)) {
 		int indexOfLastForwardSlash = postHref.lastIndexOf("/");
-		if(indexOfLastForwardSlash != -1) {
+		if (indexOfLastForwardSlash != -1) {
 		    postId = postHref.substring(indexOfLastForwardSlash + 1);
 		}
 	    }
@@ -109,14 +114,48 @@ public class BoardPostSummaryListParser {
 	}
 
 	Element repliesElement = childElements.get(2);
+	if (repliesElement != null) {
+	    String repliesText = repliesElement.text();
+	    if (!TextUtils.isEmpty(repliesText)) {
+		String[] repliesTokens = repliesText.split("\\s");
+		if (repliesTokens != null && repliesTokens.length > 0) {
+		    try {
+			numberOfReplies = Integer.parseInt(repliesTokens[0]);
+		    } catch (NumberFormatException nfe) {
+			
+		    }		    
+		}
+	    }
+	}
+
 	Element lastPostElement = childElements.get(3);
+	if (lastPostElement != null) {
+	    Elements lastPostElementClass = lastPostElement
+		    .getElementsByClass("timestamp");
+	    String lastPostTimeStamp = null;
+	    if (lastPostElementClass != null) {
+		Attributes attributes = lastPostElementClass.get(0).attributes();
+		lastPostTimeStamp = attributes.get("title");
+	    }
+	    if (lastPostTimeStamp != null) {
+		try {
+		    lastPostDateTime = Long.parseLong(lastPostTimeStamp) * 1000;   
+		} catch(NumberFormatException nfe) {
+		    
+		}	
+	    }
+	}
+
 	// TODO validate we are all the required data;
 	BoardPost boardPostSummary = new BoardPost();
 	boardPostSummary.setAuthorUsername(authorUsername);
 	boardPostSummary.setTitle(postTitle);
 	boardPostSummary.setId(postId);
+	boardPostSummary.setNumberOfReplies(numberOfReplies);
 	boardPostSummary.setBoardType(boardType);
-
+	boardPostSummary.setLastUpdatedTime(lastPostDateTime);
+	boardPostSummary.setSticky(isSticky);
+	
 	return boardPostSummary;
     }
 }
