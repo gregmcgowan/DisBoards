@@ -1,12 +1,10 @@
 package com.gregmcgowan.drownedinsound.utils;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 /**
@@ -74,16 +72,5 @@ public class UiUtils {
 	return (int) (pixels / logicalDensity  + 0.5);
     }
     
-    /**
-     * Disables hardware rendering for the provided view
-     * 
-     * @param view
-     */
-    @SuppressLint("NewApi")
-    public static void disableHardwareRendering(View view) {
-	 if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-	            view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-	        } 
-    }
     
 }
