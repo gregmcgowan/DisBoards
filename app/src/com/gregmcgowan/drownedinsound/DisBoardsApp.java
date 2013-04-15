@@ -27,10 +27,15 @@ public class DisBoardsApp extends Application {
     @Override
     public void onCreate() {
 	super.onCreate();
-	setupCookies();
+	initliaseHttpClient();
 	initliaseCrittercism();
     }
 
+    private void initliaseHttpClient(){
+	HttpClient.setTimeout(DisBoardsConstants.NETWORK_REQUEST_TIMEOUT_MS);
+	setupCookies();
+    }
+    
     private void initliaseCrittercism() {
 	Crittercism.init(getApplicationContext(), DisBoardsConstants.CRITTERCISM_APP_ID);
 	// create the JSONObject. (Do not forget to import org.json.JSONObject!)

@@ -8,6 +8,8 @@ package com.gregmcgowan.drownedinsound;
  */
 public class DisBoardsConstants {
 
+    public static final int NETWORK_REQUEST_TIMEOUT_MS = 30000;
+    
     public static final boolean DEBUG = true;
 
     public static final String LOG_TAG_PREFIX = "Dis";
@@ -33,5 +35,7 @@ public class DisBoardsConstants {
     public static final String DUAL_PANE_MODE = "DUAL_PANE_MODE";
 
     public static final String CRITTERCISM_APP_ID = "51521dba97c8f23caf000005";
+
+    public static final String BOARD_TYPE_INFO = "BOARD_TYPE_INFOS";
 
 }
