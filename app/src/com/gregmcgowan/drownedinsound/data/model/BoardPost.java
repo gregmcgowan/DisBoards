@@ -244,7 +244,7 @@ public class BoardPost implements Parcelable {
 	this.lastUpdatedTime = lastUpdatedTime;
     }
 
-    public String getLastUpdatedInReadableString(Context context) {
+    public String getLastUpdatedInReadableString() {
 	StringBuilder lastUpdatedBuilder = new StringBuilder();
 	if (lastUpdatedTime > 0) {
 	    CharSequence friendlyTime = DateUtils.getRelativeTimeSpanString(

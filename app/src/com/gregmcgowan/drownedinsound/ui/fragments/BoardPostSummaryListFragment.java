@@ -94,14 +94,15 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	super.onActivityCreated(savedInstanceState);
 	progressBar = (ProgressBar) rootView
 		.findViewById(R.id.board_list_progress_bar);
-	connectionErrorTextView = (TextView) rootView.findViewById(R.id.board_list_connection_error_text_view);
-//	connectionErrorTextView.setVisibility(View.GONE);
+	connectionErrorTextView = (TextView) rootView
+		.findViewById(R.id.board_list_connection_error_text_view);
+	// connectionErrorTextView.setVisibility(View.GONE);
 	adapter = new BoardPostSummaryListAdapater(getSherlockActivity(),
 		R.layout.board_list_row, boardPostSummaries);
 	setListAdapter(adapter);
 
 	if (requestOnStart && !loadedList) {
-	    requestBoardSummaryPage(1,false);
+	    requestBoardSummaryPage(1, false);
 	}
 
 	// Check to see if we have a frame in which to embed the details
@@ -184,7 +185,8 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     private boolean showNetworkConnectionErrorText() {
 	boolean haveNetworkConnection = NetworkUtils
 		.isConnected(getSherlockActivity());
-	return !haveNetworkConnection && boardPostSummaries.size() == 0 && !requestingBoardList;
+	return !haveNetworkConnection && boardPostSummaries.size() == 0
+		&& !requestingBoardList;
     }
 
     @Override
@@ -205,12 +207,12 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     }
 
     private void doRefreshAction() {
-	requestBoardSummaryPage(1,true);
+	requestBoardSummaryPage(1, true);
     }
 
     public void loadListIfNotAlready(int page) {
 	if (!loadedList) {
-	    requestBoardSummaryPage(page,false);
+	    requestBoardSummaryPage(page, false);
 	}
     }
 
@@ -228,8 +230,9 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 		    DisWebServiceConstants.GET_POSTS_SUMMARY_LIST_ID);
 	    parametersBundle.putParcelable(DisBoardsConstants.BOARD_TYPE_INFO,
 		    boardTypeInfo);
-	    parametersBundle.putBoolean(DisBoardsConstants.FORCE_FETCH, forceUpdate);
-	    
+	    parametersBundle.putBoolean(DisBoardsConstants.FORCE_FETCH,
+		    forceUpdate);
+
 	    disWebServiceIntent.putExtras(parametersBundle);
 	    getSherlockActivity().startService(disWebServiceIntent);
 	}
@@ -361,13 +364,30 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 	    View boardPostSummaryRowView = convertView;
+	    BoardPost summary = summaries.get(position);
+	    BoardPostSummaryHolder holder = null;
 	    if (boardPostSummaryRowView == null) {
 		LayoutInflater vi = (LayoutInflater) getActivity()
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		boardPostSummaryRowView = vi.inflate(R.layout.board_list_row,
 			null);
+		holder = new BoardPostSummaryHolder();
+		holder.titleTextView = (TextView) boardPostSummaryRowView
+			.findViewById(R.id.board_post_list_row_title);
+		holder.authorTextView = (TextView) boardPostSummaryRowView
+			.findViewById(R.id.board_post_list_row_author);
+		holder.numberOfRepliesTextView = (TextView) boardPostSummaryRowView
+			.findViewById(R.id.board_post_list_row_number_of_replies);
+		holder.stickyTextView = (TextView) boardPostSummaryRowView
+			.findViewById(R.id.board_post_list_row_sticky);
+		holder.lastUpdatedTextView = (TextView) boardPostSummaryRowView
+			.findViewById(R.id.board_post_list_row_last_updated);
+		boardPostSummaryRowView.setTag(holder);
+	    } else {
+		holder = (BoardPostSummaryHolder) boardPostSummaryRowView
+			.getTag();
 	    }
-	    BoardPost summary = summaries.get(position);
+
 	    if (summary != null) {
 		String title = summary.getTitle();
 		String authorusername = "by " + summary.getAuthorUsername();
@@ -379,30 +399,26 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 		} else {
 		    numberOfRepliesText = "No replies";
 		}
-
-		setTextForTextView(boardPostSummaryRowView,
-			R.id.board_post_list_row_title, title);
-		setTextForTextView(boardPostSummaryRowView,
-			R.id.board_post_list_row_author, authorusername);
-		setTextForTextView(boardPostSummaryRowView,
-			R.id.board_post_list_row_number_of_replies,
-			numberOfRepliesText);
-		setTextForTextView(
-			boardPostSummaryRowView,
-			R.id.board_post_list_row_last_updated,
-			summary.getLastUpdatedInReadableString(getSherlockActivity()));
-
+		String lastUpdatedText = summary.getLastUpdatedInReadableString();
+		int stickyVisible = summary.isSticky() ? View.VISIBLE : View.GONE;
+		
+		holder.titleTextView.setText(title);
+		holder.authorTextView.setText(authorusername);
+		holder.numberOfRepliesTextView.setText(numberOfRepliesText);
+		holder.lastUpdatedTextView.setText(lastUpdatedText);
+		holder.stickyTextView.setVisibility(stickyVisible);
 	    }
 	    return boardPostSummaryRowView;
 	}
+    }
 
-	// TODO optimise to find the view by id once
-	private void setTextForTextView(View parentView, int viewId, String text) {
-	    TextView textView = (TextView) parentView.findViewById(viewId);
-	    if (textView != null) {
-		textView.setText(text);
-	    }
-	}
+    private class BoardPostSummaryHolder {
+	TextView titleTextView;
+	TextView authorTextView;
+	TextView stickyTextView;
+	TextView numberOfRepliesTextView;
+	TextView lastUpdatedTextView;
+
     }
 
 }
