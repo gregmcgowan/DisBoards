@@ -64,9 +64,7 @@ public class DisWebService extends IntentService {
 	    break;
 	default:
 	    break;
-
 	}
-
     }
 
     private void handleGetBoardPost(Intent intent) {
@@ -117,7 +115,6 @@ public class DisWebService extends IntentService {
 	    boolean forceFetch) {
 	List<BoardPost> cachedBoardPosts = databaseHelper
 		.getBoardPosts(boardTypeInfo.getBoardType());
-
 	if (NetworkUtils.isConnected(this)) {
 	    if (forceFetch || !recentlyFetched(cachedBoardPosts)) {
 		boolean requestIsInProgress = HttpClient
@@ -134,16 +131,20 @@ public class DisWebService extends IntentService {
 			    1);
 		}
 	    } else {
+		if (updateUI) {
+		    EventBus.getDefault().post(
+			    new RetrievedBoardPostSummaryListEvent(
+				    cachedBoardPosts, boardTypeInfo
+					    .getBoardType(), false));
+		}
+	    }
+	} else {
+	    if (updateUI) {
 		EventBus.getDefault().post(
 			new RetrievedBoardPostSummaryListEvent(
 				cachedBoardPosts, boardTypeInfo.getBoardType(),
-				false));
-	    }
-	} else {
-	    EventBus.getDefault().post(
-		    new RetrievedBoardPostSummaryListEvent(cachedBoardPosts,
-			    boardTypeInfo.getBoardType(), true));
-
+				true));	    
+		}
 	}
     }
 
