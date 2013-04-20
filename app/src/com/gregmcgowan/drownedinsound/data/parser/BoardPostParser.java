@@ -74,7 +74,7 @@ public class BoardPostParser {
 	    boardPost.setDateOfPost(date);
 	    boardPost.setId(boardPostId);
 	    boardPost.setBoardType(boardType);
-	    boardPost.setLastFetchedTime(System.currentTimeMillis());
+	    boardPost.setLastViewedTime(System.currentTimeMillis());
 
 	    // And add the post content as first comment
 	    ArrayList<BoardPostComment> boardPostComments = new ArrayList<BoardPostComment>();

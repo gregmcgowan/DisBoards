@@ -3,9 +3,13 @@ package com.gregmcgowan.drownedinsound.ui.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -23,9 +27,9 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
+import com.gregmcgowan.drownedinsound.data.model.Board;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
-import com.gregmcgowan.drownedinsound.data.model.Board;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
@@ -49,7 +53,8 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     private static final String WAS_IN_DUAL_PANE_MODE = "WasInDualPaneMode";
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
 	    + "BoardListFragment";
-
+    private  Drawable readDrawable; 
+    private Drawable unreadDrawable; 
     private String boardUrl;
     private ProgressBar progressBar;
     private TextView connectionErrorTextView;
@@ -96,6 +101,12 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 		.findViewById(R.id.board_list_progress_bar);
 	connectionErrorTextView = (TextView) rootView
 		.findViewById(R.id.board_list_connection_error_text_view);
+	
+	readDrawable = getSherlockActivity().getResources()
+		    .getDrawable(R.drawable.white_circle_blue_outline);
+	unreadDrawable = getSherlockActivity()
+		    .getResources().getDrawable(R.drawable.filled_blue_circle);
+	
 	// connectionErrorTextView.setVisibility(View.GONE);
 	adapter = new BoardPostSummaryListAdapater(getSherlockActivity(),
 		R.layout.board_list_row, boardPostSummaries);
@@ -281,8 +292,17 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 		Toast.LENGTH_SHORT).show();
     }
 
+    @SuppressLint("NewApi")
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
+    public void onListItemClick(ListView l, View rowView, int position, long id) {
+	BoardPostSummaryHolder holder = (BoardPostSummaryHolder) rowView
+		.getTag();
+	if(Build.VERSION.SDK_INT > VERSION_CODES.JELLY_BEAN) {
+	    holder.postReadMarkerView.setBackground(readDrawable);
+	} else {
+	    holder.postReadMarkerView.setBackgroundDrawable(readDrawable);
+	}
+	
 	showBoardPost(position);
     }
 
@@ -342,18 +362,8 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 
 	public BoardPostSummaryListAdapater(Context context,
 		int textViewResourceId, List<BoardPost> boardPostSummaries) {
-	    super(context, textViewResourceId);
+	    super(context, textViewResourceId,boardPostSummaries);
 	    this.summaries = boardPostSummaries;
-	}
-
-	@Override
-	public BoardPost getItem(int position) {
-	    return summaries.get(position);
-	}
-
-	@Override
-	public long getItemId(int position) {
-	    return super.getItemId(position);
 	}
 
 	@Override
@@ -364,7 +374,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 	    View boardPostSummaryRowView = convertView;
-	    BoardPost summary = summaries.get(position);
+	    BoardPost summary = getItem(position);
 	    BoardPostSummaryHolder holder = null;
 	    if (boardPostSummaryRowView == null) {
 		LayoutInflater vi = (LayoutInflater) getActivity()
@@ -382,6 +392,8 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 			.findViewById(R.id.board_post_list_row_sticky);
 		holder.lastUpdatedTextView = (TextView) boardPostSummaryRowView
 			.findViewById(R.id.board_post_list_row_last_updated);
+		holder.postReadMarkerView = boardPostSummaryRowView
+			.findViewById(R.id.board_post_list_row_read_marker);
 		boardPostSummaryRowView.setTag(holder);
 	    } else {
 		holder = (BoardPostSummaryHolder) boardPostSummaryRowView
@@ -399,20 +411,34 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 		} else {
 		    numberOfRepliesText = "No replies";
 		}
-		String lastUpdatedText = summary.getLastUpdatedInReadableString();
-		int stickyVisible = summary.isSticky() ? View.VISIBLE : View.GONE;
-		
+		String lastUpdatedText = summary
+			.getLastUpdatedInReadableString();
+		int stickyVisible = summary.isSticky() ? View.VISIBLE
+			: View.GONE;
+
+		long lastViewedTime = summary.getLastViewedTime();
+		long lastUpdatedTime = summary.getLastUpdatedTime();
+		boolean markAsRead = lastViewedTime > 0 && lastViewedTime >= lastUpdatedTime;
+
 		holder.titleTextView.setText(title);
 		holder.authorTextView.setText(authorusername);
 		holder.numberOfRepliesTextView.setText(numberOfRepliesText);
 		holder.lastUpdatedTextView.setText(lastUpdatedText);
 		holder.stickyTextView.setVisibility(stickyVisible);
+		if (markAsRead) {
+		    holder.postReadMarkerView
+			    .setBackgroundDrawable(readDrawable);
+		} else {
+		    holder.postReadMarkerView
+			    .setBackgroundDrawable(unreadDrawable);
+		}
 	    }
 	    return boardPostSummaryRowView;
 	}
     }
 
     private class BoardPostSummaryHolder {
+	View postReadMarkerView;
 	TextView titleTextView;
 	TextView authorTextView;
 	TextView stickyTextView;

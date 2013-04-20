@@ -27,5 +27,5 @@
     <color name="lighter_grey">#222222</color>
     <color name="background_gradient_start">#FEFEFE</color>
     <color name="background_gradient_end">#DDDDDD</color>
-
+	<color name="board_list_row_selected">#E6E6EE</color>
 </resources>

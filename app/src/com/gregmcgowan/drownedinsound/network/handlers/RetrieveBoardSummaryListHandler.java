@@ -56,7 +56,7 @@ public class RetrieveBoardSummaryListHandler extends
 	    }
 	    if (document != null) {
 		BoardPostSummaryListParser parser = new BoardPostSummaryListParser(
-			document, boardType);
+			document, boardType,databaseHelper);
 		boardPostSummaries = parser.parseDocument();
 	    }
 

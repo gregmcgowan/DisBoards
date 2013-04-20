@@ -4,7 +4,7 @@
 
     <solid android:color="@android:color/white" />
     <stroke
-        android:width="2dip"
+        android:width="1dip"
         android:color="@color/highlighted_blue" />
     <size
         android:height="5dip"

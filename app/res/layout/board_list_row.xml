@@ -1,7 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white" >
+    android:padding="4dip"
+    android:background="@drawable/board_list_row_selector" >
  	
     <LinearLayout
      	 android:layout_width="match_parent"
@@ -15,6 +16,7 @@
         android:layout_marginLeft="@dimen/margin_medium"
         android:layout_marginRight="@dimen/margin_small"
         android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginBottom="@dimen/margin_small"
         android:background="@drawable/filled_blue_circle" 
         android:layout_gravity="center_vertical"/>
 
@@ -25,6 +27,7 @@
         android:layout_marginLeft="@dimen/margin_medium"
         android:layout_marginRight="@dimen/margin_small"
         android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginBottom="@dimen/margin_small"
         android:background="@color/highlighted_blue"
         android:padding="2dip"
         android:text="@string/sticky_text"
@@ -40,6 +43,7 @@
         android:layout_marginLeft="@dimen/margin_medium"
         android:layout_marginRight="@dimen/margin_small"
         android:layout_marginTop="@dimen/margin_small"
+         android:layout_marginBottom="@dimen/margin_small"
         android:text="Here is the title of the thread"
         android:textColor="@color/darkest_grey"
         android:textStyle="bold"
@@ -50,7 +54,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/title_section"
-        android:layout_marginTop="4dip"
         android:layout_marginBottom="@dimen/margin_small"
         android:layout_marginLeft="@dimen/margin_medium"
         android:layout_marginRight="@dimen/margin_medium"

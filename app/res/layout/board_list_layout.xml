@@ -8,7 +8,7 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:dividerHeight="0.5dip" />
+        android:dividerHeight="0.5dip"/>
 
     <ProgressBar
         android:id="@+id/board_list_progress_bar"
@@ -16,6 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:indeterminateDrawable="@drawable/spinner"
         android:indeterminate="true"
         android:visibility="invisible" >
     </ProgressBar>

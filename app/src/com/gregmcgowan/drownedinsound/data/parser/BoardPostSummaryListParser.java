@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 
@@ -29,10 +30,13 @@ public class BoardPostSummaryListParser {
 
     private Document document;
     private BoardType boardType;
+    private DatabaseHelper databaseHelper;
 
-    public BoardPostSummaryListParser(Document document, BoardType boardType) {
+    public BoardPostSummaryListParser(Document document, BoardType boardType,
+	    DatabaseHelper databaseHelper) {
 	this.document = document;
 	this.boardType = boardType;
+	this.databaseHelper = databaseHelper;
     }
 
     public List<BoardPost> parseDocument() {
@@ -122,8 +126,8 @@ public class BoardPostSummaryListParser {
 		    try {
 			numberOfReplies = Integer.parseInt(repliesTokens[0]);
 		    } catch (NumberFormatException nfe) {
-			
-		    }		    
+
+		    }
 		}
 	    }
 	}
@@ -134,15 +138,16 @@ public class BoardPostSummaryListParser {
 		    .getElementsByClass("timestamp");
 	    String lastPostTimeStamp = null;
 	    if (lastPostElementClass != null) {
-		Attributes attributes = lastPostElementClass.get(0).attributes();
+		Attributes attributes = lastPostElementClass.get(0)
+			.attributes();
 		lastPostTimeStamp = attributes.get("title");
 	    }
 	    if (lastPostTimeStamp != null) {
 		try {
-		    lastPostDateTime = Long.parseLong(lastPostTimeStamp) * 1000;   
-		} catch(NumberFormatException nfe) {
-		    
-		}	
+		    lastPostDateTime = Long.parseLong(lastPostTimeStamp) * 1000;
+		} catch (NumberFormatException nfe) {
+
+		}
 	    }
 	}
 
@@ -154,9 +159,13 @@ public class BoardPostSummaryListParser {
 	boardPostSummary.setNumberOfReplies(numberOfReplies);
 	boardPostSummary.setBoardType(boardType);
 	boardPostSummary.setLastUpdatedTime(lastPostDateTime);
-	boardPostSummary.setLastFetchedTime(System.currentTimeMillis());
 	boardPostSummary.setSticky(isSticky);
 	
+	BoardPost existingPost = databaseHelper.getBoardPost(postId);
+	//We don't want to overwrite certain values
+	if(existingPost != null) {
+	    boardPostSummary.setLastViewedTime(existingPost.getLastViewedTime());
+	}
 	return boardPostSummary;
     }
 }

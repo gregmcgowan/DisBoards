@@ -37,15 +37,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
 	    + "DatabaseHelper";
     private static final Class<?>[] DATA_CLASSES = { BoardPost.class,
-	    BoardPostComment.class, Board.class};
+	    BoardPostComment.class, Board.class };
     private static final String DATABASE_NAME = "disBoards.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static DatabaseHelper instance;
 
     private Dao<BoardPost, String> boardPostDao;
     private Dao<BoardPostComment, String> boardPostCommentDao;
-    private Dao<Board,BoardType> boardDao; 
+    private Dao<Board, BoardType> boardDao;
     private ArrayList<Board> boards;
 
     public synchronized static DatabaseHelper getInstance(Context context) {
@@ -93,36 +93,36 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	initliaseBoardType();
     }
 
-    private void initliaseBoardType(){
-	    boards = new ArrayList<Board>();
-	    boards.add(new Board(BoardType.MUSIC,
-			BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL));
-	    boards.add(new Board(BoardType.SOCIAL,
-			BoardTypeConstants.SOCIAL_DISPLAY_NAME, UrlConstants.SOCIAL_URL));
-	    boards.add(new Board(BoardType.ANNOUNCEMENTS_CLASSIFIEDS,
-			BoardTypeConstants.ANNOUNCEMENTS_CLASSIFIEDS_DISPLAY_NAME,
-			UrlConstants.ANNOUNCEMENTS_CLASSIFIEDS_URL));
-	    boards.add(new Board(BoardType.MUSICIANS,
-			BoardTypeConstants.MUSICIANS_DISPLAY_NAME,
-			UrlConstants.MUSICIANS_URL));
-	    boards.add(new Board(BoardType.FESTIVALS,
-			BoardTypeConstants.FESTIVALS_DISPLAY_NAME,
-			UrlConstants.FESTIVALS_URL));
-	    boards.add(new Board(BoardType.YOUR_MUSIC,
-			BoardTypeConstants.YOUR_MUSIC_DISPLAY_NAME,
-			UrlConstants.YOUR_MUSIC_URL));
-	    boards.add(new Board(BoardType.ERRORS_SUGGESTIONS,
-			BoardTypeConstants.ERROR_SUGGESTIONS_DISPLAY_NAME,
-			UrlConstants.ERRORS_SUGGESTIONS_URL));
-	    for(Board board : boards){
-		Board storedBoard = getBoard(board.getBoardType());
-		if(storedBoard == null) {
-		    setBoard(board);
-		}
+    private void initliaseBoardType() {
+	boards = new ArrayList<Board>();
+	boards.add(new Board(BoardType.MUSIC,
+		BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL));
+	boards.add(new Board(BoardType.SOCIAL,
+		BoardTypeConstants.SOCIAL_DISPLAY_NAME, UrlConstants.SOCIAL_URL));
+	boards.add(new Board(BoardType.ANNOUNCEMENTS_CLASSIFIEDS,
+		BoardTypeConstants.ANNOUNCEMENTS_CLASSIFIEDS_DISPLAY_NAME,
+		UrlConstants.ANNOUNCEMENTS_CLASSIFIEDS_URL));
+	boards.add(new Board(BoardType.MUSICIANS,
+		BoardTypeConstants.MUSICIANS_DISPLAY_NAME,
+		UrlConstants.MUSICIANS_URL));
+	boards.add(new Board(BoardType.FESTIVALS,
+		BoardTypeConstants.FESTIVALS_DISPLAY_NAME,
+		UrlConstants.FESTIVALS_URL));
+	boards.add(new Board(BoardType.YOUR_MUSIC,
+		BoardTypeConstants.YOUR_MUSIC_DISPLAY_NAME,
+		UrlConstants.YOUR_MUSIC_URL));
+	boards.add(new Board(BoardType.ERRORS_SUGGESTIONS,
+		BoardTypeConstants.ERROR_SUGGESTIONS_DISPLAY_NAME,
+		UrlConstants.ERRORS_SUGGESTIONS_URL));
+	for (Board board : boards) {
+	    Board storedBoard = getBoard(board.getBoardType());
+	    if (storedBoard == null) {
+		setBoard(board);
 	    }
-	 
-}
-    
+	}
+
+    }
+
     /**
      * This is called when your application is upgraded and it has a higher
      * version number. This allows you to adjust the various data to match the
@@ -164,13 +164,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	return boardPostCommentDao;
     }
 
-    private Dao<Board,BoardType> getBoardDao() throws SQLException{
-	if(boardDao == null) {
+    private Dao<Board, BoardType> getBoardDao() throws SQLException {
+	if (boardDao == null) {
 	    boardDao = getDao(Board.class);
 	}
 	return boardDao;
     }
-    
+
     /**
      * Gets the board post with the provided ID from the database. null is
      * returned if the post does not exist
@@ -211,14 +211,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		@Override
 		public Void call() throws Exception {
-
 		    CreateOrUpdateStatus status = boardPostDao
 			    .createOrUpdate(boardPost);
-		    // if (DisBoardsConstants.DEBUG) {
-		    // Log.d(TAG,
-		    // " Create or update board post lines changed "
-		    // + status.getNumLinesChanged());
-		    // }
+		    if (status.getNumLinesChanged() == 0) {
+			if (DisBoardsConstants.DEBUG) {
+			    Log.d(TAG, "Could not create or update board post "
+				    + boardPost.getId());
+			}
+		    }
 		    Collection<BoardPostComment> boardPostComments = boardPost
 			    .getComments();
 		    if (boardPostComments != null
@@ -226,11 +226,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			for (BoardPostComment boardPostComment : boardPostComments) {
 			    status = boardPostCommentDao
 				    .createOrUpdate(boardPostComment);
-			    // if (DisBoardsConstants.DEBUG) {
-			    // Log.d(TAG,
-			    // " Create or update comment lines changed "
-			    // + status.getNumLinesChanged());
-			    // }
+			    if (status.getNumLinesChanged() == 0) {
+				if (DisBoardsConstants.DEBUG) {
+				    Log.d(TAG,
+					    "Could not create or update comments for board post "
+						    + boardPost.getId());
+				}
+			    }
 			}
 		    }
 		    return null;
@@ -281,48 +283,49 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	    }
 	}
     }
-    
+
     /**
-     * Gets the requested  board type from the database
+     * Gets the requested board type from the database
+     * 
      * @param boardType
      * @return
      */
-    public Board getBoard(BoardType boardType){
+    public Board getBoard(BoardType boardType) {
 	Board board = null;
 	try {
-	    Dao<Board,BoardType> boardDao = getBoardDao();
+	    Dao<Board, BoardType> boardDao = getBoardDao();
 	    board = boardDao.queryForId(boardType);
 	} catch (SQLException e) {
-	    if(DisBoardsConstants.DEBUG) {
-		 e.printStackTrace();
+	    if (DisBoardsConstants.DEBUG) {
+		e.printStackTrace();
 	    }
-	}	
+	}
 	return board;
     }
-    
+
     /**
-     * Saves the provided board to the database. 
+     * Saves the provided board to the database.
      * 
      * @param board
      */
-    public void setBoard(Board board){
+    public void setBoard(Board board) {
 	try {
-	    Dao<Board,BoardType> boardDao = getBoardDao();
+	    Dao<Board, BoardType> boardDao = getBoardDao();
 	    boardDao.createOrUpdate(board);
 	} catch (SQLException e) {
-	   if(DisBoardsConstants.DEBUG) {
-	       e.printStackTrace();  
-	   }
+	    if (DisBoardsConstants.DEBUG) {
+		e.printStackTrace();
+	    }
 	}
     }
-    
+
     /**
      * Returns the board are stored in memory
      * 
      * @return
      */
     public ArrayList<Board> getCachedBoards() {
-	return  boards;
+	return boards;
     }
 
 }
