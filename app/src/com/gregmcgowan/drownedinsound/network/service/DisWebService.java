@@ -12,8 +12,8 @@ import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
-import com.gregmcgowan.drownedinsound.data.model.BoardTypeInfo;
-import com.gregmcgowan.drownedinsound.data.model.BoardTypeInfoConstants;
+import com.gregmcgowan.drownedinsound.data.model.Board;
+import com.gregmcgowan.drownedinsound.data.model.BoardConstants;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
@@ -96,14 +96,14 @@ public class DisWebService extends IntentService {
     }
 
     private void handleGetPostSummaryList(Intent intent) {
-	BoardTypeInfo passedInBoardTypeInfo = intent
+	Board passedInBoardTypeInfo = intent
 		.getParcelableExtra(DisBoardsConstants.BOARD_TYPE_INFO);
 	boolean forceFetch = intent.getBooleanExtra(
 		DisBoardsConstants.FORCE_FETCH, false);
-	ArrayList<BoardTypeInfo> boardTypeInfos = BoardTypeInfoConstants
+	ArrayList<Board> boardTypeInfos = BoardConstants
 		.geBoardsToFetch(passedInBoardTypeInfo);
 	int requestNumber = 0;
-	for (BoardTypeInfo boardTypeInfo : boardTypeInfos) {
+	for (Board boardTypeInfo : boardTypeInfos) {
 	    boolean updateUI = requestNumber == 0;
 	    fetchBoardType(boardTypeInfo, updateUI, forceFetch);
 	    requestNumber++;
@@ -111,7 +111,7 @@ public class DisWebService extends IntentService {
 
     }
 
-    private void fetchBoardType(BoardTypeInfo boardTypeInfo, boolean updateUI,
+    private void fetchBoardType(Board boardTypeInfo, boolean updateUI,
 	    boolean forceFetch) {
 	List<BoardPost> cachedBoardPosts = databaseHelper
 		.getBoardPosts(boardTypeInfo.getBoardType());

@@ -4,36 +4,36 @@ import java.util.ArrayList;
 
 import com.gregmcgowan.drownedinsound.network.UrlConstants;
 
-public class BoardTypeInfoConstants {
+public class BoardConstants {
 
-    public static final ArrayList<BoardTypeInfo> BOARDS = new ArrayList<BoardTypeInfo>();
+    public static final ArrayList<Board> BOARDS = new ArrayList<Board>();
     static {
 
-	BOARDS.add(new BoardTypeInfo(BoardType.MUSIC,
+	BOARDS.add(new Board(BoardType.MUSIC,
 		BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL));
-	BOARDS.add(new BoardTypeInfo(BoardType.SOCIAL,
+	BOARDS.add(new Board(BoardType.SOCIAL,
 		BoardTypeConstants.SOCIAL_DISPLAY_NAME, UrlConstants.SOCIAL_URL));
-	BOARDS.add(new BoardTypeInfo(BoardType.ANNOUNCEMENTS_CLASSIFIEDS,
+	BOARDS.add(new Board(BoardType.ANNOUNCEMENTS_CLASSIFIEDS,
 		BoardTypeConstants.ANNOUNCEMENTS_CLASSIFIEDS_DISPLAY_NAME,
 		UrlConstants.ANNOUNCEMENTS_CLASSIFIEDS_URL));
-	BOARDS.add(new BoardTypeInfo(BoardType.MUSICIANS,
+	BOARDS.add(new Board(BoardType.MUSICIANS,
 		BoardTypeConstants.MUSICIANS_DISPLAY_NAME,
 		UrlConstants.MUSICIANS_URL));
-	BOARDS.add(new BoardTypeInfo(BoardType.FESTIVALS,
+	BOARDS.add(new Board(BoardType.FESTIVALS,
 		BoardTypeConstants.FESTIVALS_DISPLAY_NAME,
 		UrlConstants.FESTIVALS_URL));
-	BOARDS.add(new BoardTypeInfo(BoardType.YOUR_MUSIC,
+	BOARDS.add(new Board(BoardType.YOUR_MUSIC,
 		BoardTypeConstants.YOUR_MUSIC_DISPLAY_NAME,
 		UrlConstants.YOUR_MUSIC_URL));
-	BOARDS.add(new BoardTypeInfo(BoardType.ERRORS_SUGGESTIONS,
+	BOARDS.add(new Board(BoardType.ERRORS_SUGGESTIONS,
 		BoardTypeConstants.ERROR_SUGGESTIONS_DISPLAY_NAME,
 		UrlConstants.ERRORS_SUGGESTIONS_URL));
 
     };
 
-    public static ArrayList<BoardTypeInfo> geBoardsToFetch(
-	    BoardTypeInfo boardTypeInfo) {
-	ArrayList<BoardTypeInfo> next2Tabs = new ArrayList<BoardTypeInfo>();
+    public static ArrayList<Board> geBoardsToFetch(
+	    Board boardTypeInfo) {
+	ArrayList<Board> next2Tabs = new ArrayList<Board>();
 	int indexOfBoardTypeInfo = BOARDS.indexOf(boardTypeInfo);
 	if (indexOfBoardTypeInfo != -1) {
 	    int lastIndex = BOARDS.size() - 1;

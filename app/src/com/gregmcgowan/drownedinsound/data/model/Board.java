@@ -11,13 +11,14 @@ import android.os.Parcelable;
  * @author gregmcgowan
  *
  */
-public class BoardTypeInfo  implements Parcelable{
+public class Board  implements Parcelable{
     
     private BoardType boardType;
     private String displayName;
     private String url;
+    private long lastFetchedTime;
     
-    public BoardTypeInfo(BoardType boardType, String displayName, String url) {
+    public Board(BoardType boardType, String displayName, String url) {
 	this.boardType = boardType;
 	this.displayName = displayName;
 	this.url = url;
@@ -42,7 +43,7 @@ public class BoardTypeInfo  implements Parcelable{
 	this.url = url;
     }
     
-    protected BoardTypeInfo(Parcel in) {
+    protected Board(Parcel in) {
         displayName = in.readString();
         url = in.readString();
         boardType = (BoardType) in.readSerializable();
@@ -58,13 +59,13 @@ public class BoardTypeInfo  implements Parcelable{
         dest.writeSerializable(boardType);
     }
 
-    public static final Parcelable.Creator<BoardTypeInfo> CREATOR = new Parcelable.Creator<BoardTypeInfo>() {
-        public BoardTypeInfo createFromParcel(Parcel in) {
-            return new BoardTypeInfo(in);
+    public static final Parcelable.Creator<Board> CREATOR = new Parcelable.Creator<Board>() {
+        public Board createFromParcel(Parcel in) {
+            return new Board(in);
         }
 
-        public BoardTypeInfo[] newArray(int size) {
-            return new BoardTypeInfo[size];
+        public Board[] newArray(int size) {
+            return new Board[size];
         }
     };
 
@@ -88,7 +89,7 @@ public class BoardTypeInfo  implements Parcelable{
 	    return false;
 	if (getClass() != obj.getClass())
 	    return false;
-	BoardTypeInfo other = (BoardTypeInfo) obj;
+	Board other = (Board) obj;
 	if (boardType != other.boardType)
 	    return false;
 	if (displayName == null) {

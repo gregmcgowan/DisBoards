@@ -25,7 +25,7 @@ import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
-import com.gregmcgowan.drownedinsound.data.model.BoardTypeInfo;
+import com.gregmcgowan.drownedinsound.data.model.Board;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
@@ -58,7 +58,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     private View rootView;
     private boolean requestOnStart;
     private boolean loadedList;
-    private BoardTypeInfo boardTypeInfo;
+    private Board boardTypeInfo;
     private BoardType boardType;
     private boolean dualPaneMode;
     private boolean wasInDualPaneMode;
@@ -71,7 +71,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     }
 
     public static BoardPostSummaryListFragment newInstance(
-	    BoardTypeInfo boardTypeInfo, boolean requestDataOnStart) {
+	    Board boardTypeInfo, boolean requestDataOnStart) {
 	BoardPostSummaryListFragment boardListFragment = new BoardPostSummaryListFragment();
 	boardListFragment.boardTypeInfo = boardTypeInfo;
 	boardListFragment.boardUrl = boardTypeInfo.getUrl();
