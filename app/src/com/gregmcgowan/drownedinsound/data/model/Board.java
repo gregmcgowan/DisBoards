@@ -1,72 +1,108 @@
 package com.gregmcgowan.drownedinsound.data.model;
 
+import java.util.ArrayList;
+
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * This represents information for a specific type of board. 
- * 
+import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
+/**
+ * This represents information for a specific type of board.
  * 
  * @author gregmcgowan
- *
+ * 
  */
-public class Board  implements Parcelable{
-    
+@DatabaseTable(tableName = "board")
+public class Board implements Parcelable {
+
+    @DatabaseField(id = true,generatedId = false)
     private BoardType boardType;
+    
+    @DatabaseField
     private String displayName;
+    
+    @DatabaseField
     private String url;
+    
+    @DatabaseField
     private long lastFetchedTime;
+    
+    Board (){
+	
+    }
     
     public Board(BoardType boardType, String displayName, String url) {
 	this.boardType = boardType;
 	this.displayName = displayName;
 	this.url = url;
     }
+   
+    protected Board(Parcel in) {
+	createFromParcel(in);
+    }
     
     public BoardType getBoardType() {
 	return boardType;
     }
+
     public void setBoardType(BoardType boardType) {
 	this.boardType = boardType;
     }
+
     public String getDisplayName() {
 	return displayName;
     }
+
     public void setDisplayName(String displayName) {
 	this.displayName = displayName;
     }
+
     public String getUrl() {
 	return url;
     }
+
     public void setUrl(String url) {
 	this.url = url;
     }
-    
-    protected Board(Parcel in) {
-        displayName = in.readString();
-        url = in.readString();
-        boardType = (BoardType) in.readSerializable();
+
+    public long getLastFetchedTime() {
+	return lastFetchedTime;
     }
 
+    public void setLastFetchedTime(long lastFetchedTime) {
+	this.lastFetchedTime = lastFetchedTime;
+    }
+
+    private void createFromParcel(Parcel in) {
+	displayName = in.readString();
+	url = in.readString();
+	boardType = (BoardType) in.readSerializable();
+	lastFetchedTime = in.readLong();
+    }
+    
     public int describeContents() {
-        return 0;
+	return 0;
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(displayName);
-        dest.writeString(url);
-        dest.writeSerializable(boardType);
+	dest.writeString(displayName);
+	dest.writeString(url);
+	dest.writeSerializable(boardType);
+	dest.writeLong(lastFetchedTime);
     }
 
     public static final Parcelable.Creator<Board> CREATOR = new Parcelable.Creator<Board>() {
-        public Board createFromParcel(Parcel in) {
-            return new Board(in);
-        }
+	public Board createFromParcel(Parcel in) {
+	    return new Board(in);
+	}
 
-        public Board[] newArray(int size) {
-            return new Board[size];
-        }
+	public Board[] newArray(int size) {
+	    return new Board[size];
+	}
     };
 
     @Override
@@ -104,7 +140,35 @@ public class Board  implements Parcelable{
 	    return false;
 	return true;
     }
-    
-    
+
+    /**
+     * Returns the 2 closets boards to the board provided.
+     *  
+     * 
+     * @param board
+     * @return
+     */
+    public static ArrayList<Board> getBoardsToFetch(
+	    Board board,Context context) {
+	ArrayList<Board> boards = DatabaseHelper.getInstance(context).getCachedBoards();
+	ArrayList<Board> next2Tabs = new ArrayList<Board>();
+	int indexOfBoardTypeInfo = boards.indexOf(board);
+	if (indexOfBoardTypeInfo != -1) {
+	    int lastIndex = boards.size() - 1;
+	    next2Tabs.add(boards.get(indexOfBoardTypeInfo));
+	    if (indexOfBoardTypeInfo == 0) {
+		next2Tabs.add(boards.get(indexOfBoardTypeInfo + 1));
+		next2Tabs.add(boards.get(indexOfBoardTypeInfo + 2));
+	    } else if (indexOfBoardTypeInfo == lastIndex) {
+		next2Tabs.add(boards.get(indexOfBoardTypeInfo + -1));
+		next2Tabs.add(boards.get(indexOfBoardTypeInfo - 2));
+	    } else {
+		next2Tabs.add(boards.get(indexOfBoardTypeInfo - 1));
+		next2Tabs.add(boards.get(indexOfBoardTypeInfo + 1));
+	    }
+	}
+
+	return next2Tabs;
+    }
     
 }

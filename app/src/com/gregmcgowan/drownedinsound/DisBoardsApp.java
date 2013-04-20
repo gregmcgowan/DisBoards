@@ -12,6 +12,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.crittercism.app.Crittercism;
+import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.loopj.android.http.PersistentCookieStore;
 
@@ -27,8 +28,16 @@ public class DisBoardsApp extends Application {
     @Override
     public void onCreate() {
 	super.onCreate();
+	initliaseDatabase();
 	initliaseHttpClient();
 	initliaseCrittercism();
+    }
+
+    private void initliaseDatabase() {
+	//TODO add in clear call to clear out method. Which will 
+	//remove all old posts
+	DatabaseHelper.getInstance(getApplicationContext()).initliase();
+	
     }
 
     private void initliaseHttpClient(){

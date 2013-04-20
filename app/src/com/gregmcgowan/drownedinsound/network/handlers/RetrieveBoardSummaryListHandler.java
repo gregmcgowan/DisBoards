@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
+import com.gregmcgowan.drownedinsound.data.model.Board;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.data.parser.BoardPostSummaryListParser;
@@ -61,6 +62,11 @@ public class RetrieveBoardSummaryListHandler extends
 
 	    if (boardPostSummaries.size() > 0) {
 		databaseHelper.setBoardPosts(boardPostSummaries);
+	    }
+	    Board board = databaseHelper.getBoard(boardType);
+	    if(board != null){
+		board.setLastFetchedTime(System.currentTimeMillis());
+		databaseHelper.setBoard(board);
 	    }
 	}
 	deleteFile();

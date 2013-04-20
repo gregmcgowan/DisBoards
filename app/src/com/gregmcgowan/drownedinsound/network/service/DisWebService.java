@@ -10,10 +10,9 @@ import android.util.Log;
 
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
+import com.gregmcgowan.drownedinsound.data.model.Board;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
-import com.gregmcgowan.drownedinsound.data.model.Board;
-import com.gregmcgowan.drownedinsound.data.model.BoardConstants;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
@@ -100,8 +99,8 @@ public class DisWebService extends IntentService {
 		.getParcelableExtra(DisBoardsConstants.BOARD_TYPE_INFO);
 	boolean forceFetch = intent.getBooleanExtra(
 		DisBoardsConstants.FORCE_FETCH, false);
-	ArrayList<Board> boardTypeInfos = BoardConstants
-		.geBoardsToFetch(passedInBoardTypeInfo);
+	ArrayList<Board> boardTypeInfos = Board.getBoardsToFetch(
+		passedInBoardTypeInfo, this);
 	int requestNumber = 0;
 	for (Board boardTypeInfo : boardTypeInfos) {
 	    boolean updateUI = requestNumber == 0;
@@ -111,65 +110,55 @@ public class DisWebService extends IntentService {
 
     }
 
-    private void fetchBoardType(Board boardTypeInfo, boolean updateUI,
+    private void fetchBoardType(Board board, boolean updateUI,
 	    boolean forceFetch) {
-	List<BoardPost> cachedBoardPosts = databaseHelper
-		.getBoardPosts(boardTypeInfo.getBoardType());
+	List<BoardPost> cachedBoardPosts = databaseHelper.getBoardPosts(board
+		.getBoardType());
 	if (NetworkUtils.isConnected(this)) {
-	    if (forceFetch || !recentlyFetched(cachedBoardPosts)) {
+	    if (forceFetch || !recentlyFetched(board)) {
 		boolean requestIsInProgress = HttpClient
-			.requestIsInProgress(boardTypeInfo.getBoardType()
-				.name());
+			.requestIsInProgress(board.getBoardType().name());
 		if (!requestIsInProgress) {
 		    HttpClient.requestBoardSummary(
 			    this,
-			    boardTypeInfo.getUrl(),
-			    boardTypeInfo.getBoardType(),
+			    board.getUrl(),
+			    board.getBoardType(),
 			    new RetrieveBoardSummaryListHandler(FileUtils
-				    .createTempFile(this), boardTypeInfo
-				    .getBoardType(), updateUI, databaseHelper),
-			    1);
+				    .createTempFile(this),
+				    board.getBoardType(), updateUI,
+				    databaseHelper), 1);
 		}
 	    } else {
 		if (updateUI) {
 		    EventBus.getDefault().post(
 			    new RetrievedBoardPostSummaryListEvent(
-				    cachedBoardPosts, boardTypeInfo
-					    .getBoardType(), false));
+				    cachedBoardPosts, board.getBoardType(),
+				    false));
 		}
 	    }
 	} else {
 	    if (updateUI) {
 		EventBus.getDefault().post(
 			new RetrievedBoardPostSummaryListEvent(
-				cachedBoardPosts, boardTypeInfo.getBoardType(),
-				true));	    
-		}
+				cachedBoardPosts, board.getBoardType(), true));
+	    }
 	}
     }
 
-    private boolean recentlyFetched(List<BoardPost> boardPosts) {
+    private boolean recentlyFetched(Board cachedBoard) {
 	boolean recentlyFetched = false;
-	if (boardPosts != null && boardPosts.size() > 0) {
-	    long latestLastRecentyFetchedTIme = boardPosts.get(0)
-		    .getLastFetchedTime();
-	    for (BoardPost boardPost : boardPosts) {
-		long lastRecentlyFetchedTime = boardPost.getLastFetchedTime();
-		if (lastRecentlyFetchedTime < latestLastRecentyFetchedTIme) {
-		    latestLastRecentyFetchedTIme = lastRecentlyFetchedTime;
-		}
-	    }
+	BoardType type = cachedBoard.getBoardType();
+	Board board = databaseHelper.getBoard(type);
+	long lastFetchedTime = board.getLastFetchedTime();
+	long oneMinuteAgo = System.currentTimeMillis()
+		- (DateUtils.MINUTE_IN_MILLIS);
 
-	    long oneMinuteAgo = System.currentTimeMillis()
-		    - (DateUtils.MINUTE_IN_MILLIS);
-
-	    if (DisBoardsConstants.DEBUG) {
-		Log.d(TAG, " latest last recently fetched time =  "
-			+ latestLastRecentyFetchedTIme + " one  minute ago =  "
-			+ oneMinuteAgo);
-	    }
-	    recentlyFetched = latestLastRecentyFetchedTIme > oneMinuteAgo;
+	if (DisBoardsConstants.DEBUG) {
+	    Log.d(TAG, " last fetched time =  " + lastFetchedTime
+		    + " one  minute ago =  " + oneMinuteAgo);
 	}
+	recentlyFetched = lastFetchedTime > oneMinuteAgo;
+
 	return recentlyFetched;
     }
 
