@@ -17,15 +17,15 @@ public abstract class DisBoardAsyncNetworkHandler extends
     }
 
     @Override
-    public void handleSuccess(int statusCode, File file) {
-	HttpClient.requestHasCompleted(getIdentifier());
+    public void handleSuccess(int statusCode, File file) {	
 	doSuccessAction(statusCode, file);
+	HttpClient.requestHasCompleted(getIdentifier());
     }
 
     @Override
     public void handleFailure(Throwable e, File response) {
-	HttpClient.requestHasCompleted(getIdentifier());
 	doFailureAction(e, response);
+	HttpClient.requestHasCompleted(getIdentifier());
     }
 
     public abstract void doSuccessAction(int statusCode, File file);

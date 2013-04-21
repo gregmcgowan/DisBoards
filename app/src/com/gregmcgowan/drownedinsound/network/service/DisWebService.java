@@ -1,9 +1,11 @@
 package com.gregmcgowan.drownedinsound.network.service;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -95,30 +97,32 @@ public class DisWebService extends IntentService {
     }
 
     private void handleGetPostSummaryList(Intent intent) {
-	Board passedInBoardTypeInfo = intent
+	Board board = intent
 		.getParcelableExtra(DisBoardsConstants.BOARD_TYPE_INFO);
 	boolean forceFetch = intent.getBooleanExtra(
 		DisBoardsConstants.FORCE_FETCH, false);
-	ArrayList<Board> boardTypeInfos = Board.getBoardsToFetch(
-		passedInBoardTypeInfo, this);
-	int requestNumber = 0;
-	for (Board boardTypeInfo : boardTypeInfos) {
-	    boolean updateUI = requestNumber == 0;
-	    fetchBoardType(boardTypeInfo, updateUI, forceFetch);
-	    requestNumber++;
-	}
 
+	fetchBoardType(board, true, forceFetch);
+	
+
+	// Fetch the two nearest as well
+/*	ArrayList<Board> nextTwoBoards = Board.getBoardsToFetch(board, this);
+	DisBoardsApp disApp = DisBoardsApp.getApplication(this);
+	FetchBoardRunnable fetchBoardRunnable = new FetchBoardRunnable(
+		nextTwoBoards, new WeakReference<Context>(disApp),
+		databaseHelper);
+	disApp.getMultiThreadedExecutorService().execute(fetchBoardRunnable);*/
     }
 
     private void fetchBoardType(Board board, boolean updateUI,
 	    boolean forceFetch) {
 	List<BoardPost> cachedBoardPosts = databaseHelper.getBoardPosts(board
 		.getBoardType());
-	if (NetworkUtils.isConnected(this)) {
-	    if (forceFetch || !recentlyFetched(board)) {
-		boolean requestIsInProgress = HttpClient
-			.requestIsInProgress(board.getBoardType().name());
-		if (!requestIsInProgress) {
+	boolean requestIsInProgress = HttpClient.requestIsInProgress(board
+		.getBoardType().name());
+	if (!requestIsInProgress) {
+	    if (NetworkUtils.isConnected(this)) {
+		if (forceFetch || !recentlyFetched(board)) {
 		    HttpClient.requestBoardSummary(
 			    this,
 			    board.getUrl(),
@@ -127,21 +131,102 @@ public class DisWebService extends IntentService {
 				    .createTempFile(this),
 				    board.getBoardType(), updateUI,
 				    databaseHelper), 1);
+		} else {
+		    if (updateUI) {
+			EventBus.getDefault().post(
+				new RetrievedBoardPostSummaryListEvent(
+					cachedBoardPosts, board.getBoardType(),
+					false));
+		    }
 		}
 	    } else {
 		if (updateUI) {
 		    EventBus.getDefault().post(
 			    new RetrievedBoardPostSummaryListEvent(
 				    cachedBoardPosts, board.getBoardType(),
-				    false));
+				    true));
 		}
 	    }
-	} else {
-	    if (updateUI) {
-		EventBus.getDefault().post(
-			new RetrievedBoardPostSummaryListEvent(
-				cachedBoardPosts, board.getBoardType(), true));
+	}
+    }
+
+    private static class FetchBoardRunnable implements Runnable {
+
+	private DatabaseHelper databaseHelper;
+	private WeakReference<Context> context;
+	private ArrayList<Board> boards;
+
+	FetchBoardRunnable(ArrayList<Board> boards,
+		WeakReference<Context> context, DatabaseHelper databaseHelper) {
+	    this.boards = boards;
+	    this.context = context;
+	    this.databaseHelper = databaseHelper;
+	}
+
+	@Override
+	public void run() {
+	    for (Board boardToFetch : boards) {
+		fetchBoardType(boardToFetch, false, false);
 	    }
+	}
+
+	private void fetchBoardType(Board board, boolean updateUI,
+		boolean forceFetch) {
+	    List<BoardPost> cachedBoardPosts = databaseHelper
+		    .getBoardPosts(board.getBoardType());
+	    boolean requestIsInProgress = HttpClient.requestIsInProgress(board
+		    .getBoardType().name());
+	    if (!requestIsInProgress) {
+		if (NetworkUtils.isConnected(context.get())) {
+		    if (forceFetch || !recentlyFetched(board)) {
+			HttpClient.requestBoardSummary(
+				context.get(),
+				board.getUrl(),
+				board.getBoardType(),
+				new RetrieveBoardSummaryListHandler(FileUtils
+					.createTempFile(context.get()), board
+					.getBoardType(), updateUI,
+					databaseHelper), 1);
+		    } else {
+			if (updateUI) {
+			    EventBus.getDefault().post(
+				    new RetrievedBoardPostSummaryListEvent(
+					    cachedBoardPosts, board
+						    .getBoardType(), false));
+			}
+		    }
+		} else {
+		    if (updateUI) {
+			EventBus.getDefault().post(
+				new RetrievedBoardPostSummaryListEvent(
+					cachedBoardPosts, board.getBoardType(),
+					true));
+		    }
+		}
+	    }
+	}
+
+	private boolean recentlyFetched(Board cachedBoard) {
+	    boolean recentlyFetched = false;
+	    BoardType type = cachedBoard.getBoardType();
+	    Board board = databaseHelper.getBoard(type);
+	    long lastFetchedTime = board.getLastFetchedTime();
+	    long oneMinuteAgo = System.currentTimeMillis()
+		    - (DateUtils.MINUTE_IN_MILLIS);
+
+	    recentlyFetched = lastFetchedTime > oneMinuteAgo;
+
+	    if (DisBoardsConstants.DEBUG) {
+		Log.d(TAG, " last fetched time =  "
+			+ lastFetchedTime
+			+ " one  minute ago =  "
+			+ oneMinuteAgo
+			+ " so it has been "
+			+ (recentlyFetched ? "recently fetched"
+				: "not recently fetched"));
+	    }
+
+	    return recentlyFetched;
 	}
     }
 
@@ -153,11 +238,17 @@ public class DisWebService extends IntentService {
 	long oneMinuteAgo = System.currentTimeMillis()
 		- (DateUtils.MINUTE_IN_MILLIS);
 
-	if (DisBoardsConstants.DEBUG) {
-	    Log.d(TAG, " last fetched time =  " + lastFetchedTime
-		    + " one  minute ago =  " + oneMinuteAgo);
-	}
 	recentlyFetched = lastFetchedTime > oneMinuteAgo;
+
+	if (DisBoardsConstants.DEBUG) {
+	    Log.d(TAG, " last fetched time =  "
+		    + lastFetchedTime
+		    + " one  minute ago =  "
+		    + oneMinuteAgo
+		    + " so it has been "
+		    + (recentlyFetched ? "recently fetched"
+			    : "not recently fetched"));
+	}
 
 	return recentlyFetched;
     }

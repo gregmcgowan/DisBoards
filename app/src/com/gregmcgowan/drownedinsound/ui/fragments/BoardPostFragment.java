@@ -23,7 +23,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -50,7 +49,7 @@ import de.greenrobot.event.EventBus;
  * @author Greg
  * 
  */
-public class BoardPostFragment extends SherlockListFragment {
+public class BoardPostFragment extends DisBoardsListFragment {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
 	    + "BoardPost";
@@ -61,7 +60,6 @@ public class BoardPostFragment extends SherlockListFragment {
     private TextView connectionErrorTextView;
     private List<BoardPostComment> boardPostComments = new ArrayList<BoardPostComment>();
     private BoardPostListAdapater adapter;
-    private boolean attachedFragment;
     private boolean requestingPost;
     private String boardPostUrl;
     private String boardPostId;
@@ -86,10 +84,8 @@ public class BoardPostFragment extends SherlockListFragment {
 	// In dual mode the fragment will be recreated but will not be used
 	// anywhere
 	if (container == null) {
-	    attachedFragment = false;
 	    return null;
 	}
-	attachedFragment = true;
 	inflater = (LayoutInflater) inflater.getContext().getSystemService(
 		Context.LAYOUT_INFLATER_SERVICE);
 	rootView = inflater.inflate(R.layout.board_post_layout, null);
@@ -162,7 +158,7 @@ public class BoardPostFragment extends SherlockListFragment {
 
     public void onEventMainThread(RetrievedBoardPostEvent event) {
 	 this.requestingPost = false;
-	if(attachedFragment) {
+	if(isValid()) {
 		BoardPost boardPost = event.getBoardPost();
 		if (shouldShowBoardPost(boardPost)) {
 		    this.boardPost = boardPost;
@@ -210,7 +206,7 @@ public class BoardPostFragment extends SherlockListFragment {
     }
 
     private void fetchBoardPost() {
-	if (attachedFragment && !requestingPost) {
+	if (isValid() && !requestingPost) {
 	    setProgressBarAndFragmentVisibility(true);
 	    Intent disWebServiceIntent = new Intent(getSherlockActivity(),
 		    DisWebService.class);

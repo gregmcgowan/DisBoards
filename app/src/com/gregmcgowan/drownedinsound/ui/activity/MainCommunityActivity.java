@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.ui.adapter.BoardsFragmentAdapter;
@@ -24,6 +26,8 @@ import com.viewpagerindicator.TitlePageIndicator;
  */
 public class MainCommunityActivity extends SherlockFragmentActivity {
 
+    private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX + "MainCommunityActivity";
+    
     private BoardsFragmentAdapter mAdapter;
     private ViewPager mPager;
     private PageIndicator mIndicator;
@@ -44,8 +48,20 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 
 	mIndicator.setOnPageChangeListener(new OnPageChangeListener() {
 
-	    public void onPageScrollStateChanged(int arg0) {
-
+	    public void onPageScrollStateChanged(int state) {
+		if(state == ViewPager.SCROLL_STATE_DRAGGING) {
+		    	int currentPage = mPager.getCurrentItem();
+		    	int maxPages = mAdapter.getCount();
+		    	int pageToLeft = currentPage -1;
+		    	int pageToRight = currentPage + 1;
+		    	
+		    	if(pageToLeft > -1) {
+		    	    checkIfPageNeedsUpdating(pageToLeft);
+		    	} 
+		    	if(pageToRight < maxPages) {
+		    	    checkIfPageNeedsUpdating(pageToRight);
+		    	}
+		}
 	    }
 
 	    public void onPageScrolled(int arg0, float arg1, int arg2) {
@@ -53,6 +69,11 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 	    }
 
 	    public void onPageSelected(int position) {
+		checkIfPageNeedsUpdating(position);
+	    }
+	    
+	    private void checkIfPageNeedsUpdating(int position){
+		Log.d(TAG, "Checking if page  "+position +" needs updating");
 		String fragmentName = UiUtils.makeFragmentPagerAdapterTagName(
 			R.id.boards_pager, position);
 		Fragment fragment = getSupportFragmentManager()
@@ -62,7 +83,8 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 		    listFragment.loadListIfNotAlready(1);
 		}
 	    }
-
+	    
+	    
 	});
     }
 

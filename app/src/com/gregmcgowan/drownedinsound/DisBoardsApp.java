@@ -2,6 +2,8 @@ package com.gregmcgowan.drownedinsound;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.http.cookie.Cookie;
 import org.json.JSONException;
@@ -18,8 +20,12 @@ import com.loopj.android.http.PersistentCookieStore;
 
 public class DisBoardsApp extends Application {
 
+    private static final String MULTI_THREADED_EXECUTOR_SERVICE = "MULTI_THREADED_EXECUTOR_SERVICE";
+    private static final float EXECUTOR_POOL_SIZE_PER_CORE = 1.5F;
     private final String TAG = DisBoardsConstants.LOG_TAG_PREFIX + "App";
     private PersistentCookieStore cookieStore;
+
+    private ExecutorService multiThreadedExecutorService;
 
     public static DisBoardsApp getApplication(Context context) {
 	return (DisBoardsApp) context.getApplicationContext();
@@ -34,19 +40,20 @@ public class DisBoardsApp extends Application {
     }
 
     private void initliaseDatabase() {
-	//TODO add in clear call to clear out method. Which will 
-	//remove all old posts
+	// TODO add in clear call to clear out method. Which will
+	// remove all old posts
 	DatabaseHelper.getInstance(getApplicationContext()).initliase();
-	
+
     }
 
-    private void initliaseHttpClient(){
+    private void initliaseHttpClient() {
 	HttpClient.setTimeout(DisBoardsConstants.NETWORK_REQUEST_TIMEOUT_MS);
 	setupCookies();
     }
-    
+
     private void initliaseCrittercism() {
-	Crittercism.init(getApplicationContext(), DisBoardsConstants.CRITTERCISM_APP_ID);
+	Crittercism.init(getApplicationContext(),
+		DisBoardsConstants.CRITTERCISM_APP_ID);
 	// create the JSONObject. (Do not forget to import org.json.JSONObject!)
 	JSONObject crittercismConfig = new JSONObject();
 	try {
@@ -85,6 +92,23 @@ public class DisBoardsApp extends Application {
 
     public List<Cookie> getCookies() {
 	return cookieStore.getCookies();
+    }
+
+    public ExecutorService getMultiThreadedExecutorService() {
+	if (null == multiThreadedExecutorService
+		|| multiThreadedExecutorService.isShutdown()) {
+	    final int numThreads = Math.round(Runtime.getRuntime()
+		    .availableProcessors() * EXECUTOR_POOL_SIZE_PER_CORE);
+	    multiThreadedExecutorService = Executors.newFixedThreadPool(
+		    numThreads, new DisBoardsThreadFactory(
+			    MULTI_THREADED_EXECUTOR_SERVICE));
+
+	    if (DisBoardsConstants.DEBUG) {
+		Log.d(TAG, "MultiThreadExecutor created with " + numThreads
+			+ " threads");
+	    }
+	}
+	return multiThreadedExecutorService;
     }
 
     @Override

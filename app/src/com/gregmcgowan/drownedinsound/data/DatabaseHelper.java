@@ -190,8 +190,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	    }
 	}
 	if (DisBoardsConstants.DEBUG) {
-	    Log.d(TAG, (boardPost != null ? "Found" : "Could not find")
-		    + " board post " + postId);
+/*	    Log.d(TAG, (boardPost != null ? "Found" : "Could not find")
+		    + " board post " + postId);*/
 	}
 	return boardPost;
     }

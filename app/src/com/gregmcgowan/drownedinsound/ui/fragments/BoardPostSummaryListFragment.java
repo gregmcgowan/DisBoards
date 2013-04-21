@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -48,22 +48,22 @@ import de.greenrobot.event.EventBus;
  * @author Greg
  * 
  */
-public class BoardPostSummaryListFragment extends SherlockListFragment {
+public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 
     private static final String CURRENTLY_SELECTED_BOARD_POST = "currentlySelectedBoardPost";
     private static final String WAS_IN_DUAL_PANE_MODE = "WasInDualPaneMode";
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
 	    + "BoardListFragment";
-    private  Drawable readDrawable; 
-    private Drawable unreadDrawable; 
+    private Drawable readDrawable;
+    private Drawable unreadDrawable;
     private String boardUrl;
     private ProgressBar progressBar;
     private TextView connectionErrorTextView;
     private ArrayList<BoardPost> boardPostSummaries = new ArrayList<BoardPost>();
     private BoardPostSummaryListAdapater adapter;
     private View rootView;
+    private ListView listView;
     private boolean requestOnStart;
-    private boolean loadedList;
     private Board boardTypeInfo;
     private BoardType boardType;
     private boolean dualPaneMode;
@@ -76,8 +76,8 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     public BoardPostSummaryListFragment() {
     }
 
-    public static BoardPostSummaryListFragment newInstance(
-	    Board boardTypeInfo, boolean requestDataOnStart) {
+    public static BoardPostSummaryListFragment newInstance(Board boardTypeInfo,
+	    boolean requestDataOnStart) {
 	BoardPostSummaryListFragment boardListFragment = new BoardPostSummaryListFragment();
 	boardListFragment.boardTypeInfo = boardTypeInfo;
 	boardListFragment.boardUrl = boardTypeInfo.getUrl();
@@ -102,18 +102,18 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 		.findViewById(R.id.board_list_progress_bar);
 	connectionErrorTextView = (TextView) rootView
 		.findViewById(R.id.board_list_connection_error_text_view);
-	
-	readDrawable = getSherlockActivity().getResources()
-		    .getDrawable(R.drawable.white_circle_blue_outline);
-	unreadDrawable = getSherlockActivity()
-		    .getResources().getDrawable(R.drawable.filled_blue_circle);
-	
+
+	readDrawable = getSherlockActivity().getResources().getDrawable(
+		R.drawable.white_circle_blue_outline);
+	unreadDrawable = getSherlockActivity().getResources().getDrawable(
+		R.drawable.filled_blue_circle);
+	listView  = getListView();
 	// connectionErrorTextView.setVisibility(View.GONE);
 	adapter = new BoardPostSummaryListAdapater(getSherlockActivity(),
 		R.layout.board_list_row, boardPostSummaries);
 	setListAdapter(adapter);
 
-	if (requestOnStart && !loadedList) {
+	if (requestOnStart && !summariesLoaded()) {
 	    requestBoardSummaryPage(1, false);
 	}
 
@@ -142,8 +142,8 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 		    .getString(DisBoardsConstants.BOARD_URL);
 	}
 
-	if (dualPaneMode && loadedList && currentlySelectedPost != -1) {
-	    getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+	if (dualPaneMode && summariesLoaded() && currentlySelectedPost != -1) {
+	    listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 	    showBoardPost(currentlySelectedPost);
 	}
 
@@ -222,17 +222,36 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	requestBoardSummaryPage(1, true);
     }
 
+    private boolean summariesLoaded() {
+	return boardPostSummaries != null && boardPostSummaries.size() > 0;
+    }
+
     public void loadListIfNotAlready(int page) {
-	if (!loadedList) {
-	    requestBoardSummaryPage(page, false);
+	if (isValid()) {
+	    synchronized(this) {
+		if (!summariesLoaded()) {
+			requestBoardSummaryPage(page, false);
+		    } else if (uiHasBeenCreated()) {
+			if (!requestingBoardList) {
+			    connectionErrorTextView.setVisibility(View.GONE);
+			    adapter.notifyDataSetChanged();
+			    setProgressBarVisiblity(false);
+			} else {
+			    connectionErrorTextView.setVisibility(View.VISIBLE);
+			    setProgressBarVisiblity(true);
+			}
+		    }
+	    }
 	}
     }
 
     public void requestBoardSummaryPage(int page, boolean forceUpdate) {
 	if (!requestingBoardList) {
 	    requestingBoardList = true;
-	    connectionErrorTextView.setVisibility(View.GONE);
-	    setProgressBarVisiblity(true);
+	    if (uiHasBeenCreated()) {
+		connectionErrorTextView.setVisibility(View.GONE);
+		setProgressBarVisiblity(true);
+	    }
 	    Intent disWebServiceIntent = new Intent(getSherlockActivity(),
 		    DisWebService.class);
 	    Bundle parametersBundle = new Bundle();
@@ -254,52 +273,57 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	int progressBarVisiblity = visible ? View.VISIBLE : View.INVISIBLE;
 	int listVisibility = visible ? View.INVISIBLE : View.VISIBLE;
 	progressBar.setVisibility(progressBarVisiblity);
-	getListView().setVisibility(listVisibility);
+	listView.setVisibility(listVisibility);
     }
 
     public void onEventBackgroundThread(UpdateCachedBoardPostEvent event) {
-	if(boardPostSummaries != null){
+	if (boardPostSummaries != null) {
 	    BoardPost boardPostToUpdate = event.getBoardPost();
-	    if(boardPostToUpdate != null) {
-		   String postId = boardPostToUpdate.getId();	
-		    for(BoardPost boardPost: boardPostSummaries) {
-			if(postId != null && postId.equals(boardPost.getId())) {
-			    boardPost.setLastViewedTime(boardPostToUpdate.getLastViewedTime());
-			    Log.d(TAG, "Setting post "+postId +" to "+boardPostToUpdate.getLastViewedTime());
-			}			
+	    if (boardPostToUpdate != null) {
+		String postId = boardPostToUpdate.getId();
+		for (BoardPost boardPost : boardPostSummaries) {
+		    if (postId != null && postId.equals(boardPost.getId())) {
+			boardPost.setLastViewedTime(boardPostToUpdate
+				.getLastViewedTime());
+			Log.d(TAG, "Setting post " + postId + " to "
+				+ boardPostToUpdate.getLastViewedTime());
 		    }
+		}
 	    }
 	}
     }
-    
+
     public void onEventMainThread(RetrievedBoardPostSummaryListEvent event) {
-	BoardType eventBoardType = event.getBoardType();
-	requestingBoardList = false;
-	if (eventBoardType != null && eventBoardType.equals(boardType)) {
-	    List<BoardPost> summaries = event.getBoardPostSummaryList();
-	    if (summaries != null && summaries.size() > 0) {
-		loadedList = true;
-		boardPostSummaries.clear();
-		boardPostSummaries.addAll(event.getBoardPostSummaryList());
-		adapter.notifyDataSetChanged();
-		final ListView listView = getListView();
-		listView.postDelayed(new Runnable() {
-		    @Override
-		    public void run() {
-			listView.smoothScrollToPosition(0);
-		    }
-
-		}, 250);
-
-		if (event.isCached()) {
-		    displayIsCachedPopup();
-		}
-		connectionErrorTextView.setVisibility(View.GONE);
+	if (isValid()) {
+	    BoardType eventBoardType = event.getBoardType();
+		Log.d(TAG, "Event for board type " + eventBoardType
+			+ " current board Type " + boardType);	
+	    if (eventBoardType != null && eventBoardType.equals(boardType)) {
+		 synchronized(this) {
+			List<BoardPost> summaries = event.getBoardPostSummaryList();
+			if (summaries != null && summaries.size() > 0) {
+			    boardPostSummaries.clear();
+			    boardPostSummaries.addAll(event.getBoardPostSummaryList());
+			}
+			boolean shouldUpdateUI = isUserHint();
+			if (shouldUpdateUI) {
+			    adapter.notifyDataSetChanged();
+			    Log.d(TAG, "Updated UI for " + eventBoardType);
+			    if (event.isCached()) {
+				displayIsCachedPopup();
+			    }
+			    if (summariesLoaded()) {
+				connectionErrorTextView.setVisibility(View.GONE);
+			    } else {
+				connectionErrorTextView.setVisibility(View.VISIBLE);
+			    }
+			    setProgressBarVisiblity(false);
+			}
+			requestingBoardList = false;
+		 }
 	    } else {
-		connectionErrorTextView.setVisibility(View.VISIBLE);
-		loadedList = false;
+		Log.d(TAG, "Event for wrong board type");
 	    }
-	    setProgressBarVisiblity(false);
 	}
     }
 
@@ -313,12 +337,12 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
     public void onListItemClick(ListView l, View rowView, int position, long id) {
 	BoardPostSummaryHolder holder = (BoardPostSummaryHolder) rowView
 		.getTag();
-	if(Build.VERSION.SDK_INT > VERSION_CODES.JELLY_BEAN) {
+	if (Build.VERSION.SDK_INT > VERSION_CODES.JELLY_BEAN) {
 	    holder.postReadMarkerView.setBackground(readDrawable);
 	} else {
 	    holder.postReadMarkerView.setBackgroundDrawable(readDrawable);
 	}
-	
+
 	showBoardPost(position);
     }
 
@@ -330,7 +354,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	    postUrl = boardUrl + "/" + postId;
 
 	    if (dualPaneMode) {
-		getListView().setItemChecked(position, true);
+		listView.setItemChecked(position, true);
 		BoardPostFragment boardPostFragment = (BoardPostFragment) getFragmentManager()
 			.findFragmentById(R.id.board_post_details);
 		if (boardPostFragment == null
@@ -378,7 +402,7 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 
 	public BoardPostSummaryListAdapater(Context context,
 		int textViewResourceId, List<BoardPost> boardPostSummaries) {
-	    super(context, textViewResourceId,boardPostSummaries);
+	    super(context, textViewResourceId, boardPostSummaries);
 	    this.summaries = boardPostSummaries;
 	}
 
@@ -434,7 +458,8 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 
 		long lastViewedTime = summary.getLastViewedTime();
 		long lastUpdatedTime = summary.getLastUpdatedTime();
-		boolean markAsRead = lastViewedTime > 0 && lastViewedTime >= lastUpdatedTime;
+		boolean markAsRead = lastViewedTime > 0
+			&& lastViewedTime >= lastUpdatedTime;
 
 		holder.titleTextView.setText(title);
 		holder.authorTextView.setText(authorusername);

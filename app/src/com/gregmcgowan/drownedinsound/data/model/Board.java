@@ -155,7 +155,6 @@ public class Board implements Parcelable {
 	int indexOfBoardTypeInfo = boards.indexOf(board);
 	if (indexOfBoardTypeInfo != -1) {
 	    int lastIndex = boards.size() - 1;
-	    next2Tabs.add(boards.get(indexOfBoardTypeInfo));
 	    if (indexOfBoardTypeInfo == 0) {
 		next2Tabs.add(boards.get(indexOfBoardTypeInfo + 1));
 		next2Tabs.add(boards.get(indexOfBoardTypeInfo + 2));
