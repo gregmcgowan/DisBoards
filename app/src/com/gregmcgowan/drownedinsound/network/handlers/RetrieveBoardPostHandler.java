@@ -15,6 +15,7 @@ import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.data.parser.BoardPostParser;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
+import com.gregmcgowan.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.gregmcgowan.drownedinsound.network.UrlConstants;
 
@@ -64,7 +65,7 @@ public class RetrieveBoardPostHandler extends DisBoardAsyncNetworkHandler {
 		EventBus.getDefault().post(
 			new RetrievedBoardPostEvent(boardPost, false));
 	}
-
+	EventBus.getDefault().post(new UpdateCachedBoardPostEvent(boardPost));
     }
 
     @Override
