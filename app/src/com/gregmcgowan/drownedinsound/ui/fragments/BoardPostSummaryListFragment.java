@@ -31,6 +31,7 @@ import com.gregmcgowan.drownedinsound.data.model.Board;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
+import com.gregmcgowan.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
@@ -256,6 +257,21 @@ public class BoardPostSummaryListFragment extends SherlockListFragment {
 	getListView().setVisibility(listVisibility);
     }
 
+    public void onEventBackgroundThread(UpdateCachedBoardPostEvent event) {
+	if(boardPostSummaries != null){
+	    BoardPost boardPostToUpdate = event.getBoardPost();
+	    if(boardPostToUpdate != null) {
+		   String postId = boardPostToUpdate.getId();	
+		    for(BoardPost boardPost: boardPostSummaries) {
+			if(postId != null && postId.equals(boardPost.getId())) {
+			    boardPost.setLastViewedTime(boardPostToUpdate.getLastViewedTime());
+			    Log.d(TAG, "Setting post "+postId +" to "+boardPostToUpdate.getLastViewedTime());
+			}			
+		    }
+	    }
+	}
+    }
+    
     public void onEventMainThread(RetrievedBoardPostSummaryListEvent event) {
 	BoardType eventBoardType = event.getBoardType();
 	requestingBoardList = false;
