@@ -60,12 +60,12 @@ public class RetrieveBoardPostHandler extends DisBoardAsyncNetworkHandler {
 		}
 	    }
 	}
-	deleteFile();
 	if(isUpdateUI())  {
 		EventBus.getDefault().post(
 			new RetrievedBoardPostEvent(boardPost, false));
 	}
 	EventBus.getDefault().post(new UpdateCachedBoardPostEvent(boardPost));
+	deleteFile();
     }
 
     @Override
@@ -80,10 +80,11 @@ public class RetrieveBoardPostHandler extends DisBoardAsyncNetworkHandler {
 		Log.d(TAG, "Something went really wrong");
 	    }
 	}
-	deleteFile();
+	
 	if(isUpdateUI())  {
 	    EventBus.getDefault().post(new RetrievedBoardPostEvent(null, false));
 	}
+	deleteFile();
     }
 
 }

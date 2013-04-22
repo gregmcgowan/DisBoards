@@ -53,8 +53,9 @@ public class LoginResponseHandler extends DisBoardAsyncNetworkHandler {
 
 	    }
 	}
-	deleteFile();
+	
 	EventBus.getDefault().post(new LoginResponseEvent(loginSucceeded));
+	deleteFile();
     }
 
     @Override
@@ -70,8 +71,9 @@ public class LoginResponseHandler extends DisBoardAsyncNetworkHandler {
 		Log.d(TAG, "Something went really wrong");
 	    }
 	}
-	deleteFile();
+	
 	EventBus.getDefault().post(new LoginResponseEvent(false));
+	deleteFile();
     }
 
 };

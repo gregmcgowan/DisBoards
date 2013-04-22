@@ -42,12 +42,10 @@ public class HttpClient {
     private static HashSet<String> requestsInProgress = new HashSet<String>();
     private static final boolean useFakeData = false;
 
-    
-    
-    public static void setTimeout(int timeout){
+    public static void setTimeout(int timeout) {
 	asyncHttpClient.setTimeout(timeout);
     }
-    
+
     /**
      * Indicates that the request represented by identifier has compelted
      * 

@@ -35,7 +35,7 @@ public class DisBoardsConstants {
     public static final String DUAL_PANE_MODE = "DUAL_PANE_MODE";
 
     public static final String CRITTERCISM_APP_ID = "51521dba97c8f23caf000005";
-
+    public static final String HOCKEY_APP_ID  = "5c3af261d9c6be190228715878934bfa";
     public static final String BOARD_TYPE_INFO = "BOARD_TYPE_INFOS";
 
     public static final String FORCE_FETCH = "FORCE_FETCH";

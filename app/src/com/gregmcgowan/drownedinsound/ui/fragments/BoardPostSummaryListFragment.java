@@ -32,6 +32,7 @@ import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.events.UpdateCachedBoardPostEvent;
+import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
@@ -71,7 +72,6 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
     private int currentlySelectedPost;
     private String postId;
     private String postUrl;
-    private boolean requestingBoardList;
 
     public BoardPostSummaryListFragment() {
     }
@@ -198,7 +198,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 	boolean haveNetworkConnection = NetworkUtils
 		.isConnected(getSherlockActivity());
 	return !haveNetworkConnection && boardPostSummaries.size() == 0
-		&& !requestingBoardList;
+		&& !isBoardBeingRequested();
     }
 
     @Override
@@ -218,6 +218,10 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 	}
     }
 
+    private boolean isBoardBeingRequested(){
+	return HttpClient.requestIsInProgress(boardType.name());
+    }
+    
     private void doRefreshAction() {
 	requestBoardSummaryPage(1, true);
     }
@@ -228,30 +232,25 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 
     public void loadListIfNotAlready(int page) {
 	if (isValid()) {
-	    synchronized(this) {
+	    	connectionErrorTextView.setVisibility(View.GONE);
 		if (!summariesLoaded()) {
 			requestBoardSummaryPage(page, false);
-		    } else if (uiHasBeenCreated()) {
-			if (!requestingBoardList) {
-			    connectionErrorTextView.setVisibility(View.GONE);
+		    }  else {
+			if (isBoardBeingRequested()) {
+			    setProgressBarVisiblity(true);		
+			} else {
 			    adapter.notifyDataSetChanged();
 			    setProgressBarVisiblity(false);
-			} else {
-			    connectionErrorTextView.setVisibility(View.VISIBLE);
-			    setProgressBarVisiblity(true);
 			}
 		    }
-	    }
 	}
     }
 
     public void requestBoardSummaryPage(int page, boolean forceUpdate) {
-	if (!requestingBoardList) {
-	    requestingBoardList = true;
-	    if (uiHasBeenCreated()) {
+	if (!isBoardBeingRequested()) {
 		connectionErrorTextView.setVisibility(View.GONE);
 		setProgressBarVisiblity(true);
-	    }
+	   
 	    Intent disWebServiceIntent = new Intent(getSherlockActivity(),
 		    DisWebService.class);
 	    Bundle parametersBundle = new Bundle();
@@ -266,6 +265,9 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 
 	    disWebServiceIntent.putExtras(parametersBundle);
 	    getSherlockActivity().startService(disWebServiceIntent);
+	} else {
+	    Log.d(TAG, "Already requesting "+boardType);
+	    setProgressBarVisiblity(true);
 	}
     }
 
@@ -294,20 +296,17 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
     }
 
     public void onEventMainThread(RetrievedBoardPostSummaryListEvent event) {
-	if (isValid()) {
-	    BoardType eventBoardType = event.getBoardType();
+	BoardType eventBoardType = event.getBoardType();
+	if (eventBoardType != null && eventBoardType.equals(boardType)) {
+	    if (isValid()) {	    
 		Log.d(TAG, "Event for board type " + eventBoardType
-			+ " current board Type " + boardType);	
-	    if (eventBoardType != null && eventBoardType.equals(boardType)) {
-		 synchronized(this) {
+			+ " current board Type " + boardType);		    
 			List<BoardPost> summaries = event.getBoardPostSummaryList();
 			if (summaries != null && summaries.size() > 0) {
 			    boardPostSummaries.clear();
 			    boardPostSummaries.addAll(event.getBoardPostSummaryList());
 			}
-			boolean shouldUpdateUI = isUserHint();
-			if (shouldUpdateUI) {
-			    adapter.notifyDataSetChanged();
+			 adapter.notifyDataSetChanged();
 			    Log.d(TAG, "Updated UI for " + eventBoardType);
 			    if (event.isCached()) {
 				displayIsCachedPopup();
@@ -317,13 +316,13 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 			    } else {
 				connectionErrorTextView.setVisibility(View.VISIBLE);
 			    }
-			    setProgressBarVisiblity(false);
-			}
-			requestingBoardList = false;
-		 }
+			    setProgressBarVisiblity(false);	
 	    } else {
-		Log.d(TAG, "Event for wrong board type");
+		Log.d(TAG, "Board type "+boardType +" was not attached to a activity");
 	    }
+	    
+	} else {
+	    Log.d(TAG, "Event for wrong board type");
 	}
     }
 

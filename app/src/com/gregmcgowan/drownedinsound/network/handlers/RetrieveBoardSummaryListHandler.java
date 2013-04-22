@@ -69,12 +69,13 @@ public class RetrieveBoardSummaryListHandler extends
 		databaseHelper.setBoard(board);
 	    }
 	}
-	deleteFile();
+	
 	if (isUpdateUI()) {
 	    EventBus.getDefault().post(
 		    new RetrievedBoardPostSummaryListEvent(boardPostSummaries,
 			    boardType, false));
 	}
+	deleteFile();
     }
 
     @Override
@@ -90,11 +91,12 @@ public class RetrieveBoardSummaryListHandler extends
 		Log.d(TAG, "Something went really wrong");
 	    }
 	}
-	deleteFile();
+
 	if (isUpdateUI()) {
 	    EventBus.getDefault().post(
 		    new RetrievedBoardPostSummaryListEvent(null, boardType,
 			    false));
 	}
+	deleteFile();
     }
 }

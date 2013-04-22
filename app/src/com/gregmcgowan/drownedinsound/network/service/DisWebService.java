@@ -104,14 +104,17 @@ public class DisWebService extends IntentService {
 
 	fetchBoardType(board, true, forceFetch);
 	
-
+	//TODO not sure if we actually gain anything from doing this
 	// Fetch the two nearest as well
-/*	ArrayList<Board> nextTwoBoards = Board.getBoardsToFetch(board, this);
-	DisBoardsApp disApp = DisBoardsApp.getApplication(this);
-	FetchBoardRunnable fetchBoardRunnable = new FetchBoardRunnable(
-		nextTwoBoards, new WeakReference<Context>(disApp),
-		databaseHelper);
-	disApp.getMultiThreadedExecutorService().execute(fetchBoardRunnable);*/
+/*	if(!forceFetch) {
+		ArrayList<Board> nextTwoBoards = Board.getBoardsToFetch(board, this);
+		DisBoardsApp disApp = DisBoardsApp.getApplication(this);
+		FetchBoardRunnable fetchBoardRunnable = new FetchBoardRunnable(
+			nextTwoBoards, new WeakReference<Context>(disApp),
+			databaseHelper,forceFetch);
+		disApp.getMultiThreadedExecutorService().execute(fetchBoardRunnable); 
+	}*/
+
     }
 
     private void fetchBoardType(Board board, boolean updateUI,
@@ -150,30 +153,54 @@ public class DisWebService extends IntentService {
 	}
     }
 
+    private boolean recentlyFetched(Board cachedBoard) {
+	boolean recentlyFetched = false;
+	BoardType type = cachedBoard.getBoardType();
+	Board board = databaseHelper.getBoard(type);
+	long lastFetchedTime = board.getLastFetchedTime();
+	long oneMinuteAgo = System.currentTimeMillis()
+		- (DateUtils.MINUTE_IN_MILLIS);
+
+	recentlyFetched = lastFetchedTime > oneMinuteAgo;
+
+	if (DisBoardsConstants.DEBUG) {
+	    Log.d(TAG, " last fetched time =  "
+		    + lastFetchedTime
+		    + " one  minute ago =  "
+		    + oneMinuteAgo
+		    + " so it has been "
+		    + (recentlyFetched ? "recently fetched"
+			    : "not recently fetched"));
+	}
+
+	return recentlyFetched;
+    }
+    
+    
+    //TODO Not sure if this just causes more problems
     private static class FetchBoardRunnable implements Runnable {
 
 	private DatabaseHelper databaseHelper;
 	private WeakReference<Context> context;
 	private ArrayList<Board> boards;
-
+	private boolean forceFetch;
+	
 	FetchBoardRunnable(ArrayList<Board> boards,
-		WeakReference<Context> context, DatabaseHelper databaseHelper) {
+		WeakReference<Context> context, DatabaseHelper databaseHelper,boolean forceFetch) {
 	    this.boards = boards;
 	    this.context = context;
 	    this.databaseHelper = databaseHelper;
+	    this.forceFetch = forceFetch;
 	}
 
 	@Override
 	public void run() {
 	    for (Board boardToFetch : boards) {
-		fetchBoardType(boardToFetch, false, false);
+		fetchBoardType(boardToFetch);
 	    }
 	}
 
-	private void fetchBoardType(Board board, boolean updateUI,
-		boolean forceFetch) {
-	    List<BoardPost> cachedBoardPosts = databaseHelper
-		    .getBoardPosts(board.getBoardType());
+	private void fetchBoardType(Board board) {
 	    boolean requestIsInProgress = HttpClient.requestIsInProgress(board
 		    .getBoardType().name());
 	    if (!requestIsInProgress) {
@@ -185,24 +212,10 @@ public class DisWebService extends IntentService {
 				board.getBoardType(),
 				new RetrieveBoardSummaryListHandler(FileUtils
 					.createTempFile(context.get()), board
-					.getBoardType(), updateUI,
+					.getBoardType(), forceFetch,
 					databaseHelper), 1);
-		    } else {
-			if (updateUI) {
-			    EventBus.getDefault().post(
-				    new RetrievedBoardPostSummaryListEvent(
-					    cachedBoardPosts, board
-						    .getBoardType(), false));
-			}
-		    }
-		} else {
-		    if (updateUI) {
-			EventBus.getDefault().post(
-				new RetrievedBoardPostSummaryListEvent(
-					cachedBoardPosts, board.getBoardType(),
-					true));
-		    }
-		}
+		    } 
+		} 
 	    }
 	}
 
@@ -229,30 +242,7 @@ public class DisWebService extends IntentService {
 	    return recentlyFetched;
 	}
     }
-
-    private boolean recentlyFetched(Board cachedBoard) {
-	boolean recentlyFetched = false;
-	BoardType type = cachedBoard.getBoardType();
-	Board board = databaseHelper.getBoard(type);
-	long lastFetchedTime = board.getLastFetchedTime();
-	long oneMinuteAgo = System.currentTimeMillis()
-		- (DateUtils.MINUTE_IN_MILLIS);
-
-	recentlyFetched = lastFetchedTime > oneMinuteAgo;
-
-	if (DisBoardsConstants.DEBUG) {
-	    Log.d(TAG, " last fetched time =  "
-		    + lastFetchedTime
-		    + " one  minute ago =  "
-		    + oneMinuteAgo
-		    + " so it has been "
-		    + (recentlyFetched ? "recently fetched"
-			    : "not recently fetched"));
-	}
-
-	return recentlyFetched;
-    }
-
+    
     private void handleLoginRequest(Intent intent) {
 	String username = intent.getStringExtra(DisBoardsConstants.USERNAME);
 	String password = intent.getStringExtra(DisBoardsConstants.PASSWORD);

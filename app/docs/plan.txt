@@ -1,0 +1,33 @@
+Next
+
+- Fix problems with requesting board summary list when left for a long time it seems to get fetch board posts then not display them
+- Test network problems
+- sort board posts, order by sticky ness then date
+
+
+Laster on 
+
+Fix bugs on wildfire s
+
+Create UI for new post
+Create UI for new comment
+Integrate Login/Logout
+Integrate Sliding Menu??
+Clear old posts from DB
+- Fetch more than the first page
+
+Improve parsing Speed - test on wildfire S  --
+
+Make comments a bit more rich - display web pages,photos,vidoes, within the app
+Handle link to other comments
+Handle link to other posts
+Optimse tablet UI
+- fix logo
+
+custom progress dialog could do with dis image
+
+Tests
+
+View/Edit Profiles
+Private Messages
+

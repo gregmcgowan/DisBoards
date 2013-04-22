@@ -29,6 +29,7 @@
 		<activity android:name="com.crittercism.NotificationActivity"/>
 		<activity android:name="com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity" ></activity>
 		<service android:name="com.gregmcgowan.drownedinsound.network.service.DisWebService"></service>
+		<activity android:name="net.hockeyapp.android.UpdateActivity" />
     </application>
 
 </manifest>
