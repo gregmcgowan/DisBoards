@@ -2,6 +2,7 @@ package com.gregmcgowan.drownedinsound.data.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import android.os.Parcel;
@@ -23,6 +24,13 @@ import com.j256.ormlite.table.DatabaseTable;
  */
 @DatabaseTable(tableName = "board_post")
 public class BoardPost implements Parcelable {
+  
+    public static final BoardPostComparator COMPARATOR = new BoardPostComparator();
+    
+    public static final Parcelable.Creator<BoardPost> CREATOR = new Parcelable.Creator<BoardPost>() {
+	public BoardPost createFromParcel(Parcel in) {
+	    return new BoardPost(in);
+	}
 
     public static final String BOARD_TYPE_FIELD = "board_type";
 
@@ -302,15 +310,41 @@ public class BoardPost implements Parcelable {
 		.readArrayList(BoardPostComment.class.getClassLoader());
 	setComments(comments);
     }
+       
+    public static class BoardPostComparator implements Comparator<BoardPost> {
 
-    public static final Parcelable.Creator<BoardPost> CREATOR = new Parcelable.Creator<BoardPost>() {
-	public BoardPost createFromParcel(Parcel in) {
-	    return new BoardPost(in);
+	@Override
+	public int compare(BoardPost leftHandSideBoardPost, BoardPost rightHandSidePost) {
+	   if(leftHandSideBoardPost == null){
+	       return -1;
+	   }
+	   if(rightHandSidePost == null){
+	       return 1;
+	   }
+	   
+	   boolean lhsIsSticky = leftHandSideBoardPost.isSticky();
+	   boolean rhsIsSticky = rightHandSidePost.isSticky();
+	   
+	   if(!lhsIsSticky && rhsIsSticky) {
+	       return -1;
+	   }
+	   if(lhsIsSticky && !rhsIsSticky){
+	       return 1;
+	   }
+	   
+	   long leftHandsideLastUpdatedTime = leftHandSideBoardPost.getLastUpdatedTime();
+	   long rightHandsideLastUpdatedTime = rightHandSidePost.getLastUpdatedTime();
+	   
+	   if(rightHandsideLastUpdatedTime > leftHandsideLastUpdatedTime){
+	       return -1;
+	   }
+	   if(leftHandsideLastUpdatedTime > rightHandsideLastUpdatedTime) {
+	       return 1;
+	   }
+	   
+	    return 0;
 	}
 
-	public BoardPost[] newArray(int size) {
-	    return new BoardPost[size];
-	}
     };
 
     @Override
