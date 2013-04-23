@@ -313,4 +313,18 @@ public class BoardPost implements Parcelable {
 	}
     };
 
+    @Override
+    public String toString() {
+	return "BoardPost [id=" + id + ", title=" + title + ", isSticky="
+		+ isSticky + ", summary=" + summary + ", content=" + content
+		+ ", authorUsername=" + authorUsername + ", dateOfPost="
+		+ dateOfPost + ", numberOfReplies=" + numberOfReplies
+		+ ", boardPostStatus=" + boardPostStatus + ", lastViewedTime="
+		+ lastViewedTime + ", createdTime=" + createdTime
+		+ ", lastUpdatedTime=" + lastUpdatedTime + ", boardType="
+		+ boardType +  "]";
+    }
+
+    
+    
 }

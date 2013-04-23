@@ -166,4 +166,16 @@ public class BoardPostComment implements Parcelable {
 	}
     };
 
+    @Override
+    public String toString() {
+	return "BoardPostComment [id=" + id + ", title=" + title + ", content="
+		+ content + ", authorUsername=" + authorUsername
+		+ ", usersWhoHaveThissed=" + usersWhoHaveThissed
+		+ ", dateAndTimeOfComment=" + dateAndTimeOfComment
+		+ ", boardPost=" + boardPost + ", commentLevel=" + commentLevel
+		+ ", actionSectionVisible=" + actionSectionVisible + "]";
+    }
+    
+    
+
 }

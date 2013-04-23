@@ -160,12 +160,14 @@ public class BoardPostSummaryListParser {
 	boardPostSummary.setBoardType(boardType);
 	boardPostSummary.setLastUpdatedTime(lastPostDateTime);
 	boardPostSummary.setSticky(isSticky);
-	
-	BoardPost existingPost = databaseHelper.getBoardPost(postId);
-	//We don't want to overwrite certain values
-	if(existingPost != null) {
-	    boardPostSummary.setLastViewedTime(existingPost.getLastViewedTime());
+	if(databaseHelper != null){
+	    BoardPost existingPost = databaseHelper.getBoardPost(postId);
+		//We don't want to overwrite certain values
+		if(existingPost != null) {
+		    boardPostSummary.setLastViewedTime(existingPost.getLastViewedTime());
+		}
 	}
+	
 	return boardPostSummary;
     }
 }
