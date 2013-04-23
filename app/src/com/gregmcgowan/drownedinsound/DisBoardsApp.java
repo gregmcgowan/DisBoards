@@ -6,14 +6,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.http.cookie.Cookie;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
-import com.crittercism.app.Crittercism;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.loopj.android.http.PersistentCookieStore;
@@ -36,7 +33,6 @@ public class DisBoardsApp extends Application {
 	super.onCreate();
 	initliaseDatabase();
 	initliaseHttpClient();
-	initliaseCrittercism();
     }
 
     private void initliaseDatabase() {
@@ -49,25 +45,6 @@ public class DisBoardsApp extends Application {
     private void initliaseHttpClient() {
 	HttpClient.setTimeout(DisBoardsConstants.NETWORK_REQUEST_TIMEOUT_MS);
 	setupCookies();
-    }
-
-    private void initliaseCrittercism() {
-	Crittercism.init(getApplicationContext(),
-		DisBoardsConstants.CRITTERCISM_APP_ID);
-	// create the JSONObject. (Do not forget to import org.json.JSONObject!)
-	JSONObject crittercismConfig = new JSONObject();
-	try {
-	    crittercismConfig.put("shouldCollectLogcat", true); // send logcat
-								// data for
-								// devices with
-								// API Level 16
-								// and higher
-	} catch (JSONException je) {
-	}
-
-	Crittercism.init(getApplicationContext(),
-		DisBoardsConstants.CRITTERCISM_APP_ID, crittercismConfig);
-
     }
 
     private void setupCookies() {
