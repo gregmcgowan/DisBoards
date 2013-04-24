@@ -208,6 +208,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
     private void fetchBoardPost() {
 	if (isValid() && !requestingPost) {
 	    setProgressBarAndFragmentVisibility(true);
+	    connectionErrorTextView.setVisibility(View.GONE);
 	    Intent disWebServiceIntent = new Intent(getSherlockActivity(),
 		    DisWebService.class);
 	    Bundle parametersBundle = new Bundle();
