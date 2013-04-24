@@ -31,6 +31,10 @@ public class BoardPost implements Parcelable {
 	public BoardPost createFromParcel(Parcel in) {
 	    return new BoardPost(in);
 	}
+	public BoardPost[] newArray(int size) {
+	    return new BoardPost[size];
+	}
+    };
 
     public static final String BOARD_TYPE_FIELD = "board_type";
 
@@ -344,8 +348,7 @@ public class BoardPost implements Parcelable {
 	   
 	    return 0;
 	}
-
-    };
+    }
 
     @Override
     public String toString() {
