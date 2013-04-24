@@ -101,9 +101,7 @@ public class DisWebService extends IntentService {
 		.getParcelableExtra(DisBoardsConstants.BOARD_TYPE_INFO);
 	boolean forceFetch = intent.getBooleanExtra(
 		DisBoardsConstants.FORCE_FETCH, false);
-
-	fetchBoardType(board, true, forceFetch);
-	
+	fetchBoardPostSummaryList(board, true, forceFetch);	
 	//TODO not sure if we actually gain anything from doing this
 	// Fetch the two nearest as well
 /*	if(!forceFetch) {
@@ -117,7 +115,7 @@ public class DisWebService extends IntentService {
 
     }
 
-    private void fetchBoardType(Board board, boolean updateUI,
+    private void fetchBoardPostSummaryList(Board board, boolean updateUI,
 	    boolean forceFetch) {
 	List<BoardPost> cachedBoardPosts = databaseHelper.getBoardPosts(board
 		.getBoardType());
@@ -130,8 +128,7 @@ public class DisWebService extends IntentService {
 			    this,
 			    board.getUrl(),
 			    board.getBoardType(),
-			    new RetrieveBoardSummaryListHandler(FileUtils
-				    .createTempFile(this),
+			    new RetrieveBoardSummaryListHandler(
 				    board.getBoardType(), updateUI,
 				    databaseHelper), 1);
 		} else {
@@ -210,8 +207,7 @@ public class DisWebService extends IntentService {
 				context.get(),
 				board.getUrl(),
 				board.getBoardType(),
-				new RetrieveBoardSummaryListHandler(FileUtils
-					.createTempFile(context.get()), board
+				new RetrieveBoardSummaryListHandler(board
 					.getBoardType(), forceFetch,
 					databaseHelper), 1);
 		    } 

@@ -49,11 +49,12 @@ public class BoardPostSummaryListParser extends StreamingParser {
     private DatabaseHelper databaseHelper;
     
     public BoardPostSummaryListParser(InputStream inputStream,
-	    BoardType boardType) {
+	    BoardType boardType,DatabaseHelper databaseHelper) {
 	this.inputStream = inputStream;
 	this.boardType = boardType;
 	this.boardPosts = new ArrayList<BoardPost>();
 	this.buffer = new StringBuilder(1024);
+	this.databaseHelper = databaseHelper;
     }
 
     public ArrayList<BoardPost> parse() {
@@ -77,6 +78,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
 			    tableRowCell = 0;
 			} else {
 			    if (currentBoardPost != null) {
+				//TODO we need to get the last viewed time and set it here
 				boardPosts.add(currentBoardPost);
 			    }
 			}
@@ -203,6 +205,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
     }
     
     private boolean isStartOfNewPostTr(String trString) {
+	//TODO better way to do this
 	return trString != null
 		&& trString.startsWith("<tr style=\"background-color");
     }
