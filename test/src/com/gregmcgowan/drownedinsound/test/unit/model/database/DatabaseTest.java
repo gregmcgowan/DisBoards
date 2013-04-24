@@ -1,10 +1,10 @@
-package com.gregmcgowan.drownedinsound.test.unit.model;
+package com.gregmcgowan.drownedinsound.test.unit.model.database;
 
 import android.test.AndroidTestCase;
 
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 
-public class DisDBTest extends AndroidTestCase {
+public class DatabaseTest extends AndroidTestCase {
 
     @Override
     protected void setUp() throws Exception {

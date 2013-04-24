@@ -1,4 +1,4 @@
-package com.gregmcgowan.drownedinsound.test.unit.model;
+package com.gregmcgowan.drownedinsound.test.utils;
 
 import junit.framework.Assert;
 import android.test.AndroidTestCase;

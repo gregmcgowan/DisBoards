@@ -1,4 +1,4 @@
-package com.gregmcgowan.drownedinsound.test.unit.model;
+package com.gregmcgowan.drownedinsound.test.unit.model.database;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,7 +10,7 @@ import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
 import com.gregmcgowan.drownedinsound.data.model.BoardPostStatus;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 
-public class BoardPostTest extends DisDBTest {
+public class BoardPostTest extends DatabaseTest {
 
     private static final String POST_ONE_AUTHOR = "Author";
     private static final String POST_ONE_CONTENT = "Some content";
