@@ -126,7 +126,8 @@ public class BoardPostSummaryListParser extends StreamingParser {
 		    }
 		}
 	    }
-
+	    streamedSource.close();
+	    
 	} catch (IOException ioe) {
 	    if (DisBoardsConstants.DEBUG) {
 		ioe.printStackTrace();

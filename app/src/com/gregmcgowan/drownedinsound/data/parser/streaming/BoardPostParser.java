@@ -2,6 +2,7 @@ package com.gregmcgowan.drownedinsound.data.parser.streaming;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import net.htmlparser.jericho.EndTag;
@@ -15,6 +16,7 @@ import android.util.Log;
 
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
+import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 
 public class BoardPostParser extends StreamingParser {
@@ -25,28 +27,41 @@ public class BoardPostParser extends StreamingParser {
     private static final String EDITORIAL_CLASS = "editorial";
     private static final boolean DEBUG_PARSER = true;
 
+    private static final String COMMENT_CLASS = "comment";
+
+    private static final String COMMENT_CONTENT_CLASS = "comment_content";
+    private static final String COMMENT_FOOTER_CLASS = "comment_footer";
+    private static final String THIS_CLASS = "this";
+    
     private String boardPostId;
     private BoardType boardType;
     private InputStream inputStream;
     private StringBuilder buffer;
     private boolean consumingHtmlTags;
-    private int initialContentDivLevel = 0;
-    private int initialContentAnchorNumber = 0;
+    private int initialContentDivLevel ;
+    private int initialContentAnchorNumber;
+    private int commentFooterDivLevel ;
+    
     private BoardPost currentBoardPost;
     private PageState pageState;
     private SpanClass spanClass;
-
+    private ArrayList<BoardPostComment> comments;
+    private BoardPostComment currentBoardPostComment;
+    private int boardPostCommentLevel;
+    
     public BoardPostParser(InputStream inputStream, String boardPostId,
 	    BoardType boardType) {
 	this.boardPostId = boardPostId;
 	this.boardType = boardType;
 	this.inputStream = inputStream;
 	this.buffer = new StringBuilder(1024);
-	pageState = null;
+	comments = new ArrayList<BoardPostComment>();
+	boardPostCommentLevel = -1;
     }
 
     private static enum PageState {
 	INITIAL_CONTENT_DIV, EDITIORIAL_DIV, COMMENT_DIV, COMMENT_CONTENT_DIV, COMMENT_FOOTER_DIV
+	, THIS_DIV
     }
 
     private static enum SpanClass {
@@ -64,6 +79,8 @@ public class BoardPostParser extends StreamingParser {
     public BoardPost parse() {
 	long start = System.currentTimeMillis();
 	currentBoardPost = new BoardPost();
+	currentBoardPost.setBoardType(boardType);
+	currentBoardPost.setId(boardPostId);
 	try {
 	    StreamedSource streamedSource = new StreamedSource(inputStream);
 	    for (Segment segment : streamedSource) {
@@ -79,7 +96,31 @@ public class BoardPostParser extends StreamingParser {
 			    } else if (EDITORIAL_CLASS.equals(className)) {
 				setPageState(PageState.EDITIORIAL_DIV);
 				consumingHtmlTags = true;
+			    } else if (COMMENT_CLASS.equals(className)){
+				setPageState(PageState.COMMENT_DIV);
+				if(currentBoardPostComment != null){
+				    currentBoardPostComment.setBoardPost(currentBoardPost);
+				    currentBoardPostComment.setCommentLevel(boardPostCommentLevel);
+				   comments.add(currentBoardPostComment);
+				}
+				 currentBoardPostComment = new BoardPostComment();
+				String id = ((StartTag) tag)
+					    .getAttributeValue(HtmlConstants.ID);
+				if(id != null && id.length() > 1){
+				    id = id.substring(1);  
+				    currentBoardPostComment.setId(id);
+				}	
+			    } else if(COMMENT_CONTENT_CLASS.equals(className)) {
+				consumingHtmlTags = true;
+				setPageState(PageState.COMMENT_CONTENT_DIV);
+			    } else if(COMMENT_FOOTER_CLASS.equals(className)) {
+				setPageState(PageState.COMMENT_FOOTER_DIV);
 			    }
+			    
+			    if(isInPageState(PageState.COMMENT_FOOTER_DIV)) {
+				commentFooterDivLevel++;
+			    }
+			    
 			    if (isInPageState(PageState.INITIAL_CONTENT_DIV)) {
 				initialContentDivLevel++;
 			    }
@@ -95,7 +136,49 @@ public class BoardPostParser extends StreamingParser {
 				setPageState(null);
 				String content = readFromBuffer(false);
 				currentBoardPost.setContent(content);
+				//Add the initial post as the first content
+				BoardPostComment boardPostComment = new BoardPostComment();
+				boardPostComment.setId(boardPostId);
+				boardPostComment
+					.setAuthorUsername(currentBoardPost
+						.getAuthorUsername());
+				boardPostComment
+					.setDateAndTimeOfComment(currentBoardPost
+						.getDateOfPost());
+				boardPostComment.setContent(content);
+				boardPostComment.setTitle(currentBoardPost
+					.getTitle());
+				boardPostComment.setBoardPost(currentBoardPost);
+
+				comments.add(boardPostComment);
+			    } else if (isInPageState(PageState.COMMENT_CONTENT_DIV)){
+				setPageState(null);
+				consumingHtmlTags = false;
+				String content = readFromBuffer(false);
+				currentBoardPostComment.setContent(content);
 			    }
+			    if(isInPageState(PageState.COMMENT_FOOTER_DIV)) {
+				commentFooterDivLevel--;
+				if(commentFooterDivLevel == 0){
+				    setPageState(null);
+				    String footerText = readFromBuffer();
+				  //  Log.d(TAG, "Comment footer text  ="+footerText);
+				    if (!TextUtils.isEmpty(footerText)) {
+					String[] combinedDateAndTimeBits = footerText
+						.split("\\Q|\\E");
+					if (combinedDateAndTimeBits != null
+						&& combinedDateAndTimeBits.length >= 2) {
+					    String author = combinedDateAndTimeBits[0].trim();
+					    String dateAndTime = combinedDateAndTimeBits[1].trim();
+					   // author.
+					    currentBoardPostComment.setAuthorUsername(author);
+					    currentBoardPostComment.setDateAndTimeOfComment(dateAndTime);
+					}
+				    }
+				    clearBuffer();
+				}
+			    }
+			    
 			}
 		    } else if (HtmlConstants.ANCHOR.equals(tagName)) {
 			if (tag instanceof StartTag) {
@@ -129,6 +212,12 @@ public class BoardPostParser extends StreamingParser {
 				    }
 				}
 			    }
+			    
+			    if(isInPageState(PageState.COMMENT_DIV)) {
+				String title = readFromBuffer();
+				currentBoardPostComment.setTitle(title);
+			    }
+			    
 			}
 		    } else if (HtmlConstants.SPAN.equals(tagName)) {
 			if (tag instanceof StartTag) {
@@ -156,10 +245,16 @@ public class BoardPostParser extends StreamingParser {
 			if (consumingHtmlTags) {
 			    buffer.append(segment.toString());
 			}
+		    } else if(HtmlConstants.LIST.equals(tagName)) {
+			if(tag instanceof StartTag){
+			    boardPostCommentLevel++;
+			} else {
+			    boardPostCommentLevel--;
+			}
 		    }
 
 		    if (tag instanceof EndTag) {
-			if (!consumingHtmlTags) {
+			if (!consumingHtmlTags &&  !isInPageState(PageState.COMMENT_FOOTER_DIV)) {
 			    clearBuffer();
 			}
 		    }
@@ -171,6 +266,7 @@ public class BoardPostParser extends StreamingParser {
 		    }
 		}
 	    }
+	    streamedSource.close();
 	} catch (IOException e) {
 	    if (DisBoardsConstants.DEBUG) {
 		e.printStackTrace();
@@ -179,17 +275,23 @@ public class BoardPostParser extends StreamingParser {
 	if (DisBoardsConstants.DEBUG) {
 	    if (DEBUG_PARSER) {
 		Log.d(TAG, currentBoardPost.toString());
+		for(BoardPostComment boardPostComment : comments){
+		    Log.d(TAG, boardPostComment.toString());
+		}
 	    }
 	    Log.d(TAG, "Parsed board post in "
 		    + (System.currentTimeMillis() - start) + " ms");
 	}
+	currentBoardPost.setComments(comments);
 	return currentBoardPost;
     }
 
     private boolean consumeText() {
 	return isInPageState(PageState.INITIAL_CONTENT_DIV)
 		|| isInPageState(PageState.EDITIORIAL_DIV)
-		|| isInPageState(PageState.COMMENT_DIV);
+		|| isInPageState(PageState.COMMENT_DIV)
+		|| isInPageState(PageState.COMMENT_CONTENT_DIV)
+		|| isInPageState(PageState.COMMENT_FOOTER_DIV);
     }
 
     private void clearBuffer() {

@@ -172,7 +172,7 @@ public class BoardPostComment implements Parcelable {
 		+ content + ", authorUsername=" + authorUsername
 		+ ", usersWhoHaveThissed=" + usersWhoHaveThissed
 		+ ", dateAndTimeOfComment=" + dateAndTimeOfComment
-		+ ", boardPost=" + boardPost + ", commentLevel=" + commentLevel
+		+ ", boardPost=" + (boardPost != null ? boardPost.getId() : boardPost) + ", commentLevel=" + commentLevel
 		+ ", actionSectionVisible=" + actionSectionVisible + "]";
     }
     
