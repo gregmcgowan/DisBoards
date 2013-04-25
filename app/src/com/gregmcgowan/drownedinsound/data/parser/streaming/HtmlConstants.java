@@ -10,4 +10,11 @@ public class HtmlConstants {
     public static final String SPAN = "span";
     public static final String TITLE = "title";
     public static final String CLASS = "class";
+    public static final String DIV = "div";
+    public static final String LIST = "ul";
+    public static final String LIST_ITEM  = "li";
+    public static final String HEADING_TWO = "h2";
+    public static final String PARAGRAPH = "p";
+    public static final String BREAK = "br";
+    public static final String DATE_CLASS = "date";
 }

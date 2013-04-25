@@ -5,7 +5,8 @@ import java.util.HashMap;
 import android.text.TextUtils;
 
 public class StreamingParser {
-
+    
+    //TODO we can get attributes from the tag object 
     protected long getTimestampFromParameters(HashMap<String, String> parameters) {
 	String timeStampString = parameters.get(HtmlConstants.TITLE);
 	long timeStamp = -1;
@@ -17,6 +18,7 @@ public class StreamingParser {
 	return timeStamp;
     }
     
+    //TODO we can get attributes from the tag 
     protected HashMap<String, String> createAttributeMapFromStartTag(String tag) {
 	HashMap<String, String> hashMap = new HashMap<String, String>();
 	String removeStartAndEnd = tag.substring(1, tag.length() - 1);

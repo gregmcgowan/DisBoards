@@ -128,16 +128,8 @@ public class BoardPostSummaryListParser extends StreamingParser {
 	    }
 
 	} catch (IOException ioe) {
-
-	} finally {
-	    if (inputStream != null) {
-		try {
-		    inputStream.close();
-		} catch (IOException e) {
-		    if (DisBoardsConstants.DEBUG) {
-			e.printStackTrace();
-		    }
-		}
+	    if (DisBoardsConstants.DEBUG) {
+		ioe.printStackTrace();
 	    }
 	}
 	if (DisBoardsConstants.DEBUG) {
