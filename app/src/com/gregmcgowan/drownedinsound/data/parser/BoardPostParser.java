@@ -102,7 +102,7 @@ public class BoardPostParser {
 	    }
 	    //Don't forgot to add it to the boardPost
 	    boardPost.setComments(boardPostComments);
-	    boardPost.setNumberOfReplies(boardPostComments.size());
+	    boardPost.setNumberOfReplies(boardPostComments.size() - 1);
 	}
 	Log.d(TAG, "Parsed post in "+ (System.currentTimeMillis() - startTime) +" ms");
 	return boardPost;
