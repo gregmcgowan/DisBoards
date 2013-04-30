@@ -1,6 +1,7 @@
 package com.gregmcgowan.drownedinsound.data.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -310,8 +311,7 @@ public class BoardPost implements Parcelable {
 	lastUpdatedTime = parcel.readLong();
 	boardType = (BoardType) parcel.readSerializable();
 
-	List<BoardPostComment> comments = parcel
-		.readArrayList(BoardPostComment.class.getClassLoader());
+	List<BoardPostComment> comments = Arrays.asList((BoardPostComment[]) parcel.readArray(BoardPostComment.class.getClassLoader()));
 	setComments(comments);
     }
        

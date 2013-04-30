@@ -97,7 +97,7 @@ public class DisWebService extends IntentService {
 
     private void handleGetPostSummaryList(Intent intent) {
 	Board board = intent
-		.getParcelableExtra(DisBoardsConstants.BOARD_TYPE_INFO);
+		.getParcelableExtra(DisBoardsConstants.BOARD);
 	boolean forceFetch = intent.getBooleanExtra(
 		DisBoardsConstants.FORCE_FETCH, false);
 	fetchBoardPostSummaryList(board, true, forceFetch);	

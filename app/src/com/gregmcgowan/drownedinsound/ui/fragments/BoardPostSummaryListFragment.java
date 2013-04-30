@@ -65,7 +65,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
     private View rootView;
     private ListView listView;
     private boolean requestOnStart;
-    private Board boardTypeInfo;
+    private Board board;
     private BoardType boardType;
     private boolean dualPaneMode;
     private boolean wasInDualPaneMode;
@@ -79,7 +79,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
     public static BoardPostSummaryListFragment newInstance(Board boardTypeInfo,
 	    boolean requestDataOnStart) {
 	BoardPostSummaryListFragment boardListFragment = new BoardPostSummaryListFragment();
-	boardListFragment.boardTypeInfo = boardTypeInfo;
+	boardListFragment.board = boardTypeInfo;
 	boardListFragment.boardUrl = boardTypeInfo.getUrl();
 	boardListFragment.requestOnStart = requestDataOnStart;
 	boardListFragment.boardType = boardTypeInfo.getBoardType();
@@ -107,7 +107,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 		R.drawable.white_circle_blue_outline);
 	unreadDrawable = getSherlockActivity().getResources().getDrawable(
 		R.drawable.filled_blue_circle);
-	listView  = getListView();
+	listView = getListView();
 	// connectionErrorTextView.setVisibility(View.GONE);
 	adapter = new BoardPostSummaryListAdapater(getSherlockActivity(),
 		R.layout.board_list_row, boardPostSummaries);
@@ -140,6 +140,8 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 		    .getSerializable(DisBoardsConstants.BOARD_TYPE);
 	    boardUrl = savedInstanceState
 		    .getString(DisBoardsConstants.BOARD_URL);
+	    board = (Board) savedInstanceState
+		    .getParcelable(DisBoardsConstants.BOARD);
 	}
 
 	if (dualPaneMode && summariesLoaded() && currentlySelectedPost != -1) {
@@ -177,6 +179,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 	outState.putString(DisBoardsConstants.BOARD_POST_URL, postUrl);
 	outState.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
 	outState.putString(DisBoardsConstants.BOARD_URL, boardUrl);
+	outState.putParcelable(DisBoardsConstants.BOARD, board);
     }
 
     @Override
@@ -218,10 +221,10 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 	}
     }
 
-    private boolean isBoardBeingRequested(){
+    private boolean isBoardBeingRequested() {
 	return HttpClient.requestIsInProgress(boardType.name());
     }
-    
+
     private void doRefreshAction() {
 	requestBoardSummaryPage(1, true);
     }
@@ -232,25 +235,25 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 
     public void loadListIfNotAlready(int page) {
 	if (isValid()) {
-	    	connectionErrorTextView.setVisibility(View.GONE);
-		if (!summariesLoaded()) {
-			requestBoardSummaryPage(page, false);
-		    }  else {
-			if (isBoardBeingRequested()) {
-			    setProgressBarVisiblity(true);		
-			} else {
-			    adapter.notifyDataSetChanged();
-			    setProgressBarVisiblity(false);
-			}
-		    }
+	    connectionErrorTextView.setVisibility(View.GONE);
+	    if (!summariesLoaded()) {
+		requestBoardSummaryPage(page, false);
+	    } else {
+		if (isBoardBeingRequested()) {
+		    setProgressBarVisiblity(true);
+		} else {
+		    adapter.notifyDataSetChanged();
+		    setProgressBarVisiblity(false);
+		}
+	    }
 	}
     }
 
     public void requestBoardSummaryPage(int page, boolean forceUpdate) {
 	if (!isBoardBeingRequested()) {
-		connectionErrorTextView.setVisibility(View.GONE);
-		setProgressBarVisiblity(true);
-	   
+	    connectionErrorTextView.setVisibility(View.GONE);
+	    setProgressBarVisiblity(true);
+
 	    Intent disWebServiceIntent = new Intent(getSherlockActivity(),
 		    DisWebService.class);
 	    Bundle parametersBundle = new Bundle();
@@ -258,15 +261,15 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 	    parametersBundle.putInt(
 		    DisWebServiceConstants.SERVICE_REQUESTED_ID,
 		    DisWebServiceConstants.GET_POSTS_SUMMARY_LIST_ID);
-	    parametersBundle.putParcelable(DisBoardsConstants.BOARD_TYPE_INFO,
-		    boardTypeInfo);
+	    parametersBundle.putParcelable(DisBoardsConstants.BOARD,
+		    board);
 	    parametersBundle.putBoolean(DisBoardsConstants.FORCE_FETCH,
 		    forceUpdate);
 
 	    disWebServiceIntent.putExtras(parametersBundle);
 	    getSherlockActivity().startService(disWebServiceIntent);
 	} else {
-	    Log.d(TAG, "Already requesting "+boardType);
+	    Log.d(TAG, "Already requesting " + boardType);
 	    setProgressBarVisiblity(true);
 	}
     }
@@ -298,29 +301,30 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
     public void onEventMainThread(RetrievedBoardPostSummaryListEvent event) {
 	BoardType eventBoardType = event.getBoardType();
 	if (eventBoardType != null && eventBoardType.equals(boardType)) {
-	    if (isValid()) {	    
+	    if (isValid()) {
 		Log.d(TAG, "Event for board type " + eventBoardType
-			+ " current board Type " + boardType);		    
-			List<BoardPost> summaries = event.getBoardPostSummaryList();
-			if (summaries != null && summaries.size() > 0) {
-			    boardPostSummaries.clear();
-			    boardPostSummaries.addAll(event.getBoardPostSummaryList());
-			}
-			 adapter.notifyDataSetChanged();
-			    Log.d(TAG, "Updated UI for " + eventBoardType);
-			    if (event.isCached()) {
-				displayIsCachedPopup();
-			    }
-			    if (summariesLoaded()) {
-				connectionErrorTextView.setVisibility(View.GONE);
-			    } else {
-				connectionErrorTextView.setVisibility(View.VISIBLE);
-			    }
-			    setProgressBarVisiblity(false);	
+			+ " current board Type " + boardType);
+		List<BoardPost> summaries = event.getBoardPostSummaryList();
+		if (summaries != null && summaries.size() > 0) {
+		    boardPostSummaries.clear();
+		    boardPostSummaries.addAll(event.getBoardPostSummaryList());
+		}
+		adapter.notifyDataSetChanged();
+		Log.d(TAG, "Updated UI for " + eventBoardType);
+		if (event.isCached()) {
+		    displayIsCachedPopup();
+		}
+		if (summariesLoaded()) {
+		    connectionErrorTextView.setVisibility(View.GONE);
+		} else {
+		    connectionErrorTextView.setVisibility(View.VISIBLE);
+		}
+		setProgressBarVisiblity(false);
 	    } else {
-		Log.d(TAG, "Board type "+boardType +" was not attached to a activity");
+		Log.d(TAG, "Board type " + boardType
+			+ " was not attached to a activity");
 	    }
-	    
+
 	} else {
 	    Log.d(TAG, "Event for wrong board type");
 	}
