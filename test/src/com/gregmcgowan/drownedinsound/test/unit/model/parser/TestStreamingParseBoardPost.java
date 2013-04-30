@@ -36,7 +36,7 @@ public class TestStreamingParseBoardPost extends InputStreamTest {
 	comment1.setContent("<p>fuck you buddy</p>");
 	comment1.setAuthorUsername("Silkyskillz11");
 	comment1.setDateAndTimeOfComment("15 Apr '13, 17:15");
-	comment1.setUsersWhoHaveThissed("ohgood, waffle, wonton, chickenbones , and Antelope this'd this");
+	comment1.setUsersWhoHaveThissed("ohgood, waffle, wonton, chickenbones, and Antelope this'd this");
 	comment1.setBoardPost(expectedBoardPost);
 	
 	BoardPostComment comment2 = new BoardPostComment();

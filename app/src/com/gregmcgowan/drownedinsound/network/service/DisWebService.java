@@ -84,8 +84,7 @@ public class DisWebService extends IntentService {
 		HttpClient.requestBoardPost(
 			this,
 			boardPostUrl,
-			new RetrieveBoardPostHandler(FileUtils
-				.createTempFile(this), boardPostId, boardType,
+			new RetrieveBoardPostHandler(boardPostId, boardType,
 				true, databaseHelper));
 	    }
 

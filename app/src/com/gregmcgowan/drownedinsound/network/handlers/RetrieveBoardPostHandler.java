@@ -1,11 +1,8 @@
 package com.gregmcgowan.drownedinsound.network.handlers;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.http.client.HttpResponseException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import android.util.Log;
 
@@ -13,23 +10,21 @@ import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
-import com.gregmcgowan.drownedinsound.data.parser.BoardPostParser;
+import com.gregmcgowan.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.events.UpdateCachedBoardPostEvent;
-import com.gregmcgowan.drownedinsound.network.HttpClient;
-import com.gregmcgowan.drownedinsound.network.UrlConstants;
 
 import de.greenrobot.event.EventBus;
 
-public class RetrieveBoardPostHandler extends DisBoardAsyncNetworkHandler {
+public class RetrieveBoardPostHandler extends DisBoardAsyncInputStreamHandler {
 
     private String boardPostId;
     private BoardType boardPostType;
     private DatabaseHelper databaseHelper;
 
-    public RetrieveBoardPostHandler(File file, String boardPostId,
-	    BoardType boardType, boolean updateUI,DatabaseHelper databaseHelper) {
-	super(file, boardPostId,updateUI);
+    public RetrieveBoardPostHandler(String boardPostId, BoardType boardType,
+	    boolean updateUI, DatabaseHelper databaseHelper) {
+	super(boardPostId, updateUI);
 	this.boardPostId = boardPostId;
 	this.boardPostType = boardType;
 	this.databaseHelper = databaseHelper;
@@ -39,37 +34,26 @@ public class RetrieveBoardPostHandler extends DisBoardAsyncNetworkHandler {
 	    + "RetrieveBoardPostHandler";
 
     @Override
-    public void doSuccessAction(int statusCode, File file) {
+    public void doSuccessAction(int statusCode, InputStream inputStream) {
 	BoardPost boardPost = null;
-	if (file != null && file.exists()) {
-	    Document parsedDocument = null;
-	    try {
-		parsedDocument = Jsoup.parse(file, HttpClient.CONTENT_ENCODING,
-			UrlConstants.BASE_URL);
-	    } catch (IOException e) {
-		if (DisBoardsConstants.DEBUG) {
-		    e.printStackTrace();
-		}
-	    }
-	    if (parsedDocument != null) {
-		BoardPostParser boardPostParser = new BoardPostParser(
-			parsedDocument, boardPostId, boardPostType);
-		boardPost = boardPostParser.parseDocument();
-		if (boardPost != null) {
-		    databaseHelper.setBoardPost(boardPost);
-		}
+	if (inputStream != null) {
+	    BoardPostParser boardPostParser = new BoardPostParser(inputStream,
+		    boardPostId, boardPostType);
+	    boardPost = boardPostParser.parse();
+	    if (boardPost != null) {
+		databaseHelper.setBoardPost(boardPost);
 	    }
 	}
-	if(isUpdateUI())  {
-		EventBus.getDefault().post(
-			new RetrievedBoardPostEvent(boardPost, false));
+	if (isUpdateUI()) {
+	    EventBus.getDefault().post(
+		    new RetrievedBoardPostEvent(boardPost, false));
 	}
 	EventBus.getDefault().post(new UpdateCachedBoardPostEvent(boardPost));
-	deleteFile();
+
     }
 
     @Override
-    public void doFailureAction(Throwable throwable, File response) {
+    public void doFailureAction(Throwable throwable) {
 	if (DisBoardsConstants.DEBUG) {
 	    if (throwable instanceof HttpResponseException) {
 		HttpResponseException exception = (HttpResponseException) throwable;
@@ -80,11 +64,11 @@ public class RetrieveBoardPostHandler extends DisBoardAsyncNetworkHandler {
 		Log.d(TAG, "Something went really wrong");
 	    }
 	}
-	
-	if(isUpdateUI())  {
-	    EventBus.getDefault().post(new RetrievedBoardPostEvent(null, false));
+
+	if (isUpdateUI()) {
+	    EventBus.getDefault()
+		    .post(new RetrievedBoardPostEvent(null, false));
 	}
-	deleteFile();
     }
 
 }

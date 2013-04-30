@@ -79,6 +79,13 @@ public class BoardPostSummaryListParser extends StreamingParser {
 			} else {
 			    if (currentBoardPost != null) {
 				//TODO we need to get the last viewed time and set it here
+				if(databaseHelper != null){
+				    BoardPost existingPost = databaseHelper.getBoardPost(currentBoardPost.getId());
+					//We don't want to overwrite certain values
+					if(existingPost != null) {
+					    currentBoardPost.setLastViewedTime(existingPost.getLastViewedTime());
+					}
+				}
 				boardPosts.add(currentBoardPost);
 			    }
 			}

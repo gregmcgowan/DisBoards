@@ -157,32 +157,32 @@ public class BoardPostFragment extends DisBoardsListFragment {
     }
 
     public void onEventMainThread(RetrievedBoardPostEvent event) {
-	 this.requestingPost = false;
-	if(isValid()) {
-		BoardPost boardPost = event.getBoardPost();
-		if (shouldShowBoardPost(boardPost)) {
-		    this.boardPost = boardPost;
-		    updateComments(boardPost.getComments());
-		    if (event.isCached()) {
-			displayIsCachedPopup();
-		    }
-		    connectionErrorTextView.setVisibility(View.GONE);
-		} else {
-		    connectionErrorTextView.setVisibility(View.VISIBLE);
+	this.requestingPost = false;
+	if (isValid()) {
+	    BoardPost boardPost = event.getBoardPost();
+	    if (shouldShowBoardPost(boardPost)) {
+		this.boardPost = boardPost;
+		updateComments(boardPost.getComments());
+		if (event.isCached()) {
+		    displayIsCachedPopup();
 		}
-		setProgressBarAndFragmentVisibility(false);   
+		connectionErrorTextView.setVisibility(View.GONE);
+	    } else {
+		connectionErrorTextView.setVisibility(View.VISIBLE);
+	    }
+	    setProgressBarAndFragmentVisibility(false);
 	}
     }
 
     private boolean shouldShowBoardPost(BoardPost boardPost) {
 	boolean shouldDisplayBoardPost = false;
-	if(boardPost != null) {
+	if (boardPost != null) {
 	    Collection<BoardPostComment> comments = boardPost.getComments();
 	    shouldDisplayBoardPost = comments.size() > 0;
 	}
 	return shouldDisplayBoardPost;
     }
-     
+
     private void displayIsCachedPopup() {
 	Toast.makeText(getSherlockActivity(), "This is an cached version",
 		Toast.LENGTH_SHORT).show();
@@ -368,10 +368,11 @@ public class BoardPostFragment extends DisBoardsListFragment {
 		    boardPostCommentHolder.commentAuthorTextView
 			    .setText(author);
 		    boardPostCommentHolder.commentTitleTextView.setText(title);
-		    if (content != null) {
-			boardPostCommentHolder.commentContentTextView
-				.setText(Html.fromHtml(content));
+		    if(content == null){
+			content = "";
 		    }
+		    boardPostCommentHolder.commentContentTextView.setText(Html
+			    .fromHtml(content));
 
 		    String usersWhoThised = comment.getUsersWhoHaveThissed();
 		    if (!TextUtils.isEmpty(usersWhoThised)) {

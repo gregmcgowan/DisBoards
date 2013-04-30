@@ -19,7 +19,7 @@ public class BoardPostParser {
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
 	    + "BoardPostParser";
 
-    private static final boolean DEBUG_PARSER = true;
+    private static final boolean DEBUG_PARSER = false;
     
     private Document boardPostDocument;
     private String boardPostId;

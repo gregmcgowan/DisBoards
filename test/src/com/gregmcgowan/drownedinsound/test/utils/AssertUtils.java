@@ -68,5 +68,6 @@ public class AssertUtils {
 	Assert.assertEquals(expected.getTitle(), actual.getTitle());
 	Assert.assertEquals(expected.getBoardPost().getId(), actual
 		.getBoardPost().getId());
+	Assert.assertEquals("Expected ["+expected.getUsersWhoHaveThissed() + "] actual ["+actual.getUsersWhoHaveThissed()+"]",expected.getUsersWhoHaveThissed(), actual.getUsersWhoHaveThissed());
     }
 }
