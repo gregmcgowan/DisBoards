@@ -206,25 +206,27 @@ public class BoardPostFragment extends DisBoardsListFragment {
     }
 
     private void fetchBoardPost() {
-	if (isValid() && !requestingPost) {
+	if (isValid()) {
 	    setProgressBarAndFragmentVisibility(true);
-	    connectionErrorTextView.setVisibility(View.GONE);
-	    Intent disWebServiceIntent = new Intent(getSherlockActivity(),
-		    DisWebService.class);
-	    Bundle parametersBundle = new Bundle();
-	    parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
-		    boardPostUrl);
-	    parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
-		    boardPostId);
-	    parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
-		    boardType);
-	    parametersBundle.putInt(
-		    DisWebServiceConstants.SERVICE_REQUESTED_ID,
-		    DisWebServiceConstants.GET_BOARD_POST_ID);
-	    disWebServiceIntent.putExtras(parametersBundle);
+	    if(!requestingPost) {
+		connectionErrorTextView.setVisibility(View.GONE);
+		    Intent disWebServiceIntent = new Intent(getSherlockActivity(),
+			    DisWebService.class);
+		    Bundle parametersBundle = new Bundle();
+		    parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
+			    boardPostUrl);
+		    parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
+			    boardPostId);
+		    parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
+			    boardType);
+		    parametersBundle.putInt(
+			    DisWebServiceConstants.SERVICE_REQUESTED_ID,
+			    DisWebServiceConstants.GET_BOARD_POST_ID);
+		    disWebServiceIntent.putExtras(parametersBundle);
 
-	    getSherlockActivity().startService(disWebServiceIntent);
-	    requestingPost = true;
+		    getSherlockActivity().startService(disWebServiceIntent);
+		    requestingPost = true;
+	    }	    
 	}
     }
 
