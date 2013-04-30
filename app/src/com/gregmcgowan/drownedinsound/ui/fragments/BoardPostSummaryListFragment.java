@@ -72,7 +72,9 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
     private int currentlySelectedPost;
     private String postId;
     private String postUrl;
-
+    private Drawable whiteBackgroundSelector;
+    private Drawable alternateColorSelector;
+    
     public BoardPostSummaryListFragment() {
     }
 
@@ -107,6 +109,8 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 		R.drawable.white_circle_blue_outline);
 	unreadDrawable = getSherlockActivity().getResources().getDrawable(
 		R.drawable.filled_blue_circle);
+
+	
 	listView = getListView();
 	// connectionErrorTextView.setVisibility(View.GONE);
 	adapter = new BoardPostSummaryListAdapater(getSherlockActivity(),
@@ -476,6 +480,15 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 		    holder.postReadMarkerView
 			    .setBackgroundDrawable(unreadDrawable);
 		}
+		
+		if(position % 2 == 0){	
+		    whiteBackgroundSelector = getSherlockActivity().getResources().getDrawable(R.drawable.board_list_row_selector);
+		    boardPostSummaryRowView.setBackgroundDrawable(whiteBackgroundSelector);
+		} else {
+		    alternateColorSelector = getSherlockActivity().getResources().getDrawable(R.drawable.alternate_board_list_row_selector);
+		    boardPostSummaryRowView.setBackgroundDrawable(alternateColorSelector);
+		}
+		
 	    }
 	    return boardPostSummaryRowView;
 	}
