@@ -21,6 +21,7 @@ public class TestStreamingParseBoardPost extends InputStreamTest {
 	expectedBoardPost.setTitle(BoardPostTestData.BOARD_POST_TITLE);
 	expectedBoardPost.setNumberOfReplies(BoardPostTestData.BOARD_POST_NUMBER_OF_COMMENTS);
 	expectedBoardPost.setBoardType(BoardType.SOCIAL);
+	expectedBoardPost.setLastUpdatedTime(1366042860000L);
 	
 	BoardPostComment comment0 = new BoardPostComment();
 	comment0.setId("123456");

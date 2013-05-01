@@ -3,6 +3,7 @@ package com.gregmcgowan.drownedinsound.data;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -268,6 +269,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		    "Found "
 			    + (posts.size() + " posts for " + boardType.name()));
 	}
+	Collections.sort(posts, BoardPost.COMPARATOR);
 	return posts;
     }
 

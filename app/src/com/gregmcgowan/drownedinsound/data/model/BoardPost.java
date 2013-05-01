@@ -25,13 +25,14 @@ import com.j256.ormlite.table.DatabaseTable;
  */
 @DatabaseTable(tableName = "board_post")
 public class BoardPost implements Parcelable {
-  
+
     public static final BoardPostComparator COMPARATOR = new BoardPostComparator();
-    
+
     public static final Parcelable.Creator<BoardPost> CREATOR = new Parcelable.Creator<BoardPost>() {
 	public BoardPost createFromParcel(Parcel in) {
 	    return new BoardPost(in);
 	}
+
 	public BoardPost[] newArray(int size) {
 	    return new BoardPost[size];
 	}
@@ -76,7 +77,10 @@ public class BoardPost implements Parcelable {
 
     @DatabaseField
     private long lastUpdatedTime;
-    
+
+    @DatabaseField
+    private String latestCommentId;
+
     @DatabaseField(columnName = BOARD_TYPE_FIELD)
     private BoardType boardType;
 
@@ -277,6 +281,14 @@ public class BoardPost implements Parcelable {
 	this.boardType = boardType;
     }
 
+    public String getLatestCommentId() {
+	return latestCommentId;
+    }
+
+    public void setLatestCommentId(String latestCommentId) {
+	this.latestCommentId = latestCommentId;
+    }
+
     public void writeToParcel(Parcel parcel, int flag) {
 	parcel.writeString(id);
 	parcel.writeString(title);
@@ -291,6 +303,7 @@ public class BoardPost implements Parcelable {
 	parcel.writeLong(createdTime);
 	parcel.writeLong(lastUpdatedTime);
 	parcel.writeSerializable(boardType);
+	parcel.writeString(latestCommentId);
 	Collection<BoardPostComment> comments = getComments();
 	parcel.writeParcelableArray(
 		comments.toArray(new BoardPostComment[comments.size()]), flag);
@@ -310,42 +323,47 @@ public class BoardPost implements Parcelable {
 	createdTime = parcel.readLong();
 	lastUpdatedTime = parcel.readLong();
 	boardType = (BoardType) parcel.readSerializable();
-
-	List<BoardPostComment> comments = Arrays.asList((BoardPostComment[]) parcel.readArray(BoardPostComment.class.getClassLoader()));
+	latestCommentId = parcel.readString();
+	List<BoardPostComment> comments = Arrays
+		.asList((BoardPostComment[]) parcel
+			.readArray(BoardPostComment.class.getClassLoader()));
 	setComments(comments);
     }
-       
+
     public static class BoardPostComparator implements Comparator<BoardPost> {
 
 	@Override
-	public int compare(BoardPost leftHandSideBoardPost, BoardPost rightHandSidePost) {
-	   if(leftHandSideBoardPost == null){
-	       return -1;
-	   }
-	   if(rightHandSidePost == null){
-	       return 1;
-	   }
-	   
-	   boolean lhsIsSticky = leftHandSideBoardPost.isSticky();
-	   boolean rhsIsSticky = rightHandSidePost.isSticky();
-	   
-	   if(!lhsIsSticky && rhsIsSticky) {
-	       return -1;
-	   }
-	   if(lhsIsSticky && !rhsIsSticky){
-	       return 1;
-	   }
-	   
-	   long leftHandsideLastUpdatedTime = leftHandSideBoardPost.getLastUpdatedTime();
-	   long rightHandsideLastUpdatedTime = rightHandSidePost.getLastUpdatedTime();
-	   
-	   if(rightHandsideLastUpdatedTime > leftHandsideLastUpdatedTime){
-	       return -1;
-	   }
-	   if(leftHandsideLastUpdatedTime > rightHandsideLastUpdatedTime) {
-	       return 1;
-	   }
-	   
+	public int compare(BoardPost leftHandSideBoardPost,
+		BoardPost rightHandSidePost) {
+	    if (leftHandSideBoardPost == null) {
+		return 1;
+	    }
+	    if (rightHandSidePost == null) {
+		return -1;
+	    }
+
+	    boolean lhsIsSticky = leftHandSideBoardPost.isSticky();
+	    boolean rhsIsSticky = rightHandSidePost.isSticky();
+
+	    if (!lhsIsSticky && rhsIsSticky) {
+		return 1;
+	    }
+	    if (lhsIsSticky && !rhsIsSticky) {
+		return -1;
+	    }
+
+	    long leftHandsideLastUpdatedTime = leftHandSideBoardPost
+		    .getLastUpdatedTime();
+	    long rightHandsideLastUpdatedTime = rightHandSidePost
+		    .getLastUpdatedTime();
+
+	    if (rightHandsideLastUpdatedTime > leftHandsideLastUpdatedTime) {
+		return 1;
+	    }
+	    if (leftHandsideLastUpdatedTime > rightHandsideLastUpdatedTime) {
+		return -1;
+	    }
+
 	    return 0;
 	}
     }
@@ -359,9 +377,7 @@ public class BoardPost implements Parcelable {
 		+ ", boardPostStatus=" + boardPostStatus + ", lastViewedTime="
 		+ lastViewedTime + ", createdTime=" + createdTime
 		+ ", lastUpdatedTime=" + lastUpdatedTime + ", boardType="
-		+ boardType +  "]";
+		+ boardType + "]";
     }
 
-    
-    
 }

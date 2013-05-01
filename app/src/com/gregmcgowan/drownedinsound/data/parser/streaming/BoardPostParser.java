@@ -3,6 +3,7 @@ package com.gregmcgowan.drownedinsound.data.parser.streaming;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.StringTokenizer;
 
 import net.htmlparser.jericho.EndTag;
@@ -18,6 +19,7 @@ import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
+import com.gregmcgowan.drownedinsound.utils.DateUtils;
 
 public class BoardPostParser extends StreamingParser {
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
@@ -43,7 +45,6 @@ public class BoardPostParser extends StreamingParser {
     private int initialContentDivLevel;
     private int initialContentAnchorNumber;
     private int commentFooterDivLevel;
-
     private BoardPost currentBoardPost;
     private PageState pageState;
     private PageState baseDivState;
@@ -51,6 +52,8 @@ public class BoardPostParser extends StreamingParser {
     private ArrayList<BoardPostComment> comments;
     private BoardPostComment currentBoardPostComment;
     private int boardPostCommentLevel;
+    private long latestCommentTime;
+    private String latestCommentId;
 
     public BoardPostParser(InputStream inputStream, String boardPostId,
 	    BoardType boardType) {
@@ -122,9 +125,9 @@ public class BoardPostParser extends StreamingParser {
 			    } else if (COMMENT_LIST_CLASS.equals(className)) {
 				setPageState(PageState.COMMENT_LIST_DIV);
 				baseDivState = PageState.COMMENT_LIST_DIV;
-			    } else if ("reply_form".equals(className)){
+			    } else if ("reply_form".equals(className)) {
 				setPageState(null);
-			    } else if("this".equals(className)){
+			    } else if ("this".equals(className)) {
 				setPageState(PageState.COMMENT_THIS_DIV);
 			    }
 			    if (isInPageState(PageState.COMMENT_FOOTER_DIV)) {
@@ -166,10 +169,11 @@ public class BoardPostParser extends StreamingParser {
 				consumingHtmlTags = false;
 				String content = readFromBuffer(false);
 				currentBoardPostComment.setContent(content);
-			    } else if(isInPageState(PageState.COMMENT_THIS_DIV)) {
+			    } else if (isInPageState(PageState.COMMENT_THIS_DIV)) {
 				setPageState(null);
 				String usersWhoThisd = readFromBuffer();
-				currentBoardPostComment.setUsersWhoHaveThissed(usersWhoThisd);
+				currentBoardPostComment
+					.setUsersWhoHaveThissed(usersWhoThisd);
 				clearBuffer();
 			    }
 			    if (isInPageState(PageState.COMMENT_FOOTER_DIV)) {
@@ -193,6 +197,28 @@ public class BoardPostParser extends StreamingParser {
 						    .setAuthorUsername(author);
 					    currentBoardPostComment
 						    .setDateAndTimeOfComment(dateAndTime);
+					    dateAndTime = dateAndTime.replace(
+						    "\'", "");
+					    dateAndTime = dateAndTime.replace(
+						    ",", "");
+					    Log.d(TAG, "DateAndTime = "
+						    + dateAndTime);
+					    Date dateOfPost = DateUtils
+						    .parseDate(
+							    dateAndTime,
+							    DateUtils.DIS_BOARD_COMMENT_DATE_FORMAT);
+					    if (dateOfPost != null) {
+						long dateOfPostLongValue = dateOfPost
+							.getTime();
+						if (dateOfPostLongValue > latestCommentTime) {
+						    latestCommentTime = dateOfPostLongValue;
+						    latestCommentId = currentBoardPostComment
+							    .getId();
+						}
+					    }
+					    Log.d(TAG, "Date of Comment = "
+						    + dateOfPost.getTime());
+
 					}
 				    }
 				    clearBuffer();
@@ -254,6 +280,24 @@ public class BoardPostParser extends StreamingParser {
 				String dateAndTime = readFromBuffer();
 				currentBoardPost.setDateOfPost(dateAndTime);
 				spanClass = null;
+				if (dateAndTime != null) {
+				    dateAndTime = dateAndTime.replace("th", "");
+				    dateAndTime = dateAndTime.replace("st", "");
+				    dateAndTime = dateAndTime.replace("rd", "");
+				    dateAndTime = dateAndTime.replace("nd", "");
+				    dateAndTime = dateAndTime.replace(",", "");
+				    
+				    Date parsedDate = DateUtils
+					    .parseDate(
+						    dateAndTime,
+						    DateUtils.DIS_BOARD_POST_DATE_FORMAT);
+				    if (parsedDate != null) {
+					long parsedDateLongValue = parsedDate
+						.getTime();
+					Log.d(TAG, "Date of post" + parsedDateLongValue);
+					latestCommentTime = parsedDateLongValue;
+				    }
+				}
 			    }
 			}
 
@@ -299,6 +343,14 @@ public class BoardPostParser extends StreamingParser {
 		currentBoardPostComment.setBoardPost(currentBoardPost);
 		comments.add(currentBoardPostComment);
 	    }
+	    if (latestCommentId != null) {
+		currentBoardPost.setLatestCommentId(latestCommentId);
+	    } else {
+		currentBoardPost.setLatestCommentId(currentBoardPost.getId());
+	    }
+	    currentBoardPost.setLastUpdatedTime(latestCommentTime);
+	    currentBoardPost.setLastViewedTime(System.currentTimeMillis());
+	    currentBoardPost.setComments(comments);
 
 	    streamedSource.close();
 	} catch (IOException e) {
@@ -317,8 +369,7 @@ public class BoardPostParser extends StreamingParser {
 	    }
 
 	}
-	currentBoardPost.setLastViewedTime(System.currentTimeMillis());
-	currentBoardPost.setComments(comments);
+
 	return currentBoardPost;
     }
 
