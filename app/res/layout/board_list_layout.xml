@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <ListView
+    <com.gregmcgowan.drownedinsound.ui.widgets.AutoScrollListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
