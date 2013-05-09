@@ -1,10 +1,5 @@
 package com.gregmcgowan.drownedinsound.ui.activity;
 
-import java.util.List;
-
-import org.apache.http.cookie.Cookie;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,6 +10,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
 import com.gregmcgowan.drownedinsound.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
@@ -33,30 +29,31 @@ import de.greenrobot.event.EventBus;
  * @author Greg
  * 
  */
-public class LoginActivity extends Activity {
+public class LoginActivity extends SherlockActivity {
 
     private Button loginButton;
+    private Button lurkButton;
     private EditText usernameField;
     private EditText passwordField;
     private ProgressBar progressBar;
-    private List<Cookie> cookies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.login_activity);
 	EventBus.getDefault().register(this);
-	cookies = DisBoardsApp.getApplication(this).getCookies();
-
-	if (userIsAlreadyLoggedIn()) {
-	   // setProgressVisibility(true);
-	    Intent startMainActivityIntent = new Intent(this,
-		    MainCommunityActivity.class);
-	    startActivity(startMainActivityIntent);
-	    finish();
+	if (DisBoardsApp.getApplication(this).userIsLoggedIn()) {
+	    goToMainActivity();
 	} else {
 	    setListeners();
 	}
+    }
+
+    private void goToMainActivity() {
+	Intent startMainActivityIntent = new Intent(this,
+		MainCommunityActivity.class);
+	startActivity(startMainActivityIntent);
+	finish();
     }
 
     @Override
@@ -65,37 +62,8 @@ public class LoginActivity extends Activity {
 	EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    protected void onResume() {
-	super.onResume();
-
-    }
-
-    private boolean userIsAlreadyLoggedIn() {
-	String loggedInCookieValue = getCookieValue(DisBoardsConstants.LOGGED_IN_FIELD_NAME);
-	String user_credentialsValue = getCookieValue(DisBoardsConstants.USER_CREDENTIALS_FIELD_NAME);
-	String dis_session = getCookieValue(DisBoardsConstants.DIS_SESSION_FIELD_NAME);
-	String hashed = getCookieValue(DisBoardsConstants.HASHED_FIELD_NAME);
-	return "1".equals(loggedInCookieValue)
-		&& !TextUtils.isEmpty(user_credentialsValue)
-		&& !TextUtils.isEmpty(dis_session)
-		&& !TextUtils.isEmpty(hashed);
-    }
-
-    private String getCookieValue(String cookieToFind) {
-	String value = null;
-	if (!TextUtils.isEmpty(cookieToFind)) {
-	    for (Cookie cookie : cookies) {
-		if (cookieToFind.equalsIgnoreCase(cookie.getName())) {
-		    value = cookie.getValue();
-		    break;
-		}
-	    }
-	}
-	return value;
-    }
-
     private void setListeners() {
+	lurkButton = (Button) findViewById(R.id.lurk_button);
 	loginButton = (Button) findViewById(R.id.login_button);
 	if (loginButton != null) {
 	    loginButton.setOnClickListener(new OnClickListener() {
@@ -104,9 +72,21 @@ public class LoginActivity extends Activity {
 		}
 	    });
 	}
+	lurkButton.setOnClickListener(new OnClickListener() {
+	    @Override
+	    public void onClick(View v) {
+		doLurkAction();
+	    }
+	});
 	usernameField = (EditText) findViewById(R.id.login_activity_username_field);
 	passwordField = (EditText) findViewById(R.id.login_password_field);
 	progressBar = (ProgressBar) findViewById(R.id.login_progress_bar);
+    }
+
+    protected void doLurkAction() {
+	DisBoardsApp.getApplication(this).clearCookies();
+	goToMainActivity();
+
     }
 
     protected void doLoginAction() {
@@ -130,13 +110,12 @@ public class LoginActivity extends Activity {
     }
 
     private void attemptLogin(String username, String password) {
-	UiUtils.hideSoftKeyboard(this, loginButton.getApplicationWindowToken());	
-	setProgressVisibility(true); 
-	Intent disWebServiceIntent = new Intent(this,
-		DisWebService.class);
+	UiUtils.hideSoftKeyboard(this, loginButton.getApplicationWindowToken());
+	setProgressVisibility(true);
+	Intent disWebServiceIntent = new Intent(this, DisWebService.class);
 	disWebServiceIntent.putExtra(
 		DisWebServiceConstants.SERVICE_REQUESTED_ID,
-		DisWebServiceConstants.GET_POSTS_SUMMARY_LIST_ID);
+		DisWebServiceConstants.LOGIN_SERVICE_ID);
 	disWebServiceIntent.putExtra(DisBoardsConstants.USERNAME, username);
 	disWebServiceIntent.putExtra(DisBoardsConstants.PASSWORD, password);
 	startService(disWebServiceIntent);
@@ -149,6 +128,7 @@ public class LoginActivity extends Activity {
 	usernameField.setVisibility(otherFieldsVisibility);
 	passwordField.setVisibility(otherFieldsVisibility);
 	loginButton.setVisibility(otherFieldsVisibility);
+	lurkButton.setVisibility(otherFieldsVisibility);
     }
 
     public void onEventMainThread(LoginResponseEvent event) {

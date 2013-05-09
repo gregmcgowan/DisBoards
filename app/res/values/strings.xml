@@ -6,11 +6,12 @@
 	<string name="username">Username</string>
 	<string name="password">Password</string>
 	<string name="drowned_in_sound_logo">Drowned in sound logo</string>
-	<string name="login">login</string>
+	<string name="login">Login</string>
 	<string name="refresh_text">refresh</string>
 	<string name="reply_text">Reply</string>
 	<string name="this_text">^ This</string>
 	<string name="connection_error_text">Cannot connect to Drowned in Sound. Check your internet connection</string>
 	<string name="sticky_text">Sticky</string>
 	<string name="subject">Subject</string>
+	<string name="lurk">Lurk</string>
 </resources>

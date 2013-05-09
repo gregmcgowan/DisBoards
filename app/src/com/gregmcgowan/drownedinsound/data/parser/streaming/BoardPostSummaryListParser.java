@@ -32,6 +32,8 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private static final Object STICKY_CLASS = "content_type_label";
 
+    private static final boolean DEBUG_PARSER = false;
+    
     private InputStream inputStream;
 
     private BoardType boardType;
@@ -140,7 +142,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
 		ioe.printStackTrace();
 	    }
 	}
-	if (DisBoardsConstants.DEBUG) {
+	if (DisBoardsConstants.DEBUG && DEBUG_PARSER) {
 	    Log.d(TAG, "Parsed " + boardPosts.size() + " board posts in "
 		    + (System.currentTimeMillis() - start) + " ms");
 	    for (BoardPost boardPost : boardPosts) {
