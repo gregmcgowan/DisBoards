@@ -190,11 +190,24 @@ public class BoardPostParser extends StreamingParser {
 						&& combinedDateAndTimeBits.length >= 2) {
 					    String author = combinedDateAndTimeBits[0]
 						    .trim();
+					    String replyToAuthor = null;
+					    if (!TextUtils.isEmpty(author)) {
+						String[] split = author
+							.split("@");
+						if (split != null
+							&& split.length > 1) {
+						    author = split[0].trim();
+						    replyToAuthor = split[1]
+							    .trim();
+						}
+					    }
 					    String dateAndTime = combinedDateAndTimeBits[1]
 						    .trim();
-					    // author.
+		
 					    currentBoardPostComment
 						    .setAuthorUsername(author);
+					    currentBoardPostComment
+						    .setReplyToUsername(replyToAuthor);
 					    currentBoardPostComment
 						    .setDateAndTimeOfComment(dateAndTime);
 					    dateAndTime = dateAndTime.replace(
@@ -286,7 +299,7 @@ public class BoardPostParser extends StreamingParser {
 				    dateAndTime = dateAndTime.replace("rd", "");
 				    dateAndTime = dateAndTime.replace("nd", "");
 				    dateAndTime = dateAndTime.replace(",", "");
-				    
+
 				    Date parsedDate = DateUtils
 					    .parseDate(
 						    dateAndTime,
@@ -294,7 +307,8 @@ public class BoardPostParser extends StreamingParser {
 				    if (parsedDate != null) {
 					long parsedDateLongValue = parsedDate
 						.getTime();
-					Log.d(TAG, "Date of post" + parsedDateLongValue);
+					Log.d(TAG, "Date of post"
+						+ parsedDateLongValue);
 					latestCommentTime = parsedDateLongValue;
 				    }
 				}

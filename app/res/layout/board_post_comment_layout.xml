@@ -29,83 +29,84 @@
                 android:id="@+id/board_post_comment_content_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/comment_text_padding"
                 android:layout_marginBottom="@dimen/margin_small"
                 android:layout_marginLeft="@dimen/margin_small"
                 android:layout_marginRight="@dimen/margin_small"
                 android:layout_marginTop="@dimen/margin_small"
+                android:padding="@dimen/comment_text_padding"
                 android:text="Here is a test title for the post"
                 android:textColor="@color/darkest_grey"
                 android:textSize="@dimen/text_micro"
                 android:textStyle="bold" />
-				
+
             <include layout="@layout/thicker_divider_grey" />
-			
+
             <TextView
                 android:id="@+id/board_post_comment_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/comment_text_padding"
                 android:layout_marginLeft="@dimen/margin_small"
                 android:layout_marginRight="@dimen/margin_small"
+                android:autoLink="web"
+                android:padding="@dimen/comment_text_padding"
                 android:text="Here is a test comment. A very interesting post"
                 android:textColor="@color/lighter_grey"
-                android:textSize="@dimen/text_micro" 
-                android:autoLink="web" />
+                android:textSize="@dimen/text_micro" />
 
-			<include layout="@layout/dotted_divider_grey"/>
+            <include layout="@layout/dotted_divider_grey" />
 
             <RelativeLayout
                 android:id="@+id/board_post_comment_info_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/board_post_comment_author_section"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        android:id="@+id/board_post_comment_author_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/comment_text_padding"
-                        android:layout_marginBottom="@dimen/margin_medium"
-                        android:layout_marginLeft="@dimen/margin_medium"
-                        android:layout_marginRight="@dimen/margin_medium"
-                        android:layout_marginTop="@dimen/margin_medium"
-                        android:text="Author user name"
-                        android:textColor="@color/highlighted_blue"
-                        android:textIsSelectable="true"
-                        android:textSize="@dimen/text_really_micro" />
+                    android:layout_alignParentRight="true">
 
                     <TextView
                         android:id="@+id/board_post_comment_date_time_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                       android:padding="@dimen/comment_text_padding"
+                        android:layout_alignParentRight="true"
                         android:layout_marginBottom="@dimen/margin_medium"
                         android:layout_marginLeft="@dimen/margin_medium"
                         android:layout_marginRight="@dimen/margin_medium"
                         android:layout_marginTop="@dimen/margin_medium"
+                        android:padding="@dimen/comment_text_padding"
                         android:text="19 August 1970"
                         android:textColor="@color/lighter_grey"
                         android:textSize="@dimen/text_really_micro" />
-                </LinearLayout>
-				<!-- <include layout="@layout/dotted_divider_grey"/> -->
+
+                    <TextView
+                        android:id="@+id/board_post_comment_author_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:layout_marginLeft="@dimen/margin_medium"
+                        android:layout_marginRight="@dimen/margin_medium"
+                        android:layout_marginTop="@dimen/margin_medium"
+                        android:layout_toLeftOf="@id/board_post_comment_date_time_text_view"
+                        android:padding="@dimen/comment_text_padding"
+                        android:text="Author user name"
+                        android:textColor="@color/highlighted_blue"
+                        android:textSize="@dimen/text_really_micro" />
+                </RelativeLayout>
+                <!-- <include layout="@layout/dotted_divider_grey"/> -->
+
                 <TextView
                     android:id="@+id/board_post_comment_this_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                  	 android:padding="@dimen/comment_text_padding"
                     android:layout_below="@id/board_post_comment_author_section"
                     android:layout_marginBottom="@dimen/margin_medium"
                     android:layout_marginLeft="@dimen/margin_medium"
                     android:layout_marginRight="@dimen/margin_medium"
                     android:gravity="right"
+                    android:padding="@dimen/comment_text_padding"
                     android:text="User, User, A  User, A User, A User, A User, A User, A User, A user all this&apos;d this"
                     android:textColor="@color/lighter_grey"
                     android:textSize="@dimen/text_really_micro" />
@@ -131,11 +132,11 @@
             android:layout_marginTop="@dimen/margin_medium"
             android:background="@drawable/board_post_heading_background"
             android:gravity="center"
-			android:padding="@dimen/comment_text_padding"
+            android:padding="@dimen/comment_text_padding"
             android:text="@string/reply_text"
             android:textColor="@color/darkest_grey"
-            android:textSize="@dimen/text_micro" 
-             android:textStyle="bold" />
+            android:textSize="@dimen/text_micro"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/board_post_comment_this"
@@ -148,7 +149,7 @@
             android:layout_toLeftOf="@id/board_post_comment_reply"
             android:background="@drawable/board_post_heading_background"
             android:gravity="center"
-			android:padding="@dimen/comment_text_padding"	
+            android:padding="@dimen/comment_text_padding"
             android:text="@string/this_text"
             android:textColor="@color/darkest_grey"
             android:textSize="@dimen/text_micro"

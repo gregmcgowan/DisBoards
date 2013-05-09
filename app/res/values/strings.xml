@@ -12,4 +12,5 @@
 	<string name="this_text">^ This</string>
 	<string name="connection_error_text">Cannot connect to Drowned in Sound. Check your internet connection</string>
 	<string name="sticky_text">Sticky</string>
+	<string name="subject">Subject</string>
 </resources>

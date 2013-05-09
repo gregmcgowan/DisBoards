@@ -40,4 +40,10 @@ public class DisBoardsConstants {
 
     public static final String FORCE_FETCH = "FORCE_FETCH";
 
+    public static final String REPLY_TO_AUTHOR = "REPLY_TO_AUTHOR";
+
+    public static final String REPLY_TO_TEXT = "REPLY_TO_TEXT";
+
+    public static final String REPLY_TO_ID = "REPLY_TO_ID";
+
 }

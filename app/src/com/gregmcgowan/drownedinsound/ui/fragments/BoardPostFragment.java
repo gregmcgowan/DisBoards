@@ -1,5 +1,6 @@
 package com.gregmcgowan.drownedinsound.ui.fragments;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -59,7 +61,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
     private ProgressBar progressBar;
     private TextView connectionErrorTextView;
     private List<BoardPostComment> boardPostComments = new ArrayList<BoardPostComment>();
-    private BoardPostListAdapater adapter;
+    private BoardPostListAdapter adapter;
     private boolean requestingPost;
     private String boardPostUrl;
     private String boardPostId;
@@ -103,7 +105,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
 	    connectionErrorTextView.setVisibility(View.GONE);
 	}
 
-	adapter = new BoardPostListAdapater(getSherlockActivity(),
+	adapter = new BoardPostListAdapter(getSherlockActivity(),
 		R.layout.board_post_comment_layout, boardPostComments);
 	setListAdapter(adapter);
 	initliase(savedInstanceState);
@@ -208,25 +210,25 @@ public class BoardPostFragment extends DisBoardsListFragment {
     private void fetchBoardPost() {
 	if (isValid()) {
 	    setProgressBarAndFragmentVisibility(true);
-	    if(!requestingPost) {
+	    if (!requestingPost) {
 		connectionErrorTextView.setVisibility(View.GONE);
-		    Intent disWebServiceIntent = new Intent(getSherlockActivity(),
-			    DisWebService.class);
-		    Bundle parametersBundle = new Bundle();
-		    parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
-			    boardPostUrl);
-		    parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
-			    boardPostId);
-		    parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
-			    boardType);
-		    parametersBundle.putInt(
-			    DisWebServiceConstants.SERVICE_REQUESTED_ID,
-			    DisWebServiceConstants.GET_BOARD_POST_ID);
-		    disWebServiceIntent.putExtras(parametersBundle);
+		Intent disWebServiceIntent = new Intent(getSherlockActivity(),
+			DisWebService.class);
+		Bundle parametersBundle = new Bundle();
+		parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
+			boardPostUrl);
+		parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
+			boardPostId);
+		parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
+			boardType);
+		parametersBundle.putInt(
+			DisWebServiceConstants.SERVICE_REQUESTED_ID,
+			DisWebServiceConstants.GET_BOARD_POST_ID);
+		disWebServiceIntent.putExtras(parametersBundle);
 
-		    getSherlockActivity().startService(disWebServiceIntent);
-		    requestingPost = true;
-	    }	    
+		getSherlockActivity().startService(disWebServiceIntent);
+		requestingPost = true;
+	    }
 	}
     }
 
@@ -278,9 +280,12 @@ public class BoardPostFragment extends DisBoardsListFragment {
     }
 
     private void doReplyAction() {
-	Toast.makeText(getSherlockActivity(), "Reply to post",
-		Toast.LENGTH_SHORT).show();
-	Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Reply to  post");
+	Bundle replyDetails = new Bundle();
+	String replyToAuthor = boardPost.getAuthorUsername();
+	replyDetails.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
+		replyToAuthor);
+	PostReplyFragment.newInstance(replyDetails).show(
+		getFragmentManager(), "REPLY-DIALOG");
     }
 
     private void doRefreshAction() {
@@ -288,11 +293,11 @@ public class BoardPostFragment extends DisBoardsListFragment {
 	Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Refresh  post");
     }
 
-    private class BoardPostListAdapater extends ArrayAdapter<BoardPostComment> {
+    private class BoardPostListAdapter extends ArrayAdapter<BoardPostComment> {
 
 	private List<BoardPostComment> comments;
 
-	public BoardPostListAdapater(Context context, int textViewResourceId,
+	public BoardPostListAdapter(Context context, int textViewResourceId,
 		List<BoardPostComment> boardPostSummaries) {
 	    super(context, textViewResourceId);
 	    this.comments = boardPostSummaries;
@@ -363,6 +368,10 @@ public class BoardPostFragment extends DisBoardsListFragment {
 	    if (comment != null) {
 		String title = comment.getTitle();
 		String author = comment.getAuthorUsername();
+		String replyTo = comment.getReplyToUsername();
+		if (!TextUtils.isEmpty(replyTo)) {
+		    author = author + "\n" + "@ " + replyTo;
+		}
 		String content = comment.getContent();
 		String dateAndTime = comment.getDateAndTimeOfComment();
 
@@ -370,7 +379,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
 		    boardPostCommentHolder.commentAuthorTextView
 			    .setText(author);
 		    boardPostCommentHolder.commentTitleTextView.setText(title);
-		    if(content == null){
+		    if (content == null) {
 			content = "";
 		    }
 		    boardPostCommentHolder.commentContentTextView.setText(Html
@@ -411,7 +420,20 @@ public class BoardPostFragment extends DisBoardsListFragment {
 			    .setOnClickListener(new CommentSectionClickListener(
 				    position,
 				    new AllCommentClickListener(
-					    boardPostCommentHolder.actionRelativeLayout)));
+					    new WeakReference<RelativeLayout>(
+						    boardPostCommentHolder.actionRelativeLayout),
+					    new WeakReference<BoardPostListAdapter>(
+						    adapter))));
+		    
+		    boardPostCommentHolder.replyTextView
+			    .setOnClickListener(new CommentSectionClickListener(
+				    position,
+				    new ReplyToCommentListener(
+					    new WeakReference<BoardPostListAdapter>(
+						    adapter),
+					    new WeakReference<FragmentManager>(
+						    getSherlockActivity()
+							    .getSupportFragmentManager()))));
 
 		    boolean actionSectionVisible = comment
 			    .isActionSectionVisible();
@@ -462,12 +484,16 @@ public class BoardPostFragment extends DisBoardsListFragment {
 		.findViewById(R.id.board_post_comment_whitespace_section);
 	boardPostCommentHolder.actionRelativeLayout = (RelativeLayout) rowView
 		.findViewById(R.id.board_post_comment_action_section);
+	boardPostCommentHolder.replyTextView = (TextView) rowView
+		.findViewById(R.id.board_post_comment_reply);
 
 	rowView.setTag(boardPostCommentHolder);
 	rowView.setOnClickListener(null);
 	rowView.setOnClickListener(new CommentSectionClickListener(
 		listPosition, new AllCommentClickListener(
-			boardPostCommentHolder.actionRelativeLayout)));
+			new WeakReference<RelativeLayout>(
+				boardPostCommentHolder.actionRelativeLayout),
+			new WeakReference<BoardPostListAdapter>(adapter))));
 	return boardPostCommentHolder;
     }
 
@@ -511,63 +537,129 @@ public class BoardPostFragment extends DisBoardsListFragment {
 
     }
 
-    private void animateActionLayout(final RelativeLayout actionLayout,
-	    int position, final boolean setVisible) {
-	BoardPostComment comment = adapter.getItem(position);
-	if (comment != null) {
-	    comment.setActionSectionVisible(setVisible);
-	}
+    public static class ReplyToCommentListener implements
+	    CommentSectionClickHandler {
 
-	float[] offset = setVisible ? new float[] { 0, 0.5f, 1 } : new float[] {
-		1, 0.5f, 0 };
+	private WeakReference<BoardPostListAdapter> adapterWeakReference;
+	private WeakReference<FragmentManager> fragmentManagerReference;
 
-	actionLayout.setVisibility(View.VISIBLE);
-	ObjectAnimator removeObjectAnimator = ObjectAnimator.ofFloat(
-		actionLayout, "scaleY", offset);
-	removeObjectAnimator.setDuration(500);
-	removeObjectAnimator.setInterpolator(new AccelerateInterpolator());
-	removeObjectAnimator.addListener(new AnimatorListener() {
-
-	    public void onAnimationStart(Animator animation) {
-	    }
-
-	    public void onAnimationEnd(Animator animation) {
-		if (setVisible) {
-		    actionLayout.setVisibility(View.VISIBLE);
-		} else {
-		    actionLayout.setVisibility(View.GONE);
-		}
-
-	    }
-
-	    public void onAnimationCancel(Animator animation) {
-	    }
-
-	    public void onAnimationRepeat(Animator animation) {
-	    }
-
-	});
-	removeObjectAnimator.start();
-    }
-
-    public class AllCommentClickListener implements CommentSectionClickHandler {
-
-	RelativeLayout actionLayout;
-
-	public AllCommentClickListener(RelativeLayout actionLayout) {
-	    this.actionLayout = actionLayout;
+	public ReplyToCommentListener(
+		WeakReference<BoardPostListAdapter> adapterWeakReference,
+		WeakReference<FragmentManager> fragmentManager) {
+	    this.adapterWeakReference = adapterWeakReference;
+	    this.fragmentManagerReference = fragmentManager;
 	}
 
 	@Override
 	public void doCommentClickAction(View parentView, int position) {
+	    BoardPostComment comment = null;
+	    BoardPostListAdapter boardPostListAdapter = adapterWeakReference
+		    .get();
+	    if (boardPostListAdapter != null) {
+		comment = boardPostListAdapter.getItem(position);
+	    }
+
+	    if (comment != null) {
+		String replyToAuthor = comment.getAuthorUsername();
+		if (TextUtils.isEmpty(replyToAuthor)) {
+		    BoardPostComment initalPost = boardPostListAdapter
+			    .getItem(0);
+		    replyToAuthor = initalPost.getAuthorUsername();
+		}
+		String replyToId =  comment.getId();
+		
+		Bundle replyDetails = new Bundle();
+		replyDetails.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
+			replyToAuthor);
+		replyDetails.putString(DisBoardsConstants.REPLY_TO_ID, replyToId);
+/*		String replyText = comment.getTitle();
+		if (TextUtils.isEmpty(replyText)) {
+		    replyText = comment.getContent();
+		}
+		replyDetails.putString(DisBoardsConstants.REPLY_TO_TEXT,
+			replyText);*/
+		// TextUtils.ellipsize(text, p, avail, where)
+
+		PostReplyFragment.newInstance(replyDetails)
+			.show(fragmentManagerReference.get(),
+				"REPLY_FRAGMENT_DIALOG");
+
+	    } else {
+
+	    }
+	}
+
+    }
+
+    public static class AllCommentClickListener implements
+	    CommentSectionClickHandler {
+
+	private WeakReference<RelativeLayout> actionLayoutWeakReference;
+	private WeakReference<BoardPostListAdapter> adapterWeakReference;
+
+	public AllCommentClickListener(
+		WeakReference<RelativeLayout> actionLayout,
+		WeakReference<BoardPostListAdapter> adapterWeakReference) {
+	    this.actionLayoutWeakReference = actionLayout;
+	    this.adapterWeakReference = adapterWeakReference;
+	}
+
+	@Override
+	public void doCommentClickAction(View parentView, int position) {
+	    RelativeLayout actionLayout = actionLayoutWeakReference.get();
 	    if (actionLayout != null) {
 		boolean initallyVisible = actionLayout.getVisibility() == View.VISIBLE;
 		animateActionLayout(actionLayout, position, !initallyVisible);
 	    }
 	}
+
+	private void animateActionLayout(final RelativeLayout actionLayout,
+		int position, final boolean setVisible) {
+	    BoardPostComment comment = null;
+	    BoardPostListAdapter boardPostListAdapter = adapterWeakReference
+		    .get();
+	    if (boardPostListAdapter != null) {
+		comment = boardPostListAdapter.getItem(position);
+	    }
+
+	    if (comment != null) {
+		comment.setActionSectionVisible(setVisible);
+	    }
+
+	    float[] offset = setVisible ? new float[] { 0, 0.5f, 1 }
+		    : new float[] { 1, 0.5f, 0 };
+
+	    actionLayout.setVisibility(View.VISIBLE);
+	    ObjectAnimator removeObjectAnimator = ObjectAnimator.ofFloat(
+		    actionLayout, "scaleY", offset);
+	    removeObjectAnimator.setDuration(500);
+	    removeObjectAnimator.setInterpolator(new AccelerateInterpolator());
+	    removeObjectAnimator.addListener(new AnimatorListener() {
+
+		public void onAnimationStart(Animator animation) {
+		}
+
+		public void onAnimationEnd(Animator animation) {
+		    if (setVisible) {
+			actionLayout.setVisibility(View.VISIBLE);
+		    } else {
+			actionLayout.setVisibility(View.GONE);
+		    }
+
+		}
+
+		public void onAnimationCancel(Animator animation) {
+		}
+
+		public void onAnimationRepeat(Animator animation) {
+		}
+
+	    });
+	    removeObjectAnimator.start();
+	}
     }
 
-    private class CommentSectionClickListener implements OnClickListener {
+    private static class CommentSectionClickListener implements OnClickListener {
 
 	private int listPosition;
 	private CommentSectionClickHandler commentClickHandler;

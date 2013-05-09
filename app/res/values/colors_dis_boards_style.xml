@@ -28,4 +28,5 @@
     <color name="background_gradient_start">#FEFEFE</color>
     <color name="background_gradient_end">#DDDDDD</color>
 	<color name="board_list_row_selected">#E6E6EE</color>
+	<color name="board_list_row_alternate_color">#F9F9FF</color>
 </resources>

@@ -26,6 +26,8 @@ public class BoardPostComment implements Parcelable {
     @DatabaseField
     private String authorUsername;
     @DatabaseField
+    private String replyToUsername;
+    @DatabaseField
     private String usersWhoHaveThissed;
     @DatabaseField
     private String dateAndTimeOfComment;
@@ -134,6 +136,14 @@ public class BoardPostComment implements Parcelable {
 
     public void setActionSectionVisible(boolean actionSectionVisible) {
 	this.actionSectionVisible = actionSectionVisible;
+    }
+
+    public String getReplyToUsername() {
+	return replyToUsername;
+    }
+
+    public void setReplyToUsername(String replyToUsername) {
+	this.replyToUsername = replyToUsername;
     }
 
     private void readFromParcel(Parcel in) {
