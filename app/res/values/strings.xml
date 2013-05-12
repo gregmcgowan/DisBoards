@@ -14,4 +14,5 @@
 	<string name="sticky_text">Sticky</string>
 	<string name="subject">Subject</string>
 	<string name="lurk">Lurk</string>
+	<string name="go_to_latest_comment">Go to latest comment</string>
 </resources>

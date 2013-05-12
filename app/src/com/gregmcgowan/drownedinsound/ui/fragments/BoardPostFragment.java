@@ -37,6 +37,7 @@ import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
+import com.gregmcgowan.drownedinsound.ui.widgets.AutoScrollListView;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.Animator.AnimatorListener;
@@ -53,6 +54,8 @@ import de.greenrobot.event.EventBus;
  */
 public class BoardPostFragment extends DisBoardsListFragment {
 
+    private static final int SHOW_GO_TO_LAST_COMMENT_TIMEOUT = 5000;
+
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
 	    + "BoardPost";
 
@@ -60,6 +63,8 @@ public class BoardPostFragment extends DisBoardsListFragment {
     private View rootView;
     private ProgressBar progressBar;
     private TextView connectionErrorTextView;
+    private AutoScrollListView commentsList;
+    private TextView scrollToLastCommentTextView;
     private List<BoardPostComment> boardPostComments = new ArrayList<BoardPostComment>();
     private BoardPostListAdapter adapter;
     private boolean requestingPost;
@@ -68,7 +73,8 @@ public class BoardPostFragment extends DisBoardsListFragment {
     private BoardType boardType;
 
     private boolean inDualPaneMode;
-
+    private boolean animatingScrollToLastCommentView;
+    
     public BoardPostFragment() {
 
     }
@@ -103,6 +109,18 @@ public class BoardPostFragment extends DisBoardsListFragment {
 	    connectionErrorTextView = (TextView) rootView
 		    .findViewById(R.id.board_post_connection_error_text_view);
 	    connectionErrorTextView.setVisibility(View.GONE);
+	    commentsList = (AutoScrollListView) getListView();
+	    scrollToLastCommentTextView = (TextView) rootView
+		    .findViewById(R.id.board_post_move_to_last_comment_view);
+	    scrollToLastCommentTextView
+		    .setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+			    scrollToLatestComment();
+			    displayScrollToHiddenCommentOption(false);
+			}
+
+		    });
 	}
 
 	adapter = new BoardPostListAdapter(getSherlockActivity(),
@@ -162,17 +180,29 @@ public class BoardPostFragment extends DisBoardsListFragment {
 	this.requestingPost = false;
 	if (isValid()) {
 	    BoardPost boardPost = event.getBoardPost();
+	    boolean showGoToLastCommentOption = false;
 	    if (shouldShowBoardPost(boardPost)) {
 		this.boardPost = boardPost;
 		updateComments(boardPost.getComments());
 		if (event.isCached()) {
 		    displayIsCachedPopup();
 		}
+		showGoToLastCommentOption = true;
 		connectionErrorTextView.setVisibility(View.GONE);
 	    } else {
 		connectionErrorTextView.setVisibility(View.VISIBLE);
 	    }
 	    setProgressBarAndFragmentVisibility(false);
+	    if(showGoToLastCommentOption){
+		displayScrollToHiddenCommentOption(true);
+		scrollToLastCommentTextView.postDelayed(new Runnable(){
+		    @Override
+		    public void run() {
+			displayScrollToHiddenCommentOption(false);
+		    }
+		    
+		}, SHOW_GO_TO_LAST_COMMENT_TIMEOUT);
+	    }
 	}
     }
 
@@ -196,6 +226,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
 	    int listVisibility = visible ? View.INVISIBLE : View.VISIBLE;
 	    progressBar.setVisibility(progressBarVisiblity);
 	    getListView().setVisibility(listVisibility);
+	    scrollToLastCommentTextView.setVisibility(listVisibility);
 	}
     }
 
@@ -284,13 +315,78 @@ public class BoardPostFragment extends DisBoardsListFragment {
 	String replyToAuthor = boardPost.getAuthorUsername();
 	replyDetails.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
 		replyToAuthor);
-	PostReplyFragment.newInstance(replyDetails).show(
-		getFragmentManager(), "REPLY-DIALOG");
+	PostReplyFragment.newInstance(replyDetails).show(getFragmentManager(),
+		"REPLY-DIALOG");
     }
 
     private void doRefreshAction() {
 	fetchBoardPost();
 	Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Refresh  post");
+    }
+
+    public boolean showGoToLastCommentOption() {
+	// TODO
+
+	return true;
+    }
+
+    public void scrollToLatestComment() {
+	String latestCommentId = boardPost.getLatestCommentId();
+	if (!TextUtils.isEmpty(latestCommentId)) {
+	    int index = 0;
+	    for (BoardPostComment comment : boardPostComments) {
+		if (latestCommentId.equals(comment.getId())) {
+		    break;
+		}
+		index++;
+	    }
+	    if (index > 0) {
+		commentsList.requestPositionToScreen(index, true);
+	    }
+	}
+
+    }
+
+    private void displayScrollToHiddenCommentOption(final boolean display) {
+	if(!animatingScrollToLastCommentView) {
+	    animatingScrollToLastCommentView = true;
+		float[] offset = new float[3];
+		if (display) {
+		    offset[0] = 100f;
+		    offset[1] = 50f;
+		    offset[2] = 0f;
+		} else {
+		    offset[0] = 0f;
+		    offset[1] = 50f;
+		    offset[2] = 100f;
+		}
+
+		ObjectAnimator animateScrollToLastCommentOption = ObjectAnimator
+			.ofFloat(scrollToLastCommentTextView, "translationY", offset);
+		animateScrollToLastCommentOption.setDuration(1000);
+		animateScrollToLastCommentOption.addListener(new AnimatorListener() {
+
+		    public void onAnimationStart(Animator animation) {
+		    }
+
+		    public void onAnimationEnd(Animator animation) {
+			if (display) {
+			    scrollToLastCommentTextView.setVisibility(View.VISIBLE);
+			} else {
+			    scrollToLastCommentTextView.setVisibility(View.GONE);
+			}
+			animatingScrollToLastCommentView = false;
+		    }
+
+		    public void onAnimationCancel(Animator animation) {
+		    }
+
+		    public void onAnimationRepeat(Animator animation) {
+		    }
+
+		});
+		animateScrollToLastCommentOption.start();
+	}
     }
 
     private class BoardPostListAdapter extends ArrayAdapter<BoardPostComment> {
@@ -424,7 +520,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
 						    boardPostCommentHolder.actionRelativeLayout),
 					    new WeakReference<BoardPostListAdapter>(
 						    adapter))));
-		    
+
 		    boardPostCommentHolder.replyTextView
 			    .setOnClickListener(new CommentSectionClickListener(
 				    position,
@@ -566,18 +662,20 @@ public class BoardPostFragment extends DisBoardsListFragment {
 			    .getItem(0);
 		    replyToAuthor = initalPost.getAuthorUsername();
 		}
-		String replyToId =  comment.getId();
-		
+		String replyToId = comment.getId();
+
 		Bundle replyDetails = new Bundle();
 		replyDetails.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
 			replyToAuthor);
-		replyDetails.putString(DisBoardsConstants.REPLY_TO_ID, replyToId);
-/*		String replyText = comment.getTitle();
-		if (TextUtils.isEmpty(replyText)) {
-		    replyText = comment.getContent();
-		}
-		replyDetails.putString(DisBoardsConstants.REPLY_TO_TEXT,
-			replyText);*/
+		replyDetails.putString(DisBoardsConstants.REPLY_TO_ID,
+			replyToId);
+		/*
+		 * String replyText = comment.getTitle(); if
+		 * (TextUtils.isEmpty(replyText)) { replyText =
+		 * comment.getContent(); }
+		 * replyDetails.putString(DisBoardsConstants.REPLY_TO_TEXT,
+		 * replyText);
+		 */
 		// TextUtils.ellipsize(text, p, avail, where)
 
 		PostReplyFragment.newInstance(replyDetails)
