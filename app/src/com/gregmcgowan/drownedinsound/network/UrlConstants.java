@@ -21,4 +21,6 @@ public class UrlConstants {
     public final static String  YOUR_MUSIC_URL = BOARD_BASE_URL + "your_music";
     
     public final static String  ERRORS_SUGGESTIONS_URL = BOARD_BASE_URL + "errors";
+    
+    public final static String COMMENTS_URL = BASE_URL  +"/comments";
 }

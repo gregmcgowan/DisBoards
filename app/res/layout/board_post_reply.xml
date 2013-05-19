@@ -20,7 +20,7 @@
             android:text="Reply @someusername" />
 
         <ImageButton
-            android:id="@+id/btn_upload"
+            android:id="@+id/board_post_reply_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/reply" />

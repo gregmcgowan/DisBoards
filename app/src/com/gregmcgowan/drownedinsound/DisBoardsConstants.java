@@ -48,4 +48,8 @@ public class DisBoardsConstants {
 
     public static final String BOARD_COMMENT_ID = "BOARD_COMMENT_ID";
 
+    public static final String COMMENT_TITLE = "COMMENT_TITLE";
+
+    public static final String COMMENT_CONTENT = "COMMENT_CONTENT";
+
 }

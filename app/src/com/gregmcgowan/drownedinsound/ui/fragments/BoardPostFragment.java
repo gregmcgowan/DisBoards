@@ -33,6 +33,8 @@ import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
+import com.gregmcgowan.drownedinsound.events.BoardPostCommentSentEvent;
+import com.gregmcgowan.drownedinsound.events.FailedToPostCommentEvent;
 import com.gregmcgowan.drownedinsound.events.FailedToThisThisEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
@@ -215,6 +217,17 @@ public class BoardPostFragment extends DisBoardsListFragment {
 		Toast.LENGTH_SHORT).show();
     }
 
+    public void onEventMainThread(FailedToPostCommentEvent event) {
+	setProgressBarAndFragmentVisibility(false);
+	Toast.makeText(getSherlockActivity(),
+		"So why so sad... Failed to post comment. You could try again",
+		Toast.LENGTH_SHORT).show();
+    }
+
+    public void onEventMainThread(BoardPostCommentSentEvent event) {
+	setProgressBarAndFragmentVisibility(true);
+    }
+
     private boolean shouldShowBoardPost(BoardPost boardPost) {
 	boolean shouldDisplayBoardPost = false;
 	if (boardPost != null) {
@@ -324,6 +337,9 @@ public class BoardPostFragment extends DisBoardsListFragment {
 	String replyToAuthor = boardPost.getAuthorUsername();
 	replyDetails.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
 		replyToAuthor);
+	replyDetails.putString(DisBoardsConstants.BOARD_POST_ID,
+		boardPost.getId());
+	replyDetails.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
 	PostReplyFragment.newInstance(replyDetails).show(getFragmentManager(),
 		"REPLY-DIALOG");
     }
@@ -752,8 +768,12 @@ public class BoardPostFragment extends DisBoardsListFragment {
 		Bundle replyDetails = new Bundle();
 		replyDetails.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
 			replyToAuthor);
-		replyDetails.putString(DisBoardsConstants.REPLY_TO_ID,
+		replyDetails.putString(DisBoardsConstants.BOARD_COMMENT_ID,
 			replyToId);
+		replyDetails.putString(DisBoardsConstants.BOARD_POST_ID,
+			comment.getBoardPost().getId());
+		replyDetails.putSerializable(DisBoardsConstants.BOARD_TYPE,
+			comment.getBoardPost().getBoardType());
 		/*
 		 * String replyText = comment.getTitle(); if
 		 * (TextUtils.isEmpty(replyText)) { replyText =

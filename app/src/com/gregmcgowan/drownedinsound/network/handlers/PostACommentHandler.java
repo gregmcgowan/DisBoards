@@ -6,24 +6,24 @@ import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.data.parser.streaming.BoardPostParser;
-import com.gregmcgowan.drownedinsound.events.FailedToThisThisEvent;
+import com.gregmcgowan.drownedinsound.events.FailedToPostCommentEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.events.UpdateCachedBoardPostEvent;
 
 import de.greenrobot.event.EventBus;
 
-public class ThisACommentHandler extends DisBoardAsyncInputStreamHandler {
+public class PostACommentHandler extends DisBoardAsyncInputStreamHandler {
 
     private String postID;
     private BoardType boardType;
     private DatabaseHelper databaseHelper;
 
-    public ThisACommentHandler( String postID,
-	    BoardType boardType,  DatabaseHelper databaseHelper) {
-	super(postID, true);
-	this.postID = postID;
-	this.databaseHelper = databaseHelper;
+    public PostACommentHandler(String boardPostId, BoardType boardType,
+	    DatabaseHelper databaseHelper) {
+	super(boardPostId, true);
+	this.postID = boardPostId;
 	this.boardType = boardType;
+	this.databaseHelper = databaseHelper;
     }
 
     @Override
@@ -46,8 +46,6 @@ public class ThisACommentHandler extends DisBoardAsyncInputStreamHandler {
 
     @Override
     public void doFailureAction(Throwable throwable) {
-	    EventBus.getDefault()
-	    .post(new FailedToThisThisEvent());
+	EventBus.getDefault().post(new FailedToPostCommentEvent());
     }
-
 }

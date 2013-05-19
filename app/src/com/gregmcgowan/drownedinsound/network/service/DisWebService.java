@@ -20,6 +20,7 @@ import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.gregmcgowan.drownedinsound.network.UrlConstants;
 import com.gregmcgowan.drownedinsound.network.handlers.LoginResponseHandler;
+import com.gregmcgowan.drownedinsound.network.handlers.PostACommentHandler;
 import com.gregmcgowan.drownedinsound.network.handlers.RetrieveBoardPostHandler;
 import com.gregmcgowan.drownedinsound.network.handlers.RetrieveBoardSummaryListHandler;
 import com.gregmcgowan.drownedinsound.network.handlers.ThisACommentHandler;
@@ -66,6 +67,9 @@ public class DisWebService extends IntentService {
 	    break;
 	case DisWebServiceConstants.THIS_A_COMMENT_ID:
 	    handleThisAComment(intent);
+	    break;
+	case DisWebServiceConstants.POST_A_COMMENT:
+	    postComment(intent);
 	    break;
 	default:
 	    break;
@@ -125,13 +129,26 @@ public class DisWebService extends IntentService {
 		.getStringExtra(DisBoardsConstants.BOARD_COMMENT_ID);
 	BoardType boardType = (BoardType) intent
 		.getSerializableExtra(DisBoardsConstants.BOARD_TYPE);
-	HttpClient
-		.thisAComment(
-			getApplicationContext(),
-			commentId,
-			boardPostUrl,
-			new ThisACommentHandler(boardPostId,
-				boardType,databaseHelper));
+	HttpClient.thisAComment(getApplicationContext(), commentId,
+		boardPostUrl, new ThisACommentHandler(boardPostId, boardType,
+			databaseHelper));
+    }
+
+    private void postComment(Intent intent) {
+	String boardPostId = intent
+		.getStringExtra(DisBoardsConstants.BOARD_POST_ID);
+	String commentId = intent
+		.getStringExtra(DisBoardsConstants.BOARD_COMMENT_ID);
+	BoardType boardType = (BoardType) intent
+		.getSerializableExtra(DisBoardsConstants.BOARD_TYPE);
+	String title = intent.getStringExtra(DisBoardsConstants.COMMENT_TITLE);
+	String content = intent
+		.getStringExtra(DisBoardsConstants.COMMENT_CONTENT);
+	
+	HttpClient.postComment(getApplicationContext(), title, content,
+		boardPostId, commentId, new PostACommentHandler(boardPostId,
+			boardType, databaseHelper));
+
     }
 
     private void fetchBoardPostSummaryList(Board board, boolean updateUI,

@@ -134,6 +134,34 @@ public class HttpClient {
 
     }
 
+    public static void postComment(Context context, String title,
+	    String content, String postID, String replyToCommentID,
+	    AsyncHttpResponseHandler responseHandler) {
+	BasicHeader[] headers = getMandatoryDefaultHeaders();
+
+	List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+	pairs.add(new BasicNameValuePair("comment[commentable_id]", postID));
+	pairs.add(new BasicNameValuePair("comment[commentable_type]", "Topic"));
+	if (replyToCommentID == null) {
+	    replyToCommentID = "";
+	}
+	pairs.add(new BasicNameValuePair("parent_id", replyToCommentID));
+	pairs.add(new BasicNameValuePair("comment[title]", title));
+	pairs.add(new BasicNameValuePair("comment[content_raw]", content));
+	pairs.add(new BasicNameValuePair("commit", "Post reply"));
+
+	HttpEntity entity = null;
+	try {
+	    entity = new UrlEncodedFormEntity(pairs, CONTENT_ENCODING);
+	} catch (UnsupportedEncodingException e) {
+	    if (DisBoardsConstants.DEBUG) {
+		e.printStackTrace();
+	    }
+	}
+	asyncHttpClient.post(context, UrlConstants.COMMENTS_URL, headers,
+		entity, REQUEST_CONTENT_TYPE, responseHandler);
+    }
+
     /**
      * Get the headers that are required for each request to the drowned in
      * sound website
@@ -205,14 +233,15 @@ public class HttpClient {
 
     }
 
-    public static void thisAComment(Context context, String commentId,String boardPostUrl,
-	    AsyncHttpResponseHandler responseHandler) {
-	String fullUrl = boardPostUrl + "/" + commentId +"/this";
-	if(DisBoardsConstants.DEBUG) {
-	    Log.d(TAG, "Going to request  ="+fullUrl);
+    public static void thisAComment(Context context, String commentId,
+	    String boardPostUrl, AsyncHttpResponseHandler responseHandler) {
+	String fullUrl = boardPostUrl + "/" + commentId + "/this";
+	if (DisBoardsConstants.DEBUG) {
+	    Log.d(TAG, "Going to request  =" + fullUrl);
 	}
 	addRequest(responseHandler.getIdentifier());
-	asyncHttpClient.get(context, fullUrl, getMandatoryDefaultHeaders(), null , responseHandler);
+	asyncHttpClient.get(context, fullUrl, getMandatoryDefaultHeaders(),
+		null, responseHandler);
 
     }
 
