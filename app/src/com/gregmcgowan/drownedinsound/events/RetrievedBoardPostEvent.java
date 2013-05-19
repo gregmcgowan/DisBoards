@@ -6,6 +6,8 @@ public class RetrievedBoardPostEvent {
 
     private BoardPost boardPost;
     private boolean isCached;
+    private String commentIDToScrollTo;
+    private boolean displayGotToLatestCommentOption;
     
     public RetrievedBoardPostEvent(BoardPost boardPost, boolean isCached){
 	setBoardPost(boardPost);
@@ -26,5 +28,22 @@ public class RetrievedBoardPostEvent {
 
     public void setCached(boolean isCached) {
 	this.isCached = isCached;
+    }
+
+    public String getCommentIDToScrollTo() {
+	return commentIDToScrollTo;
+    }
+
+    public void setCommentIDToScrollTo(String commentIDToScrollTo) {
+	this.commentIDToScrollTo = commentIDToScrollTo;
+    }
+
+    public boolean isDisplayGotToLatestCommentOption() {
+	return displayGotToLatestCommentOption;
+    }
+
+    public void setDisplayGotToLatestCommentOption(
+	    boolean displayGotToLatestCommentOption) {
+	this.displayGotToLatestCommentOption = displayGotToLatestCommentOption;
     }
 }

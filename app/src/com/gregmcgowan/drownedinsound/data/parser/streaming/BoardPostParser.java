@@ -214,8 +214,6 @@ public class BoardPostParser extends StreamingParser {
 						    "\'", "");
 					    dateAndTime = dateAndTime.replace(
 						    ",", "");
-					    Log.d(TAG, "DateAndTime = "
-						    + dateAndTime);
 					    Date dateOfPost = DateUtils
 						    .parseDate(
 							    dateAndTime,
@@ -229,8 +227,6 @@ public class BoardPostParser extends StreamingParser {
 							    .getId();
 						}
 					    }
-					    Log.d(TAG, "Date of Comment = "
-						    + dateOfPost.getTime());
 
 					}
 				    }

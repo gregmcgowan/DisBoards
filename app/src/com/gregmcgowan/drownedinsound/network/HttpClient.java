@@ -205,6 +205,17 @@ public class HttpClient {
 
     }
 
+    public static void thisAComment(Context context, String commentId,String boardPostUrl,
+	    AsyncHttpResponseHandler responseHandler) {
+	String fullUrl = boardPostUrl + "/" + commentId +"/this";
+	if(DisBoardsConstants.DEBUG) {
+	    Log.d(TAG, "Going to request  ="+fullUrl);
+	}
+	addRequest(responseHandler.getIdentifier());
+	asyncHttpClient.get(context, fullUrl, getMandatoryDefaultHeaders(), null , responseHandler);
+
+    }
+
     private static void makeFakeRequest(final Object returnEvent) {
 	new Thread() {
 

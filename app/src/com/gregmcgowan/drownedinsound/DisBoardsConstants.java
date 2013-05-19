@@ -46,4 +46,6 @@ public class DisBoardsConstants {
 
     public static final String REPLY_TO_ID = "REPLY_TO_ID";
 
+    public static final String BOARD_COMMENT_ID = "BOARD_COMMENT_ID";
+
 }

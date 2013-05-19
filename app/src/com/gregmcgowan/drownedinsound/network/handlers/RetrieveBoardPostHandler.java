@@ -18,6 +18,9 @@ import de.greenrobot.event.EventBus;
 
 public class RetrieveBoardPostHandler extends DisBoardAsyncInputStreamHandler {
 
+    private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
+	    + "RetrieveBoardPostHandler";
+    
     private String boardPostId;
     private BoardType boardPostType;
     private DatabaseHelper databaseHelper;
@@ -29,9 +32,6 @@ public class RetrieveBoardPostHandler extends DisBoardAsyncInputStreamHandler {
 	this.boardPostType = boardType;
 	this.databaseHelper = databaseHelper;
     }
-
-    private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
-	    + "RetrieveBoardPostHandler";
 
     @Override
     public void doSuccessAction(int statusCode, InputStream inputStream) {

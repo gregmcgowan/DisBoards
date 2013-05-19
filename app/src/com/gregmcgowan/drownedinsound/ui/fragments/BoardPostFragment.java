@@ -33,6 +33,7 @@ import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
+import com.gregmcgowan.drownedinsound.events.FailedToThisThisEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
@@ -74,7 +75,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
 
     private boolean inDualPaneMode;
     private boolean animatingScrollToLastCommentView;
-    
+
     public BoardPostFragment() {
 
     }
@@ -124,7 +125,8 @@ public class BoardPostFragment extends DisBoardsListFragment {
 	}
 
 	adapter = new BoardPostListAdapter(getSherlockActivity(),
-		R.layout.board_post_comment_layout, boardPostComments);
+		R.layout.board_post_comment_layout, boardPostComments,
+		new WeakReference<BoardPostFragment>(this));
 	setListAdapter(adapter);
 	initliase(savedInstanceState);
     }
@@ -193,17 +195,24 @@ public class BoardPostFragment extends DisBoardsListFragment {
 		connectionErrorTextView.setVisibility(View.VISIBLE);
 	    }
 	    setProgressBarAndFragmentVisibility(false);
-	    if(showGoToLastCommentOption){
+	    if (showGoToLastCommentOption) {
 		displayScrollToHiddenCommentOption(true);
-		scrollToLastCommentTextView.postDelayed(new Runnable(){
+		scrollToLastCommentTextView.postDelayed(new Runnable() {
 		    @Override
 		    public void run() {
 			displayScrollToHiddenCommentOption(false);
 		    }
-		    
+
 		}, SHOW_GO_TO_LAST_COMMENT_TIMEOUT);
 	    }
 	}
+    }
+
+    public void onEventMainThread(FailedToThisThisEvent event) {
+	setProgressBarAndFragmentVisibility(false);
+	Toast.makeText(getSherlockActivity(),
+		"So why so sad... Failed to this this. You could try again",
+		Toast.LENGTH_SHORT).show();
     }
 
     private boolean shouldShowBoardPost(BoardPost boardPost) {
@@ -348,55 +357,62 @@ public class BoardPostFragment extends DisBoardsListFragment {
     }
 
     private void displayScrollToHiddenCommentOption(final boolean display) {
-	if(!animatingScrollToLastCommentView) {
+	if (!animatingScrollToLastCommentView) {
 	    animatingScrollToLastCommentView = true;
-		float[] offset = new float[3];
-		if (display) {
-		    offset[0] = 100f;
-		    offset[1] = 50f;
-		    offset[2] = 0f;
-		} else {
-		    offset[0] = 0f;
-		    offset[1] = 50f;
-		    offset[2] = 100f;
-		}
+	    float[] offset = new float[3];
+	    if (display) {
+		offset[0] = 100f;
+		offset[1] = 50f;
+		offset[2] = 0f;
+	    } else {
+		offset[0] = 0f;
+		offset[1] = 50f;
+		offset[2] = 100f;
+	    }
 
-		ObjectAnimator animateScrollToLastCommentOption = ObjectAnimator
-			.ofFloat(scrollToLastCommentTextView, "translationY", offset);
-		animateScrollToLastCommentOption.setDuration(1000);
-		animateScrollToLastCommentOption.addListener(new AnimatorListener() {
+	    ObjectAnimator animateScrollToLastCommentOption = ObjectAnimator
+		    .ofFloat(scrollToLastCommentTextView, "translationY",
+			    offset);
+	    animateScrollToLastCommentOption.setDuration(1000);
+	    animateScrollToLastCommentOption
+		    .addListener(new AnimatorListener() {
 
-		    public void onAnimationStart(Animator animation) {
-		    }
-
-		    public void onAnimationEnd(Animator animation) {
-			if (display) {
-			    scrollToLastCommentTextView.setVisibility(View.VISIBLE);
-			} else {
-			    scrollToLastCommentTextView.setVisibility(View.GONE);
+			public void onAnimationStart(Animator animation) {
 			}
-			animatingScrollToLastCommentView = false;
-		    }
 
-		    public void onAnimationCancel(Animator animation) {
-		    }
+			public void onAnimationEnd(Animator animation) {
+			    if (display) {
+				scrollToLastCommentTextView
+					.setVisibility(View.VISIBLE);
+			    } else {
+				scrollToLastCommentTextView
+					.setVisibility(View.GONE);
+			    }
+			    animatingScrollToLastCommentView = false;
+			}
 
-		    public void onAnimationRepeat(Animator animation) {
-		    }
+			public void onAnimationCancel(Animator animation) {
+			}
 
-		});
-		animateScrollToLastCommentOption.start();
+			public void onAnimationRepeat(Animator animation) {
+			}
+
+		    });
+	    animateScrollToLastCommentOption.start();
 	}
     }
 
     private class BoardPostListAdapter extends ArrayAdapter<BoardPostComment> {
 
 	private List<BoardPostComment> comments;
+	private WeakReference<BoardPostFragment> boardPostFragmentWeakReference;
 
 	public BoardPostListAdapter(Context context, int textViewResourceId,
-		List<BoardPostComment> boardPostSummaries) {
+		List<BoardPostComment> boardPostSummaries,
+		WeakReference<BoardPostFragment> boardPostFragmentWeakReference) {
 	    super(context, textViewResourceId);
 	    this.comments = boardPostSummaries;
+	    this.boardPostFragmentWeakReference = boardPostFragmentWeakReference;
 	}
 
 	@Override
@@ -530,6 +546,16 @@ public class BoardPostFragment extends DisBoardsListFragment {
 					    new WeakReference<FragmentManager>(
 						    getSherlockActivity()
 							    .getSupportFragmentManager()))));
+		    boardPostCommentHolder.thisTextView
+			    .setOnClickListener(new CommentSectionClickListener(
+				    position,
+				    new ThisACommentListener(
+					    boardPostUrl,
+					    boardType,
+					    boardPostId,
+					    new WeakReference<BoardPostListAdapter>(
+						    this),
+					    boardPostFragmentWeakReference)));
 
 		    boolean actionSectionVisible = comment
 			    .isActionSectionVisible();
@@ -582,6 +608,8 @@ public class BoardPostFragment extends DisBoardsListFragment {
 		.findViewById(R.id.board_post_comment_action_section);
 	boardPostCommentHolder.replyTextView = (TextView) rowView
 		.findViewById(R.id.board_post_comment_reply);
+	boardPostCommentHolder.thisTextView = (TextView) rowView
+		.findViewById(R.id.board_post_comment_this);
 
 	rowView.setTag(boardPostCommentHolder);
 	rowView.setOnClickListener(null);
@@ -630,6 +658,63 @@ public class BoardPostFragment extends DisBoardsListFragment {
 	private TextView commentAuthorTextView;
 	private TextView commentDateTimeTextView;
 	private TextView noOfCommentsTextView;
+
+    }
+
+    public static class ThisACommentListener implements
+	    CommentSectionClickHandler {
+
+	private WeakReference<BoardPostListAdapter> adapterWeakReference;
+	private WeakReference<BoardPostFragment> boardPostFragmentWeakReference;
+	private String postUrl;
+	private BoardType boardType;
+	private String postID;
+
+	public ThisACommentListener(String postUrl, BoardType boardType,
+		String postID,
+		WeakReference<BoardPostListAdapter> adapterWeakReference,
+		WeakReference<BoardPostFragment> fragment) {
+	    this.adapterWeakReference = adapterWeakReference;
+	    this.boardPostFragmentWeakReference = fragment;
+	    this.postUrl = postUrl;
+	    this.postID = postID;
+	    this.boardType = boardType;
+	}
+
+	@Override
+	public void doCommentClickAction(View parentView, int position) {
+	    BoardPostComment comment = null;
+	    BoardPostListAdapter boardPostListAdapter = adapterWeakReference
+		    .get();
+	    if (boardPostListAdapter != null) {
+		comment = boardPostListAdapter.getItem(position);
+	    }
+	    String commentID = comment.getId();
+	    BoardPostListAdapter adapter = adapterWeakReference.get();
+	    BoardPostFragment fragment = boardPostFragmentWeakReference.get();
+	    if (adapter != null && fragment != null) {
+		fragment.setProgressBarAndFragmentVisibility(true);
+
+		Intent thisCommentIntent = new Intent(
+			fragment.getSherlockActivity(), DisWebService.class);
+		Bundle parametersBundle = new Bundle();
+		parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
+			postUrl);
+		parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
+			postID);
+		parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
+			boardType);
+		parametersBundle.putString(DisBoardsConstants.BOARD_COMMENT_ID,
+			commentID);
+		parametersBundle.putInt(
+			DisWebServiceConstants.SERVICE_REQUESTED_ID,
+			DisWebServiceConstants.THIS_A_COMMENT_ID);
+		thisCommentIntent.putExtras(parametersBundle);
+
+		fragment.getSherlockActivity().startService(thisCommentIntent);
+
+	    }
+	}
 
     }
 

@@ -22,6 +22,7 @@ import com.gregmcgowan.drownedinsound.network.UrlConstants;
 import com.gregmcgowan.drownedinsound.network.handlers.LoginResponseHandler;
 import com.gregmcgowan.drownedinsound.network.handlers.RetrieveBoardPostHandler;
 import com.gregmcgowan.drownedinsound.network.handlers.RetrieveBoardSummaryListHandler;
+import com.gregmcgowan.drownedinsound.network.handlers.ThisACommentHandler;
 import com.gregmcgowan.drownedinsound.utils.FileUtils;
 import com.gregmcgowan.drownedinsound.utils.NetworkUtils;
 
@@ -63,6 +64,9 @@ public class DisWebService extends IntentService {
 	case DisWebServiceConstants.GET_BOARD_POST_ID:
 	    handleGetBoardPost(intent);
 	    break;
+	case DisWebServiceConstants.THIS_A_COMMENT_ID:
+	    handleThisAComment(intent);
+	    break;
 	default:
 	    break;
 	}
@@ -81,9 +85,7 @@ public class DisWebService extends IntentService {
 	    boolean requestIsInProgress = HttpClient
 		    .requestIsInProgress(boardPostId);
 	    if (!requestIsInProgress) {
-		HttpClient.requestBoardPost(
-			this,
-			boardPostUrl,
+		HttpClient.requestBoardPost(this, boardPostUrl,
 			new RetrieveBoardPostHandler(boardPostId, boardType,
 				true, databaseHelper));
 	    }
@@ -96,22 +98,40 @@ public class DisWebService extends IntentService {
     }
 
     private void handleGetPostSummaryList(Intent intent) {
-	Board board = intent
-		.getParcelableExtra(DisBoardsConstants.BOARD);
+	Board board = intent.getParcelableExtra(DisBoardsConstants.BOARD);
 	boolean forceFetch = intent.getBooleanExtra(
 		DisBoardsConstants.FORCE_FETCH, false);
-	fetchBoardPostSummaryList(board, true, forceFetch);	
-	//TODO not sure if we actually gain anything from doing this
+	fetchBoardPostSummaryList(board, true, forceFetch);
+	// TODO not sure if we actually gain anything from doing this
 	// Fetch the two nearest as well
-/*	if(!forceFetch) {
-		ArrayList<Board> nextTwoBoards = Board.getBoardsToFetch(board, this);
-		DisBoardsApp disApp = DisBoardsApp.getApplication(this);
-		FetchBoardRunnable fetchBoardRunnable = new FetchBoardRunnable(
-			nextTwoBoards, new WeakReference<Context>(disApp),
-			databaseHelper,forceFetch);
-		disApp.getMultiThreadedExecutorService().execute(fetchBoardRunnable); 
-	}*/
+	/*
+	 * if(!forceFetch) { ArrayList<Board> nextTwoBoards =
+	 * Board.getBoardsToFetch(board, this); DisBoardsApp disApp =
+	 * DisBoardsApp.getApplication(this); FetchBoardRunnable
+	 * fetchBoardRunnable = new FetchBoardRunnable( nextTwoBoards, new
+	 * WeakReference<Context>(disApp), databaseHelper,forceFetch);
+	 * disApp.getMultiThreadedExecutorService().execute(fetchBoardRunnable);
+	 * }
+	 */
 
+    }
+
+    private void handleThisAComment(Intent intent) {
+	String boardPostUrl = intent
+		.getStringExtra(DisBoardsConstants.BOARD_POST_URL);
+	String boardPostId = intent
+		.getStringExtra(DisBoardsConstants.BOARD_POST_ID);
+	String commentId = intent
+		.getStringExtra(DisBoardsConstants.BOARD_COMMENT_ID);
+	BoardType boardType = (BoardType) intent
+		.getSerializableExtra(DisBoardsConstants.BOARD_TYPE);
+	HttpClient
+		.thisAComment(
+			getApplicationContext(),
+			commentId,
+			boardPostUrl,
+			new ThisACommentHandler(boardPostId,
+				boardType,databaseHelper));
     }
 
     private void fetchBoardPostSummaryList(Board board, boolean updateUI,
@@ -127,9 +147,9 @@ public class DisWebService extends IntentService {
 			    this,
 			    board.getUrl(),
 			    board.getBoardType(),
-			    new RetrieveBoardSummaryListHandler(
-				    board.getBoardType(), updateUI,
-				    databaseHelper), 1);
+			    new RetrieveBoardSummaryListHandler(board
+				    .getBoardType(), updateUI, databaseHelper),
+			    1);
 		} else {
 		    if (updateUI) {
 			EventBus.getDefault().post(
@@ -171,18 +191,18 @@ public class DisWebService extends IntentService {
 
 	return recentlyFetched;
     }
-    
-    
-    //TODO Not sure if this just causes more problems
+
+    // TODO Not sure if this just causes more problems
     private static class FetchBoardRunnable implements Runnable {
 
 	private DatabaseHelper databaseHelper;
 	private WeakReference<Context> context;
 	private ArrayList<Board> boards;
 	private boolean forceFetch;
-	
+
 	FetchBoardRunnable(ArrayList<Board> boards,
-		WeakReference<Context> context, DatabaseHelper databaseHelper,boolean forceFetch) {
+		WeakReference<Context> context, DatabaseHelper databaseHelper,
+		boolean forceFetch) {
 	    this.boards = boards;
 	    this.context = context;
 	    this.databaseHelper = databaseHelper;
@@ -209,8 +229,8 @@ public class DisWebService extends IntentService {
 				new RetrieveBoardSummaryListHandler(board
 					.getBoardType(), forceFetch,
 					databaseHelper), 1);
-		    } 
-		} 
+		    }
+		}
 	    }
 	}
 
@@ -237,7 +257,7 @@ public class DisWebService extends IntentService {
 	    return recentlyFetched;
 	}
     }
-    
+
     private void handleLoginRequest(Intent intent) {
 	String username = intent.getStringExtra(DisBoardsConstants.USERNAME);
 	String password = intent.getStringExtra(DisBoardsConstants.PASSWORD);
