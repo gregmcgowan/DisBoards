@@ -1,7 +1,6 @@
 package com.gregmcgowan.drownedinsound.data.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -308,9 +307,8 @@ public class BoardPost implements Parcelable {
 	parcel.writeSerializable(boardType);
 	parcel.writeString(latestCommentId);
 	parcel.writeInt(numberOfTimesRead);
-	Collection<BoardPostComment> comments = getComments();
-	parcel.writeParcelableArray(
-		comments.toArray(new BoardPostComment[comments.size()]), flag);
+	List<BoardPostComment> comments = new ArrayList<BoardPostComment>(getComments());
+	parcel.writeTypedList(comments);
     }
 
     private void createFromParcel(Parcel parcel) {
@@ -329,9 +327,8 @@ public class BoardPost implements Parcelable {
 	boardType = (BoardType) parcel.readSerializable();
 	latestCommentId = parcel.readString();
 	numberOfTimesRead = parcel.readInt();
-	List<BoardPostComment> comments = Arrays
-		.asList((BoardPostComment[]) parcel
-			.readArray(BoardPostComment.class.getClassLoader()));
+	List<BoardPostComment> comments = new ArrayList<BoardPostComment>();
+	parcel.readTypedList(comments, BoardPostComment.CREATOR);
 	setComments(comments);
     }
 
