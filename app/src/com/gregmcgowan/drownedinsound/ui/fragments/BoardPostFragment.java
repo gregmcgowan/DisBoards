@@ -184,29 +184,33 @@ public class BoardPostFragment extends DisBoardsListFragment {
 	this.requestingPost = false;
 	if (isValid()) {
 	    BoardPost boardPost = event.getBoardPost();
-	    boolean showGoToLastCommentOption = false;
 	    if (shouldShowBoardPost(boardPost)) {
 		this.boardPost = boardPost;
+		boolean showGoToLastCommentOption = event
+			.isDisplayGotToLatestCommentOption()
+			&& showGoToLastCommentOption();
 		updateComments(boardPost.getComments());
 		if (event.isCached()) {
 		    displayIsCachedPopup();
 		}
-		showGoToLastCommentOption = true;
 		connectionErrorTextView.setVisibility(View.GONE);
+		Log.d(TAG, "Show got to last comment option ="
+			+ showGoToLastCommentOption);
+		if (showGoToLastCommentOption) {
+		    displayScrollToHiddenCommentOption(true);
+		    scrollToLastCommentTextView.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+			    displayScrollToHiddenCommentOption(false);
+			}
+
+		    }, SHOW_GO_TO_LAST_COMMENT_TIMEOUT);
+		}
 	    } else {
 		connectionErrorTextView.setVisibility(View.VISIBLE);
 	    }
 	    setProgressBarAndFragmentVisibility(false);
-	    if (showGoToLastCommentOption) {
-		displayScrollToHiddenCommentOption(true);
-		scrollToLastCommentTextView.postDelayed(new Runnable() {
-		    @Override
-		    public void run() {
-			displayScrollToHiddenCommentOption(false);
-		    }
 
-		}, SHOW_GO_TO_LAST_COMMENT_TIMEOUT);
-	    }
 	}
     }
 
@@ -242,13 +246,17 @@ public class BoardPostFragment extends DisBoardsListFragment {
 		Toast.LENGTH_SHORT).show();
     }
 
-    public void setProgressBarAndFragmentVisibility(boolean visible) {
+    public void setProgressBarAndFragmentVisibility(boolean progressBarVisible) {
 	if (progressBar != null) {
-	    int progressBarVisiblity = visible ? View.VISIBLE : View.INVISIBLE;
-	    int listVisibility = visible ? View.INVISIBLE : View.VISIBLE;
+	    int progressBarVisiblity = progressBarVisible ? View.VISIBLE
+		    : View.INVISIBLE;
+	    int listVisibility = progressBarVisible ? View.INVISIBLE
+		    : View.VISIBLE;
 	    progressBar.setVisibility(progressBarVisiblity);
 	    getListView().setVisibility(listVisibility);
-	    scrollToLastCommentTextView.setVisibility(listVisibility);
+	    if (progressBarVisible) {
+		scrollToLastCommentTextView.setVisibility(View.INVISIBLE);
+	    }
 	}
     }
 
@@ -352,7 +360,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
     public boolean showGoToLastCommentOption() {
 	// TODO
 
-	return true;
+	return boardPost != null && boardPost.getNumberOfTimesRead() > 1;
     }
 
     public void scrollToLatestComment() {
@@ -373,6 +381,10 @@ public class BoardPostFragment extends DisBoardsListFragment {
     }
 
     private void displayScrollToHiddenCommentOption(final boolean display) {
+	boolean alreadyHidden = scrollToLastCommentTextView.getVisibility() != View.VISIBLE;
+	if(!display && alreadyHidden){
+	    return;
+	}
 	if (!animatingScrollToLastCommentView) {
 	    animatingScrollToLastCommentView = true;
 	    float[] offset = new float[3];
@@ -385,7 +397,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
 		offset[1] = 50f;
 		offset[2] = 100f;
 	    }
-
+	    scrollToLastCommentTextView.setVisibility(View.VISIBLE);
 	    ObjectAnimator animateScrollToLastCommentOption = ObjectAnimator
 		    .ofFloat(scrollToLastCommentTextView, "translationY",
 			    offset);

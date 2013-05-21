@@ -33,7 +33,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
     private static final Object STICKY_CLASS = "content_type_label";
 
     private static final boolean DEBUG_PARSER = false;
-    
+
     private InputStream inputStream;
 
     private BoardType boardType;
@@ -49,9 +49,9 @@ public class BoardPostSummaryListParser extends StreamingParser {
     private BoardPost currentBoardPost;
     private StringBuilder buffer;
     private DatabaseHelper databaseHelper;
-    
+
     public BoardPostSummaryListParser(InputStream inputStream,
-	    BoardType boardType,DatabaseHelper databaseHelper) {
+	    BoardType boardType, DatabaseHelper databaseHelper) {
 	this.inputStream = inputStream;
 	this.boardType = boardType;
 	this.boardPosts = new ArrayList<BoardPost>();
@@ -80,13 +80,21 @@ public class BoardPostSummaryListParser extends StreamingParser {
 			    tableRowCell = 0;
 			} else {
 			    if (currentBoardPost != null) {
-				//TODO we need to get the last viewed time and set it here
-				if(databaseHelper != null){
-				    BoardPost existingPost = databaseHelper.getBoardPost(currentBoardPost.getId());
-					//We don't want to overwrite certain values
-					if(existingPost != null) {
-					    currentBoardPost.setLastViewedTime(existingPost.getLastViewedTime());
-					}
+				// TODO we need to get the last viewed time and
+				// set it here
+				if (databaseHelper != null) {
+				    BoardPost existingPost = databaseHelper
+					    .getBoardPost(currentBoardPost
+						    .getId());
+				    // We don't want to overwrite certain values
+				    if (existingPost != null) {
+					currentBoardPost
+						.setLastViewedTime(existingPost
+							.getLastViewedTime());
+					currentBoardPost
+						.setNumberOfTimesRead(existingPost
+							.getNumberOfTimesRead());
+				    }
 				}
 				boardPosts.add(currentBoardPost);
 			    }
@@ -123,7 +131,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
 			if (inBoardPostTable) {
 			    if (tag instanceof StartTag) {
 				parseSpanSegment(segment);
-			    } 
+			    }
 			}
 		    }
 		    if (tag instanceof EndTag) {
@@ -136,7 +144,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
 		}
 	    }
 	    streamedSource.close();
-	    
+
 	} catch (IOException ioe) {
 	    if (DisBoardsConstants.DEBUG) {
 		ioe.printStackTrace();
@@ -157,8 +165,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
 	HashMap<String, String> parameters = createAttributeMapFromStartTag(segment
 		.toString());
 	if (spanNumber == 1) {
-	    String spanClass = parameters
-		    .get(HtmlConstants.CLASS);
+	    String spanClass = parameters.get(HtmlConstants.CLASS);
 	    if (STICKY_CLASS.equals(spanClass)) {
 		currentBoardPost.setSticky(true);
 	    }
@@ -166,20 +173,16 @@ public class BoardPostSummaryListParser extends StreamingParser {
 		long timeStamp = getTimestampFromParameters(parameters);
 		if (timeStamp != -1) {
 		    if (tableRowCell == DESCRIPTION_TABLE_ROW_INDEX
-			    && !currentBoardPost
-				    .isSticky()) {
-			currentBoardPost
-				.setCreatedTime(timeStamp);
+			    && !currentBoardPost.isSticky()) {
+			currentBoardPost.setCreatedTime(timeStamp);
 		    }
 		    if (tableRowCell == LAST_POST_TABLE_ROW_INDEX) {
-			currentBoardPost
-				.setLastUpdatedTime(timeStamp);
+			currentBoardPost.setLastUpdatedTime(timeStamp);
 		    }
 		}
 	    }
 	} else if (tableRowCell == DESCRIPTION_TABLE_ROW_INDEX
-		&& spanNumber == 2
-		&& currentBoardPost.isSticky()) {
+		&& spanNumber == 2 && currentBoardPost.isSticky()) {
 	    long timeStamp = getTimestampFromParameters(parameters);
 	    currentBoardPost.setCreatedTime(timeStamp);
 	}
@@ -187,31 +190,26 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private void setNumberOfReplies() {
 	int numberOfReplies = 0;
-	String repliesText = Html.fromHtml(
-		buffer.toString().trim()).toString();
+	String repliesText = Html.fromHtml(buffer.toString().trim()).toString();
 	if (!TextUtils.isEmpty(repliesText)) {
-	    String[] repliesTokens = repliesText
-		    .split("\\s");
-	    if (repliesTokens != null
-		    && repliesTokens.length > 0) {
+	    String[] repliesTokens = repliesText.split("\\s");
+	    if (repliesTokens != null && repliesTokens.length > 0) {
 		try {
-		    numberOfReplies = Integer
-			    .parseInt(repliesTokens[0]);
+		    numberOfReplies = Integer.parseInt(repliesTokens[0]);
 		} catch (NumberFormatException nfe) {
 
 		}
 	    }
 	}
-	currentBoardPost
-		.setNumberOfReplies(numberOfReplies);
+	currentBoardPost.setNumberOfReplies(numberOfReplies);
     }
-    
+
     private boolean isStartOfNewPostTr(String trString) {
-	//TODO better way to do this
+	// TODO better way to do this
 	return trString != null
 		&& trString.startsWith("<tr style=\"background-color");
     }
-    
+
     private void parseDescriptionRowAnchorText(String bufferOutput) {
 	if (anchorNumber == 1) {
 	    String title = bufferOutput;

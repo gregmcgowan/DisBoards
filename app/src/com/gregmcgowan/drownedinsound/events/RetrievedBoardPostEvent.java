@@ -8,10 +8,12 @@ public class RetrievedBoardPostEvent {
     private boolean isCached;
     private String commentIDToScrollTo;
     private boolean displayGotToLatestCommentOption;
-    
-    public RetrievedBoardPostEvent(BoardPost boardPost, boolean isCached){
+
+    public RetrievedBoardPostEvent(BoardPost boardPost, boolean isCached,
+	    boolean showGotToLastCommentOption) {
 	setBoardPost(boardPost);
 	setCached(isCached);
+	setDisplayGotToLatestCommentOption(showGotToLastCommentOption);
     }
 
     public BoardPost getBoardPost() {

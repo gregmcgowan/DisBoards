@@ -39,7 +39,7 @@ public class ThisACommentHandler extends DisBoardAsyncInputStreamHandler {
 	}
 	if (isUpdateUI()) {
 	    EventBus.getDefault().post(
-		    new RetrievedBoardPostEvent(boardPost, false));
+		    new RetrievedBoardPostEvent(boardPost, false,false));
 	}
 	EventBus.getDefault().post(new UpdateCachedBoardPostEvent(boardPost));
     }

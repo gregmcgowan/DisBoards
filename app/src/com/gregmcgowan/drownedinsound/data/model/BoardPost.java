@@ -84,6 +84,9 @@ public class BoardPost implements Parcelable {
     @DatabaseField(columnName = BOARD_TYPE_FIELD)
     private BoardType boardType;
 
+    @DatabaseField
+    private int numberOfTimesRead;
+    
     @ForeignCollectionField
     private transient Collection<BoardPostComment> comments;
 
@@ -304,6 +307,7 @@ public class BoardPost implements Parcelable {
 	parcel.writeLong(lastUpdatedTime);
 	parcel.writeSerializable(boardType);
 	parcel.writeString(latestCommentId);
+	parcel.writeInt(numberOfTimesRead);
 	Collection<BoardPostComment> comments = getComments();
 	parcel.writeParcelableArray(
 		comments.toArray(new BoardPostComment[comments.size()]), flag);
@@ -324,6 +328,7 @@ public class BoardPost implements Parcelable {
 	lastUpdatedTime = parcel.readLong();
 	boardType = (BoardType) parcel.readSerializable();
 	latestCommentId = parcel.readString();
+	numberOfTimesRead = parcel.readInt();
 	List<BoardPostComment> comments = Arrays
 		.asList((BoardPostComment[]) parcel
 			.readArray(BoardPostComment.class.getClassLoader()));
@@ -378,6 +383,14 @@ public class BoardPost implements Parcelable {
 		+ lastViewedTime + ", createdTime=" + createdTime
 		+ ", lastUpdatedTime=" + lastUpdatedTime + ", boardType="
 		+ boardType + "]";
+    }
+
+    public int getNumberOfTimesRead() {
+	return numberOfTimesRead;
+    }
+
+    public void setNumberOfTimesRead(int numberOfTimesRead) {
+	this.numberOfTimesRead = numberOfTimesRead;
     }
 
 }

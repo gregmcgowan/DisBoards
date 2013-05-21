@@ -96,7 +96,7 @@ public class DisWebService extends IntentService {
 
 	} else {
 	    EventBus.getDefault().post(
-		    new RetrievedBoardPostEvent(cachedPost, true));
+		    new RetrievedBoardPostEvent(cachedPost, true,true));
 	}
 
     }

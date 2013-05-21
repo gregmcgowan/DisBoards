@@ -40,13 +40,19 @@ public class RetrieveBoardPostHandler extends DisBoardAsyncInputStreamHandler {
 	    BoardPostParser boardPostParser = new BoardPostParser(inputStream,
 		    boardPostId, boardPostType);
 	    boardPost = boardPostParser.parse();
+	    BoardPost exisitingBoardPost = databaseHelper.getBoardPost(boardPost.getId());
+	    int numberOfTimesRead = 0;
+	    if(exisitingBoardPost != null)  {
+		 numberOfTimesRead = exisitingBoardPost.getNumberOfTimesRead()  + 1;
+	    }
+	    boardPost.setNumberOfTimesRead(numberOfTimesRead);
 	    if (boardPost != null) {
 		databaseHelper.setBoardPost(boardPost);
 	    }
 	}
 	if (isUpdateUI()) {
 	    EventBus.getDefault().post(
-		    new RetrievedBoardPostEvent(boardPost, false));
+		    new RetrievedBoardPostEvent(boardPost, false,true));
 	}
 	EventBus.getDefault().post(new UpdateCachedBoardPostEvent(boardPost));
 
@@ -67,7 +73,7 @@ public class RetrieveBoardPostHandler extends DisBoardAsyncInputStreamHandler {
 
 	if (isUpdateUI()) {
 	    EventBus.getDefault()
-		    .post(new RetrievedBoardPostEvent(null, false));
+		    .post(new RetrievedBoardPostEvent(null, false,true));
 	}
     }
 

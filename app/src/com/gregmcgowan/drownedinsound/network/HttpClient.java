@@ -225,7 +225,7 @@ public class HttpClient {
 	addRequest(responseHandler.getIdentifier());
 	if (useFakeData) {
 	    makeFakeRequest(new RetrievedBoardPostEvent(
-		    FakeDataFactory.generateRandomBoardPost(), false));
+		    FakeDataFactory.generateRandomBoardPost(), false,true));
 	} else {
 	    asyncHttpClient.get(context, boardPostUrl,
 		    getMandatoryDefaultHeaders(), null, responseHandler);
