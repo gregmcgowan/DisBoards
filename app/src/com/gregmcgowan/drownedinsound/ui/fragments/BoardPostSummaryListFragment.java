@@ -39,6 +39,7 @@ import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
+import com.gregmcgowan.drownedinsound.ui.widgets.AutoScrollListView;
 import com.gregmcgowan.drownedinsound.utils.NetworkUtils;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
@@ -67,7 +68,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
     private ArrayList<BoardPost> boardPostSummaries = new ArrayList<BoardPost>();
     private BoardPostSummaryListEndlessAdapter adapter;
     private View rootView;
-    private ListView listView;
+    private AutoScrollListView listView;
     private boolean requestOnStart;
     private Board board;
     private BoardType boardType;
@@ -115,7 +116,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 	unreadDrawable = getSherlockActivity().getResources().getDrawable(
 		R.drawable.filled_blue_circle);
 
-	listView = getListView();
+	listView = (AutoScrollListView) getListView();
 	// connectionErrorTextView.setVisibility(View.GONE);
 	adapter = new BoardPostSummaryListEndlessAdapter(getSherlockActivity(),
 		new BoardPostSummaryListAdapater(getSherlockActivity(),
@@ -317,8 +318,8 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 		Log.d(TAG, "Event for board type " + eventBoardType
 			+ " current board Type " + boardType);
 		List<BoardPost> summaries = event.getBoardPostSummaryList();
+		boolean append = event.isAppend();
 		if (summaries != null && summaries.size() > 0) {
-		    boolean append = event.isAppend();
 		    if (!append) {
 			boardPostSummaries.clear();
 			lastPageFetched = 1;
@@ -346,6 +347,9 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 		    connectionErrorTextView.setVisibility(View.VISIBLE);
 		}
 		setProgressBarVisiblity(false);
+		if(!append) {
+		    listView.requestPositionToScreen(0, true);
+		}
 	    } else {
 		Log.d(TAG, "Board type " + boardType
 			+ " was not attached to a activity");
