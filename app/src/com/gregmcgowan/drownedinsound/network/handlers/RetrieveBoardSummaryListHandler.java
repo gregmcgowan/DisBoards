@@ -23,12 +23,14 @@ public class RetrieveBoardSummaryListHandler extends
 
     private BoardType boardType;
     private DatabaseHelper databaseHelper;
-
+    private boolean append;
+    
     public RetrieveBoardSummaryListHandler(BoardType boardType,
-	    boolean updateUI, DatabaseHelper databaseHelper) {
+	    boolean updateUI, DatabaseHelper databaseHelper, boolean append) {
 	super(boardType.name(), updateUI);
 	this.boardType = boardType;
 	this.databaseHelper = databaseHelper;
+	this.append = append;
     }
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
@@ -57,7 +59,7 @@ public class RetrieveBoardSummaryListHandler extends
 	if (isUpdateUI()) {
 	    EventBus.getDefault().post(
 		    new RetrievedBoardPostSummaryListEvent(boardPostSummaries,
-			    boardType, false));
+			    boardType, false,append));
 	}
     }
 
@@ -77,7 +79,7 @@ public class RetrieveBoardSummaryListHandler extends
 	if (isUpdateUI()) {
 	    EventBus.getDefault().post(
 		    new RetrievedBoardPostSummaryListEvent(null, boardType,
-			    false));
+			    false,append));
 	}
     }
 }

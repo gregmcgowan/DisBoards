@@ -1,90 +1,109 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="4dip"
-    android:background="@drawable/board_list_row_selector" >
- 	
-    <LinearLayout
-     	 android:layout_width="match_parent"
-    	android:layout_height="wrap_content"
-      	android:layout_alignParentLeft="true"
-      	android:id="@+id/title_section">
-    <View
-        android:id="@+id/board_post_list_row_read_marker"
-        android:layout_width="10dip"
-        android:layout_height="10dip"
-        android:layout_marginLeft="@dimen/margin_medium"
-        android:layout_marginRight="@dimen/margin_small"
-        android:layout_marginTop="@dimen/margin_small"
-        android:layout_marginBottom="@dimen/margin_small"
-        android:background="@drawable/filled_blue_circle" 
-        android:layout_gravity="center_vertical"/>
+    android:layout_height="match_parent" 
+    android:background="@android:color/white" >"
 
-    <TextView
-        android:id="@+id/board_post_list_row_sticky"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margin_medium"
-        android:layout_marginRight="@dimen/margin_small"
-        android:layout_marginTop="@dimen/margin_small"
-        android:layout_marginBottom="@dimen/margin_small"
-        android:background="@color/highlighted_blue"
-        android:padding="2dip"
-        android:text="@string/sticky_text"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"
-        android:visibility="visible" 
-        android:layout_gravity="center_vertical"/>
+    <RelativeLayout
+        android:id="@+id/board_list_row_detail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/board_list_row_selector"
+        android:padding="4dip" >
 
-    <TextView
-        android:id="@+id/board_post_list_row_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margin_medium"
-        android:layout_marginRight="@dimen/margin_small"
-        android:layout_marginTop="@dimen/margin_small"
-         android:layout_marginBottom="@dimen/margin_small"
-        android:text="Here is the title of the thread"
-        android:textColor="@color/darkest_grey"
-        android:textStyle="bold"
-        android:layout_gravity="center_vertical" />
-</LinearLayout>
-    <TextView
-        android:id="@+id/board_post_list_row_author"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/title_section"
-        android:layout_marginBottom="@dimen/margin_small"
-        android:layout_marginLeft="@dimen/margin_medium"
-        android:layout_marginRight="@dimen/margin_medium"
-        android:layout_toRightOf="@id/board_post_list_row_read_marker"
-        android:text="by some author"
-        android:textColor="@color/highlighted_blue"
-        android:textSize="@dimen/text_micro" />
+        <LinearLayout
+            android:id="@+id/title_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true" >
 
-    <TextView
-        android:id="@+id/board_post_list_row_number_of_replies"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/board_post_list_row_author"
-        android:layout_below="@id/board_post_list_row_author"
-        android:layout_marginBottom="@dimen/margin_medium"
-        android:layout_marginRight="@dimen/margin_medium"
-        android:text="500 replies"
-        android:textColor="@color/darkest_grey"
-        android:textSize="@dimen/text_really_micro" />
+            <View
+                android:id="@+id/board_post_list_row_read_marker"
+                android:layout_width="10dip"
+                android:layout_height="10dip"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="@drawable/filled_blue_circle" />
 
-    <TextView
-        android:id="@+id/board_post_list_row_last_updated"
+            <TextView
+                android:id="@+id/board_post_list_row_sticky"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="@color/highlighted_blue"
+                android:padding="2dip"
+                android:text="@string/sticky_text"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/board_post_list_row_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="Here is the title of the thread"
+                android:textColor="@color/darkest_grey"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/board_post_list_row_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/title_section"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:text="by some author"
+            android:textColor="@color/highlighted_blue"
+            android:textSize="@dimen/text_micro" />
+
+        <TextView
+            android:id="@+id/board_post_list_row_number_of_replies"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/board_post_list_row_author"
+            android:layout_below="@id/board_post_list_row_author"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:text="500 replies"
+            android:textColor="@color/darkest_grey"
+            android:textSize="@dimen/text_really_micro" />
+
+        <TextView
+            android:id="@+id/board_post_list_row_last_updated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/board_post_list_row_author"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:layout_toRightOf="@id/board_post_list_row_number_of_replies"
+            android:text="Updated five minutes ago"
+            android:textColor="@color/darkest_grey"
+            android:textSize="@dimen/text_really_micro" />
+    </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/board_list_row_progress_bar"
+        style="?android:attr/progressBarStyleInverse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/board_post_list_row_author"
-        android:layout_marginBottom="@dimen/margin_medium"
-        android:layout_marginLeft="@dimen/margin_medium"
-        android:layout_marginRight="@dimen/margin_medium"
-        android:layout_toRightOf="@id/board_post_list_row_number_of_replies"
-        android:text="Updated five minutes ago"
-        android:textColor="@color/darkest_grey"
-        android:textSize="@dimen/text_really_micro" />
+        android:layout_centerInParent="true"
+        android:indeterminate="true"
+        android:indeterminateDrawable="@drawable/spinner"
+        android:visibility="invisible" >
+    </ProgressBar>
 
 </RelativeLayout>

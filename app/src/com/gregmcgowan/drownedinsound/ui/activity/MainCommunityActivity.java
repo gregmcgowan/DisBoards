@@ -82,7 +82,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 			.findFragmentByTag(fragmentName);
 		if (fragment instanceof BoardPostSummaryListFragment) {
 		    BoardPostSummaryListFragment listFragment = (BoardPostSummaryListFragment) fragment;
-		    listFragment.loadListIfNotAlready(1);
+		    listFragment.loadListIfNotAlready();
 		}
 	    }
 	    

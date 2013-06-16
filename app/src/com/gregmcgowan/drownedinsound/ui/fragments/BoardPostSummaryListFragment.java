@@ -17,14 +17,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.commonsware.cwac.endless.EndlessAdapter;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.model.Board;
@@ -55,13 +58,14 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
     private static final String WAS_IN_DUAL_PANE_MODE = "WasInDualPaneMode";
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
 	    + "BoardListFragment";
+
     private Drawable readDrawable;
     private Drawable unreadDrawable;
     private String boardUrl;
     private ProgressBar progressBar;
     private TextView connectionErrorTextView;
     private ArrayList<BoardPost> boardPostSummaries = new ArrayList<BoardPost>();
-    private BoardPostSummaryListAdapater adapter;
+    private BoardPostSummaryListEndlessAdapter adapter;
     private View rootView;
     private ListView listView;
     private boolean requestOnStart;
@@ -74,7 +78,8 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
     private String postUrl;
     private Drawable whiteBackgroundSelector;
     private Drawable alternateColorSelector;
-    
+    private int lastPageFetched;
+
     public BoardPostSummaryListFragment() {
     }
 
@@ -110,11 +115,11 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 	unreadDrawable = getSherlockActivity().getResources().getDrawable(
 		R.drawable.filled_blue_circle);
 
-	
 	listView = getListView();
 	// connectionErrorTextView.setVisibility(View.GONE);
-	adapter = new BoardPostSummaryListAdapater(getSherlockActivity(),
-		R.layout.board_list_row, boardPostSummaries);
+	adapter = new BoardPostSummaryListEndlessAdapter(getSherlockActivity(),
+		new BoardPostSummaryListAdapater(getSherlockActivity(),
+			R.layout.board_list_row, boardPostSummaries));
 	setListAdapter(adapter);
 
 	if (requestOnStart && !summariesLoaded()) {
@@ -237,11 +242,11 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 	return boardPostSummaries != null && boardPostSummaries.size() > 0;
     }
 
-    public void loadListIfNotAlready(int page) {
+    public void loadListIfNotAlready() {
 	if (isValid()) {
 	    connectionErrorTextView.setVisibility(View.GONE);
 	    if (!summariesLoaded()) {
-		requestBoardSummaryPage(page, false);
+		requestBoardSummaryPage(1, false);
 	    } else {
 		if (isBoardBeingRequested()) {
 		    setProgressBarVisiblity(true);
@@ -255,8 +260,11 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 
     public void requestBoardSummaryPage(int page, boolean forceUpdate) {
 	if (!isBoardBeingRequested()) {
-	    connectionErrorTextView.setVisibility(View.GONE);
-	    setProgressBarVisiblity(true);
+	    if(page <= 1) {
+		    connectionErrorTextView.setVisibility(View.GONE);
+		    setProgressBarVisiblity(true);	
+	    } 
+
 
 	    Intent disWebServiceIntent = new Intent(getSherlockActivity(),
 		    DisWebService.class);
@@ -265,11 +273,10 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 	    parametersBundle.putInt(
 		    DisWebServiceConstants.SERVICE_REQUESTED_ID,
 		    DisWebServiceConstants.GET_POSTS_SUMMARY_LIST_ID);
-	    parametersBundle.putParcelable(DisBoardsConstants.BOARD,
-		    board);
+	    parametersBundle.putParcelable(DisBoardsConstants.BOARD, board);
 	    parametersBundle.putBoolean(DisBoardsConstants.FORCE_FETCH,
 		    forceUpdate);
-
+	    parametersBundle.putInt(DisBoardsConstants.BOARD_PAGE_NUMBER, page);
 	    disWebServiceIntent.putExtras(parametersBundle);
 	    getSherlockActivity().startService(disWebServiceIntent);
 	} else {
@@ -304,16 +311,31 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 
     public void onEventMainThread(RetrievedBoardPostSummaryListEvent event) {
 	BoardType eventBoardType = event.getBoardType();
+	currentlySelectedPost  = -1;
 	if (eventBoardType != null && eventBoardType.equals(boardType)) {
 	    if (isValid()) {
 		Log.d(TAG, "Event for board type " + eventBoardType
 			+ " current board Type " + boardType);
 		List<BoardPost> summaries = event.getBoardPostSummaryList();
 		if (summaries != null && summaries.size() > 0) {
-		    boardPostSummaries.clear();
-		    boardPostSummaries.addAll(event.getBoardPostSummaryList());
+		    boolean append = event.isAppend();
+		    if (!append) {
+			boardPostSummaries.clear();
+			lastPageFetched = 1;
+		    } else {
+			lastPageFetched++;
+			// TODO may need to optimize this
+			for (BoardPost boardPost : summaries) {
+			    if (boardPostSummaries.contains(boardPost)) {
+				boardPostSummaries.remove(boardPost);
+			    }
+			}
+		    }
+		    boardPostSummaries.addAll(summaries);
+		    adapter.onDataReady();
 		}
-		adapter.notifyDataSetChanged();
+		
+		
 		Log.d(TAG, "Updated UI for " + eventBoardType);
 		if (event.isCached()) {
 		    displayIsCachedPopup();
@@ -403,6 +425,47 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 	}
     }
 
+    private class BoardPostSummaryListEndlessAdapter extends EndlessAdapter {
+
+	public BoardPostSummaryListEndlessAdapter(Context context,
+		ListAdapter wrapped) {
+	    super(wrapped);
+	    super.setRunInBackground(false);
+	}
+
+	@Override
+	protected void appendCachedData() {
+	    // Don't think we need this
+
+	}
+
+	@Override
+	protected boolean cacheInBackground() throws Exception {
+	  
+	    int pageToFetch = lastPageFetched + 1;
+	    Log.d(TAG, "Cache in background called");
+	    requestBoardSummaryPage(pageToFetch, false);
+	    return true;
+	}
+
+	@Override
+	protected View getPendingView(ViewGroup parent) {
+	    LayoutInflater vi = (LayoutInflater) getActivity()
+		    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	    View pendingRow = vi.inflate(R.layout.board_list_row, null);
+
+	    RelativeLayout detail = (RelativeLayout) pendingRow
+		    .findViewById(R.id.board_list_row_detail);
+	    detail.setVisibility(View.INVISIBLE);
+
+	    ProgressBar progressBar = (ProgressBar) pendingRow
+		    .findViewById(R.id.board_list_row_progress_bar);
+	    progressBar.setVisibility(View.VISIBLE);
+	    return pendingRow;
+	}
+
+    }
+
     private class BoardPostSummaryListAdapater extends ArrayAdapter<BoardPost> {
 
 	private List<BoardPost> summaries;
@@ -480,15 +543,22 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 		    holder.postReadMarkerView
 			    .setBackgroundDrawable(unreadDrawable);
 		}
-		
-		if(position % 2 == 0){	
-		    whiteBackgroundSelector = getSherlockActivity().getResources().getDrawable(R.drawable.board_list_row_selector);
-		    boardPostSummaryRowView.setBackgroundDrawable(whiteBackgroundSelector);
+
+		if (position % 2 == 0) {
+		    whiteBackgroundSelector = getSherlockActivity()
+			    .getResources().getDrawable(
+				    R.drawable.board_list_row_selector);
+		    boardPostSummaryRowView
+			    .setBackgroundDrawable(whiteBackgroundSelector);
 		} else {
-		    alternateColorSelector = getSherlockActivity().getResources().getDrawable(R.drawable.alternate_board_list_row_selector);
-		    boardPostSummaryRowView.setBackgroundDrawable(alternateColorSelector);
+		    alternateColorSelector = getSherlockActivity()
+			    .getResources()
+			    .getDrawable(
+				    R.drawable.alternate_board_list_row_selector);
+		    boardPostSummaryRowView
+			    .setBackgroundDrawable(alternateColorSelector);
 		}
-		
+
 	    }
 	    return boardPostSummaryRowView;
 	}

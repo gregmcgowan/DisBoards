@@ -13,11 +13,14 @@ public class RetrievedBoardPostSummaryListEvent {
     
     private boolean isCached;
     
+    private boolean append;
+    
     public RetrievedBoardPostSummaryListEvent(
-	    List<BoardPost> boardPostSummaryList, BoardType boardType, boolean isCached) {
+	    List<BoardPost> boardPostSummaryList, BoardType boardType, boolean isCached,boolean append) {
 	setBoardPostSummaryList(boardPostSummaryList);
 	setBoardType(boardType);
 	setCached(isCached);
+	setAppend(append);
     }
 
     public List<BoardPost> getBoardPostSummaryList() {
@@ -43,6 +46,14 @@ public class RetrievedBoardPostSummaryListEvent {
 
     public void setCached(boolean isCached) {
 	this.isCached = isCached;
+    }
+
+    public boolean isAppend() {
+	return append;
+    }
+
+    public void setAppend(boolean append) {
+	this.append = append;
     }
 
 }

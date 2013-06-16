@@ -105,7 +105,8 @@ public class DisWebService extends IntentService {
 	Board board = intent.getParcelableExtra(DisBoardsConstants.BOARD);
 	boolean forceFetch = intent.getBooleanExtra(
 		DisBoardsConstants.FORCE_FETCH, false);
-	fetchBoardPostSummaryList(board, true, forceFetch);
+	int pageNumber = intent.getIntExtra(DisBoardsConstants.BOARD_PAGE_NUMBER, 1);
+	fetchBoardPostSummaryList(pageNumber, board, true, forceFetch);
 	// TODO not sure if we actually gain anything from doing this
 	// Fetch the two nearest as well
 	/*
@@ -151,36 +152,29 @@ public class DisWebService extends IntentService {
 
     }
 
-    private void fetchBoardPostSummaryList(Board board, boolean updateUI,
+    private void fetchBoardPostSummaryList(int pageNumber, Board board, boolean updateUI,
 	    boolean forceFetch) {
 	List<BoardPost> cachedBoardPosts = databaseHelper.getBoardPosts(board
 		.getBoardType());
 	boolean requestIsInProgress = HttpClient.requestIsInProgress(board
 		.getBoardType().name());
+	boolean append = pageNumber > 1;
+	
 	if (!requestIsInProgress) {
 	    if (NetworkUtils.isConnected(this)) {
-		if (forceFetch || !recentlyFetched(board)) {
 		    HttpClient.requestBoardSummary(
 			    this,
 			    board.getUrl(),
 			    board.getBoardType(),
 			    new RetrieveBoardSummaryListHandler(board
-				    .getBoardType(), updateUI, databaseHelper),
-			    1);
-		} else {
-		    if (updateUI) {
-			EventBus.getDefault().post(
-				new RetrievedBoardPostSummaryListEvent(
-					cachedBoardPosts, board.getBoardType(),
-					false));
-		    }
-		}
+				    .getBoardType(), updateUI, databaseHelper, append),
+			    pageNumber);	
 	    } else {
 		if (updateUI) {
 		    EventBus.getDefault().post(
 			    new RetrievedBoardPostSummaryListEvent(
 				    cachedBoardPosts, board.getBoardType(),
-				    true));
+				    true,false));
 		}
 	    }
 	}
@@ -245,7 +239,7 @@ public class DisWebService extends IntentService {
 				board.getBoardType(),
 				new RetrieveBoardSummaryListHandler(board
 					.getBoardType(), forceFetch,
-					databaseHelper), 1);
+					databaseHelper,false), 1);
 		    }
 		}
 	    }

@@ -196,6 +196,11 @@ public class HttpClient {
     public static void requestBoardSummary(Context context, String boardUrl,
 	    BoardType boardType, AsyncHttpResponseHandler responseHandler,
 	    int pageNumber) {
+
+	boolean append = pageNumber > 1;
+	if(append) {
+	    boardUrl += "/page/" + pageNumber;
+	}
 	if (DisBoardsConstants.DEBUG) {
 	    Log.d(TAG, "Going to request = " + boardUrl);
 	}
@@ -203,7 +208,7 @@ public class HttpClient {
 	if (useFakeData) {
 	    makeFakeRequest(new RetrievedBoardPostSummaryListEvent(
 		    FakeDataFactory.generateRandomBoardPostSummaryList(),
-		    boardType, false));
+		    boardType, false,append));
 	} else {
 	    asyncHttpClient.get(context, boardUrl,
 		    getMandatoryDefaultHeaders(), null, responseHandler);
