@@ -226,9 +226,24 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 	case R.id.menu_list_refresh:
 	    doRefreshAction();
 	    return true;
+	case R.id.menu_new_post :
+	    doNewPostAction();
 	default:
 	    return super.onOptionsItemSelected(item);
 	}
+    }
+
+    
+    
+    
+    private void doNewPostAction() {
+	Bundle newPostDetails = new Bundle();
+
+	newPostDetails
+		.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
+	NewPostFragment.newInstance(newPostDetails).show(getFragmentManager(),
+		"NEW_POST_DIALOG");
+
     }
 
     private boolean isBoardBeingRequested() {
