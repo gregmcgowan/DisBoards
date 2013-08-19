@@ -61,6 +61,7 @@
         android:hint="@string/reply_text"
         android:lines="@integer/reply_dialog_min_lines"
         android:padding="10dip"
+        android:gravity="top"
         android:scrollbars="vertical"/>
 
 </LinearLayout>

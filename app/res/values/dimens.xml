@@ -15,7 +15,7 @@
 	<dimen name="comment_button_height">38dip</dimen>
 	<dimen name="comment_button_width">100dip</dimen>
 	<dimen name="comment_background_rectangle_thickness">1dip</dimen>
-	<dimen name="reply_dialog_min_width">300dip</dimen>
+	<dimen name="reply_dialog_min_width">400dip</dimen>
 	<dimen name ="reply_dialog_min_height">250dip</dimen>
 	
 </resources>
