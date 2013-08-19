@@ -22,7 +22,7 @@
             android:id="@+id/board_post_comment_content_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/comment_background"
+            android:background="@drawable/comment_background_transition"
             android:orientation="vertical" >
 
             <TextView

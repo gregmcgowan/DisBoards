@@ -7,6 +7,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.text.Html;
@@ -217,14 +218,14 @@ public class BoardPostFragment extends DisBoardsListFragment {
     public void onEventMainThread(FailedToThisThisEvent event) {
 	setProgressBarAndFragmentVisibility(false);
 	Toast.makeText(getSherlockActivity(),
-		"So why so sad... Failed to this this. You could try again",
-		Toast.LENGTH_SHORT).show();
+		"Failed to this this. You could try again", Toast.LENGTH_SHORT)
+		.show();
     }
 
     public void onEventMainThread(FailedToPostCommentEvent event) {
 	setProgressBarAndFragmentVisibility(false);
 	Toast.makeText(getSherlockActivity(),
-		"So why so sad... Failed to post comment. You could try again",
+		"Failed to post comment. You could try again",
 		Toast.LENGTH_SHORT).show();
     }
 
@@ -374,7 +375,9 @@ public class BoardPostFragment extends DisBoardsListFragment {
 		index++;
 	    }
 	    if (index > 0) {
+		boardPostComments.get(index).setDoHighlightedAnimation(true);
 		commentsList.requestPositionToScreen(index, true);
+
 	    }
 	}
 
@@ -382,7 +385,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
 
     private void displayScrollToHiddenCommentOption(final boolean display) {
 	boolean alreadyHidden = scrollToLastCommentTextView.getVisibility() != View.VISIBLE;
-	if(!display && alreadyHidden){
+	if (!display && alreadyHidden) {
 	    return;
 	}
 	if (!animatingScrollToLastCommentView) {
@@ -432,6 +435,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
 
     private class BoardPostListAdapter extends ArrayAdapter<BoardPostComment> {
 
+	private static final int HIGHLIGHTED_COMMENT_ANIMATION_LENGTH = 2000;
 	private List<BoardPostComment> comments;
 	private WeakReference<BoardPostFragment> boardPostFragmentWeakReference;
 
@@ -595,6 +599,25 @@ public class BoardPostFragment extends DisBoardsListFragment {
 				.setVisibility(View.GONE);
 		    }
 
+		    if (comment.isDoHighlightedAnimation()) {
+			final TransitionDrawable transitionDrawable = (TransitionDrawable) boardPostCommentHolder.commentSection
+				.getBackground();
+			transitionDrawable
+				.startTransition(HIGHLIGHTED_COMMENT_ANIMATION_LENGTH / 2);
+			boardPostCommentHolder.commentSection.postDelayed(
+				new Runnable() {
+
+				    @Override
+				    public void run() {
+					transitionDrawable
+						.reverseTransition(HIGHLIGHTED_COMMENT_ANIMATION_LENGTH / 2);
+
+				    }
+
+				}, HIGHLIGHTED_COMMENT_ANIMATION_LENGTH / 2);
+			comment.setDoHighlightedAnimation(false);
+		    }
+
 		} else {
 		    dateAndTime = boardPost.getDateOfPost();
 		    String numberOfReplies = boardPost.getNumberOfReplies()
@@ -638,6 +661,8 @@ public class BoardPostFragment extends DisBoardsListFragment {
 		.findViewById(R.id.board_post_comment_reply);
 	boardPostCommentHolder.thisTextView = (TextView) rowView
 		.findViewById(R.id.board_post_comment_this);
+	boardPostCommentHolder.commentSection = (LinearLayout) rowView
+		.findViewById(R.id.board_post_comment_content_section);
 
 	rowView.setTag(boardPostCommentHolder);
 	rowView.setOnClickListener(null);
@@ -678,6 +703,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
 	private RelativeLayout actionRelativeLayout;
 	private TextView thisTextView;
 	private TextView replyTextView;
+	private LinearLayout commentSection;
     }
 
     private class BoardPostInitialCommentHolder {

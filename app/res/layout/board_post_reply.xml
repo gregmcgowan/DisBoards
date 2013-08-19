@@ -45,7 +45,7 @@
         android:layout_marginBottom="@dimen/margin_medium"
         android:layout_marginLeft="@dimen/margin_medium"
         android:layout_marginRight="@dimen/margin_medium"
-        android:background="@drawable/comment_background"
+        android:background="@drawable/comment_background_normal"
         android:hint="@string/subject"
         android:padding="10dip"
         android:singleLine="true"/>
@@ -57,7 +57,7 @@
         android:layout_marginBottom="@dimen/margin_medium"
         android:layout_marginLeft="@dimen/margin_medium"
         android:layout_marginRight="@dimen/margin_medium"
-        android:background="@drawable/comment_background"
+        android:background="@drawable/comment_background_normal"
         android:hint="@string/reply_text"
         android:lines="@integer/reply_dialog_min_lines"
         android:padding="10dip"

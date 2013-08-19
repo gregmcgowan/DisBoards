@@ -46,6 +46,10 @@ public class BoardPostComment implements Parcelable {
     private boolean actionSectionVisible;
     private BoardPostCommentTreeNode treeNode;
 
+    private boolean doHighlightedAnimation;
+
+
+
     public BoardPostComment() {
 
     }
@@ -185,7 +189,13 @@ public class BoardPostComment implements Parcelable {
 		+ ", boardPost=" + (boardPost != null ? boardPost.getId() : boardPost) + ", commentLevel=" + commentLevel
 		+ ", actionSectionVisible=" + actionSectionVisible + "]";
     }
+
+    public void setDoHighlightedAnimation(boolean doHighlightedAnimation) {
+	this.doHighlightedAnimation =  doHighlightedAnimation;	
+    }
     
-    
+    public boolean isDoHighlightedAnimation() {
+        return doHighlightedAnimation;
+    }
 
 }
