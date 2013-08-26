@@ -21,6 +21,7 @@ package com.loopj.android.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpVersion;
+import org.apache.http.ProtocolException;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CookieStore;
@@ -58,10 +60,12 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.HttpEntityWrapper;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultRedirectHandler;
+import org.apache.http.impl.client.RedirectLocations;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
@@ -92,6 +96,7 @@ import android.content.Context;
 public class AsyncHttpClient {
     private static final String VERSION = "1.4.3";
 
+    private static final String REDIRECT_LOCATIONS = "http.protocol.redirect-locations";
     private static final int DEFAULT_MAX_CONNECTIONS = 10;
     private static final int DEFAULT_SOCKET_TIMEOUT = 10 * 1000;
     private static final int DEFAULT_MAX_RETRIES = 5;
@@ -123,7 +128,7 @@ public class AsyncHttpClient {
         HttpConnectionParams.setConnectionTimeout(httpParams, socketTimeout);
         HttpConnectionParams.setTcpNoDelay(httpParams, true);
         HttpConnectionParams.setSocketBufferSize(httpParams, DEFAULT_SOCKET_BUFFER_SIZE);
-
+        
         HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);
         HttpProtocolParams.setUserAgent(httpParams, String.format("android-async-http/%s (http://loopj.com/android-async-http)", VERSION));
 
@@ -144,7 +149,18 @@ public class AsyncHttpClient {
                 }
             }
         });
+        
+        httpClient.setRedirectHandler(new DefaultRedirectHandler(){
 
+	    @Override
+	    public URI getLocationURI(HttpResponse response, HttpContext context)
+		    throws ProtocolException {
+		 context.setAttribute(REDIRECT_LOCATIONS, new RedirectLocations());
+		return super.getLocationURI(response, context);
+	    }
+            
+        }
+        );
         httpClient.addResponseInterceptor(new HttpResponseInterceptor() {
             public void process(HttpResponse response, HttpContext context) {
                 final HttpEntity entity = response.getEntity();
@@ -563,7 +579,8 @@ public class AsyncHttpClient {
                 requestMap.put(context, requestList);
             }
 
-            requestList.add(new WeakReference<Future<?>>(request));
+            WeakReference<Future<?>> weakRef = new WeakReference<Future<?>>(request);
+            requestList.add(weakRef);
 
             // TODO: Remove dead weakrefs from requestLists?
         }
