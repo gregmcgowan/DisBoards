@@ -2,6 +2,8 @@ package com.gregmcgowan.drownedinsound.network.handlers;
 
 import java.io.InputStream;
 
+import org.apache.http.Header;
+
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
@@ -27,7 +29,7 @@ public class PostACommentHandler extends DisBoardAsyncInputStreamHandler {
     }
 
     @Override
-    public void doSuccessAction(int statusCode, InputStream inputStream) {
+    public void doSuccessAction(int statusCode, Header[] headers, InputStream inputStream) {
 	BoardPost boardPost = null;
 	if (inputStream != null) {
 	    BoardPostParser boardPostParser = new BoardPostParser(inputStream,

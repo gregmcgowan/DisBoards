@@ -33,7 +33,10 @@ import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.model.Board;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
+import com.gregmcgowan.drownedinsound.events.FailedToPostNewThreadEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
+import com.gregmcgowan.drownedinsound.events.SentNewPostEvent;
+import com.gregmcgowan.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.gregmcgowan.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
@@ -233,17 +236,18 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 	}
     }
 
-    
-    
-    
     private void doNewPostAction() {
 	Bundle newPostDetails = new Bundle();
+	newPostDetails.putParcelable(DisBoardsConstants.BOARD, board);
 
-	newPostDetails
-		.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
 	NewPostFragment.newInstance(newPostDetails).show(getFragmentManager(),
 		"NEW_POST_DIALOG");
-
+    }
+    
+    public void onEventMainThread(FailedToPostNewThreadEvent event) {
+	this.setProgressBarVisiblity(false);
+	Toast.makeText(getSherlockActivity(), "Failed to create post",
+		Toast.LENGTH_SHORT).show();
     }
 
     private boolean isBoardBeingRequested() {
@@ -375,6 +379,18 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 	}
     }
 
+    public void onEventMainThread(SentNewPostEvent event) {
+	SentNewPostState state = event.getState();
+	if(state.equals(SentNewPostState.SENT)) {
+	    this.setProgressBarVisiblity(true);
+	} else if(state.equals(SentNewPostState.CONFIRMED)) {
+	    //Refresh the current list
+	    requestBoardSummaryPage(1, true);
+	}
+		
+    }
+    
+    
     private void displayIsCachedPopup() {
 	Toast.makeText(getSherlockActivity(), "This is an cached version",
 		Toast.LENGTH_SHORT).show();

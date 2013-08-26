@@ -2,9 +2,11 @@ package com.gregmcgowan.drownedinsound.network;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
@@ -16,6 +18,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.data.model.Board;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
@@ -162,6 +165,45 @@ public class HttpClient {
 		entity, REQUEST_CONTENT_TYPE, responseHandler);
     }
 
+    public static void makeNewPost(Context context, String title,
+	    String content, Board board,
+	    AsyncHttpResponseHandler responseHandler) {
+	BasicHeader[] headers = getMandatoryDefaultHeaders();
+
+	BasicHeader referer = new BasicHeader("Referer", board.getUrl());
+
+	headers = Arrays.copyOf(headers, headers.length + 1);
+	headers[headers.length - 1] = referer;
+	for(Header header : headers) {
+	    Log.d(TAG, "Header " +header);
+	}
+	List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+
+	pairs.add(new BasicNameValuePair("section_id", String.valueOf(board
+		.getSectionId())));
+	pairs.add(new BasicNameValuePair("topic[title]", title));
+	pairs.add(new BasicNameValuePair("topic[content_raw]", content));
+	pairs.add(new BasicNameValuePair("topic[sticky]", "0"));
+	pairs.add(new BasicNameValuePair("commit", "Post it"));
+	
+	for(NameValuePair pair : pairs) {
+	    Log.d(TAG, "Pair " +pair);
+	}
+	
+	HttpEntity entity = null;
+	try {
+	    entity = new UrlEncodedFormEntity(pairs, CONTENT_ENCODING);
+	} catch (UnsupportedEncodingException e) {
+	    if (DisBoardsConstants.DEBUG) {
+		e.printStackTrace();
+	    }
+	}
+	Log.d(TAG, entity.toString());
+	asyncHttpClient.post(context, UrlConstants.NEW_POST_URL, headers,
+		entity, REQUEST_CONTENT_TYPE, responseHandler);
+	
+    }
+
     /**
      * Get the headers that are required for each request to the drowned in
      * sound website
@@ -198,7 +240,7 @@ public class HttpClient {
 	    int pageNumber) {
 
 	boolean append = pageNumber > 1;
-	if(append) {
+	if (append) {
 	    boardUrl += "/page/" + pageNumber;
 	}
 	if (DisBoardsConstants.DEBUG) {
@@ -208,7 +250,7 @@ public class HttpClient {
 	if (useFakeData) {
 	    makeFakeRequest(new RetrievedBoardPostSummaryListEvent(
 		    FakeDataFactory.generateRandomBoardPostSummaryList(),
-		    boardType, false,append));
+		    boardType, false, append));
 	} else {
 	    asyncHttpClient.get(context, boardUrl,
 		    getMandatoryDefaultHeaders(), null, responseHandler);
@@ -230,7 +272,7 @@ public class HttpClient {
 	addRequest(responseHandler.getIdentifier());
 	if (useFakeData) {
 	    makeFakeRequest(new RetrievedBoardPostEvent(
-		    FakeDataFactory.generateRandomBoardPost(), false,true));
+		    FakeDataFactory.generateRandomBoardPost(), false, true));
 	} else {
 	    asyncHttpClient.get(context, boardPostUrl,
 		    getMandatoryDefaultHeaders(), null, responseHandler);

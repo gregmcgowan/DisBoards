@@ -31,14 +31,18 @@ public class Board implements Parcelable {
     @DatabaseField
     private long lastFetchedTime;
     
+    @DatabaseField
+    private int sectionId;
+    
     Board (){
 	
     }
     
-    public Board(BoardType boardType, String displayName, String url) {
+    public Board(BoardType boardType, String displayName, String url,int sectionId) {
 	this.boardType = boardType;
 	this.displayName = displayName;
 	this.url = url;
+	this.sectionId = sectionId;
     }
    
     protected Board(Parcel in) {
@@ -82,6 +86,7 @@ public class Board implements Parcelable {
 	url = in.readString();
 	boardType = (BoardType) in.readSerializable();
 	lastFetchedTime = in.readLong();
+	sectionId = in.readInt();
     }
     
     public int describeContents() {
@@ -93,6 +98,7 @@ public class Board implements Parcelable {
 	dest.writeString(url);
 	dest.writeSerializable(boardType);
 	dest.writeLong(lastFetchedTime);
+	dest.writeInt(sectionId);
     }
 
     public static final Parcelable.Creator<Board> CREATOR = new Parcelable.Creator<Board>() {
@@ -168,6 +174,14 @@ public class Board implements Parcelable {
 	}
 
 	return next2Tabs;
+    }
+
+    public int getSectionId() {
+	return sectionId;
+    }
+
+    public void setSectionId(int sectionId) {
+	this.sectionId = sectionId;
     }
     
 }

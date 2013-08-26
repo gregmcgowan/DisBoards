@@ -1,0 +1,91 @@
+Request 
+POST http://drownedinsound.com/comments HTTP/1.1
+Host: drownedinsound.com
+Connection: keep-alive
+Content-Length: 321
+Cache-Control: max-age=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Origin: http://drownedinsound.com
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.57 Safari/537.17
+Content-Type: application/x-www-form-urlencoded
+Referer: http://drownedinsound.com/community/boards/social/4425041
+Accept-Encoding: gzip,deflate,sdch
+Accept-Language: en-US,en;q=0.8,en-GB;q=0.6
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
+Cookie: __qca=P0-1810176248-1287933745335; user_credentials=5f59121c19f7474c4678182919176b123504721de7208b6fa8298114b75039b9316ae8508cb0e85ee504d2addb35e83b7b133cfd2cb847aee6f13eaacc626267%3A%3A112114; __gads=ID=8543882eff6140c2:T=1358888732:S=ALNI_MaZ4QnugyG7-xGe-bPdY1vVebHRWA; dis_session=BAh7CCIVdXNlcl9jcmVkZW50aWFscyIBgDVmNTkxMjFjMTlmNzQ3NGM0Njc4MTgyOTE5MTc2YjEyMzUwNDcyMWRlNzIwOGI2ZmE4Mjk4MTE0Yjc1MDM5YjkzMTZhZTg1MDhjYjBlODVlZTUwNGQyYWRkYjM1ZTgzYjdiMTMzY2ZkMmNiODQ3YWVlNmYxM2VhYWNjNjI2MjY3Og9zZXNzaW9uX2lkIiVlMzdkMzc1M2Q4YmJhODJkNjNmNjkwMzBkNDA4YmVhMiIYdXNlcl9jcmVkZW50aWFsc19pZGkD8rUB--f0f8574824837fb9f54c3317f7b3f6b597b376ad; hashed=43e450c71a90d572b637cde8d67aa614; return_to=http%3A//drownedinsound.com/community/boards/music/4424973; topics=%7B%224305358%22%3A%20116411872%2C%20%224309882%22%3A%20116415140%2C%20%224424914%22%3A%20116420009%2C%20%224424957%22%3A%20116399311%2C%20%224424961%22%3A%20116405021%2C%20%224424973%22%3A%20116362681%2C%20%224424996%22%3A%20116417974%2C%20%224425041%22%3A%20116419561%2C%20%224425044%22%3A%20116424716%7D; __utma=86140493.857991584.1287933745.1360417999.1360424977.1161; __utmb=86140493.14.10.1360424977; __utmc=86140493; __utmz=86140493.1359663050.1140.135.utmcsr=netvibes.com|utmccn=(referral)|utmcmd=referral|utmcct=/privatepage/1; __utmv=86140493.Unregistered; rsi_segs=G07611_10491|G07611_10486|G07611_10302|G07611_10499|D08734_73374|G07611_10536|G07611_10542|G07611_0
+
+comment%5Bcommentable_id%5D=4425041&comment%5Bcommentable_type%5D=Topic&parent_id=&comment%5Btitle%5D=You+need+to+buy+the+specific+Sony+PS+Vita+memory+card&comment%5Bcontent_raw%5D=can%27t+just+use+any+normal+sd+card+you+might+have.+%0D%0A%0D%0AI+don%27t+have+one+but+I+can+mind+reading+that+about+them.&commit=Post+reply
+
+
+Response
+HTTP/1.1 302 Found
+Server: nginx/0.7.65
+Date: Sat, 09 Feb 2013 16:07:50 GMT
+Content-Type: text/html; charset=utf-8
+Connection: keep-alive
+Status: 302 Found
+Location: http://drownedinsound.com/community/boards/social/4425041
+X-Runtime: 1438
+Set-Cookie: logged_in=1; path=/
+Set-Cookie: dis_session=BAh7CCIVdXNlcl9jcmVkZW50aWFscyIBgDVmNTkxMjFjMTlmNzQ3NGM0Njc4MTgyOTE5MTc2YjEyMzUwNDcyMWRlNzIwOGI2ZmE4Mjk4MTE0Yjc1MDM5YjkzMTZhZTg1MDhjYjBlODVlZTUwNGQyYWRkYjM1ZTgzYjdiMTMzY2ZkMmNiODQ3YWVlNmYxM2VhYWNjNjI2MjY3Ihh1c2VyX2NyZWRlbnRpYWxzX2lkaQPytQE6D3Nlc3Npb25faWQiJWUzN2QzNzUzZDhiYmE4MmQ2M2Y2OTAzMGQ0MDhiZWEy--8b9ae70b0c0a816ddf34b68f8fc71932e3bab520; path=/; HttpOnly
+Cache-Control: no-cache
+Content-Length: 123
+
+<html><body>You are being <a href="http://drownedinsound.com/community/boards/social/4425041">redirected</a>.</body></html>
+
+
+
+
+Referer: http://drownedinsound.com/community/boards/social/4430059
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
+Cache-Control: max-age=0
+Connection: keep-alive
+Origin: http://drownedinsound.com
+Accept-Language: en-US,en;q=0.8
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Content-Length: 309
+Host: drownedinsound.com
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_3) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31
+Content-Type: application/x-www-form-urlencoded
+Cookie: __qca=P0-1283032328-1364037920174; user_credentials=5f59121c19f7474c4678182919176b123504721de7208b6fa8298114b75039b9316ae8508cb0e85ee504d2addb35e83b7b133cfd2cb847aee6f13eaacc626267%3A%3A112114; dis_session=BAh7CSIVdXNlcl9jcmVkZW50aWFscyIBgDVmNTkxMjFjMTlmNzQ3NGM0Njc4MTgyOTE5MTc2YjEyMzUwNDcyMWRlNzIwOGI2ZmE4Mjk4MTE0Yjc1MDM5YjkzMTZhZTg1MDhjYjBlODVlZTUwNGQyYWRkYjM1ZTgzYjdiMTMzY2ZkMmNiODQ3YWVlNmYxM2VhYWNjNjI2MjY3Ihh1c2VyX2NyZWRlbnRpYWxzX2lkaQPytQE6D3Nlc3Npb25faWQiJTdhZTNmMGMxZGIwZTE4ZGVmNDA2ZmViNDZlZmIwOTEwIgpmbGFzaElDOidBY3Rpb25Db250cm9sbGVyOjpGbGFzaDo6Rmxhc2hIYXNoewY6DXNldHRpbmdzIhVTZXR0aW5ncyB1cGRhdGVkBjoKQHVzZWR7BjsHVA%3D%3D--0a0521fe42dba0127c65cd4d97df7e848eb566e1; hashed=43e450c71a90d572b637cde8d67aa614; return_to=http%3A//drownedinsound.com/community/boards/social/4430059; topics=%7B%224429644%22%3A%20124125570%2C%20%224430059%22%3A%20124113801%2C%20%224430177%22%3A%20124120157%2C%20%224430201%22%3A%20124124373%2C%20%224430210%22%3A%20124117206%2C%20%224430212%22%3A%20124126313%7D; __utma=86140493.1170303490.1364037920.1367954845.1368126365.65; __utmb=86140493.9.10.1368126365; __utmc=86140493; __utmz=86140493.1367272931.57.7.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)
+Accept-Encoding: gzip,deflate,sdch
+
+Server: nginx/0.7.65
+Set-Cookie: logged_in=1; path=/,dis_session=BAh7CSIVdXNlcl9jcmVkZW50aWFscyIBgDVmNTkxMjFjMTlmNzQ3NGM0Njc4MTgyOTE5MTc2YjEyMzUwNDcyMWRlNzIwOGI2ZmE4Mjk4MTE0Yjc1MDM5YjkzMTZhZTg1MDhjYjBlODVlZTUwNGQyYWRkYjM1ZTgzYjdiMTMzY2ZkMmNiODQ3YWVlNmYxM2VhYWNjNjI2MjY3IgpmbGFzaElDOidBY3Rpb25Db250cm9sbGVyOjpGbGFzaDo6Rmxhc2hIYXNoewY6DXNldHRpbmdzIhVTZXR0aW5ncyB1cGRhdGVkBjoKQHVzZWR7BjsGVDoPc2Vzc2lvbl9pZCIlN2FlM2YwYzFkYjBlMThkZWY0MDZmZWI0NmVmYjA5MTAiGHVzZXJfY3JlZGVudGlhbHNfaWRpA%2FK1AQ%3D%3D--498a5ac7c05b430d2fb0274a69060c5a63987a79; path=/; HttpOnly
+Transfer-Encoding: chunked
+Location: http://drownedinsound.com/community/boards/social/4430059
+Status: 302 Found
+Connection: keep-alive
+Cache-Control: no-cache
+X-Runtime: 957
+Content-Type: text/html; charset=utf-8
+Date: Thu, 09 May 2013 19:17:09 GMT
+
+
+Request parameters
+comment%5Bcommentable_id%5D=4430059
+comment%5Bcommentable_type%5D=Topic
+parent_id=
+comment%5Btitle%5D=The+welsh+bloke+went+up+in+my+estimation+when+he
+comment%5Bcontent_raw%5D=called+that+guy+a+%22silly+shit%22%0D%0A%0D%0AHopefully+he+stays+in+it+for+a+while+as+he+seems+a+source+of+comedy.+
+commit=Post+reply
+
+
+
+POST_DATA
+comment%5Bcommentable_id%5D=4430059&comment%5Bcommentable_type%5D=Topic&parent_id=&comment%5Btitle%5D=The+welsh+bloke+went+up+in+my+estimation+when+he&comment%5Bcontent_raw%5D=called+that+guy+a+%22silly+shit%22%0D%0A%0D%0AHopefully+he+stays+in+it+for+a+while+as+he+seems+a+source+of+comedy.+&commit=Post+reply
+
+Response text
+<html><body>You are being <a href="http://drownedinsound.com/community/boards/social/4430059">redirected</a>.</body></html>
+
+
+
+
+
+
+
+
+
+
+
+

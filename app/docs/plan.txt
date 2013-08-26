@@ -1,16 +1,14 @@
 Next
 
-- Fix problems with requesting board summary list when left for a long time it seems to get fetch board posts then not display them
 - Test network problems
-- sort board posts, order by sticky ness then date
+- option to go to the last post
 
-
-Laster on 
-
-Fix bugs on wildfire s
+Later on 
 
 Create UI for new post
 Create UI for new comment
+fix author for comments that have replies - should have a seperate field for the person you are replying to
+
 Integrate Login/Logout
 Integrate Sliding Menu??
 Clear old posts from DB

@@ -23,4 +23,7 @@ public class UrlConstants {
     public final static String  ERRORS_SUGGESTIONS_URL = BOARD_BASE_URL + "errors";
     
     public final static String COMMENTS_URL = BASE_URL  +"/comments";
+    
+    public final static String NEW_POST_URL = "http://drownedinsound.com/community/topics";
+    
 }

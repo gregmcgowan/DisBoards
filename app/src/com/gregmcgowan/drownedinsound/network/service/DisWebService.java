@@ -20,6 +20,7 @@ import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.gregmcgowan.drownedinsound.network.UrlConstants;
 import com.gregmcgowan.drownedinsound.network.handlers.LoginResponseHandler;
+import com.gregmcgowan.drownedinsound.network.handlers.NewPostHandler;
 import com.gregmcgowan.drownedinsound.network.handlers.PostACommentHandler;
 import com.gregmcgowan.drownedinsound.network.handlers.RetrieveBoardPostHandler;
 import com.gregmcgowan.drownedinsound.network.handlers.RetrieveBoardSummaryListHandler;
@@ -71,6 +72,9 @@ public class DisWebService extends IntentService {
 	case DisWebServiceConstants.POST_A_COMMENT:
 	    postComment(intent);
 	    break;
+	case DisWebServiceConstants.NEW_POST:
+	    newPost(intent);
+	    break;
 	default:
 	    break;
 	}
@@ -96,7 +100,7 @@ public class DisWebService extends IntentService {
 
 	} else {
 	    EventBus.getDefault().post(
-		    new RetrievedBoardPostEvent(cachedPost, true,true));
+		    new RetrievedBoardPostEvent(cachedPost, true, true));
 	}
 
     }
@@ -105,7 +109,8 @@ public class DisWebService extends IntentService {
 	Board board = intent.getParcelableExtra(DisBoardsConstants.BOARD);
 	boolean forceFetch = intent.getBooleanExtra(
 		DisBoardsConstants.FORCE_FETCH, false);
-	int pageNumber = intent.getIntExtra(DisBoardsConstants.BOARD_PAGE_NUMBER, 1);
+	int pageNumber = intent.getIntExtra(
+		DisBoardsConstants.BOARD_PAGE_NUMBER, 1);
 	fetchBoardPostSummaryList(pageNumber, board, true, forceFetch);
 	// TODO not sure if we actually gain anything from doing this
 	// Fetch the two nearest as well
@@ -135,6 +140,16 @@ public class DisWebService extends IntentService {
 			databaseHelper));
     }
 
+    private void newPost(Intent intent) {
+	Board board = intent.getParcelableExtra(DisBoardsConstants.BOARD);
+	String title = intent.getStringExtra(DisBoardsConstants.NEW_POST_TITLE);
+	String content = intent
+		.getStringExtra(DisBoardsConstants.NEW_POST_CONTENT);
+	HttpClient.makeNewPost(getApplicationContext(), title, content, board,
+		new NewPostHandler(board, databaseHelper));
+
+    }
+
     private void postComment(Intent intent) {
 	String boardPostId = intent
 		.getStringExtra(DisBoardsConstants.BOARD_POST_ID);
@@ -145,36 +160,36 @@ public class DisWebService extends IntentService {
 	String title = intent.getStringExtra(DisBoardsConstants.COMMENT_TITLE);
 	String content = intent
 		.getStringExtra(DisBoardsConstants.COMMENT_CONTENT);
-	
+
 	HttpClient.postComment(getApplicationContext(), title, content,
 		boardPostId, commentId, new PostACommentHandler(boardPostId,
 			boardType, databaseHelper));
 
     }
 
-    private void fetchBoardPostSummaryList(int pageNumber, Board board, boolean updateUI,
-	    boolean forceFetch) {
+    private void fetchBoardPostSummaryList(int pageNumber, Board board,
+	    boolean updateUI, boolean forceFetch) {
 	List<BoardPost> cachedBoardPosts = databaseHelper.getBoardPosts(board
 		.getBoardType());
 	boolean requestIsInProgress = HttpClient.requestIsInProgress(board
 		.getBoardType().name());
 	boolean append = pageNumber > 1;
-	
+
 	if (!requestIsInProgress) {
 	    if (NetworkUtils.isConnected(this)) {
-		    HttpClient.requestBoardSummary(
-			    this,
-			    board.getUrl(),
-			    board.getBoardType(),
-			    new RetrieveBoardSummaryListHandler(board
-				    .getBoardType(), updateUI, databaseHelper, append),
-			    pageNumber);	
+		HttpClient.requestBoardSummary(
+			this,
+			board.getUrl(),
+			board.getBoardType(),
+			new RetrieveBoardSummaryListHandler(board
+				.getBoardType(), updateUI, databaseHelper,
+				append), pageNumber);
 	    } else {
 		if (updateUI) {
 		    EventBus.getDefault().post(
 			    new RetrievedBoardPostSummaryListEvent(
 				    cachedBoardPosts, board.getBoardType(),
-				    true,false));
+				    true, false));
 		}
 	    }
 	}
@@ -239,7 +254,7 @@ public class DisWebService extends IntentService {
 				board.getBoardType(),
 				new RetrieveBoardSummaryListHandler(board
 					.getBoardType(), forceFetch,
-					databaseHelper,false), 1);
+					databaseHelper, false), 1);
 		    }
 		}
 	    }

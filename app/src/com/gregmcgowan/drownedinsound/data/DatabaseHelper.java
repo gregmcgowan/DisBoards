@@ -97,24 +97,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private void initliaseBoardType() {
 	boards = new ArrayList<Board>();
 	boards.add(new Board(BoardType.MUSIC,
-		BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL));
+		BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL,19));
 	boards.add(new Board(BoardType.SOCIAL,
-		BoardTypeConstants.SOCIAL_DISPLAY_NAME, UrlConstants.SOCIAL_URL));
+		BoardTypeConstants.SOCIAL_DISPLAY_NAME, UrlConstants.SOCIAL_URL,20));
 	boards.add(new Board(BoardType.ANNOUNCEMENTS_CLASSIFIEDS,
 		BoardTypeConstants.ANNOUNCEMENTS_CLASSIFIEDS_DISPLAY_NAME,
-		UrlConstants.ANNOUNCEMENTS_CLASSIFIEDS_URL));
+		UrlConstants.ANNOUNCEMENTS_CLASSIFIEDS_URL,21));
 	boards.add(new Board(BoardType.MUSICIANS,
 		BoardTypeConstants.MUSICIANS_DISPLAY_NAME,
-		UrlConstants.MUSICIANS_URL));
+		UrlConstants.MUSICIANS_URL,22));
 	boards.add(new Board(BoardType.FESTIVALS,
 		BoardTypeConstants.FESTIVALS_DISPLAY_NAME,
-		UrlConstants.FESTIVALS_URL));
+		UrlConstants.FESTIVALS_URL,23));
 	boards.add(new Board(BoardType.YOUR_MUSIC,
 		BoardTypeConstants.YOUR_MUSIC_DISPLAY_NAME,
-		UrlConstants.YOUR_MUSIC_URL));
+		UrlConstants.YOUR_MUSIC_URL,24));
 	boards.add(new Board(BoardType.ERRORS_SUGGESTIONS,
 		BoardTypeConstants.ERROR_SUGGESTIONS_DISPLAY_NAME,
-		UrlConstants.ERRORS_SUGGESTIONS_URL));
+		UrlConstants.ERRORS_SUGGESTIONS_URL,25));
 	for (Board board : boards) {
 	    Board storedBoard = getBoard(board.getBoardType());
 	    if (storedBoard == null) {

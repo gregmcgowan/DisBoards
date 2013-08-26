@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.Header;
 import org.apache.http.client.HttpResponseException;
 
 import android.util.Log;
@@ -37,7 +38,7 @@ public class RetrieveBoardSummaryListHandler extends
 	    + "RetrieveBoardSummaryListHandler";
 
     @Override
-    public void doSuccessAction(int statusCode, InputStream inputStream) {
+    public void doSuccessAction(int statusCode,Header[] headers,  InputStream inputStream) {
 	List<BoardPost> boardPostSummaries = new ArrayList<BoardPost>();
 	if (DisBoardsConstants.DEBUG) {
 	    Log.d(TAG, "Got response");

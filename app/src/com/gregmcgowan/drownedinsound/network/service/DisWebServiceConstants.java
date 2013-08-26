@@ -8,4 +8,5 @@ public class DisWebServiceConstants {
     public static final int GET_BOARD_POST_ID = 3;
     public static final int THIS_A_COMMENT_ID = 4;
     public static final int POST_A_COMMENT = 5;
+    public static final int NEW_POST = 6;
 }

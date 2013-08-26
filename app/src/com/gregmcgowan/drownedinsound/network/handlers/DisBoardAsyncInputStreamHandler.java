@@ -3,6 +3,8 @@ package com.gregmcgowan.drownedinsound.network.handlers;
 
 import java.io.InputStream;
 
+import org.apache.http.Header;
+
 import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.loopj.android.http.InputStreamAsyncHttpResponseHandler;
 
@@ -16,8 +18,8 @@ public abstract class DisBoardAsyncInputStreamHandler extends InputStreamAsyncHt
     }
 
     @Override
-    public void handleSuccess(int statusCode,InputStream inputStream) {	
-	doSuccessAction(statusCode, inputStream);
+    public void handleSuccess(int statusCode,Header[] headers, InputStream inputStream) {	
+	doSuccessAction(statusCode, headers, inputStream);
 	HttpClient.requestHasCompleted(getIdentifier());
     }
 
@@ -35,7 +37,7 @@ public abstract class DisBoardAsyncInputStreamHandler extends InputStreamAsyncHt
 	this.updateUI = updateUI;
     }
 
-    public abstract void doSuccessAction(int statusCode, InputStream inputStream);
+    public abstract void doSuccessAction(int statusCode, Header[] headers, InputStream inputStream);
     public abstract void doFailureAction(Throwable throwable);
     
 }

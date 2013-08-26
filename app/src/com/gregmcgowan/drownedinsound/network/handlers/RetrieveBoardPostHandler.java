@@ -2,6 +2,7 @@ package com.gregmcgowan.drownedinsound.network.handlers;
 
 import java.io.InputStream;
 
+import org.apache.http.Header;
 import org.apache.http.client.HttpResponseException;
 
 import android.util.Log;
@@ -34,7 +35,7 @@ public class RetrieveBoardPostHandler extends DisBoardAsyncInputStreamHandler {
     }
 
     @Override
-    public void doSuccessAction(int statusCode, InputStream inputStream) {
+    public void doSuccessAction(int statusCode, Header[] headers, InputStream inputStream) {
 	BoardPost boardPost = null;
 	if (inputStream != null) {
 	    BoardPostParser boardPostParser = new BoardPostParser(inputStream,
