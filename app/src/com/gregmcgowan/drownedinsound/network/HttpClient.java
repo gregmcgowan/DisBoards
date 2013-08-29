@@ -1,6 +1,7 @@
 package com.gregmcgowan.drownedinsound.network;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -8,20 +9,27 @@ import java.util.List;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.ProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.impl.client.DefaultRedirectHandler;
+import org.apache.http.impl.client.RedirectLocations;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HttpContext;
 
 import android.content.Context;
 import android.util.Log;
 
+import com.gregmcgowan.drownedinsound.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.model.Board;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
+import com.gregmcgowan.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
@@ -49,6 +57,30 @@ public class HttpClient {
 	asyncHttpClient.setTimeout(timeout);
     }
 
+    public static void initialiseRedirectClient(final Context appContext) {
+	asyncHttpClient.setRedirectHandler(new DefaultRedirectHandler(){
+
+	    @Override
+	    public URI getLocationURI(HttpResponse response, HttpContext context)
+		    throws ProtocolException {
+		//First check we are not redirected to login page if so we need to 
+		Header locationHeader = response.getFirstHeader("location");
+		if(locationHeader != null) {
+		    	String locationValue = locationHeader.getValue();
+		    	if("http://drownedinsound.com/login".equals(locationValue)) {
+		    	    EventBus.getDefault().post(new UserIsNotLoggedInEvent());
+		    	    DisBoardsApp.getApplication(appContext).clearCookies();
+		    	    throw new UserNotLoggedInException();
+		    	}
+		}
+		
+		 context.setAttribute(AsyncHttpClient.REDIRECT_LOCATIONS, new RedirectLocations());
+		return super.getLocationURI(response, context);
+	    }
+            
+        });
+    }
+    
     /**
      * Indicates that the request represented by identifier has compelted
      * 

@@ -38,6 +38,7 @@ import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.events.SentNewPostEvent;
 import com.gregmcgowan.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.gregmcgowan.drownedinsound.events.UpdateCachedBoardPostEvent;
+import com.gregmcgowan.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
@@ -387,8 +388,21 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 	    //Refresh the current list
 	    requestBoardSummaryPage(1, true);
 	}
-		
+	
     }
+    
+    public void onEventMainThread(UserIsNotLoggedInEvent event) {
+	if(DisBoardsConstants.DEBUG) {
+	    Log.d(TAG, "recieved  not logged in ");  
+	}
+
+	setProgressBarVisiblity(false);
+	Toast.makeText(getSherlockActivity(),
+		"User is not logged in", Toast.LENGTH_SHORT)
+		.show();
+    }
+    
+    
     
     
     private void displayIsCachedPopup() {

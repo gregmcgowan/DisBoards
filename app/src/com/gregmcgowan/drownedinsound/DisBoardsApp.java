@@ -41,6 +41,7 @@ public class DisBoardsApp extends Application {
 
     private void initliaseHttpClient() {
 	HttpClient.setTimeout(DisBoardsConstants.NETWORK_REQUEST_TIMEOUT_MS);
+	HttpClient.initialiseRedirectClient(this);
     }
 
     public ExecutorService getMultiThreadedExecutorService() {

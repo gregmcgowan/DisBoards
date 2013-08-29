@@ -38,6 +38,7 @@ import com.gregmcgowan.drownedinsound.events.BoardPostCommentSentEvent;
 import com.gregmcgowan.drownedinsound.events.FailedToPostCommentEvent;
 import com.gregmcgowan.drownedinsound.events.FailedToThisThisEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
+import com.gregmcgowan.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
@@ -229,6 +230,18 @@ public class BoardPostFragment extends DisBoardsListFragment {
 		Toast.LENGTH_SHORT).show();
     }
 
+    public void onEventMainThread(UserIsNotLoggedInEvent event) {
+	if(DisBoardsConstants.DEBUG) {
+	    Log.d(TAG, "recieved  not logged in ");  
+	}
+
+	setProgressBarAndFragmentVisibility(false);
+	Toast.makeText(getSherlockActivity(),
+		"User is not logged in", Toast.LENGTH_SHORT)
+		.show();
+    }
+    
+    
     public void onEventMainThread(BoardPostCommentSentEvent event) {
 	setProgressBarAndFragmentVisibility(true);
     }
