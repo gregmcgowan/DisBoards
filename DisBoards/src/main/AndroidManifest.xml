@@ -1,0 +1,40 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.gregmcgowan.drownedinsound"
+    android:versionCode="1"
+    android:versionName="0.0.2" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="15" />
+
+    <application
+        android:name=".DisBoardsApp"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.dis_boards_style" >
+        <activity android:name="com.gregmcgowan.drownedinsound.ui.activity.LoginActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.gregmcgowan.drownedinsound.ui.activity.MainCommunityActivity" />
+        <activity android:name="com.crittercism.NotificationActivity" />
+        <activity android:name="com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity" >
+        </activity>
+
+        <service android:name="com.gregmcgowan.drownedinsound.network.service.DisWebService" >
+        </service>
+
+        <activity android:name="net.hockeyapp.android.UpdateActivity" />
+    </application>
+
+</manifest>

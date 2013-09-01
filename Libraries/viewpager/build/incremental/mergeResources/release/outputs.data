@@ -1,0 +1,25 @@
+# incremental data. DO NOT EDIT.
+# format is <lastModified> <length> <SHA-1> <path>
+# Encoding is UTF-8
+1378048033000 153 63b518b92999c386cb952dbff676534793421e1e /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-xhdpi/vpi__tab_selected_holo.9.png
+1378048033000 1496 e120f8644748a0d65bc7d670d658217577707ffc /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/color/vpi__dark_theme.xml
+1378048033000 1509 702f8d43a2a17672c223c6137a0635b47286e33c /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/color/vpi__light_theme.xml
+1378048033000 2347 706f2c5369106c461efa50e717437e3c5770555f /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable/vpi__tab_indicator.xml
+1378048033000 151 237f868f593963ff0cbbd8b8ea1ad5c09816c4d5 /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-mdpi/vpi__tab_selected_holo.9.png
+1378048033000 166 73f3be9e242b7695d14dc49bdada8c9b4d003c9c /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-xhdpi/vpi__tab_unselected_holo.9.png
+1378048033000 147 81776b637cfd33b2e629aff1a822c3351a8514ec /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-hdpi/vpi__tab_selected_pressed_holo.9.png
+1378048033000 153 c12460df33cda6ea84854d7e5a47141030aeddc2 /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-hdpi/vpi__tab_unselected_holo.9.png
+1378048033000 150 63893a0fc45d4aff1e2f35e857bdccae5673efb2 /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-mdpi/vpi__tab_unselected_focused_holo.9.png
+1378048033000 147 5448410bc939b9c033a5b3002397162b0ba7be0c /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-xhdpi/vpi__tab_selected_pressed_holo.9.png
+1378048033000 150 de0ffac02c18f407824b27846961297b48b3d8fd /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-mdpi/vpi__tab_selected_pressed_holo.9.png
+1378048033000 10456 5862abe74d89a1bd840b462761c9747bda3bc816 /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/values/values.xml
+1378048033000 148 47ef1365616f31b6018598321ea5c576b1c3429f /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-xhdpi/vpi__tab_unselected_focused_holo.9.png
+1378048033000 147 2a32fedfa6e27c8c8570fb878026581b90d0a341 /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-hdpi/vpi__tab_selected_focused_holo.9.png
+1378048033000 157 fab4d5ea242393f868e08f3e2ca0e6808842524f /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-mdpi/vpi__tab_unselected_holo.9.png
+1378048033000 146 bce0602e189a7f4a0548ca0a0cfc1cea7cbeee22 /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-hdpi/vpi__tab_unselected_focused_holo.9.png
+1378048033000 145 929dad62d3421e97f07742ebfa3a058046f1f8c0 /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-hdpi/vpi__tab_unselected_pressed_holo.9.png
+1378048033000 148 253429487d41977ad263b27d4bd6b6c8678fdb40 /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-mdpi/vpi__tab_selected_focused_holo.9.png
+1378048033000 147 f162f0baf35db1964b2fe722460605cab8312a27 /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-xhdpi/vpi__tab_selected_focused_holo.9.png
+1378048033000 155 6eb18ad9cf9c0c56f5d935f1f78e47ace4cb6d96 /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-mdpi/vpi__tab_unselected_pressed_holo.9.png
+1378048033000 149 cd9ea9006cfec4ecc98486a63df638e1354b9e0a /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-xhdpi/vpi__tab_unselected_pressed_holo.9.png
+1378048033000 148 74a67edc1236d8c673d008c17b76b6cd565a521e /Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/viewpager/build/res/all/release/drawable-hdpi/vpi__tab_selected_holo.9.png

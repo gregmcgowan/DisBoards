@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- From: file:/Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/DisBoards/build/exploded-bundles/DisBoardsProjectLibrariesActionbarsherlockUnspecified.aar/res/values-w600dp/values.xml -->
+    <integer name="abs__max_action_buttons">5</integer>
+
+</resources>

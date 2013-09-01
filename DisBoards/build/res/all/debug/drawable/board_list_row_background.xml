@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+  android:shape="rectangle" >
+  <solid android:color="#FFFFFF" />
+</shape><!-- From: file:/Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/DisBoards/src/main/res/drawable/board_list_row_background.xml -->

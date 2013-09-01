@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@id/parent_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_gradient_background"
+    android:baselineAligned="true"
+    android:orientation="horizontal" >
+
+    <LinearLayout
+        android:layout_width="0px"
+        android:layout_height="match_parent"
+        android:layout_weight="0.4"
+        android:orientation="vertical" >
+
+        <com.viewpagerindicator.TitlePageIndicator
+            android:id="@id/indicator"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dip"
+            android:textColor="@color/lighter_grey"
+            app:selectedColor="@color/darkest_grey" />
+
+        <android.support.v4.view.ViewPager
+            android:id="@id/boards_pager"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="3dip"
+        android:layout_height="fill_parent"
+        android:background="@color/very_dark_grey"
+        android:layout_marginRight="@dimen/margin_small" />
+
+    <LinearLayout
+        android:id="@+id/detail_layout"
+        android:layout_width="0px"
+        android:layout_height="match_parent"
+        android:layout_weight="0.6"
+        android:orientation="vertical" >
+
+        <FrameLayout
+            android:id="@+id/board_post_details"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+</LinearLayout>

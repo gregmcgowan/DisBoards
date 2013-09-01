@@ -1,0 +1,21 @@
+<resources>
+    <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_medium">8dp</dimen>
+    <dimen name="padding_large">16dp</dimen>
+    <dimen name="text_micro">12sp</dimen>
+    <dimen name="text_really_micro">10sp</dimen>
+	<dimen name="text_small">14sp</dimen>
+	<dimen name="text_medium">18sp</dimen>
+	<dimen name="text_large">22sp</dimen>
+	<dimen name="margin_small">4dp</dimen>
+	<dimen name="margin_medium">8dp</dimen>
+	<dimen name="margin_large">16dip</dimen>
+	<dimen name="comment_text_padding">5dip</dimen>
+	<dimen name= "divider_height">2dip</dimen>
+	<dimen name="comment_button_height">38dip</dimen>
+	<dimen name="comment_button_width">100dip</dimen>
+	<dimen name="comment_background_rectangle_thickness">1dip</dimen>
+	<dimen name="reply_dialog_min_width">400dip</dimen>
+	<dimen name ="reply_dialog_min_height">250dip</dimen>
+	
+</resources>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="endlessadapter">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/DisBoards/libs/endlessadapter.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
