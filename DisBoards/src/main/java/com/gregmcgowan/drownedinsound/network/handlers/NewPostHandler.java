@@ -20,28 +20,28 @@ public class NewPostHandler extends DisBoardAsyncInputStreamHandler {
     private DatabaseHelper databaseHelper;
 
     public NewPostHandler(Board board, DatabaseHelper databaseHelper) {
-	super(board.getDisplayName(), true);
-	this.board = board;
-	this.databaseHelper = databaseHelper;
+        super(board.getDisplayName(), true);
+        this.board = board;
+        this.databaseHelper = databaseHelper;
     }
 
     @Override
     public void doSuccessAction(int statusCode, Header[] headers,
-	    InputStream inputStream) {
-	String postID = "";
-	if (headers != null) {
-	    for (Header header : headers) {
-		Log.d("NEWPOST", header.toString());
-		String name = header.getName();
-		if ("location".equals(name)) {
-		    String value = header.getValue();
-		    int lastIndexOfForwardSlash = value.lastIndexOf("/");
-		    int lastIndexOfQuestion = value.lastIndexOf("?");
-		    postID = value.substring(lastIndexOfForwardSlash,
-			    lastIndexOfQuestion + 1);
-		    Log.d("NEWPOST", "postID " + postID);
-		}
-	    }
+                                InputStream inputStream) {
+        String postID = "";
+        if (headers != null) {
+            for (Header header : headers) {
+                Log.d("NEWPOST", header.toString());
+                String name = header.getName();
+                if ("location".equals(name)) {
+                    String value = header.getValue();
+                    int lastIndexOfForwardSlash = value.lastIndexOf("/");
+                    int lastIndexOfQuestion = value.lastIndexOf("?");
+                    postID = value.substring(lastIndexOfForwardSlash,
+                        lastIndexOfQuestion + 1);
+                    Log.d("NEWPOST", "postID " + postID);
+                }
+            }
 
 //	    BoardPostParser boardPostParser = new BoardPostParser(inputStream,
 //		    postID, board.getBoardType());
@@ -56,14 +56,14 @@ public class NewPostHandler extends DisBoardAsyncInputStreamHandler {
 //	    }
 //	    EventBus.getDefault().post(
 //		    new UpdateCachedBoardPostEvent(boardPost));
-	    EventBus.getDefault().post(new SentNewPostEvent(SentNewPostState.CONFIRMED));
-	}
+            EventBus.getDefault().post(new SentNewPostEvent(SentNewPostState.CONFIRMED));
+        }
 
     }
 
     @Override
     public void doFailureAction(Throwable throwable) {
-	EventBus.getDefault().post(new FailedToPostNewThreadEvent());
+        EventBus.getDefault().post(new FailedToPostNewThreadEvent());
     }
 
 }

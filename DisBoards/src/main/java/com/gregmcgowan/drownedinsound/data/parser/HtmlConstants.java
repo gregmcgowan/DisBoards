@@ -2,9 +2,8 @@ package com.gregmcgowan.drownedinsound.data.parser;
 
 /**
  * This will represent various tags used in the html pages
- * 
- * @author Greg
  *
+ * @author Greg
  */
 public class HtmlConstants {
 

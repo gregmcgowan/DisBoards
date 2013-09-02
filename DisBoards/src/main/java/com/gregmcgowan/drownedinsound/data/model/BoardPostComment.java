@@ -8,9 +8,8 @@ import com.j256.ormlite.table.DatabaseTable;
 
 /**
  * Represents a comment that has been made against a drowned in sound board post
- * 
+ *
  * @author Greg
- * 
  */
 @DatabaseTable(tableName = "board_post_comment")
 public class BoardPostComment implements Parcelable {
@@ -42,12 +41,11 @@ public class BoardPostComment implements Parcelable {
     @DatabaseField
     private int commentLevel;
 
-    
+
     private boolean actionSectionVisible;
     private BoardPostCommentTreeNode treeNode;
 
     private boolean doHighlightedAnimation;
-
 
 
     public BoardPostComment() {
@@ -55,145 +53,145 @@ public class BoardPostComment implements Parcelable {
     }
 
     protected BoardPostComment(Parcel in) {
-	readFromParcel(in);
+        readFromParcel(in);
     }
 
     public String getTitle() {
-	return title;
+        return title;
     }
 
     public void setTitle(String title) {
-	this.title = title;
+        this.title = title;
     }
 
     public String getContent() {
-	return content;
+        return content;
     }
 
     public void setContent(String content) {
-	this.content = content;
+        this.content = content;
     }
 
     public String getAuthorUsername() {
-	return authorUsername;
+        return authorUsername;
     }
 
     public void setAuthorUsername(String authorUsername) {
-	this.authorUsername = authorUsername;
+        this.authorUsername = authorUsername;
     }
 
     public String getUsersWhoHaveThissed() {
-	return usersWhoHaveThissed;
+        return usersWhoHaveThissed;
     }
 
     public void setUsersWhoHaveThissed(String usersWhoHaveThissed) {
-	this.usersWhoHaveThissed = usersWhoHaveThissed;
+        this.usersWhoHaveThissed = usersWhoHaveThissed;
     }
 
     public String getDateAndTimeOfComment() {
-	return dateAndTimeOfComment;
+        return dateAndTimeOfComment;
     }
 
     public void setDateAndTimeOfComment(String dateAndTimeOfComment) {
-	this.dateAndTimeOfComment = dateAndTimeOfComment;
+        this.dateAndTimeOfComment = dateAndTimeOfComment;
     }
 
     public BoardPostCommentTreeNode getTreeNode() {
-	return treeNode;
+        return treeNode;
     }
 
     public void setTreeNode(BoardPostCommentTreeNode treeNode) {
-	this.treeNode = treeNode;
+        this.treeNode = treeNode;
     }
 
     public String getId() {
-	return id;
+        return id;
     }
 
     public void setId(String commentId) {
-	this.id = commentId;
+        this.id = commentId;
     }
 
     public int getCommentLevel() {
-	return commentLevel;
+        return commentLevel;
     }
 
     public void setCommentLevel(int commentLevel) {
-	this.commentLevel = commentLevel;
+        this.commentLevel = commentLevel;
     }
 
     public BoardPost getBoardPost() {
-	return boardPost;
+        return boardPost;
     }
 
     public void setBoardPost(BoardPost boardPost) {
-	this.boardPost = boardPost;
+        this.boardPost = boardPost;
     }
 
     public int describeContents() {
-	return 0;
+        return 0;
     }
 
     public boolean isActionSectionVisible() {
-	return actionSectionVisible;
+        return actionSectionVisible;
     }
 
     public void setActionSectionVisible(boolean actionSectionVisible) {
-	this.actionSectionVisible = actionSectionVisible;
+        this.actionSectionVisible = actionSectionVisible;
     }
 
     public String getReplyToUsername() {
-	return replyToUsername;
+        return replyToUsername;
     }
 
     public void setReplyToUsername(String replyToUsername) {
-	this.replyToUsername = replyToUsername;
+        this.replyToUsername = replyToUsername;
     }
 
     private void readFromParcel(Parcel in) {
-	title = in.readString();
-	content = in.readString();
-	authorUsername = in.readString();
-	id = in.readString();
-	commentLevel = in.readInt();
-	dateAndTimeOfComment = in.readString();
-	actionSectionVisible = in.readInt() == 1 ;
+        title = in.readString();
+        content = in.readString();
+        authorUsername = in.readString();
+        id = in.readString();
+        commentLevel = in.readInt();
+        dateAndTimeOfComment = in.readString();
+        actionSectionVisible = in.readInt() == 1;
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-	dest.writeString(title);
-	dest.writeString(content);
-	dest.writeString(authorUsername);
-	dest.writeString(id);
-	dest.writeInt(commentLevel);
-	dest.writeString(dateAndTimeOfComment);
-	dest.writeInt(actionSectionVisible ? 1 : 0);
+        dest.writeString(title);
+        dest.writeString(content);
+        dest.writeString(authorUsername);
+        dest.writeString(id);
+        dest.writeInt(commentLevel);
+        dest.writeString(dateAndTimeOfComment);
+        dest.writeInt(actionSectionVisible ? 1 : 0);
     }
 
     public static final Parcelable.Creator<BoardPostComment> CREATOR = new Parcelable.Creator<BoardPostComment>() {
-	public BoardPostComment createFromParcel(Parcel in) {
-	    return new BoardPostComment(in);
-	}
+        public BoardPostComment createFromParcel(Parcel in) {
+            return new BoardPostComment(in);
+        }
 
-	public BoardPostComment[] newArray(int size) {
-	    return new BoardPostComment[size];
-	}
+        public BoardPostComment[] newArray(int size) {
+            return new BoardPostComment[size];
+        }
     };
 
     @Override
     public String toString() {
-	return "BoardPostComment [id=" + id + ", title=" + title + ", content="
-		+ content + ", authorUsername=" + authorUsername
-		+ ", usersWhoHaveThissed=" + usersWhoHaveThissed
-		+ ", dateAndTimeOfComment=" + dateAndTimeOfComment
-		+ ", boardPost=" + (boardPost != null ? boardPost.getId() : boardPost) + ", commentLevel=" + commentLevel
-		+ ", actionSectionVisible=" + actionSectionVisible + "]";
+        return "BoardPostComment [id=" + id + ", title=" + title + ", content="
+            + content + ", authorUsername=" + authorUsername
+            + ", usersWhoHaveThissed=" + usersWhoHaveThissed
+            + ", dateAndTimeOfComment=" + dateAndTimeOfComment
+            + ", boardPost=" + (boardPost != null ? boardPost.getId() : boardPost) + ", commentLevel=" + commentLevel
+            + ", actionSectionVisible=" + actionSectionVisible + "]";
     }
 
     public void setDoHighlightedAnimation(boolean doHighlightedAnimation) {
-	this.doHighlightedAnimation =  doHighlightedAnimation;	
+        this.doHighlightedAnimation = doHighlightedAnimation;
     }
-    
+
     public boolean isDoHighlightedAnimation() {
         return doHighlightedAnimation;
     }

@@ -10,50 +10,50 @@ public class RetrievedBoardPostSummaryListEvent {
     private List<BoardPost> boardPostSummaryList;
 
     private BoardType boardType;
-    
+
     private boolean isCached;
-    
+
     private boolean append;
-    
+
     public RetrievedBoardPostSummaryListEvent(
-	    List<BoardPost> boardPostSummaryList, BoardType boardType, boolean isCached,boolean append) {
-	setBoardPostSummaryList(boardPostSummaryList);
-	setBoardType(boardType);
-	setCached(isCached);
-	setAppend(append);
+        List<BoardPost> boardPostSummaryList, BoardType boardType, boolean isCached, boolean append) {
+        setBoardPostSummaryList(boardPostSummaryList);
+        setBoardType(boardType);
+        setCached(isCached);
+        setAppend(append);
     }
 
     public List<BoardPost> getBoardPostSummaryList() {
-	return boardPostSummaryList;
+        return boardPostSummaryList;
     }
 
     public void setBoardPostSummaryList(
-	    List<BoardPost> boardPostSummaryList) {
-	this.boardPostSummaryList = boardPostSummaryList;
+        List<BoardPost> boardPostSummaryList) {
+        this.boardPostSummaryList = boardPostSummaryList;
     }
 
     public BoardType getBoardType() {
-	return boardType;
+        return boardType;
     }
 
     public void setBoardType(BoardType boardType) {
-	this.boardType = boardType;
+        this.boardType = boardType;
     }
 
     public boolean isCached() {
-	return isCached;
+        return isCached;
     }
 
     public void setCached(boolean isCached) {
-	this.isCached = isCached;
+        this.isCached = isCached;
     }
 
     public boolean isAppend() {
-	return append;
+        return append;
     }
 
     public void setAppend(boolean append) {
-	this.append = append;
+        this.append = append;
     }
 
 }

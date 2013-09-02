@@ -21,33 +21,33 @@ public class PostACommentHandler extends DisBoardAsyncInputStreamHandler {
     private DatabaseHelper databaseHelper;
 
     public PostACommentHandler(String boardPostId, BoardType boardType,
-	    DatabaseHelper databaseHelper) {
-	super(boardPostId, true);
-	this.postID = boardPostId;
-	this.boardType = boardType;
-	this.databaseHelper = databaseHelper;
+                               DatabaseHelper databaseHelper) {
+        super(boardPostId, true);
+        this.postID = boardPostId;
+        this.boardType = boardType;
+        this.databaseHelper = databaseHelper;
     }
 
     @Override
     public void doSuccessAction(int statusCode, Header[] headers, InputStream inputStream) {
-	BoardPost boardPost = null;
-	if (inputStream != null) {
-	    BoardPostParser boardPostParser = new BoardPostParser(inputStream,
-		    postID, boardType);
-	    boardPost = boardPostParser.parse();
-	    if (boardPost != null) {
-		databaseHelper.setBoardPost(boardPost);
-	    }
-	}
-	if (isUpdateUI()) {
-	    EventBus.getDefault().post(
-		    new RetrievedBoardPostEvent(boardPost, false,false));
-	}
-	EventBus.getDefault().post(new UpdateCachedBoardPostEvent(boardPost));
+        BoardPost boardPost = null;
+        if (inputStream != null) {
+            BoardPostParser boardPostParser = new BoardPostParser(inputStream,
+                postID, boardType);
+            boardPost = boardPostParser.parse();
+            if (boardPost != null) {
+                databaseHelper.setBoardPost(boardPost);
+            }
+        }
+        if (isUpdateUI()) {
+            EventBus.getDefault().post(
+                new RetrievedBoardPostEvent(boardPost, false, false));
+        }
+        EventBus.getDefault().post(new UpdateCachedBoardPostEvent(boardPost));
     }
 
     @Override
     public void doFailureAction(Throwable throwable) {
-	EventBus.getDefault().post(new FailedToPostCommentEvent());
+        EventBus.getDefault().post(new FailedToPostCommentEvent());
     }
 }

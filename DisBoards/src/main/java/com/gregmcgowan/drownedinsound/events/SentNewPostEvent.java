@@ -1,18 +1,18 @@
 package com.gregmcgowan.drownedinsound.events;
 
 public class SentNewPostEvent {
-   	private SentNewPostState state;
-    	
-    	public SentNewPostEvent(SentNewPostState state){
-    	    this.state = state;
-    	}
+    private SentNewPostState state;
 
-	public SentNewPostState getState() {
-	    return state;
-	}
+    public SentNewPostEvent(SentNewPostState state) {
+        this.state = state;
+    }
 
-	public static enum SentNewPostState {
-	    	SENT,CONFIRMED,FAILED
-	} 
-    	
+    public SentNewPostState getState() {
+        return state;
+    }
+
+    public static enum SentNewPostState {
+        SENT, CONFIRMED, FAILED
+    }
+
 }

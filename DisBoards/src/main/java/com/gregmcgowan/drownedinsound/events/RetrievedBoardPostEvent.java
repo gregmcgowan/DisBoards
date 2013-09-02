@@ -10,42 +10,42 @@ public class RetrievedBoardPostEvent {
     private boolean displayGotToLatestCommentOption;
 
     public RetrievedBoardPostEvent(BoardPost boardPost, boolean isCached,
-	    boolean showGotToLastCommentOption) {
-	setBoardPost(boardPost);
-	setCached(isCached);
-	setDisplayGotToLatestCommentOption(showGotToLastCommentOption);
+                                   boolean showGotToLastCommentOption) {
+        setBoardPost(boardPost);
+        setCached(isCached);
+        setDisplayGotToLatestCommentOption(showGotToLastCommentOption);
     }
 
     public BoardPost getBoardPost() {
-	return boardPost;
+        return boardPost;
     }
 
     private void setBoardPost(BoardPost boardPost) {
-	this.boardPost = boardPost;
+        this.boardPost = boardPost;
     }
 
     public boolean isCached() {
-	return isCached;
+        return isCached;
     }
 
     public void setCached(boolean isCached) {
-	this.isCached = isCached;
+        this.isCached = isCached;
     }
 
     public String getCommentIDToScrollTo() {
-	return commentIDToScrollTo;
+        return commentIDToScrollTo;
     }
 
     public void setCommentIDToScrollTo(String commentIDToScrollTo) {
-	this.commentIDToScrollTo = commentIDToScrollTo;
+        this.commentIDToScrollTo = commentIDToScrollTo;
     }
 
     public boolean isDisplayGotToLatestCommentOption() {
-	return displayGotToLatestCommentOption;
+        return displayGotToLatestCommentOption;
     }
 
     public void setDisplayGotToLatestCommentOption(
-	    boolean displayGotToLatestCommentOption) {
-	this.displayGotToLatestCommentOption = displayGotToLatestCommentOption;
+        boolean displayGotToLatestCommentOption) {
+        this.displayGotToLatestCommentOption = displayGotToLatestCommentOption;
     }
 }

@@ -2,18 +2,17 @@ package com.gregmcgowan.drownedinsound;
 
 /**
  * A class for constants that are used throughout the app
- * 
+ *
  * @author Greg
- * 
  */
 public class DisBoardsConstants {
 
     public static final int NETWORK_REQUEST_TIMEOUT_MS = 30000;
-    
+
     public static final boolean DEBUG = true;
 
     public static final String LOG_TAG_PREFIX = "Dis";
-    
+
     public static final String SOCIAL_BOARD_TITLE = "Social / Boards // Drowned In Sound ";
     public static final String LOGIN_TITLE = "Log In // Drowned In Sound ";
 
@@ -35,7 +34,7 @@ public class DisBoardsConstants {
     public static final String DUAL_PANE_MODE = "DUAL_PANE_MODE";
 
     public static final String CRITTERCISM_APP_ID = "51521dba97c8f23caf000005";
-    public static final String HOCKEY_APP_ID  = "5c3af261d9c6be190228715878934bfa";
+    public static final String HOCKEY_APP_ID = "5c3af261d9c6be190228715878934bfa";
     public static final String BOARD = "BOARD_TYPE_INFOS";
 
     public static final String FORCE_FETCH = "FORCE_FETCH";
@@ -51,7 +50,7 @@ public class DisBoardsConstants {
     public static final String COMMENT_TITLE = "COMMENT_TITLE";
 
     public static final String COMMENT_CONTENT = "COMMENT_CONTENT";
-   
+
     public static final String NEW_POST_TITLE = "NEW_POST_TITLE";
     public static final String NEW_POST_CONTENT = "NEW_POST_CONTENT";
 

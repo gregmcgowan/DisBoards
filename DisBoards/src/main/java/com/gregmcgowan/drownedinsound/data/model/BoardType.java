@@ -1,24 +1,24 @@
 package com.gregmcgowan.drownedinsound.data.model;
+
 /**
  * The type of board - gives an indication of the content that will be in posted
- *  * At the moment there are boards for 
- * 
+ * * At the moment there are boards for
+ * <p/>
  * Music
- * 
+ * <p/>
  * Social
- * 
+ * <p/>
  * Announcements / Classifieds
- * 
+ * <p/>
  * Musicians
- * 
+ * <p/>
  * Festivals
- * 
+ * <p/>
  * Your Music
- * 
+ * <p/>
  * Errors & Suggestions
- * 
- * @author gregmcgowan
  *
+ * @author gregmcgowan
  */
 public enum BoardType {
     MUSIC,

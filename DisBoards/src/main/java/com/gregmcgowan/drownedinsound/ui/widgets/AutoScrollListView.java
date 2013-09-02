@@ -26,7 +26,7 @@ import android.widget.ListView;
  * A ListView that can be asked to scroll (smoothly or otherwise) to a specific
  * position. This class takes advantage of similar functionality that exists in
  * {@link ListView} and enhances it.
- * 
+ *
  * @author Cyril Mottier
  */
 public class AutoScrollListView extends ListView {

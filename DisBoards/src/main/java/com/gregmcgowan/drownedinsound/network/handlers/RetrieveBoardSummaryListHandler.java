@@ -20,67 +20,67 @@ import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import de.greenrobot.event.EventBus;
 
 public class RetrieveBoardSummaryListHandler extends
-	DisBoardAsyncInputStreamHandler {
+    DisBoardAsyncInputStreamHandler {
 
     private BoardType boardType;
     private DatabaseHelper databaseHelper;
     private boolean append;
-    
+
     public RetrieveBoardSummaryListHandler(BoardType boardType,
-	    boolean updateUI, DatabaseHelper databaseHelper, boolean append) {
-	super(boardType.name(), updateUI);
-	this.boardType = boardType;
-	this.databaseHelper = databaseHelper;
-	this.append = append;
+                                           boolean updateUI, DatabaseHelper databaseHelper, boolean append) {
+        super(boardType.name(), updateUI);
+        this.boardType = boardType;
+        this.databaseHelper = databaseHelper;
+        this.append = append;
     }
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
-	    + "RetrieveBoardSummaryListHandler";
+        + "RetrieveBoardSummaryListHandler";
 
     @Override
-    public void doSuccessAction(int statusCode,Header[] headers,  InputStream inputStream) {
-	List<BoardPost> boardPostSummaries = new ArrayList<BoardPost>();
-	if (DisBoardsConstants.DEBUG) {
-	    Log.d(TAG, "Got response");
-	}
-	if (inputStream != null) {
-	    BoardPostSummaryListParser parser = new BoardPostSummaryListParser(
-		    inputStream, boardType, databaseHelper);
-	    boardPostSummaries = parser.parse();
-	    if (boardPostSummaries.size() > 0) {
-		databaseHelper.setBoardPosts(boardPostSummaries);
-	    }
-	    Board board = databaseHelper.getBoard(boardType);
-	    if (board != null) {
-		board.setLastFetchedTime(System.currentTimeMillis());
-		databaseHelper.setBoard(board);
-	    }
-	}
+    public void doSuccessAction(int statusCode, Header[] headers, InputStream inputStream) {
+        List<BoardPost> boardPostSummaries = new ArrayList<BoardPost>();
+        if (DisBoardsConstants.DEBUG) {
+            Log.d(TAG, "Got response");
+        }
+        if (inputStream != null) {
+            BoardPostSummaryListParser parser = new BoardPostSummaryListParser(
+                inputStream, boardType, databaseHelper);
+            boardPostSummaries = parser.parse();
+            if (boardPostSummaries.size() > 0) {
+                databaseHelper.setBoardPosts(boardPostSummaries);
+            }
+            Board board = databaseHelper.getBoard(boardType);
+            if (board != null) {
+                board.setLastFetchedTime(System.currentTimeMillis());
+                databaseHelper.setBoard(board);
+            }
+        }
 
-	if (isUpdateUI()) {
-	    EventBus.getDefault().post(
-		    new RetrievedBoardPostSummaryListEvent(boardPostSummaries,
-			    boardType, false,append));
-	}
+        if (isUpdateUI()) {
+            EventBus.getDefault().post(
+                new RetrievedBoardPostSummaryListEvent(boardPostSummaries,
+                    boardType, false, append));
+        }
     }
 
     @Override
     public void doFailureAction(Throwable throwable) {
-	if (DisBoardsConstants.DEBUG) {
-	    if (throwable instanceof HttpResponseException) {
-		HttpResponseException exception = (HttpResponseException) throwable;
-		int statusCode = exception.getStatusCode();
-		Log.d(TAG, "Status code " + statusCode);
-		Log.d(TAG, "Message " + exception.getMessage());
-	    } else {
-		Log.d(TAG, "Something went really wrong");
-	    }
-	}
+        if (DisBoardsConstants.DEBUG) {
+            if (throwable instanceof HttpResponseException) {
+                HttpResponseException exception = (HttpResponseException) throwable;
+                int statusCode = exception.getStatusCode();
+                Log.d(TAG, "Status code " + statusCode);
+                Log.d(TAG, "Message " + exception.getMessage());
+            } else {
+                Log.d(TAG, "Something went really wrong");
+            }
+        }
 
-	if (isUpdateUI()) {
-	    EventBus.getDefault().post(
-		    new RetrievedBoardPostSummaryListEvent(null, boardType,
-			    false,append));
-	}
+        if (isUpdateUI()) {
+            EventBus.getDefault().post(
+                new RetrievedBoardPostSummaryListEvent(null, boardType,
+                    false, append));
+        }
     }
 }

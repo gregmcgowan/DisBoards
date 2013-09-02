@@ -1,7 +1,7 @@
 package com.gregmcgowan.drownedinsound.data.parser.streaming;
 
 public class HtmlConstants {
-    
+
     public static final String ANCHOR = "a";
     public static final String TABLE_CELL = "td";
     public static final String TABLE_ROW = "tr";
@@ -12,7 +12,7 @@ public class HtmlConstants {
     public static final String CLASS = "class";
     public static final String DIV = "div";
     public static final String LIST = "ul";
-    public static final String LIST_ITEM  = "li";
+    public static final String LIST_ITEM = "li";
     public static final String HEADING_TWO = "h2";
     public static final String PARAGRAPH = "p";
     public static final String BREAK = "br";

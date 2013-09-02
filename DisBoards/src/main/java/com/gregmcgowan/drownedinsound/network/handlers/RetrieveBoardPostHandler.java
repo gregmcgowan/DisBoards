@@ -20,62 +20,62 @@ import de.greenrobot.event.EventBus;
 public class RetrieveBoardPostHandler extends DisBoardAsyncInputStreamHandler {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
-	    + "RetrieveBoardPostHandler";
-    
+        + "RetrieveBoardPostHandler";
+
     private String boardPostId;
     private BoardType boardPostType;
     private DatabaseHelper databaseHelper;
 
     public RetrieveBoardPostHandler(String boardPostId, BoardType boardType,
-	    boolean updateUI, DatabaseHelper databaseHelper) {
-	super(boardPostId, updateUI);
-	this.boardPostId = boardPostId;
-	this.boardPostType = boardType;
-	this.databaseHelper = databaseHelper;
+                                    boolean updateUI, DatabaseHelper databaseHelper) {
+        super(boardPostId, updateUI);
+        this.boardPostId = boardPostId;
+        this.boardPostType = boardType;
+        this.databaseHelper = databaseHelper;
     }
 
     @Override
     public void doSuccessAction(int statusCode, Header[] headers, InputStream inputStream) {
-	BoardPost boardPost = null;
-	if (inputStream != null) {
-	    BoardPostParser boardPostParser = new BoardPostParser(inputStream,
-		    boardPostId, boardPostType);
-	    boardPost = boardPostParser.parse();
-	    BoardPost exisitingBoardPost = databaseHelper.getBoardPost(boardPost.getId());
-	    int numberOfTimesRead = 0;
-	    if(exisitingBoardPost != null)  {
-		 numberOfTimesRead = exisitingBoardPost.getNumberOfTimesRead()  + 1;
-	    }
-	    boardPost.setNumberOfTimesRead(numberOfTimesRead);
-	    if (boardPost != null) {
-		databaseHelper.setBoardPost(boardPost);
-	    }
-	}
-	if (isUpdateUI()) {
-	    EventBus.getDefault().post(
-		    new RetrievedBoardPostEvent(boardPost, false,true));
-	}
-	EventBus.getDefault().post(new UpdateCachedBoardPostEvent(boardPost));
+        BoardPost boardPost = null;
+        if (inputStream != null) {
+            BoardPostParser boardPostParser = new BoardPostParser(inputStream,
+                boardPostId, boardPostType);
+            boardPost = boardPostParser.parse();
+            BoardPost exisitingBoardPost = databaseHelper.getBoardPost(boardPost.getId());
+            int numberOfTimesRead = 0;
+            if (exisitingBoardPost != null) {
+                numberOfTimesRead = exisitingBoardPost.getNumberOfTimesRead() + 1;
+            }
+            boardPost.setNumberOfTimesRead(numberOfTimesRead);
+            if (boardPost != null) {
+                databaseHelper.setBoardPost(boardPost);
+            }
+        }
+        if (isUpdateUI()) {
+            EventBus.getDefault().post(
+                new RetrievedBoardPostEvent(boardPost, false, true));
+        }
+        EventBus.getDefault().post(new UpdateCachedBoardPostEvent(boardPost));
 
     }
 
     @Override
     public void doFailureAction(Throwable throwable) {
-	if (DisBoardsConstants.DEBUG) {
-	    if (throwable instanceof HttpResponseException) {
-		HttpResponseException exception = (HttpResponseException) throwable;
-		int statusCode = exception.getStatusCode();
-		Log.d(TAG, "Status code " + statusCode);
-		Log.d(TAG, "Message " + exception.getMessage());
-	    } else {
-		Log.d(TAG, "Something went really wrong");
-	    }
-	}
+        if (DisBoardsConstants.DEBUG) {
+            if (throwable instanceof HttpResponseException) {
+                HttpResponseException exception = (HttpResponseException) throwable;
+                int statusCode = exception.getStatusCode();
+                Log.d(TAG, "Status code " + statusCode);
+                Log.d(TAG, "Message " + exception.getMessage());
+            } else {
+                Log.d(TAG, "Something went really wrong");
+            }
+        }
 
-	if (isUpdateUI()) {
-	    EventBus.getDefault()
-		    .post(new RetrievedBoardPostEvent(null, false,true));
-	}
+        if (isUpdateUI()) {
+            EventBus.getDefault()
+                .post(new RetrievedBoardPostEvent(null, false, true));
+        }
     }
 
 }

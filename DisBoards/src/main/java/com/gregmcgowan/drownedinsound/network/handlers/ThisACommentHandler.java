@@ -24,49 +24,49 @@ public class ThisACommentHandler extends DisBoardAsyncInputStreamHandler {
     private DatabaseHelper databaseHelper;
 
     public ThisACommentHandler(String postID, BoardType boardType,
-	    DatabaseHelper databaseHelper) {
-	super(postID, true);
-	this.postID = postID;
-	this.databaseHelper = databaseHelper;
-	this.boardType = boardType;
+                               DatabaseHelper databaseHelper) {
+        super(postID, true);
+        this.postID = postID;
+        this.databaseHelper = databaseHelper;
+        this.boardType = boardType;
     }
 
     @Override
     public void doSuccessAction(int statusCode, Header[] headers,
-	    InputStream inputStream) {
-	    if (headers != null) {
-		for (Header header : headers) {
-		    Log.d("HEADER ", header.toString() + " " + header.getName());
+                                InputStream inputStream) {
+        if (headers != null) {
+            for (Header header : headers) {
+                Log.d("HEADER ", header.toString() + " " + header.getName());
 
-		}
-	    }
-	    
-	BoardPost boardPost = null;
-	if (inputStream != null) {
-	    BoardPostParser boardPostParser = new BoardPostParser(inputStream,
-		    postID, boardType);
-	    boardPost = boardPostParser.parse();
-	    if (boardPost != null) {
-		databaseHelper.setBoardPost(boardPost);
-		    if (isUpdateUI()) {
-			EventBus.getDefault().post(
-				new RetrievedBoardPostEvent(boardPost, false, false));
-		    }
-		    EventBus.getDefault().post(
-			    new UpdateCachedBoardPostEvent(boardPost));
-	    }
+            }
+        }
+
+        BoardPost boardPost = null;
+        if (inputStream != null) {
+            BoardPostParser boardPostParser = new BoardPostParser(inputStream,
+                postID, boardType);
+            boardPost = boardPostParser.parse();
+            if (boardPost != null) {
+                databaseHelper.setBoardPost(boardPost);
+                if (isUpdateUI()) {
+                    EventBus.getDefault().post(
+                        new RetrievedBoardPostEvent(boardPost, false, false));
+                }
+                EventBus.getDefault().post(
+                    new UpdateCachedBoardPostEvent(boardPost));
+            }
 
 
-	} else {
+        } else {
 
-	    EventBus.getDefault().post(new UserIsNotLoggedInEvent());
-	}
+            EventBus.getDefault().post(new UserIsNotLoggedInEvent());
+        }
 
     }
 
     @Override
     public void doFailureAction(Throwable throwable) {
-	EventBus.getDefault().post(new FailedToThisThisEvent());
+        EventBus.getDefault().post(new FailedToThisThisEvent());
     }
 
 }

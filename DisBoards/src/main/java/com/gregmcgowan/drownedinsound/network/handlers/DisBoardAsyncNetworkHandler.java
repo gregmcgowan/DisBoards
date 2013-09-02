@@ -6,26 +6,26 @@ import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.loopj.android.http.FileAsyncBackgroundThreadHttpResponseHandler;
 
 public abstract class DisBoardAsyncNetworkHandler extends
-	FileAsyncBackgroundThreadHttpResponseHandler {
+    FileAsyncBackgroundThreadHttpResponseHandler {
 
     private boolean updateUI;
-    
-    public DisBoardAsyncNetworkHandler(File file, String identifier,boolean updateUI) {
-	super(file);
-	super.setIdentifier(identifier);
-	setUpdateUI(updateUI);
+
+    public DisBoardAsyncNetworkHandler(File file, String identifier, boolean updateUI) {
+        super(file);
+        super.setIdentifier(identifier);
+        setUpdateUI(updateUI);
     }
 
     @Override
-    public void handleSuccess(int statusCode, File file) {	
-	doSuccessAction(statusCode, file);
-	HttpClient.requestHasCompleted(getIdentifier());
+    public void handleSuccess(int statusCode, File file) {
+        doSuccessAction(statusCode, file);
+        HttpClient.requestHasCompleted(getIdentifier());
     }
 
     @Override
     public void handleFailure(Throwable e, File response) {
-	doFailureAction(e, response);
-	HttpClient.requestHasCompleted(getIdentifier());
+        doFailureAction(e, response);
+        HttpClient.requestHasCompleted(getIdentifier());
     }
 
     public abstract void doSuccessAction(int statusCode, File file);
@@ -33,11 +33,11 @@ public abstract class DisBoardAsyncNetworkHandler extends
     public abstract void doFailureAction(Throwable throwable, File response);
 
     public boolean isUpdateUI() {
-	return updateUI;
+        return updateUI;
     }
 
     public void setUpdateUI(boolean updateUI) {
-	this.updateUI = updateUI;
+        this.updateUI = updateUI;
     }
 
 }
