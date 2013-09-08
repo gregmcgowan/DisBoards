@@ -3,21 +3,34 @@ package com.gregmcgowan.drownedinsound.ui.activity;
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.MenuItem;
+import com.gregmcgowan.drownedinsound.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
+import com.gregmcgowan.drownedinsound.data.model.NavigationDrawerItem;
 import com.gregmcgowan.drownedinsound.ui.adapter.BoardsFragmentAdapter;
+import com.gregmcgowan.drownedinsound.ui.adapter.NavigationDrawerAdapter;
 import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
+
+import java.util.ArrayList;
 
 /**
  * This allows the user to move between the different message boards that are
@@ -34,6 +47,14 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
     private ViewPager mPager;
     private PageIndicator mIndicator;
 
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private ActionBarDrawerToggle mDrawerToggle;
+
+    private CharSequence mDrawerTitle;
+    private CharSequence mTitle;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +63,56 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
         mAdapter = new BoardsFragmentAdapter(getSupportFragmentManager(),
             DatabaseHelper.getInstance(getApplicationContext()));
 
+        initialiseViewPager();
+        initialiseSlidingDrawer();
+    }
+
+    private void initialiseSlidingDrawer() {
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+      //  mDrawerList.setBackgroundResource(R.color.lighter_grey);
+
+        // set a custom shadow that overlays the main content when the drawer opens
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        // set up the drawer's list view with items and click listener
+
+        ArrayList<NavigationDrawerItem> navigationDrawerItems = new ArrayList<NavigationDrawerItem>();
+        if(!DisBoardsApp.getApplication(this).userIsLoggedIn()) {
+            navigationDrawerItems.add(new NavigationDrawerItem("Login"));
+        }
+        navigationDrawerItems.add(new NavigationDrawerItem("Boards"));
+        navigationDrawerItems.add(new NavigationDrawerItem("Profile"));
+        navigationDrawerItems.add(new NavigationDrawerItem("Messages"));
+        navigationDrawerItems.add(new NavigationDrawerItem("Settings"));
+
+        mDrawerList.setAdapter(new NavigationDrawerAdapter(this,R.layout.navigation_drawer_list_item,navigationDrawerItems));
+//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        // enable ActionBar app icon to behave as action to toggle nav drawer
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+            mDrawerToggle = new ActionBarDrawerToggle(
+                this,                  /* host Activity */
+            mDrawerLayout,         /* DrawerLayout object */
+                R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
+            R.string.drawer_open,  /* "open drawer" description for accessibility */
+               R.string.drawer_close  /* "close drawer" description for accessibility */
+        ) {
+           public void onDrawerClosed(View view) {
+               super.onDrawerClosed(view);
+           }
+
+           public void onDrawerOpened(View drawerView) {
+               getSupportActionBar().setTitle(mDrawerTitle);
+               // invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+           }
+       };
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+    }
+
+    private void initialiseViewPager() {
         mPager = (ViewPager) findViewById(R.id.boards_pager);
         mPager.setAdapter(mAdapter);
         mPager.getCurrentItem();
@@ -106,5 +177,39 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
         UpdateManager.register(this, DisBoardsConstants.HOCKEY_APP_ID);
     }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggles
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == android.R.id.home) {
+
+            if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
+                mDrawerLayout.closeDrawer(mDrawerList);
+            } else {
+                mDrawerLayout.openDrawer(mDrawerList);
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        }
+    }
 }

@@ -429,7 +429,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
             postUrl = boardUrl + "/" + postId;
 
             if (dualPaneMode) {
-                listView.setItemChecked(position, true);
+               // listView.setItemChecked(position, true);
                 BoardPostFragment boardPostFragment = (BoardPostFragment) getFragmentManager()
                     .findFragmentById(R.id.board_post_details);
                 if (boardPostFragment == null

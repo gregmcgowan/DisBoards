@@ -59,7 +59,6 @@
       <excludeFolder url="file://$MODULE_DIR$/build/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/build/classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/dependency-cache" />
-      <excludeFolder url="file://$MODULE_DIR$/build/exploded-bundles" />
       <excludeFolder url="file://$MODULE_DIR$/build/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/build/libs" />
       <excludeFolder url="file://$MODULE_DIR$/build/manifests" />
@@ -68,19 +67,19 @@
     </content>
     <orderEntry type="jdk" jdkName="Android 4.3 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="support-v4-18.0.0" level="project" />
-    <orderEntry type="module" module-name="viewpager" exported="" />
+    <orderEntry type="library" exported="" name="endlessadapter" level="project" />
     <orderEntry type="module" module-name="actionbarsherlock" exported="" />
+    <orderEntry type="library" exported="" name="jsoup-1.7.1" level="project" />
+    <orderEntry type="library" exported="" name="HockeySDK" level="project" />
     <orderEntry type="module" module-name="asynchttp" exported="" />
+    <orderEntry type="library" exported="" name="jericho-html-3.3" level="project" />
+    <orderEntry type="library" exported="" name="support-v4-18.0.0" level="project" />
     <orderEntry type="module" module-name="nineoldandroids" exported="" />
-    <orderEntry type="library" name="endlessadapter" level="project" />
-    <orderEntry type="library" name="EventBus-2.0.1" level="project" />
-    <orderEntry type="library" name="jericho-html-3.3" level="project" />
-    <orderEntry type="library" name="HockeySDK" level="project" />
-    <orderEntry type="library" name="jsoup-1.7.1" level="project" />
-    <orderEntry type="library" name="ormlite-android-4.42" level="project" />
-    <orderEntry type="library" name="ormlite-core-4.42" level="project" />
-    <orderEntry type="library" name="CWAC-AdapterWrapper" level="project" />
+    <orderEntry type="library" exported="" name="ormlite-core-4.42" level="project" />
+    <orderEntry type="library" exported="" name="CWAC-AdapterWrapper" level="project" />
+    <orderEntry type="module" module-name="viewpager" exported="" />
+    <orderEntry type="library" exported="" name="ormlite-android-4.42" level="project" />
+    <orderEntry type="library" exported="" name="EventBus-2.0.1" level="project" />
   </component>
 </module>
 

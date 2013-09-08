@@ -17,4 +17,6 @@
 	<string name="go_to_latest_comment">Go to latest comment</string>
 	<string name="content">Content</string>
 	<string name="new_post">New Post</string>
+    <string name="drawer_open">open drawer</string>
+    <string name="drawer_close">close drawer</string>
 </resources>
