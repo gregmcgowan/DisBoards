@@ -3,6 +3,8 @@ package com.gregmcgowan.drownedinsound.ui.activity;
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -17,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.gregmcgowan.drownedinsound.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
@@ -30,6 +33,7 @@ import com.gregmcgowan.drownedinsound.utils.UiUtils;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /**
@@ -53,6 +57,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
+    private final ArrayList<NavigationDrawerItem> navigationDrawerItems = new ArrayList<NavigationDrawerItem>();
 
 
     @Override
@@ -76,16 +81,10 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
 
-        ArrayList<NavigationDrawerItem> navigationDrawerItems = new ArrayList<NavigationDrawerItem>();
-        if(!DisBoardsApp.getApplication(this).userIsLoggedIn()) {
-            navigationDrawerItems.add(new NavigationDrawerItem("Login"));
-        }
-        navigationDrawerItems.add(new NavigationDrawerItem("Boards"));
-        navigationDrawerItems.add(new NavigationDrawerItem("Profile"));
-        navigationDrawerItems.add(new NavigationDrawerItem("Messages"));
-        navigationDrawerItems.add(new NavigationDrawerItem("Settings"));
+        initialiseNavigationDrawerItems();
 
-        mDrawerList.setAdapter(new NavigationDrawerAdapter(this,R.layout.navigation_drawer_list_item,navigationDrawerItems));
+
+        mDrawerList.setAdapter(new NavigationDrawerAdapter(this,R.layout.navigation_drawer_list_item, navigationDrawerItems));
 //        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
@@ -101,16 +100,32 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
         ) {
            public void onDrawerClosed(View view) {
                super.onDrawerClosed(view);
+               invalidateOptionsMenu();
            }
 
            public void onDrawerOpened(View drawerView) {
                getSupportActionBar().setTitle(mDrawerTitle);
-               // invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+               invalidateOptionsMenu();
            }
        };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
     }
+
+    private void initialiseNavigationDrawerItems(){
+        boolean loggedIn = DisBoardsApp.getApplication(this).userIsLoggedIn();
+        if(!loggedIn) {
+            navigationDrawerItems.add(new NavigationDrawerItem("Login"));
+        }
+        navigationDrawerItems.add(new NavigationDrawerItem("Boards"));
+        navigationDrawerItems.add(new NavigationDrawerItem("Profile"));
+        navigationDrawerItems.add(new NavigationDrawerItem("Messages"));
+        navigationDrawerItems.add(new NavigationDrawerItem("Settings"));
+        if(loggedIn) {
+            navigationDrawerItems.add(new NavigationDrawerItem("Logout"));
+        }
+    }
+
 
     private void initialiseViewPager() {
         mPager = (ViewPager) findViewById(R.id.boards_pager);
@@ -168,6 +183,9 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
         checkForUpdates();
     }
 
+
+
+
     private void checkForCrashes() {
         CrashManager.register(this, DisBoardsConstants.HOCKEY_APP_ID);
     }
@@ -192,6 +210,17 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        boolean menuVisibilty = !mDrawerLayout.isDrawerOpen(mDrawerList);
+        int numberOfMenuItems = menu.size();
+        for(int i = 0; i < numberOfMenuItems; i++) {
+            MenuItem item = menu.getItem(i);
+            item.setEnabled(menuVisibilty);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == android.R.id.home) {
@@ -211,5 +240,26 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
         }
+    }
+
+    public static class LoginDrawerItem implements NavigatonDrawerItemHandler {
+        private WeakReference<Context> contextWeakReference;
+
+        public LoginDrawerItem(Context context){
+            contextWeakReference = new WeakReference<Context>(context);
+        }
+
+        @Override
+        public void doNavigationDrawerItemSelectedAction(Bundle bundle) {
+            Context context = contextWeakReference.get();
+            if(context != null) {
+                Intent loginIntent = new Intent(context,LoginActivity.class);
+                context.startActivity(loginIntent);
+            }
+        }
+    }
+
+    private interface NavigatonDrawerItemHandler {
+        public void doNavigationDrawerItemSelectedAction(Bundle bundle);
     }
 }

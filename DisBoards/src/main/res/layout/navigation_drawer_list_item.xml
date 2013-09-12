@@ -9,5 +9,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/navigation_drawer_item_display_text"
         android:padding="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         android:textSize="20sp"/>
 </LinearLayout>

@@ -15,6 +15,8 @@ import com.gregmcgowan.drownedinsound.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.events.LoginResponseEvent;
+import com.gregmcgowan.drownedinsound.events.LoginSucceededEvent;
+import com.gregmcgowan.drownedinsound.events.LurkEvent;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
@@ -41,11 +43,7 @@ public class LoginActivity extends SherlockActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
         EventBus.getDefault().register(this);
-        if (DisBoardsApp.getApplication(this).userIsLoggedIn()) {
-            goToMainActivity();
-        } else {
-            setListeners();
-        }
+        setListeners();
     }
 
     private void goToMainActivity() {
@@ -84,7 +82,9 @@ public class LoginActivity extends SherlockActivity {
 
     protected void doLurkAction() {
         DisBoardsApp.getApplication(this).clearCookies();
+        EventBus.getDefault().post(new LurkEvent());
         goToMainActivity();
+
 
     }
 
@@ -133,19 +133,15 @@ public class LoginActivity extends SherlockActivity {
     public void onEventMainThread(LoginResponseEvent event) {
         boolean loginSucceeded = event.isSuccess();
         if (loginSucceeded) {
-            handleLoginSucceeded();
+            EventBus.getDefault().post(new LoginSucceededEvent());
+            finish();
         } else {
             setProgressVisibility(false);
             handleLoginFailed();
         }
     }
 
-    private void handleLoginSucceeded() {
-        Intent startMainActivityIntent = new Intent(this,
-            MainCommunityActivity.class);
-        startActivity(startMainActivityIntent);
-        finish();
-    }
+
 
     private void handleLoginFailed() {
         Toast.makeText(this, "Login failed", Toast.LENGTH_LONG).show();
