@@ -1,1 +1,1 @@
-include ':DisBoards',':Libraries:viewpager:library',':Libraries:actionbarsherlock',':Libraries:asynchttp',':Libraries:viewpager',':Libraries:nineoldandroids:libraries'
+include ':DisBoards',':Libraries:actionbarsherlock',':Libraries:asynchttp',':Libraries:viewpager'

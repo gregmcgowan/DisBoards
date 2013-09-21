@@ -75,12 +75,12 @@
     <orderEntry type="module" module-name="asynchttp" exported="" />
     <orderEntry type="library" exported="" name="jericho-html-3.3" level="project" />
     <orderEntry type="library" exported="" name="support-v4-18.0.0" level="project" />
-    <orderEntry type="module" module-name="nineoldandroids" exported="" />
     <orderEntry type="library" exported="" name="ormlite-core-4.42" level="project" />
     <orderEntry type="library" exported="" name="CWAC-AdapterWrapper" level="project" />
     <orderEntry type="module" module-name="viewpager" exported="" />
     <orderEntry type="library" exported="" name="ormlite-android-4.42" level="project" />
     <orderEntry type="library" exported="" name="EventBus-2.0.1" level="project" />
+    <orderEntry type="library" exported="" name="library-2.4.0" level="project" />
   </component>
 </module>
 

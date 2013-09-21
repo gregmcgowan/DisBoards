@@ -36,11 +36,12 @@ android {
 
 dependencies {
     compile 'com.android.support:support-v4:18.0.0'
+    compile 'com.nineoldandroids:library:2.4.0'
 
     compile project(':Libraries:viewpager')
     compile project(':Libraries:actionbarsherlock')
     compile project(':Libraries:asynchttp')
-    compile project(':Libraries:nineoldandroids')
+
     compile files('libs/jericho-html-3.3.jar')
     compile files('libs/EventBus-2.0.1.jar')
     compile files('libs/HockeySDK.jar')
