@@ -22,3 +22,7 @@ local.properties
 bin
 gen
 *.apk
+build/*.*
+.idea/*.*
+.gradle/*.*
+Libraries/*.*/build/*.*

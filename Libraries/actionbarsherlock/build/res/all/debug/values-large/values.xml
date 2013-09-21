@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <!-- From: file:/Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/Libraries/actionbarsherlock/res/values-large/abs__dimens.xml -->
-    <item name="abs__dialog_min_width_major" type="dimen">55%</item>
-    <item name="abs__dialog_min_width_minor" type="dimen">80%</item>
-
-</resources>

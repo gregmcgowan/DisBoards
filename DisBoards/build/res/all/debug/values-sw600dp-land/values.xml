@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <!-- From: file:/Users/gregmcgowan/workspace/android/android-studio/DisBoardsProject/DisBoards/src/main/res/values-sw600dp-land/dimens.xml -->
-    <dimen name="reply_dialog_min_width">500dip</dimen>
-
-</resources>
