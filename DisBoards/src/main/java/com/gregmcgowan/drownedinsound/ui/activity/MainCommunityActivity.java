@@ -26,6 +26,7 @@ import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.NavigationDrawerItem;
+import com.gregmcgowan.drownedinsound.events.LoginSucceededEvent;
 import com.gregmcgowan.drownedinsound.ui.adapter.BoardsFragmentAdapter;
 import com.gregmcgowan.drownedinsound.ui.adapter.NavigationDrawerAdapter;
 import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
@@ -35,6 +36,8 @@ import com.viewpagerindicator.TitlePageIndicator;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * This allows the user to move between the different message boards that are
@@ -51,9 +54,10 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
     private ViewPager mPager;
     private PageIndicator mIndicator;
 
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
-    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout navigationDrawerLayout;
+    private ListView navigationDrawerListView;
+    private NavigationDrawerAdapter navigationDrawerAdapter;
+    private ActionBarDrawerToggle navigationDrawerToggle;
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
@@ -64,7 +68,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.community_layout);
-
+        EventBus.getDefault().register(this);
         mAdapter = new BoardsFragmentAdapter(getSupportFragmentManager(),
             DatabaseHelper.getInstance(getApplicationContext()));
 
@@ -72,28 +76,33 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
         initialiseSlidingDrawer();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
     private void initialiseSlidingDrawer() {
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-      //  mDrawerList.setBackgroundResource(R.color.lighter_grey);
+        navigationDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationDrawerListView = (ListView) findViewById(R.id.left_drawer);
 
         // set a custom shadow that overlays the main content when the drawer opens
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        navigationDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
 
         initialiseNavigationDrawerItems();
 
-
-        mDrawerList.setAdapter(new NavigationDrawerAdapter(this,R.layout.navigation_drawer_list_item, navigationDrawerItems));
-//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        navigationDrawerAdapter = new NavigationDrawerAdapter(this,R.layout.navigation_drawer_list_item, navigationDrawerItems);
+        navigationDrawerListView.setAdapter(navigationDrawerAdapter);
+        navigationDrawerListView.setOnItemClickListener(new DrawerItemClickListener(new WeakReference<MainCommunityActivity>(this)));
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-            mDrawerToggle = new ActionBarDrawerToggle(
+            navigationDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
-            mDrawerLayout,         /* DrawerLayout object */
+                navigationDrawerLayout,         /* DrawerLayout object */
                 R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
             R.string.drawer_open,  /* "open drawer" description for accessibility */
                R.string.drawer_close  /* "close drawer" description for accessibility */
@@ -108,21 +117,21 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
                invalidateOptionsMenu();
            }
        };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        navigationDrawerLayout.setDrawerListener(navigationDrawerToggle);
 
     }
 
     private void initialiseNavigationDrawerItems(){
         boolean loggedIn = DisBoardsApp.getApplication(this).userIsLoggedIn();
         if(!loggedIn) {
-            navigationDrawerItems.add(new NavigationDrawerItem("Login"));
+            navigationDrawerItems.add(new LoginDrawerItem(this));
         }
-        navigationDrawerItems.add(new NavigationDrawerItem("Boards"));
-        navigationDrawerItems.add(new NavigationDrawerItem("Profile"));
-        navigationDrawerItems.add(new NavigationDrawerItem("Messages"));
-        navigationDrawerItems.add(new NavigationDrawerItem("Settings"));
+        //navigationDrawerItems.add(new NavigationDrawerItem("Boards"));
+        navigationDrawerItems.add(new ProfileDrawerItem(this));
+        navigationDrawerItems.add(new MessagesDrawerItem(this));
+        navigationDrawerItems.add(new SettingsDrawerItem(this));
         if(loggedIn) {
-            navigationDrawerItems.add(new NavigationDrawerItem("Logout"));
+            navigationDrawerItems.add(new LogoutDrawerItem(this));
         }
     }
 
@@ -199,19 +208,19 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
+        navigationDrawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        navigationDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        boolean menuVisibilty = !mDrawerLayout.isDrawerOpen(mDrawerList);
+        boolean menuVisibilty = !navigationDrawerLayout.isDrawerOpen(navigationDrawerListView);
         int numberOfMenuItems = menu.size();
         for(int i = 0; i < numberOfMenuItems; i++) {
             MenuItem item = menu.getItem(i);
@@ -222,44 +231,150 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         if (item.getItemId() == android.R.id.home) {
-
-            if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
-                mDrawerLayout.closeDrawer(mDrawerList);
+            if (navigationDrawerLayout.isDrawerOpen(navigationDrawerListView)) {
+                navigationDrawerLayout.closeDrawer(navigationDrawerListView);
             } else {
-                mDrawerLayout.openDrawer(mDrawerList);
+                navigationDrawerLayout.openDrawer(navigationDrawerListView);
             }
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    //TODO rename
+    private void updateAfterLoginOrLogout(){
+        navigationDrawerLayout.postDelayed( new Runnable() {
+            @Override
+            public void run() {
 
+               navigationDrawerItems.clear();
+               initialiseNavigationDrawerItems();
+               navigationDrawerAdapter.notifyDataSetChanged();
+            }
+        },500);
+
+    }
+
+    public void onEventMainThread(LoginSucceededEvent event) {
+        updateAfterLoginOrLogout();
+    }
+
+    public void doNavigationDrawerAction(int position){
+        NavigationDrawerItem navigationDrawerItem = navigationDrawerItems.get(position);
+        if(navigationDrawerItem != null) {
+            navigationDrawerItem.doNavigationDrawerItemSelectedAction();
+        }
+        if (navigationDrawerLayout.isDrawerOpen(navigationDrawerListView)) {
+            navigationDrawerLayout.closeDrawer(navigationDrawerListView);
         }
     }
 
-    public static class LoginDrawerItem implements NavigatonDrawerItemHandler {
-        private WeakReference<Context> contextWeakReference;
+    public void doLogoutAction(){
+        //Might need to do a proper logout
+        DisBoardsApp.getApplication(this).clearCookies();
+        updateAfterLoginOrLogout();
+    }
+
+    private static class DrawerItemClickListener implements ListView.OnItemClickListener {
+
+        private WeakReference<MainCommunityActivity> mainCommunityActivityWeakReference;
+
+        public DrawerItemClickListener(WeakReference<MainCommunityActivity> mainCommunityActivityWeakReference){
+            this.mainCommunityActivityWeakReference = mainCommunityActivityWeakReference;
+        }
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if(mainCommunityActivityWeakReference != null) {
+                MainCommunityActivity mainCommunityActivity = mainCommunityActivityWeakReference.get();
+                if(mainCommunityActivity != null) {
+                    mainCommunityActivity.doNavigationDrawerAction(position);
+                }
+            }
+        }
+    }
+
+    public static class LoginDrawerItem extends  NavigationDrawerItem {
 
         public LoginDrawerItem(Context context){
-            contextWeakReference = new WeakReference<Context>(context);
+           super("Login",new WeakReference<Context>(context));
         }
 
         @Override
-        public void doNavigationDrawerItemSelectedAction(Bundle bundle) {
-            Context context = contextWeakReference.get();
+        public void doNavigationDrawerItemSelectedAction() {
+            Context context = getContext();
             if(context != null) {
                 Intent loginIntent = new Intent(context,LoginActivity.class);
                 context.startActivity(loginIntent);
             }
         }
+
     }
 
-    private interface NavigatonDrawerItemHandler {
-        public void doNavigationDrawerItemSelectedAction(Bundle bundle);
+    public static class LogoutDrawerItem extends  NavigationDrawerItem {
+
+        public LogoutDrawerItem(Context context){
+            super("Logout",new WeakReference<Context>(context));
+        }
+
+        @Override
+        public void doNavigationDrawerItemSelectedAction() {
+            Context context = getContext();
+            if(context != null) {
+                MainCommunityActivity mainCommunityActivity = (MainCommunityActivity)context;
+                mainCommunityActivity.doLogoutAction();
+            }
+        }
+
     }
+
+    public static class ProfileDrawerItem extends  NavigationDrawerItem {
+
+        public ProfileDrawerItem(Context context){
+            super("Profile",new WeakReference<Context>(context));
+        }
+
+        @Override
+        public void doNavigationDrawerItemSelectedAction() {
+            Context context = getContext();
+            if(context != null) {
+                MainCommunityActivity mainCommunityActivity = (MainCommunityActivity)context;
+            }
+        }
+
+    }
+
+    public static class MessagesDrawerItem extends  NavigationDrawerItem {
+
+        public MessagesDrawerItem(Context context){
+            super("Messages",new WeakReference<Context>(context));
+        }
+
+        @Override
+        public void doNavigationDrawerItemSelectedAction() {
+            Context context = getContext();
+            if(context != null) {
+                MainCommunityActivity mainCommunityActivity = (MainCommunityActivity)context;
+            }
+        }
+
+    }
+
+    public static class SettingsDrawerItem extends  NavigationDrawerItem {
+
+        public SettingsDrawerItem(Context context){
+            super("Settings",new WeakReference<Context>(context));
+        }
+
+        @Override
+        public void doNavigationDrawerItemSelectedAction() {
+            Context context = getContext();
+            if(context != null) {
+                MainCommunityActivity mainCommunityActivity = (MainCommunityActivity)context;
+            }
+        }
+
+    }
+
+
 }
