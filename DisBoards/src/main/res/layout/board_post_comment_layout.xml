@@ -64,6 +64,10 @@
                     android:id="@+id/board_post_comment_author_section"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:layout_marginLeft="@dimen/margin_small"
+                    android:layout_marginRight="@dimen/margin_small"
+                    android:layout_marginTop="@dimen/margin_small"
                     android:layout_alignParentRight="true">
 
                     <TextView
@@ -71,28 +75,24 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
-                        android:layout_marginBottom="@dimen/margin_medium"
-                        android:layout_marginLeft="@dimen/margin_medium"
-                        android:layout_marginRight="@dimen/margin_medium"
-                        android:layout_marginTop="@dimen/margin_medium"
+                        android:layout_centerInParent="true"
                         android:padding="@dimen/comment_text_padding"
                         android:text="19 August 1970"
                         android:textColor="@color/lighter_grey"
-                        android:textSize="@dimen/text_really_micro" />
+                        android:textSize="@dimen/text_really_micro"
+                        android:gravity="center_vertical"/>
 
                     <TextView
                         android:id="@+id/board_post_comment_author_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/margin_medium"
-                        android:layout_marginLeft="@dimen/margin_medium"
-                        android:layout_marginRight="@dimen/margin_medium"
-                        android:layout_marginTop="@dimen/margin_medium"
                         android:layout_toLeftOf="@id/board_post_comment_date_time_text_view"
+                        android:layout_centerInParent="true"
                         android:padding="@dimen/comment_text_padding"
                         android:text="Author user name"
                         android:textColor="@color/highlighted_blue"
-                        android:textSize="@dimen/text_really_micro" />
+                        android:textSize="@dimen/text_really_micro"
+                        android:gravity="center_vertical"/>
                 </RelativeLayout>
                 <!-- <include layout="@layout/dotted_divider_grey"/> -->
 
@@ -103,10 +103,11 @@
                     android:layout_alignParentRight="true"
                     android:layout_below="@id/board_post_comment_author_section"
                     android:layout_marginBottom="@dimen/margin_medium"
-                    android:layout_marginLeft="@dimen/margin_medium"
-                    android:layout_marginRight="@dimen/margin_medium"
-                    android:gravity="right"
-                    android:padding="@dimen/comment_text_padding"
+                    android:layout_marginLeft="@dimen/margin_small"
+                    android:layout_marginRight="@dimen/margin_small"
+                    android:gravity="center|right"
+                    android:paddingTop="@dimen/comment_text_padding"
+                    android:paddingBottom="12dp"
                     android:text="User, User, A  User, A User, A User, A User, A User, A User, A user all this&apos;d this"
                     android:textColor="@color/lighter_grey"
                     android:textSize="@dimen/text_really_micro" />
