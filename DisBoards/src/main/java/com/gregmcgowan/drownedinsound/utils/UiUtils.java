@@ -1,6 +1,7 @@
 package com.gregmcgowan.drownedinsound.utils;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
@@ -71,5 +72,15 @@ public class UiUtils {
         return (int) (pixels / logicalDensity + 0.5);
     }
 
+
+    public static boolean isDualPaneMode(Context context){
+        Resources resources = context.getResources();
+        int screenWidthPixels = resources.getDisplayMetrics().widthPixels;
+        int screenWidthDp = UiUtils.convertPixelsToDp(resources,
+            screenWidthPixels);
+        int currentOrientation = resources.getConfiguration().orientation;
+        return currentOrientation == Configuration.ORIENTATION_LANDSCAPE
+            && screenWidthDp >= UiUtils.MIN_WIDTH_DP_FOR_DUAL_MODE;
+    }
 
 }

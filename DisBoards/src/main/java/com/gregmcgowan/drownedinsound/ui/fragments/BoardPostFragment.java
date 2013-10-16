@@ -336,6 +336,9 @@ public class BoardPostFragment extends DisBoardsListFragment {
         int itemId = item.getItemId();
         switch (itemId) {
             case android.R.id.home:
+                if(UiUtils.isDualPaneMode(getSherlockActivity())) {
+                    return false;
+                }
                 hideFragment();
                 return true;
             case R.id.menu_post_refresh:
@@ -529,17 +532,25 @@ public class BoardPostFragment extends DisBoardsListFragment {
                     author = author + "\n" + "@ " + replyTo;
                 }
                 String content = comment.getContent();
+                if (content == null) {
+                    content = "";
+                }
+                if(!TextUtils.isEmpty(content)) {
+                    content = Html.fromHtml(content).toString();
+                    int lastLineFeed = content.lastIndexOf("\n");
+                    if (lastLineFeed != -1 && (lastLineFeed == content.length() - 1)) {
+                        content = content.substring(1,content.length() - 2);
+                    }
+                }
+
                 String dateAndTime = comment.getDateAndTimeOfComment();
 
                 if (!isFirstComment) {
                     boardPostCommentHolder.commentAuthorTextView
                         .setText(author);
                     boardPostCommentHolder.commentTitleTextView.setText(title);
-                    if (content == null) {
-                        content = "";
-                    }
-                    boardPostCommentHolder.commentContentTextView.setText(Html
-                        .fromHtml(content));
+
+                    boardPostCommentHolder.commentContentTextView.setText(content);
 
                     String usersWhoThised = comment.getUsersWhoHaveThissed();
                     if (!TextUtils.isEmpty(usersWhoThised)) {
@@ -637,8 +648,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
                     boardPostInitialHolder.commentAuthorTextView
                         .setText(author);
                     boardPostInitialHolder.commentTitleTextView.setText(title);
-                    boardPostInitialHolder.commentContentTextView.setText(Html
-                        .fromHtml(content));
+                    boardPostInitialHolder.commentContentTextView.setText(content);
                     boardPostInitialHolder.commentDateTimeTextView
                         .setText(dateAndTime);
                     boardPostInitialHolder.noOfCommentsTextView

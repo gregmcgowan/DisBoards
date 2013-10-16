@@ -8,3 +8,15 @@ package com.gregmcgowan.drownedinsound.data.model;
 public enum BoardPostStatus {
     REQUESTING_SUMMARY, DOWNLOADED_SUMMARY, REQUESTING_COMMENTS, DOWNLOADED_COMMENTS
 }
+
+
+
+
+
+
+
+
+
+
+
+

@@ -131,13 +131,9 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
         }
 
         // Check to see if we have a frame in which to embed the details
-        // fragment directly in the containing UI.
-        int screenWidthPixels = getResources().getDisplayMetrics().widthPixels;
-        int screenWidthDp = UiUtils.convertPixelsToDp(getResources(),
-            screenWidthPixels);
+
         int currentOrientation = getResources().getConfiguration().orientation;
-        dualPaneMode = currentOrientation == Configuration.ORIENTATION_LANDSCAPE
-            && screenWidthDp >= UiUtils.MIN_WIDTH_DP_FOR_DUAL_MODE;
+        dualPaneMode = UiUtils.isDualPaneMode(getSherlockActivity());
 
         if (savedInstanceState != null) {
             // Restore last state for checked position.
