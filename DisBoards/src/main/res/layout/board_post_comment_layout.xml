@@ -1,51 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <RelativeLayout
-        android:id="@+id/board_post_comment_action_section"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="visible" >
-
-        <TextView
-            android:id="@+id/board_post_comment_reply"
-            android:layout_width="@dimen/comment_button_width"
-            android:layout_height="@dimen/comment_button_height"
-            android:layout_alignParentRight="true"
-            android:layout_centerInParent="true"
-            android:layout_marginBottom="@dimen/margin_medium"
-            android:layout_marginLeft="@dimen/margin_medium"
-            android:layout_marginRight="@dimen/margin_medium"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:background="@drawable/board_post_heading_background"
-            android:gravity="center"
-            android:padding="@dimen/comment_text_padding"
-            android:text="@string/reply_text"
-            android:textColor="@color/darkest_grey"
-            android:textSize="@dimen/text_micro"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_centerInParent="true"
-            android:id="@+id/board_post_comment_this"
-            android:layout_width="@dimen/comment_button_width"
-            android:layout_height="@dimen/comment_button_height"
-            android:layout_marginBottom="@dimen/margin_medium"
-            android:layout_marginLeft="@dimen/margin_medium"
-            android:layout_marginRight="@dimen/margin_medium"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:layout_toLeftOf="@id/board_post_comment_reply"
-            android:background="@drawable/board_post_heading_background"
-            android:gravity="center"
-            android:padding="@dimen/comment_text_padding"
-            android:text="@string/this_text"
-            android:textColor="@color/darkest_grey"
-            android:textSize="@dimen/text_micro"
-            android:textStyle="bold" />
-    </RelativeLayout>
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/board_post_comment_comment_section"
@@ -176,8 +133,50 @@
         </LinearLayout>
     </LinearLayout>
 
+    <RelativeLayout
+        android:id="@+id/board_post_comment_action_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="visible" >
+
+        <TextView
+            android:id="@+id/board_post_comment_reply"
+            android:layout_width="@dimen/comment_button_width"
+            android:layout_height="@dimen/comment_button_height"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:background="@drawable/board_post_heading_background"
+            android:gravity="center"
+            android:padding="@dimen/comment_text_padding"
+            android:text="@string/reply_text"
+            android:textColor="@color/darkest_grey"
+            android:textSize="@dimen/text_micro"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:id="@+id/board_post_comment_this"
+            android:layout_width="@dimen/comment_button_width"
+            android:layout_height="@dimen/comment_button_height"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_toLeftOf="@id/board_post_comment_reply"
+            android:background="@drawable/board_post_heading_background"
+            android:gravity="center"
+            android:padding="@dimen/comment_text_padding"
+            android:text="@string/this_text"
+            android:textColor="@color/darkest_grey"
+            android:textSize="@dimen/text_micro"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
 
 
-
-</RelativeLayout>
+</LinearLayout>

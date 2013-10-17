@@ -24,7 +24,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center|left"
-            android:layout_margin="@dimen/margin_medium"
+            android:layout_margin="@dimen/margin_small"
+            android:paddingLeft="@dimen/comment_text_padding"
+            android:paddingRight="12dp"
+            android:paddingTop="@dimen/comment_text_padding"
+            android:paddingBottom="@dimen/comment_text_padding"
             android:text="Here is a title"
             android:textColor="@color/darkest_grey"
             android:textIsSelectable="true"
@@ -35,16 +39,20 @@
          
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_medium">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/board_post_initial_comment_author_subheading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
                 android:text="Test"
+                android:layout_margin="@dimen/margin_small"
+                android:paddingLeft="@dimen/comment_text_padding"
+                android:paddingRight="12dp"
+                android:paddingTop="@dimen/comment_text_padding"
+                android:paddingBottom="@dimen/comment_text_padding"
                 android:textColor="@color/highlighted_blue"
                 android:textSize="@dimen/text_really_micro" />
 
@@ -55,7 +63,11 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:layout_margin="@dimen/margin_medium"
+                android:layout_margin="@dimen/margin_small"
+                android:paddingLeft="@dimen/comment_text_padding"
+                android:paddingRight="12dp"
+                android:paddingTop="@dimen/comment_text_padding"
+                android:paddingBottom="@dimen/comment_text_padding"
                 android:textColor="@color/darkest_grey"
                 android:textIsSelectable="true"
                 android:textSize="@dimen/text_really_micro" 
@@ -66,7 +78,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="@dimen/margin_medium"
+                android:layout_margin="@dimen/margin_small"
+                android:paddingLeft="@dimen/comment_text_padding"
+                android:paddingRight="12dp"
+                android:paddingTop="@dimen/comment_text_padding"
+                android:paddingBottom="@dimen/comment_text_padding"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@id/board_post_initial_comment_date_time_subheading"
                 android:textColor="@color/darkest_grey"
@@ -81,9 +97,14 @@
             android:id="@+id/board_post_initial_comment_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_medium"
+            android:layout_margin="@dimen/margin_small"
+            android:paddingLeft="@dimen/comment_text_padding"
+            android:paddingRight="12dp"
+            android:paddingTop="@dimen/comment_text_padding"
+            android:paddingBottom="@dimen/comment_text_padding"
             android:autoLink="web"
             android:textColor="@color/lighter_grey"
+            android:text="Here is some text"
             android:textIsSelectable="true"
             android:textSize="@dimen/text_micro" />
     </LinearLayout>

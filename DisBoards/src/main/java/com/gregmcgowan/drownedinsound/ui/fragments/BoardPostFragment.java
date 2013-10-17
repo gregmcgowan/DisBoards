@@ -539,7 +539,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
                     content = Html.fromHtml(content).toString();
                     int lastLineFeed = content.lastIndexOf("\n");
                     if (lastLineFeed != -1 && (lastLineFeed == content.length() - 1)) {
-                        content = content.substring(1,content.length() - 2);
+                        content = content.substring(0,content.length() - 2);
                     }
                 }
 
@@ -581,6 +581,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
                         boardPostCommentHolder.whitespaceLayout.addView(spacer,
                             i);
                     }
+                    LinearLayout commentLayout = (LinearLayout) boardPostSummaryRowView.findViewById(R.id.board_post_comment_comment_section);
                     // Set ActionVisibility
                     boardPostSummaryRowView.setOnClickListener(null);
                     boardPostSummaryRowView
@@ -589,6 +590,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
                             new AllCommentClickListener(
                                 new WeakReference<RelativeLayout>(
                                     boardPostCommentHolder.actionRelativeLayout),
+                                new WeakReference<View>(commentLayout),
                                 new WeakReference<BoardPostListAdapter>(
                                     adapter))));
 
@@ -685,13 +687,14 @@ public class BoardPostFragment extends DisBoardsListFragment {
             .findViewById(R.id.board_post_comment_this);
         boardPostCommentHolder.commentSection = (LinearLayout) rowView
             .findViewById(R.id.board_post_comment_content_section);
-
+        LinearLayout commentLayout = (LinearLayout) rowView.findViewById(R.id.board_post_comment_comment_section);
         rowView.setTag(boardPostCommentHolder);
         rowView.setOnClickListener(null);
         rowView.setOnClickListener(new CommentSectionClickListener(
             listPosition, new AllCommentClickListener(
             new WeakReference<RelativeLayout>(
                 boardPostCommentHolder.actionRelativeLayout),
+            new WeakReference<View>(commentLayout),
             new WeakReference<BoardPostListAdapter>(adapter))));
         return boardPostCommentHolder;
     }
@@ -858,12 +861,15 @@ public class BoardPostFragment extends DisBoardsListFragment {
         CommentSectionClickHandler {
 
         private WeakReference<RelativeLayout> actionLayoutWeakReference;
+        private WeakReference<View> parentLayoutWeakReference;
         private WeakReference<BoardPostListAdapter> adapterWeakReference;
 
         public AllCommentClickListener(
             WeakReference<RelativeLayout> actionLayout,
+            WeakReference<View> parentLayoutWeakReference,
             WeakReference<BoardPostListAdapter> adapterWeakReference) {
             this.actionLayoutWeakReference = actionLayout;
+            this.parentLayoutWeakReference = parentLayoutWeakReference;
             this.adapterWeakReference = adapterWeakReference;
         }
 
@@ -893,6 +899,8 @@ public class BoardPostFragment extends DisBoardsListFragment {
                 : new float[]{1, 0.5f, 0};
 
             actionLayout.setVisibility(View.VISIBLE);
+           // parentLayoutWeakReference.get().bringToFront();
+            //parentLayoutWeakReference.get().requestLayout();
             ObjectAnimator removeObjectAnimator = ObjectAnimator.ofFloat(
                 actionLayout, "scaleY", offset);
             removeObjectAnimator.setDuration(500);
