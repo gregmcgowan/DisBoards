@@ -38,8 +38,7 @@
         android:id="@+id/divider"
         android:layout_width="3dip"
         android:layout_height="fill_parent"
-        android:background="@color/very_dark_grey"
-        android:layout_marginRight="@dimen/margin_small" />
+        android:background="@color/very_dark_grey"/>
 
     <LinearLayout
         android:id="@+id/detail_layout"

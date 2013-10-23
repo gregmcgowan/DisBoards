@@ -56,6 +56,7 @@ public class NewPostHandler extends DisBoardAsyncInputStreamHandler {
 //	    }
 //	    EventBus.getDefault().post(
 //		    new UpdateCachedBoardPostEvent(boardPost));
+            databaseHelper.removeDraftBoardPost(board.getBoardType());
             EventBus.getDefault().post(new SentNewPostEvent(SentNewPostState.CONFIRMED));
         }
 

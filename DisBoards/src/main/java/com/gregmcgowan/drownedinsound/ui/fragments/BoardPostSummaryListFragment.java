@@ -240,6 +240,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
             "NEW_POST_DIALOG");
     }
 
+
     public void onEventMainThread(FailedToPostNewThreadEvent event) {
         this.setProgressBarVisiblity(false);
         Toast.makeText(getSherlockActivity(), "Failed to create post",

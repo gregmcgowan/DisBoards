@@ -17,10 +17,12 @@ import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.data.model.BoardTypeConstants;
+import com.gregmcgowan.drownedinsound.data.model.DraftBoardPost;
 import com.gregmcgowan.drownedinsound.network.UrlConstants;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.Dao.CreateOrUpdateStatus;
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
@@ -37,7 +39,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
         + "DatabaseHelper";
     private static final Class<?>[] DATA_CLASSES = {BoardPost.class,
-        BoardPostComment.class, Board.class};
+        BoardPostComment.class, Board.class,DraftBoardPost.class};
     private static final String DATABASE_NAME = "disBoards.db";
     private static final int DATABASE_VERSION = 2;
 
@@ -46,6 +48,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<BoardPost, String> boardPostDao;
     private Dao<BoardPostComment, String> boardPostCommentDao;
     private Dao<Board, BoardType> boardDao;
+    private Dao<DraftBoardPost,String> draftBoardPostDao;
     private ArrayList<Board> boards;
 
     public synchronized static DatabaseHelper getInstance(Context context) {
@@ -171,6 +174,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return boardDao;
     }
 
+    private Dao<DraftBoardPost,String> getDraftBoardPostDao() throws SQLException {
+        if(draftBoardPostDao == null) {
+            draftBoardPostDao = getDao(DraftBoardPost.class);
+        }
+        return draftBoardPostDao;
+    }
+
     /**
      * Gets the board post with the provided ID from the database. null is
      * returned if the post does not exist
@@ -245,6 +255,50 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             }
         }
 
+    }
+
+    public DraftBoardPost getDraftBoardPost(BoardType boardType) {
+        DraftBoardPost draftBoardPost = null;
+        try {
+            final Dao<DraftBoardPost,String> draftBoardPostDao = getDraftBoardPostDao();
+            List<DraftBoardPost> draftBoardPosts = draftBoardPostDao.queryForEq(DraftBoardPost.BOARD_TYPE_FIELD,boardType);
+            if(draftBoardPosts != null) {
+                Log.d(DisBoardsConstants.LOG_TAG_PREFIX,"Number of draft board posts ="+draftBoardPosts.size());
+            }
+            if(draftBoardPosts != null && draftBoardPosts.size() > 0) {
+                draftBoardPost = draftBoardPosts.get(0);
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
+
+
+        return  draftBoardPost;
+    }
+
+    
+    public void setDraftBoardPost(DraftBoardPost draftBoardPost) {
+        try {
+            final Dao<DraftBoardPost,String> draftBoardPostDao = getDraftBoardPostDao();
+            removeDraftBoardPost(draftBoardPost.getBoardType());
+            int i = draftBoardPostDao.create(draftBoardPost);
+            Log.d(DisBoardsConstants.LOG_TAG_PREFIX,"Added "+i+" Draft board posts");
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }        
+    }
+
+
+    public void removeDraftBoardPost(BoardType boardType) {
+        try {
+            final Dao<DraftBoardPost,String> draftBoardPostDao = getDraftBoardPostDao();
+            DeleteBuilder<DraftBoardPost,String> deleteBuilder = draftBoardPostDao.deleteBuilder();
+            deleteBuilder.where().eq(DraftBoardPost.BOARD_TYPE_FIELD,boardType);
+            int i = deleteBuilder.delete();
+            Log.d(DisBoardsConstants.LOG_TAG_PREFIX,"Deleted "+i+" Draft board posts");
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
     }
 
     /**
