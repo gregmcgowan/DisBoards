@@ -56,4 +56,5 @@ public class DisBoardsConstants {
 
     public static final String BOARD_PAGE_NUMBER = "BOARD_PAGE_NUMBER";
 
+    public static final String IS_FAVOURITE = "IS_FAVOURITE";
 }

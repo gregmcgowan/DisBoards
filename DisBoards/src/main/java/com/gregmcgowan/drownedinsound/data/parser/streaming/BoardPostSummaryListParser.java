@@ -95,6 +95,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                                         currentBoardPost
                                             .setNumberOfTimesRead(existingPost
                                                 .getNumberOfTimesRead());
+                                        currentBoardPost.setFavourited(existingPost.isFavourited());
                                     }
                                 }
                                 boardPosts.add(currentBoardPost);

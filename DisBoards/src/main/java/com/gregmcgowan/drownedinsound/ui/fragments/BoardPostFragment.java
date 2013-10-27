@@ -31,6 +31,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
+import com.gregmcgowan.drownedinsound.data.DatabaseService;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
@@ -38,6 +39,7 @@ import com.gregmcgowan.drownedinsound.events.BoardPostCommentSentEvent;
 import com.gregmcgowan.drownedinsound.events.FailedToPostCommentEvent;
 import com.gregmcgowan.drownedinsound.events.FailedToThisThisEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
+import com.gregmcgowan.drownedinsound.events.SetBoardPostFavouriteStatusResultEvent;
 import com.gregmcgowan.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
@@ -210,8 +212,8 @@ public class BoardPostFragment extends DisBoardsListFragment {
             } else {
                 connectionErrorTextView.setVisibility(View.VISIBLE);
             }
+            updateFavouriteMenuItemStatus();
             setProgressBarAndFragmentVisibility(false);
-
         }
     }
 
@@ -243,6 +245,15 @@ public class BoardPostFragment extends DisBoardsListFragment {
 
     public void onEventMainThread(BoardPostCommentSentEvent event) {
         setProgressBarAndFragmentVisibility(true);
+    }
+
+    public void onEventMainThread(SetBoardPostFavouriteStatusResultEvent event) {
+        if(event.isSuccess()) {
+            boardPost.setFavourited(event.isNewStatus());
+            updateFavouriteMenuItemStatus();
+        } else {
+            Toast.makeText(getSherlockActivity(),"Could not save to favourites",Toast.LENGTH_SHORT).show();
+        }
     }
 
     private boolean shouldShowBoardPost(BoardPost boardPost) {
@@ -328,7 +339,24 @@ public class BoardPostFragment extends DisBoardsListFragment {
         if (!inDualPaneMode) {
             inflater.inflate(R.menu.board_post_menu, menu);
         }
+        findAndUpdateFavouritesMenuItem(menu);
+    }
 
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        findAndUpdateFavouritesMenuItem(menu);
+    }
+
+    private void findAndUpdateFavouritesMenuItem(Menu menu) {
+        MenuItem favouriteMenuItem = menu.findItem(R.id.menu_favourite);
+        if(favouriteMenuItem != null) {
+            if(boardPost != null && boardPost.isFavourited()){
+                favouriteMenuItem.setIcon(R.drawable.favourite_selected);
+            } else {
+                favouriteMenuItem.setIcon(R.drawable.favourite_not_selected);
+            }
+        }
     }
 
     @Override
@@ -347,9 +375,23 @@ public class BoardPostFragment extends DisBoardsListFragment {
             case R.id.menu_post_reply:
                 doReplyAction();
                 return true;
+            case R.id.menu_favourite:
+                doFavouriteAction();
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void doFavouriteAction(){
+        boolean existingFavouriteStatus = boardPost.isFavourited();
+        Bundle serviceBundle = new Bundle();
+        serviceBundle.putParcelable(DisBoardsConstants.BOARD_POST_KEY,boardPost);
+        serviceBundle.putInt(DatabaseService.DATABASE_SERVICE_REQUESTED_KEY,DatabaseService.SET_BOARD_POST_FAVOURITE_STATUS);
+        serviceBundle.putBoolean(DisBoardsConstants.IS_FAVOURITE,!existingFavouriteStatus);
+
+        Intent databaseServiceIntent = new Intent(getSherlockActivity(),DatabaseService.class);
+        databaseServiceIntent.putExtras(serviceBundle);
+        getSherlockActivity().startService(databaseServiceIntent);
     }
 
     private void hideFragment() {
@@ -447,6 +489,13 @@ public class BoardPostFragment extends DisBoardsListFragment {
             animateScrollToLastCommentOption.start();
         }
     }
+
+    private void updateFavouriteMenuItemStatus() {
+        if(!UiUtils.isDualPaneMode(getSherlockActivity())){
+            ((BoardPostActivity)(getSherlockActivity())).refreshMenu();
+        }
+    }
+
 
     private class BoardPostListAdapter extends ArrayAdapter<BoardPostComment> {
 

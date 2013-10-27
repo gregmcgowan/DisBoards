@@ -85,6 +85,9 @@ public class BoardPost implements Parcelable {
     @DatabaseField
     private int numberOfTimesRead;
 
+    @DatabaseField
+    private boolean isFavourited;
+
     @ForeignCollectionField
     private transient Collection<BoardPostComment> comments;
 
@@ -290,6 +293,15 @@ public class BoardPost implements Parcelable {
         this.latestCommentId = latestCommentId;
     }
 
+
+    public boolean isFavourited() {
+        return isFavourited;
+    }
+
+    public void setFavourited(boolean isFavourited) {
+        this.isFavourited = isFavourited;
+    }
+    
     public void writeToParcel(Parcel parcel, int flag) {
         parcel.writeString(id);
         parcel.writeString(title);
@@ -306,6 +318,7 @@ public class BoardPost implements Parcelable {
         parcel.writeSerializable(boardType);
         parcel.writeString(latestCommentId);
         parcel.writeInt(numberOfTimesRead);
+        parcel.writeInt(isFavourited ? 1 : 0);
         List<BoardPostComment> comments = new ArrayList<BoardPostComment>(getComments());
         parcel.writeTypedList(comments);
     }
@@ -326,6 +339,7 @@ public class BoardPost implements Parcelable {
         boardType = (BoardType) parcel.readSerializable();
         latestCommentId = parcel.readString();
         numberOfTimesRead = parcel.readInt();
+        isFavourited = parcel.readInt() == 1 ? true : false;
         List<BoardPostComment> comments = new ArrayList<BoardPostComment>();
         parcel.readTypedList(comments, BoardPostComment.CREATOR);
         setComments(comments);

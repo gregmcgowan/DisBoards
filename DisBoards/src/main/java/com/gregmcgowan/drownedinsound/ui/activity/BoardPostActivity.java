@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostFragment;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
@@ -74,6 +75,10 @@ public class BoardPostActivity extends SherlockFragmentActivity {
     private void checkForUpdates() {
         // Remove this for store builds!
         UpdateManager.register(this, DisBoardsConstants.HOCKEY_APP_ID);
+    }
+
+    public void refreshMenu(){
+        this.supportInvalidateOptionsMenu();
     }
 
 }

@@ -383,4 +383,37 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return boards;
     }
 
+    public boolean setBoardPostFavouriteStatus(final BoardPost boardPost, boolean isFavourite) {
+        boolean updated = true;
+        boardPost.setFavourited(isFavourite);
+        try {
+            final Dao<BoardPost, String> boardPostDao = getBoardPostDao();
+
+            boardPostDao.callBatchTasks(new Callable<Void>() {
+
+                @Override
+                public Void call() throws Exception {
+                    CreateOrUpdateStatus status = boardPostDao
+                        .createOrUpdate(boardPost);
+                    if (status.getNumLinesChanged() == 0) {
+                        if (DisBoardsConstants.DEBUG) {
+                            Log.d(TAG, "Could not create or update board post "
+                                + boardPost.getId());
+                        }
+                    } else {
+                        Log.d(TAG,"Updated favourite status for board post "+boardPost.getId());
+                    }
+
+                    return null;
+                }
+
+            });
+        } catch (Exception exception) {
+            updated = false;
+            if (DisBoardsConstants.DEBUG) {
+                exception.printStackTrace();
+            }
+        }
+        return updated;
+    }
 }

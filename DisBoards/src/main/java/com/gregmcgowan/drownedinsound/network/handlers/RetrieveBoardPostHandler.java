@@ -45,6 +45,7 @@ public class RetrieveBoardPostHandler extends DisBoardAsyncInputStreamHandler {
             int numberOfTimesRead = 0;
             if (exisitingBoardPost != null) {
                 numberOfTimesRead = exisitingBoardPost.getNumberOfTimesRead() + 1;
+                boardPost.setFavourited(exisitingBoardPost.isFavourited());
             }
             boardPost.setNumberOfTimesRead(numberOfTimesRead);
             if (boardPost != null) {
