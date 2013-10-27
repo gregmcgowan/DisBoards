@@ -43,6 +43,8 @@ import com.gregmcgowan.drownedinsound.network.HttpClient;
 import com.gregmcgowan.drownedinsound.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
+import com.gregmcgowan.drownedinsound.ui.adapter.BoardPostSummaryHolder;
+import com.gregmcgowan.drownedinsound.ui.adapter.BoardPostSummaryListAdapter;
 import com.gregmcgowan.drownedinsound.ui.widgets.AutoScrollListView;
 import com.gregmcgowan.drownedinsound.utils.NetworkUtils;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
@@ -80,8 +82,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
     private int currentlySelectedPost;
     private String postId;
     private String postUrl;
-    private Drawable whiteBackgroundSelector;
-    private Drawable alternateColorSelector;
+
     private int lastPageFetched;
 
     public BoardPostSummaryListFragment() {
@@ -122,7 +123,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
         listView = (AutoScrollListView) getListView();
         // connectionErrorTextView.setVisibility(View.GONE);
         adapter = new BoardPostSummaryListEndlessAdapter(getSherlockActivity(),
-            new BoardPostSummaryListAdapater(getSherlockActivity(),
+            new BoardPostSummaryListAdapter(getSherlockActivity(),
                 R.layout.board_list_row, boardPostSummaries));
         setListAdapter(adapter);
 
@@ -154,7 +155,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
         }
 
         if (dualPaneMode && summariesLoaded() && currentlySelectedPost != -1) {
-            listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+           // listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             showBoardPost(currentlySelectedPost);
         }
 
@@ -509,112 +510,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 
     }
 
-    private class BoardPostSummaryListAdapater extends ArrayAdapter<BoardPost> {
 
-        private List<BoardPost> summaries;
 
-        public BoardPostSummaryListAdapater(Context context,
-                                            int textViewResourceId, List<BoardPost> boardPostSummaries) {
-            super(context, textViewResourceId, boardPostSummaries);
-            this.summaries = boardPostSummaries;
-        }
-
-        @Override
-        public int getCount() {
-            return summaries.size();
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View boardPostSummaryRowView = convertView;
-            BoardPost summary = getItem(position);
-            BoardPostSummaryHolder holder = null;
-            if (boardPostSummaryRowView == null) {
-                LayoutInflater vi = (LayoutInflater) getActivity()
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                boardPostSummaryRowView = vi.inflate(R.layout.board_list_row,
-                    null);
-                holder = new BoardPostSummaryHolder();
-                holder.titleTextView = (TextView) boardPostSummaryRowView
-                    .findViewById(R.id.board_post_list_row_title);
-                holder.authorTextView = (TextView) boardPostSummaryRowView
-                    .findViewById(R.id.board_post_list_row_author);
-                holder.numberOfRepliesTextView = (TextView) boardPostSummaryRowView
-                    .findViewById(R.id.board_post_list_row_number_of_replies);
-                holder.stickyTextView = (TextView) boardPostSummaryRowView
-                    .findViewById(R.id.board_post_list_row_sticky);
-                holder.lastUpdatedTextView = (TextView) boardPostSummaryRowView
-                    .findViewById(R.id.board_post_list_row_last_updated);
-                holder.postReadMarkerView = boardPostSummaryRowView
-                    .findViewById(R.id.board_post_list_row_read_marker);
-                boardPostSummaryRowView.setTag(holder);
-            } else {
-                holder = (BoardPostSummaryHolder) boardPostSummaryRowView
-                    .getTag();
-            }
-
-            if (summary != null) {
-                String title = summary.getTitle();
-                String authorusername = "by " + summary.getAuthorUsername();
-                int numberOfReplies = summary.getNumberOfReplies();
-                String numberOfRepliesText = null;
-                if (numberOfReplies > 0) {
-                    numberOfRepliesText = numberOfReplies
-                        + (numberOfReplies > 1 ? " replies " : "  reply");
-                } else {
-                    numberOfRepliesText = "No replies";
-                }
-                String lastUpdatedText = summary
-                    .getLastUpdatedInReadableString();
-                int stickyVisible = summary.isSticky() ? View.VISIBLE
-                    : View.GONE;
-
-                long lastViewedTime = summary.getLastViewedTime();
-                long lastUpdatedTime = summary.getLastUpdatedTime();
-                boolean markAsRead = lastViewedTime > 0
-                    && lastViewedTime >= lastUpdatedTime;
-
-                holder.titleTextView.setText(title);
-                holder.authorTextView.setText(authorusername);
-                holder.numberOfRepliesTextView.setText(numberOfRepliesText);
-                holder.lastUpdatedTextView.setText(lastUpdatedText);
-                holder.stickyTextView.setVisibility(stickyVisible);
-                if (markAsRead) {
-                    holder.postReadMarkerView
-                        .setBackgroundDrawable(readDrawable);
-                } else {
-                    holder.postReadMarkerView
-                        .setBackgroundDrawable(unreadDrawable);
-                }
-
-                if (position % 2 == 0) {
-                    whiteBackgroundSelector = getSherlockActivity()
-                        .getResources().getDrawable(
-                            R.drawable.board_list_row_selector);
-                    boardPostSummaryRowView
-                        .setBackgroundDrawable(whiteBackgroundSelector);
-                } else {
-                    alternateColorSelector = getSherlockActivity()
-                        .getResources()
-                        .getDrawable(
-                            R.drawable.alternate_board_list_row_selector);
-                    boardPostSummaryRowView
-                        .setBackgroundDrawable(alternateColorSelector);
-                }
-
-            }
-            return boardPostSummaryRowView;
-        }
-    }
-
-    private class BoardPostSummaryHolder {
-        View postReadMarkerView;
-        TextView titleTextView;
-        TextView authorTextView;
-        TextView stickyTextView;
-        TextView numberOfRepliesTextView;
-        TextView lastUpdatedTextView;
-
-    }
 
 }
