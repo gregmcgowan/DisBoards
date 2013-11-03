@@ -5,7 +5,11 @@ import android.content.Intent;
 
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
+import com.gregmcgowan.drownedinsound.events.RetrievedFavouritesEvent;
 import com.gregmcgowan.drownedinsound.events.SetBoardPostFavouriteStatusResultEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
 
@@ -56,7 +60,7 @@ public class DatabaseService extends IntentService {
 
 
     private void doGetFavouriteBoardPostsAction(Intent intent) {
-
-
+        List<BoardPost> favouritedBoardPosts = databaseHelper.getFavouritedBoardPosts();
+        EventBus.getDefault().post(new RetrievedFavouritesEvent(new ArrayList<BoardPost>(favouritedBoardPosts)));
     }
 }

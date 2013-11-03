@@ -17,6 +17,7 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:paddingLeft="8dp"
+            android:textSize="18sp"
             android:gravity="center_vertical"
             android:text="Reply @someusername" />
 
@@ -25,6 +26,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/reply" />
+        <ImageButton
+            android:id="@+id/board_post_reply_abandon_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/delete_icon"/>
     </LinearLayout>
 
     <TextView

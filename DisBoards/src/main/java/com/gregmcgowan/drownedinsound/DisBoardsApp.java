@@ -69,11 +69,4 @@ public class DisBoardsApp extends Application {
         cookieManager.clearCookies();
     }
 
-
-    @Override
-    public void onTerminate() {
-        // TODO Auto-generated method stub
-        super.onTerminate();
-    }
-
 }

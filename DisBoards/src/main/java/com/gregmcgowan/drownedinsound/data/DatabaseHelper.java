@@ -416,4 +416,29 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         }
         return updated;
     }
+
+    /**
+     * Fetches all the boardPosts from the database with the suppied boardTypeId
+     *
+     * @return
+     */
+    public List<BoardPost> getFavouritedBoardPosts() {
+        List<BoardPost> posts = new ArrayList<BoardPost>();
+        try {
+            final Dao<BoardPost, String> boardPostDao = getBoardPostDao();
+            posts = boardPostDao.queryForEq(BoardPost.IS_FAVOURITED_FIELD_NAME,
+                true);
+        } catch (SQLException e) {
+            if (DisBoardsConstants.DEBUG) {
+                e.printStackTrace();
+            }
+        }
+        if (DisBoardsConstants.DEBUG) {
+            Log.d(TAG,
+                "Found "
+                    + (posts.size() + " favourited board posts"));
+        }
+        Collections.sort(posts, BoardPost.COMPARATOR);
+        return posts;
+    }
 }

@@ -38,6 +38,7 @@ public class BoardPost implements Parcelable {
 
     public static final String BOARD_TYPE_FIELD = "board_type";
 
+    public static final String IS_FAVOURITED_FIELD_NAME = "isFavourited";
     private static final String ID_FIELD = "_id";
 
     @DatabaseField(id = true, columnName = ID_FIELD, generatedId = false)

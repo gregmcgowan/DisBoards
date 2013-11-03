@@ -25,6 +25,7 @@ import com.gregmcgowan.drownedinsound.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
+import com.gregmcgowan.drownedinsound.data.DatabaseService;
 import com.gregmcgowan.drownedinsound.data.model.NavigationDrawerItem;
 import com.gregmcgowan.drownedinsound.events.LoginSucceededEvent;
 import com.gregmcgowan.drownedinsound.ui.adapter.BoardsFragmentAdapter;
@@ -127,6 +128,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
             navigationDrawerItems.add(new LoginDrawerItem(this));
         }
         //navigationDrawerItems.add(new NavigationDrawerItem("Boards"));
+        navigationDrawerItems.add(new FavouritesDrawerItem(this));
         navigationDrawerItems.add(new ProfileDrawerItem(this));
         navigationDrawerItems.add(new MessagesDrawerItem(this));
         navigationDrawerItems.add(new SettingsDrawerItem(this));
@@ -191,9 +193,6 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
         checkForCrashes();
         checkForUpdates();
     }
-
-
-
 
     private void checkForCrashes() {
         CrashManager.register(this, DisBoardsConstants.HOCKEY_APP_ID);
@@ -276,6 +275,12 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
         updateAfterLoginOrLogout();
     }
 
+    public void doViewFavouritesAction(){
+        Intent displayFavouritesIntent = new Intent(this,FavouritesActivity.class);
+        startActivity(displayFavouritesIntent);
+    }
+
+
     private static class DrawerItemClickListener implements ListView.OnItemClickListener {
 
         private WeakReference<MainCommunityActivity> mainCommunityActivityWeakReference;
@@ -327,6 +332,23 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
         }
 
     }
+
+    public static class FavouritesDrawerItem extends NavigationDrawerItem {
+
+        public FavouritesDrawerItem(Context context) {
+            super("Favourites", new WeakReference<Context>(context));
+        }
+
+        @Override
+        public void doNavigationDrawerItemSelectedAction() {
+            Context context = getContext();
+            if(context != null) {
+                MainCommunityActivity mainCommunityActivity = (MainCommunityActivity)context;
+                mainCommunityActivity.doViewFavouritesAction();
+            }
+        }
+    }
+
 
     public static class ProfileDrawerItem extends  NavigationDrawerItem {
 

@@ -22,7 +22,7 @@
         android:layout_below="@+id/login_activity_username_field"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
-        android:inputType="textWebPassword"
+        android:inputType="textPassword"
         android:padding="10dip"
         android:gravity="center"
         android:background="@drawable/comment_background_normal"

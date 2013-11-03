@@ -383,15 +383,17 @@ public class BoardPostFragment extends DisBoardsListFragment {
     }
 
     private void doFavouriteAction(){
-        boolean existingFavouriteStatus = boardPost.isFavourited();
-        Bundle serviceBundle = new Bundle();
-        serviceBundle.putParcelable(DisBoardsConstants.BOARD_POST_KEY,boardPost);
-        serviceBundle.putInt(DatabaseService.DATABASE_SERVICE_REQUESTED_KEY,DatabaseService.SET_BOARD_POST_FAVOURITE_STATUS);
-        serviceBundle.putBoolean(DisBoardsConstants.IS_FAVOURITE,!existingFavouriteStatus);
+        if(boardPost != null) {
+            boolean existingFavouriteStatus = boardPost.isFavourited();
+            Bundle serviceBundle = new Bundle();
+            serviceBundle.putParcelable(DisBoardsConstants.BOARD_POST_KEY,boardPost);
+            serviceBundle.putInt(DatabaseService.DATABASE_SERVICE_REQUESTED_KEY,DatabaseService.SET_BOARD_POST_FAVOURITE_STATUS);
+            serviceBundle.putBoolean(DisBoardsConstants.IS_FAVOURITE,!existingFavouriteStatus);
 
-        Intent databaseServiceIntent = new Intent(getSherlockActivity(),DatabaseService.class);
-        databaseServiceIntent.putExtras(serviceBundle);
-        getSherlockActivity().startService(databaseServiceIntent);
+            Intent databaseServiceIntent = new Intent(getSherlockActivity(),DatabaseService.class);
+            databaseServiceIntent.putExtras(serviceBundle);
+            getSherlockActivity().startService(databaseServiceIntent);
+        }
     }
 
     private void hideFragment() {

@@ -22,8 +22,9 @@
         android:theme="@style/Theme.dis_boards_style" >
         <activity android:name="com.gregmcgowan.drownedinsound.ui.activity.LoginActivity" />
         <activity android:name="com.gregmcgowan.drownedinsound.ui.activity.MainCommunityActivity" />
-        <activity android:name="com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity" >
-        </activity>
+        <activity android:name="com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity" />
+        <activity android:name="com.gregmcgowan.drownedinsound.ui.activity.FavouritesActivity" android:label="Favourite Posts"
+            android:icon="@null"/>
 
         <service android:name="com.gregmcgowan.drownedinsound.network.service.DisWebService" />
 
