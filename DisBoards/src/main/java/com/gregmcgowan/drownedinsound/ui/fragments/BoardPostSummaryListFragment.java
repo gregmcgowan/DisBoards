@@ -249,7 +249,11 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
     }
 
     private boolean isBoardBeingRequested() {
-        return HttpClient.requestIsInProgress(boardType.name());
+        boolean requested = false;
+        if(boardType != null) {
+            HttpClient.requestIsInProgress(boardType.name());
+        }
+        return requested;
     }
 
     private void doRefreshAction() {
