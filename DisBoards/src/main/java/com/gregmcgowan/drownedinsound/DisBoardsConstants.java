@@ -13,7 +13,7 @@ public class DisBoardsConstants {
 
     public static final String LOG_TAG_PREFIX = "Dis";
 
-    public static final String SOCIAL_BOARD_TITLE = "Social / Boards // Drowned In Sound ";
+    public static final String SOCIAL_BOARD_TITLE_START = "Social";
     public static final String LOGIN_TITLE = "Log In // Drowned In Sound ";
 
     public static final String HASHED_FIELD_NAME = "hashed";

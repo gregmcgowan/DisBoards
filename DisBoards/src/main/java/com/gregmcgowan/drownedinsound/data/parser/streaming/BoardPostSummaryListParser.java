@@ -68,7 +68,6 @@ public class BoardPostSummaryListParser extends StreamingParser {
                 if (segment instanceof Tag) {
                     Tag tag = (Tag) segment;
                     String tagName = tag.getName();
-
                     if (tagName.equals(HtmlConstants.TABLE)) {
                         inBoardPostTable = tag instanceof StartTag;
                     } else if (tagName.equals(HtmlConstants.TABLE_ROW)) {
@@ -118,7 +117,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                             if (inBoardPostTable) {
                                 if (anchorNumber == POST_URL_ANCHOR_INDEX
                                     && tableRowCell == DESCRIPTION_TABLE_ROW_INDEX) {
-                                    extractPostId(segment.toString());
+                                    extractPostId(tag.toString());
                                 }
                             }
                         } else {
@@ -209,7 +208,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
     private boolean isStartOfNewPostTr(String trString) {
         // TODO better way to do this
         return trString != null
-            && trString.startsWith("<tr style=\"background-color");
+            && trString.startsWith("<tr style='background-color");
     }
 
     private void parseDescriptionRowAnchorText(String bufferOutput) {

@@ -9,6 +9,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
@@ -48,8 +49,9 @@ public class LoginResponseHandler extends DisBoardAsyncNetworkHandler {
                     .getElementsByTag(HtmlConstants.TITLE_TAG);
                 Element firstAndOnlyElement = titleElements.get(0);
                 String titleText = firstAndOnlyElement.text();
-                loginSucceeded = DisBoardsConstants.SOCIAL_BOARD_TITLE.trim()
-                    .equalsIgnoreCase(titleText);
+                if(!TextUtils.isEmpty(titleText)){
+                    loginSucceeded = titleText.startsWith(DisBoardsConstants.SOCIAL_BOARD_TITLE_START);
+                }
 
             }
         }
