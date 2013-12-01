@@ -15,7 +15,7 @@
                   android:layout_height="match_parent"
                   android:orientation="vertical"
                   android:id="@+id/parent_layout"
-                  android:background="@drawable/main_gradient_background"   >
+                  android:background="@color/background_colour_light" >
 
         <com.viewpagerindicator.TitlePageIndicator
             android:id="@+id/indicator"

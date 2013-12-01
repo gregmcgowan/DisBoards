@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- File created by the Android Action Bar Style Generator
+
+     Copyright (C) 2011 The Android Open Source Project
+     Copyright (C) 2012 readyState Software Ltd
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+  
+          http://www.apache.org/licenses/LICENSE-2.0
+  
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<resources>
+    <color name="pressed_dis_boards">#CC32A3D4</color>
+    <color name="heading_background"> #DDDDDD</color>
+    <color name="very_dark_grey">#CCCCCC</color>
+    <color name="highlighted_blue">#32A3D4</color>
+    <color name="darkest_grey">#313131</color>
+    <color name="lighter_grey">#222222</color>
+    <color name="background_gradient_start">#FEFEFE</color>
+    <color name="background_gradient_end">#DDDDDD</color>
+    <color name="board_list_row_selected">#DBF2FF</color>
+    <color name="board_list_row_alternate_color">#F9F9FF</color>
+    <color name="yellow_start_colour">#EEFEFFC6</color>
+
+
+    <color name="almost_white_light">#FBFBFB</color>
+    <color name="font_colour_light">#333333</color>
+    <color name="background_colour_light">#F0EFEB</color>
+    <color name="highlighted_colour">#32A3D4</color>
+</resources>

@@ -32,7 +32,7 @@ public class BoardPostSummaryListAdapter extends ArrayAdapter<BoardPost> {
     private Drawable unreadDrawable;
 
     public BoardPostSummaryListAdapter(Context context,
-                                        int textViewResourceId, List<BoardPost> boardPostSummaries) {
+                                       int textViewResourceId, List<BoardPost> boardPostSummaries) {
         super(context, textViewResourceId, boardPostSummaries);
         this.contextWeakReference = new WeakReference<Context>(context);
         this.summaries = boardPostSummaries;
@@ -40,6 +40,9 @@ public class BoardPostSummaryListAdapter extends ArrayAdapter<BoardPost> {
             R.drawable.white_circle_blue_outline);
         this.unreadDrawable = context.getResources().getDrawable(
             R.drawable.filled_blue_circle);
+        this.whiteBackgroundSelector = getContext().getResources().getDrawable(
+            R.drawable.board_list_row_selector);
+        this.alternateColorSelector = context.getResources().getDrawable(R.drawable.alternate_board_list_row_selector);
     }
 
     @Override
@@ -53,13 +56,13 @@ public class BoardPostSummaryListAdapter extends ArrayAdapter<BoardPost> {
         BoardPost summary = getItem(position);
         BoardPostSummaryHolder holder = null;
         Context context = contextWeakReference.get();
-        if(context == null){
-            Log.w(DisBoardsConstants.LOG_TAG_PREFIX,"Null context in board post summary list adapter");
+        if (context == null) {
+            Log.w(DisBoardsConstants.LOG_TAG_PREFIX, "Null context in board post summary list adapter");
             return null;
         }
         if (boardPostSummaryRowView == null) {
-            if(context != null) {
-                LayoutInflater vi = (LayoutInflater)context
+            if (context != null) {
+                LayoutInflater vi = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 boardPostSummaryRowView = vi.inflate(R.layout.board_list_row,
                     null);

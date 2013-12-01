@@ -16,9 +16,6 @@
      limitations under the License.
 -->
 
-<selector xmlns:android="http://schemas.android.com/apk/res/android"
-        android:exitFadeDuration="@android:integer/config_mediumAnimTime" >
-    <item android:state_pressed="false" android:state_focused="true" android:drawable="@drawable/list_focused_dis_boards" />
-    <item android:state_pressed="true" android:drawable="@drawable/pressed_background_dis_boards" />
-    <item android:drawable="@android:color/transparent" />
-</selector>
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/ab_texture_tile_dis_boards"
+    android:tileMode="repeat" />

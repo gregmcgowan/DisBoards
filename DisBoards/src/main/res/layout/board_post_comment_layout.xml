@@ -38,13 +38,13 @@
                 android:paddingTop="@dimen/comment_text_padding"
                 android:paddingBottom="@dimen/comment_text_padding"
                 android:text="Here is a test title for the post"
-                android:textColor="@color/darkest_grey"
+                android:textColor="@color/font_colour_light"
                 android:textSize="@dimen/text_micro"
                 android:textStyle="bold" />
 
             <include layout="@layout/thicker_divider_grey" />
 
-            <TextView
+            <com.gregmcgowan.drownedinsound.ui.view.ActiveTextView
                 android:id="@+id/board_post_comment_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
                 android:paddingTop="@dimen/comment_text_padding"
                 android:paddingBottom="@dimen/comment_text_padding"
                 android:text="Here is a test comment. A very interesting post"
-                android:textColor="@color/lighter_grey"
+                android:textColor="@color/font_colour_light"
                 android:textSize="@dimen/text_micro" />
 
             <include layout="@layout/dotted_divider_grey" />
@@ -90,7 +90,7 @@
                         android:paddingTop="@dimen/comment_text_padding"
                         android:paddingBottom="@dimen/comment_text_padding"
                         android:text="19 August 1970"
-                        android:textColor="@color/lighter_grey"
+                        android:textColor="@color/font_colour_light"
                         android:textSize="@dimen/text_really_micro"
                         android:gravity="center_vertical"/>
 
@@ -127,7 +127,7 @@
                     android:paddingBottom="12dp"
                     android:paddingRight="@dimen/comment_text_padding"
                     android:text="User, User, A  User, A User, A User, A User, A User, A User, A user all this&apos;d this"
-                    android:textColor="@color/lighter_grey"
+                    android:textColor="@color/font_colour_light"
                     android:textSize="@dimen/text_really_micro" />
                 </RelativeLayout>
         </LinearLayout>

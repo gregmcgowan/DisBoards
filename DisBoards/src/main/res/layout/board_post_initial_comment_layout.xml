@@ -93,7 +93,7 @@
 
         <include layout="@layout/dotted_divider_grey" /> 
          
-        <TextView
+        <com.gregmcgowan.drownedinsound.ui.view.ActiveTextView
             android:id="@+id/board_post_initial_comment_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

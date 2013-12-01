@@ -2,7 +2,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle" >
 
-    <solid android:color="#ffffff" />
+    <solid android:color="@color/almost_white_light" />
 
     <stroke
         android:width="@dimen/comment_background_rectangle_thickness"

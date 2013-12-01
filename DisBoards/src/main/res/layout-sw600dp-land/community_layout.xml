@@ -9,7 +9,7 @@
     android:id="@id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/main_gradient_background"
+    android:background="@color/background_colour_light"
     android:baselineAligned="true"
     android:orientation="horizontal" >
 
