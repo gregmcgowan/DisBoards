@@ -1,4 +1,4 @@
-package com.gregmcgowan.drownedinsound.network.handlers;
+package com.gregmcgowan.drownedinsound.data.network.handlers;
 
 import java.io.InputStream;
 import java.util.ArrayList;

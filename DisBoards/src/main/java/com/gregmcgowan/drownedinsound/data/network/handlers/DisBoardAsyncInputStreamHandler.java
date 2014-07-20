@@ -1,4 +1,4 @@
-package com.gregmcgowan.drownedinsound.network.handlers;
+package com.gregmcgowan.drownedinsound.data.network.handlers;
 
 
 import java.io.InputStream;
@@ -8,8 +8,8 @@ import org.apache.http.Header;
 import android.util.Log;
 
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
-import com.gregmcgowan.drownedinsound.network.HttpClient;
-import com.gregmcgowan.drownedinsound.network.UserNotLoggedInException;
+import com.gregmcgowan.drownedinsound.data.network.HttpClient;
+import com.gregmcgowan.drownedinsound.data.network.UserNotLoggedInException;
 import com.loopj.android.http.InputStreamAsyncHttpResponseHandler;
 
 public abstract class DisBoardAsyncInputStreamHandler extends InputStreamAsyncHttpResponseHandler {

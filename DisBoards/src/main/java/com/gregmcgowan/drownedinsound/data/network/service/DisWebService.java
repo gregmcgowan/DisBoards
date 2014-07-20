@@ -1,4 +1,4 @@
-package com.gregmcgowan.drownedinsound.network.service;
+package com.gregmcgowan.drownedinsound.data.network.service;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -17,16 +17,19 @@ import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
-import com.gregmcgowan.drownedinsound.network.HttpClient;
-import com.gregmcgowan.drownedinsound.network.UrlConstants;
-import com.gregmcgowan.drownedinsound.network.handlers.LoginResponseHandler;
-import com.gregmcgowan.drownedinsound.network.handlers.NewPostHandler;
-import com.gregmcgowan.drownedinsound.network.handlers.PostACommentHandler;
-import com.gregmcgowan.drownedinsound.network.handlers.RetrieveBoardPostHandler;
-import com.gregmcgowan.drownedinsound.network.handlers.RetrieveBoardSummaryListHandler;
-import com.gregmcgowan.drownedinsound.network.handlers.ThisACommentHandler;
+import com.gregmcgowan.drownedinsound.data.network.HttpClient;
+import com.gregmcgowan.drownedinsound.data.network.UrlConstants;
+import com.gregmcgowan.drownedinsound.data.network.handlers.LoginResponseHandler;
+import com.gregmcgowan.drownedinsound.data.network.handlers.NewPostHandler;
+import com.gregmcgowan.drownedinsound.data.network.handlers.PostACommentHandler;
+import com.gregmcgowan.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
+import com.gregmcgowan.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
+import com.gregmcgowan.drownedinsound.data.network.handlers.ThisACommentHandler;
 import com.gregmcgowan.drownedinsound.utils.FileUtils;
 import com.gregmcgowan.drownedinsound.utils.NetworkUtils;
+import com.squareup.okhttp.OkHttpClient;
+
+import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
@@ -42,7 +45,9 @@ public class DisWebService extends IntentService {
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
         + "DisWebService";
 
-    private DatabaseHelper databaseHelper;
+    @Inject OkHttpClient httpClient;
+
+    @Inject DatabaseHelper databaseHelper;
 
     public DisWebService() {
         super(SERVICE_NAME);

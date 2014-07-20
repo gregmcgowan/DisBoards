@@ -1,4 +1,4 @@
-package com.gregmcgowan.drownedinsound.network;
+package com.gregmcgowan.drownedinsound.data.network;
 
 import org.apache.http.ProtocolException;
 

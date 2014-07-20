@@ -1,4 +1,4 @@
-package com.gregmcgowan.drownedinsound.network.service;
+package com.gregmcgowan.drownedinsound.data.network.service;
 
 public class DisWebServiceConstants {
 

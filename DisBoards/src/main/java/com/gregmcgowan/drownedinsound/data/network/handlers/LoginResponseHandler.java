@@ -1,4 +1,4 @@
-package com.gregmcgowan.drownedinsound.network.handlers;
+package com.gregmcgowan.drownedinsound.data.network.handlers;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,8 +14,8 @@ import android.util.Log;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.parser.HtmlConstants;
 import com.gregmcgowan.drownedinsound.events.LoginResponseEvent;
-import com.gregmcgowan.drownedinsound.network.HttpClient;
-import com.gregmcgowan.drownedinsound.network.UrlConstants;
+import com.gregmcgowan.drownedinsound.data.network.HttpClient;
+import com.gregmcgowan.drownedinsound.data.network.UrlConstants;
 
 import de.greenrobot.event.EventBus;
 

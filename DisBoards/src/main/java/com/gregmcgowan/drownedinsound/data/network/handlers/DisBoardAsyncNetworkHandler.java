@@ -1,8 +1,8 @@
-package com.gregmcgowan.drownedinsound.network.handlers;
+package com.gregmcgowan.drownedinsound.data.network.handlers;
 
 import java.io.File;
 
-import com.gregmcgowan.drownedinsound.network.HttpClient;
+import com.gregmcgowan.drownedinsound.data.network.HttpClient;
 import com.loopj.android.http.FileAsyncBackgroundThreadHttpResponseHandler;
 
 public abstract class DisBoardAsyncNetworkHandler extends
