@@ -15,6 +15,7 @@ import com.loopj.android.http.InputStreamAsyncHttpResponseHandler;
 public abstract class DisBoardAsyncInputStreamHandler extends InputStreamAsyncHttpResponseHandler {
 
 
+
     private boolean updateUI;
 
     public DisBoardAsyncInputStreamHandler(String identifier, boolean updateUI) {

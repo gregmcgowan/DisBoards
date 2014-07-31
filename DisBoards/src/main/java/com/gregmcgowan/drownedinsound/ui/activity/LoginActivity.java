@@ -17,8 +17,8 @@ import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.events.LoginResponseEvent;
 import com.gregmcgowan.drownedinsound.events.LoginSucceededEvent;
 import com.gregmcgowan.drownedinsound.events.LurkEvent;
-import com.gregmcgowan.drownedinsound.network.service.DisWebService;
-import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
 import de.greenrobot.event.EventBus;
@@ -84,8 +84,6 @@ public class LoginActivity extends SherlockActivity {
         DisBoardsApp.getApplication(this).clearCookies();
         EventBus.getDefault().post(new LurkEvent());
         goToMainActivity();
-
-
     }
 
     protected void doLoginAction() {
