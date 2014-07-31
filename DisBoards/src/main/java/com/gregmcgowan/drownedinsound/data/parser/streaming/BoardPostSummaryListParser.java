@@ -3,6 +3,7 @@ package com.gregmcgowan.drownedinsound.data.parser.streaming;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import net.htmlparser.jericho.EndTag;
@@ -19,6 +20,7 @@ import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
+import com.gregmcgowan.drownedinsound.utils.DateUtils;
 
 public class BoardPostSummaryListParser extends StreamingParser {
 
@@ -118,6 +120,8 @@ public class BoardPostSummaryListParser extends StreamingParser {
                                 if (anchorNumber == POST_URL_ANCHOR_INDEX
                                     && tableRowCell == DESCRIPTION_TABLE_ROW_INDEX) {
                                     extractPostId(tag.toString());
+                                } else if (tableRowCell == LAST_POST_TABLE_ROW_INDEX) {
+                                    extract
                                 }
                             }
                         } else {
@@ -130,8 +134,8 @@ public class BoardPostSummaryListParser extends StreamingParser {
                         }
                     } else if (tagName.endsWith(HtmlConstants.SPAN)) {
                         if (inBoardPostTable) {
-                            if (tag instanceof StartTag) {
-                                parseSpanSegment(segment);
+                            if (tag instanceof EndTag) {
+                              //  parseSpanSegment(segment);
                             }
                         }
                     }
@@ -171,7 +175,8 @@ public class BoardPostSummaryListParser extends StreamingParser {
                 currentBoardPost.setSticky(true);
             }
             if (parameters != null) {
-                long timeStamp = getTimestampFromParameters(parameters);
+                long timeStamp = parseDate();
+                Log.d(TAG,"Segment "+segment.toString() + "buffer "+buffer.toString() + " timestamp "+timeStamp);
                 if (timeStamp != -1) {
                     if (tableRowCell == DESCRIPTION_TABLE_ROW_INDEX
                         && !currentBoardPost.isSticky()) {
@@ -184,10 +189,33 @@ public class BoardPostSummaryListParser extends StreamingParser {
             }
         } else if (tableRowCell == DESCRIPTION_TABLE_ROW_INDEX
             && spanNumber == 2 && currentBoardPost.isSticky()) {
-            long timeStamp = getTimestampFromParameters(parameters);
+            long timeStamp = parseDate();
             currentBoardPost.setCreatedTime(timeStamp);
         }
     }
+
+    private long parseDate(){
+        String dateAndTime = buffer.toString();
+        dateAndTime = dateAndTime.replace("th", "");
+        dateAndTime = dateAndTime.replace("st", "");
+        dateAndTime = dateAndTime.replace("rd", "");
+        dateAndTime = dateAndTime.replace("nd", "");
+        dateAndTime = dateAndTime.replace(",", "");
+        dateAndTime = dateAndTime.replace("'", "");
+        dateAndTime = dateAndTime.replace("&nbsp;"," ");
+        dateAndTime = dateAndTime.replace("\n","");
+        Log.d(TAG, "Date and time"+ dateAndTime);
+        Date parsedDate = DateUtils
+            .parseDate(
+                dateAndTime,
+                DateUtils.DIS_BOARD_POST_SUMMARY_LIST_DATE_FORMAT);
+        long timeStamp = -1;
+        if(parsedDate != null) {
+            timeStamp = parsedDate.getTime();
+        }
+        return timeStamp;
+    }
+
 
     private void setNumberOfReplies() {
         int numberOfReplies = 0;

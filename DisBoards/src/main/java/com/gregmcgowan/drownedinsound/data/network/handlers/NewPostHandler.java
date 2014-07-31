@@ -43,19 +43,6 @@ public class NewPostHandler extends DisBoardAsyncInputStreamHandler {
                 }
             }
 
-//	    BoardPostParser boardPostParser = new BoardPostParser(inputStream,
-//		    postID, board.getBoardType());
-//	    BoardPost boardPost = boardPostParser.parse();
-//	    if (boardPost != null) {
-//		databaseHelper.setBoardPost(boardPost);
-//	    }
-//
-//	    if (isUpdateUI()) {
-//		EventBus.getDefault().post(
-//			new RetrievedBoardPostEvent(boardPost, false, false));
-//	    }
-//	    EventBus.getDefault().post(
-//		    new UpdateCachedBoardPostEvent(boardPost));
             databaseHelper.removeDraftBoardPost(board.getBoardType());
             EventBus.getDefault().post(new SentNewPostEvent(SentNewPostState.CONFIRMED));
         }

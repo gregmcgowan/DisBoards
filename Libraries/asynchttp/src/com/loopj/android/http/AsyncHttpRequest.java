@@ -119,13 +119,14 @@ class AsyncHttpRequest implements Runnable {
             } catch (IOException e) {
                 cause = e;
                 retry = retryHandler.retryRequest(cause, ++executionCount, context);
+
             } catch (NullPointerException e) {
                 // there's a bug in HttpClient 4.0.x that on some occasions causes
                 // DefaultRequestExecutor to throw an NPE, see
                 // http://code.google.com/p/android/issues/detail?id=5255
                 cause = new IOException("NPE in HttpClient" + e.getMessage());
                 retry = retryHandler.retryRequest(cause, ++executionCount, context);
-            } catch (Exception e){
+              }catch (Exception e){
                 if(responseHandler != null) {
                     responseHandler.sendFailureMessage(e, "unknown exception");
                 }

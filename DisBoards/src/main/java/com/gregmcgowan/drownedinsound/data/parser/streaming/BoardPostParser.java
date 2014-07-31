@@ -296,6 +296,7 @@ public class BoardPostParser extends StreamingParser {
                                     dateAndTime = dateAndTime.replace("rd", "");
                                     dateAndTime = dateAndTime.replace("nd", "");
                                     dateAndTime = dateAndTime.replace(",", "");
+                                    dateAndTime = dateAndTime.replace("'", "");
 
                                     Date parsedDate = DateUtils
                                         .parseDate(

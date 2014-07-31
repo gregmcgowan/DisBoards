@@ -17,6 +17,7 @@ import java.util.Locale;
 public class DateUtils {
 
 
+    public static final String DIS_BOARD_POST_SUMMARY_LIST_DATE_FORMAT = "dd MMM HH:MM";
     public static final String DIS_BOARD_COMMENT_DATE_FORMAT = "dd MMM yy HH:mm";
 
     //17:13 April 15th, 2013

@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/DisBoards/DisBoards.iml" filepath="$PROJECT_DIR$/DisBoards/DisBoards.iml" />
       <module fileurl="file://$PROJECT_DIR$/DisBoardsProject.iml" filepath="$PROJECT_DIR$/DisBoardsProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Libraries/Libraries.iml" filepath="$PROJECT_DIR$/Libraries/Libraries.iml" />
       <module fileurl="file://$PROJECT_DIR$/Libraries/actionbarsherlock/actionbarsherlock.iml" filepath="$PROJECT_DIR$/Libraries/actionbarsherlock/actionbarsherlock.iml" />
       <module fileurl="file://$PROJECT_DIR$/Libraries/asynchttp/asynchttp.iml" filepath="$PROJECT_DIR$/Libraries/asynchttp/asynchttp.iml" />
       <module fileurl="file://$PROJECT_DIR$/Libraries/viewpager/viewpager.iml" filepath="$PROJECT_DIR$/Libraries/viewpager/viewpager.iml" />
