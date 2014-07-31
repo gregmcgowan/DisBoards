@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 Reply for tablet landscape mode
 Save drafts for replies
 Remove old posts from the database
@@ -11,3 +12,6 @@ Actionbar compat
 Later
 Messaging
 Profile
+=======
+utf8=%E2%9C%93&authenticity_token=yf2QJZH4sEu6gydLma74UZQhDDzFXFaV2kR%2FmuqqPDk%3D&user_session%5Busername%5D=ripper&user_session%5Bpassword%5D=exEcutri1&user_session%5Bremember_me%5D=0&commit=Log+in
+>>>>>>> Stashed changes

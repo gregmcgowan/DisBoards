@@ -26,7 +26,7 @@
         <activity android:name="com.gregmcgowan.drownedinsound.ui.activity.FavouritesActivity" android:label="Favourite Posts"
             android:icon="@null"/>
 
-        <service android:name="com.gregmcgowan.drownedinsound.network.service.DisWebService" />
+        <service android:name=".data.network.service.DisWebService" />
 
         <service android:name="com.gregmcgowan.drownedinsound.data.DatabaseService" />
 

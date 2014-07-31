@@ -28,8 +28,6 @@ import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.events.RetrievedFavouritesEvent;
 import com.gregmcgowan.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.events.UserIsNotLoggedInEvent;
-import com.gregmcgowan.drownedinsound.network.service.DisWebService;
-import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
 import com.gregmcgowan.drownedinsound.ui.adapter.BoardPostSummaryHolder;
 import com.gregmcgowan.drownedinsound.ui.adapter.BoardPostSummaryListAdapter;

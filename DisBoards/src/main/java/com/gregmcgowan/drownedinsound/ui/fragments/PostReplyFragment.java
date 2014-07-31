@@ -16,8 +16,8 @@ import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.events.BoardPostCommentSentEvent;
-import com.gregmcgowan.drownedinsound.network.service.DisWebService;
-import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebServiceConstants;
 
 import de.greenrobot.event.EventBus;
 

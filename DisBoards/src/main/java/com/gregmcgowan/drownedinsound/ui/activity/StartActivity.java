@@ -23,6 +23,7 @@ public class StartActivity extends Activity {
         } else {
            goToLoginActivity();
         }
+        finish();
     }
 
     private void goToLoginActivity() {

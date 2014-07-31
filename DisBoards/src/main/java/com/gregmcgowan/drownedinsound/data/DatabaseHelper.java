@@ -18,7 +18,7 @@ import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.data.model.BoardTypeConstants;
 import com.gregmcgowan.drownedinsound.data.model.DraftBoardPost;
-import com.gregmcgowan.drownedinsound.network.UrlConstants;
+import com.gregmcgowan.drownedinsound.data.network.UrlConstants;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.Dao.CreateOrUpdateStatus;
@@ -58,8 +58,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return instance;
     }
 
-    private DatabaseHelper(Context context) {
+    public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        initliase();
     }
 
     @Override

@@ -13,8 +13,8 @@ import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.data.parser.BoardPostSummaryListParser;
-import com.gregmcgowan.drownedinsound.network.HttpClient;
-import com.gregmcgowan.drownedinsound.network.UrlConstants;
+import com.gregmcgowan.drownedinsound.data.network.HttpClient;
+import com.gregmcgowan.drownedinsound.data.network.UrlConstants;
 import com.gregmcgowan.drownedinsound.test.unit.model.BoardPostTestData;
 import com.gregmcgowan.drownedinsound.test.utils.AssertUtils;
 

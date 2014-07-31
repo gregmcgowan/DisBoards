@@ -9,7 +9,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.gregmcgowan.drownedinsound.network.HttpClient;
+import com.gregmcgowan.drownedinsound.data.network.HttpClient;
 import com.loopj.android.http.PersistentCookieStore;
 
 public class CookieManager {

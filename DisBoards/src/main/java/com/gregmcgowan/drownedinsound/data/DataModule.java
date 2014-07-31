@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.network.NewHTTPClient;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
 import com.squareup.okhttp.OkHttpClient;
 
 
@@ -18,6 +19,7 @@ import static android.content.Context.MODE_PRIVATE;
 @Module(
         injects = {
                 NewHTTPClient.class,
+                DisWebService.class
         },
         complete = false,
         library = true

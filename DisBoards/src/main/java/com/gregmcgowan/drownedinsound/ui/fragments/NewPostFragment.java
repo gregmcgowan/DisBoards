@@ -21,8 +21,8 @@ import com.gregmcgowan.drownedinsound.data.model.Board;
 import com.gregmcgowan.drownedinsound.data.model.DraftBoardPost;
 import com.gregmcgowan.drownedinsound.events.SentNewPostEvent;
 import com.gregmcgowan.drownedinsound.events.SentNewPostEvent.SentNewPostState;
-import com.gregmcgowan.drownedinsound.network.service.DisWebService;
-import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.ui.view.RobotoLightTextView;
 
 import de.greenrobot.event.EventBus;

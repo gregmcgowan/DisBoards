@@ -2,13 +2,17 @@ package com.gregmcgowan.drownedinsound;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
-import com.gregmcgowan.drownedinsound.network.HttpClient;
+import com.gregmcgowan.drownedinsound.data.network.HttpClient;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
+
+import dagger.ObjectGraph;
 
 public class DisBoardsApp extends Application {
 
@@ -16,9 +20,10 @@ public class DisBoardsApp extends Application {
     private static final float EXECUTOR_POOL_SIZE_PER_CORE = 1.5F;
     private final String TAG = DisBoardsConstants.LOG_TAG_PREFIX + "App";
 
-
     private CookieManager cookieManager;
     private ExecutorService multiThreadedExecutorService;
+    private ObjectGraph objectGraph;
+
 
     public static DisBoardsApp getApplication(Context context) {
         return (DisBoardsApp) context.getApplicationContext();
@@ -28,20 +33,7 @@ public class DisBoardsApp extends Application {
     public void onCreate() {
         super.onCreate();
         cookieManager = new CookieManager(this);
-        initliaseDatabase();
-        initliaseHttpClient();
-    }
-
-    private void initliaseDatabase() {
-        // TODO add in clear call to clear out method. Which will
-        // remove all old posts
-        DatabaseHelper.getInstance(getApplicationContext()).initliase();
-
-    }
-
-    private void initliaseHttpClient() {
-        HttpClient.setTimeout(DisBoardsConstants.NETWORK_REQUEST_TIMEOUT_MS);
-        HttpClient.initialiseRedirectClient(this);
+        buildObjectGraphAndInject();
     }
 
     public ExecutorService getMultiThreadedExecutorService() {
@@ -69,4 +61,14 @@ public class DisBoardsApp extends Application {
         cookieManager.clearCookies();
     }
 
+    public void buildObjectGraphAndInject() {
+        long start = System.nanoTime();
+
+        objectGraph = ObjectGraph.create(Modules.list(this));
+        objectGraph.inject(this);
+    }
+
+    public void inject(Object o) {
+        objectGraph.inject(o);
+    }
 }

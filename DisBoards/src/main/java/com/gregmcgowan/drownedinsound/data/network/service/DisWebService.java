@@ -1,5 +1,6 @@
 package com.gregmcgowan.drownedinsound.data.network.service;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import android.content.Intent;
 import android.text.format.DateUtils;
 import android.util.Log;
 
+import com.gregmcgowan.drownedinsound.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.Board;
@@ -27,7 +29,12 @@ import com.gregmcgowan.drownedinsound.data.network.handlers.RetrieveBoardSummary
 import com.gregmcgowan.drownedinsound.data.network.handlers.ThisACommentHandler;
 import com.gregmcgowan.drownedinsound.utils.FileUtils;
 import com.gregmcgowan.drownedinsound.utils.NetworkUtils;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
 import javax.inject.Inject;
 
@@ -55,7 +62,8 @@ public class DisWebService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
+        DisBoardsApp disBoardsApp = DisBoardsApp.getApplication(this);
+        disBoardsApp.inject(this);
 
         int requestedService = intent.getIntExtra(
             DisWebServiceConstants.SERVICE_REQUESTED_ID, 0);
@@ -291,9 +299,16 @@ public class DisWebService extends IntentService {
     private void handleLoginRequest(Intent intent) {
         String username = intent.getStringExtra(DisBoardsConstants.USERNAME);
         String password = intent.getStringExtra(DisBoardsConstants.PASSWORD);
-        HttpClient.makeLoginRequest(this, username, password,
-            UrlConstants.SOCIAL_URL,
-            new LoginResponseHandler(FileUtils.createTempFile(this)));
+        RequestBody requestBody = new FormEncodingBuilder().add("user_session[username]", username)
+                .add("user_session[password]", password)
+                .add("user_session[remember_me]", "1")
+                .add("return_to", UrlConstants.SOCIAL_URL)
+                .add("commit", "Go!*").build();
+        Request.Builder requestBuilder = new Request.Builder();
+        Request request = requestBuilder.post(requestBody).url(UrlConstants.LOGIN_URL).build();
+
+        httpClient.newCall(request).enqueue(new LoginResponseHandler());
+
     }
 
 }
