@@ -1,10 +1,5 @@
 package com.gregmcgowan.drownedinsound.ui.fragments;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.TransitionDrawable;
@@ -31,7 +26,6 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
-import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.DatabaseService;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
@@ -42,9 +36,9 @@ import com.gregmcgowan.drownedinsound.events.FailedToThisThisEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.events.SetBoardPostFavouriteStatusResultEvent;
 import com.gregmcgowan.drownedinsound.events.UserIsNotLoggedInEvent;
-import com.gregmcgowan.drownedinsound.network.UrlConstants;
-import com.gregmcgowan.drownedinsound.network.service.DisWebService;
-import com.gregmcgowan.drownedinsound.network.service.DisWebServiceConstants;
+import com.gregmcgowan.drownedinsound.data.network.UrlConstants;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
 import com.gregmcgowan.drownedinsound.ui.view.ActiveTextView;
 import com.gregmcgowan.drownedinsound.ui.widgets.AutoScrollListView;
@@ -52,6 +46,11 @@ import com.gregmcgowan.drownedinsound.utils.UiUtils;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.Animator.AnimatorListener;
 import com.nineoldandroids.animation.ObjectAnimator;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
 
