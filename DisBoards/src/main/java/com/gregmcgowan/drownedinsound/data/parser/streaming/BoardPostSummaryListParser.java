@@ -270,7 +270,6 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private void extractPostId(String tagString) {
         String postId = null;
-        Log.d(TAG, "Extract PostID = "+tagString);
         HashMap<String, String> parameters = createAttributeMapFromStartTag(tagString);
         if (parameters != null) {
             String href = parameters.get(HtmlConstants.HREF);
