@@ -27,13 +27,11 @@ public class StreamingParser {
         HashMap<String, String> hashMap = new HashMap<String, String>();
         if(!TextUtils.isEmpty(tag)){
             String removeStartAndEnd = tag.substring(1, tag.length() - 1);
-            Log.d(TAG, removeStartAndEnd);
             if (!TextUtils.isEmpty(removeStartAndEnd)) {
                 String[] splitAttributes = removeStartAndEnd.split("\\s");
                 if (splitAttributes != null && splitAttributes.length > 0) {
                     for (int i = 0; i < splitAttributes.length; i++) {
                         String splitAttribute = splitAttributes[i];
-                        Log.d(TAG,"split attributes = "+splitAttribute);
                         String[] keyValue = splitAttribute.split("=");
                         if (keyValue != null && keyValue.length > 1) {
                             String key = keyValue[0];
@@ -42,7 +40,7 @@ public class StreamingParser {
                                 && !TextUtils.isEmpty(value)) {
                                 // Remove quotes
                                 value = value.substring(1, value.length() - 1);
-			                    Log.d(TAG, "Key [" + key + "] Value [" + value +"]");
+			                    //Log.d(TAG, "Key [" + key + "] Value [" + value +"]");
                                 hashMap.put(key, value);
                             }
                         }
@@ -50,7 +48,7 @@ public class StreamingParser {
                 }
             }
         }
-        Log.d(TAG,hashMap.toString());
+        //Log.d(TAG,hashMap.toString());
         return hashMap;
     }
 }

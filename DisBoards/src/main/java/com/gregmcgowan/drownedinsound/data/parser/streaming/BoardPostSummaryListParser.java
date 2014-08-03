@@ -117,11 +117,25 @@ public class BoardPostSummaryListParser extends StreamingParser {
                         if (tag instanceof StartTag) {
                             anchorNumber++;
                             if (inBoardPostTable) {
+                                String tagString = tag.toString();
                                 if (anchorNumber == POST_URL_ANCHOR_INDEX
                                     && tableRowCell == DESCRIPTION_TABLE_ROW_INDEX) {
-                                    extractPostId(tag.toString());
+                                    extractPostId(tagString);
                                 } else if (tableRowCell == LAST_POST_TABLE_ROW_INDEX) {
-                                    extract
+                                    int titleIndex = tagString.indexOf(HtmlConstants.TITLE);
+                                    if (titleIndex != -1) {
+                                        String title = tagString.substring(titleIndex,
+                                                tagString.length() - 1);
+                                        String[] keyValue = title.split("=");
+                                        if(keyValue != null && keyValue.length == 2){
+                                            String value = keyValue[1];
+                                            long timestamp = parseDate(value,DateUtils.DIS_BOARD_LAST_COMMENT_DATE_FORMAT);
+                                            if(timestamp != -1) {
+                                                currentBoardPost.setLastUpdatedTime(timestamp);
+                                            }
+                                        }
+                                    }
+                                    extractPostId(tagString);
                                 }
                             }
                         } else {
@@ -134,8 +148,8 @@ public class BoardPostSummaryListParser extends StreamingParser {
                         }
                     } else if (tagName.endsWith(HtmlConstants.SPAN)) {
                         if (inBoardPostTable) {
-                            if (tag instanceof EndTag) {
-                              //  parseSpanSegment(segment);
+                            if (tag instanceof EndTag ) {
+                                parseSpanSegment(segment);
                             }
                         }
                     }
@@ -167,55 +181,55 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private void parseSpanSegment(Segment segment) {
         spanNumber++;
-        HashMap<String, String> parameters = createAttributeMapFromStartTag(segment
-            .toString());
+        String spanString = segment.toString();
+        HashMap<String, String> parameters = createAttributeMapFromStartTag(spanString);
         if (spanNumber == 1) {
             String spanClass = parameters.get(HtmlConstants.CLASS);
             if (STICKY_CLASS.equals(spanClass)) {
                 currentBoardPost.setSticky(true);
             }
             if (parameters != null) {
-                long timeStamp = parseDate();
-                Log.d(TAG,"Segment "+segment.toString() + "buffer "+buffer.toString() + " timestamp "+timeStamp);
-                if (timeStamp != -1) {
-                    if (tableRowCell == DESCRIPTION_TABLE_ROW_INDEX
-                        && !currentBoardPost.isSticky()) {
-                        currentBoardPost.setCreatedTime(timeStamp);
-                    }
-                    if (tableRowCell == LAST_POST_TABLE_ROW_INDEX) {
-                        currentBoardPost.setLastUpdatedTime(timeStamp);
-                    }
-                }
+//                long timeStamp = parseDate();
+//                if (timeStamp != -1) {
+//                    if (tableRowCell == DESCRIPTION_TABLE_ROW_INDEX
+//                        && !currentBoardPost.isSticky()) {
+//                        //TODO not sure if we actually need this
+//                       // currentBoardPost.setCreatedTime(timeStamp);
+//                    }
+////                    if (tableRowCell == LAST_POST_TABLE_ROW_INDEX) {
+////                        currentBoardPost.setLastUpdatedTime(timeStamp);
+////                    }
+//                }
             }
         } else if (tableRowCell == DESCRIPTION_TABLE_ROW_INDEX
             && spanNumber == 2 && currentBoardPost.isSticky()) {
-            long timeStamp = parseDate();
-            currentBoardPost.setCreatedTime(timeStamp);
+            //TODO not sure if we actually need this
+            //long timeStamp = parseDate();
+            //currentBoardPost.setCreatedTime(timeStamp);
         }
     }
 
-    private long parseDate(){
-        String dateAndTime = buffer.toString();
-        dateAndTime = dateAndTime.replace("th", "");
-        dateAndTime = dateAndTime.replace("st", "");
-        dateAndTime = dateAndTime.replace("rd", "");
-        dateAndTime = dateAndTime.replace("nd", "");
-        dateAndTime = dateAndTime.replace(",", "");
-        dateAndTime = dateAndTime.replace("'", "");
-        dateAndTime = dateAndTime.replace("&nbsp;"," ");
-        dateAndTime = dateAndTime.replace("\n","");
-        Log.d(TAG, "Date and time"+ dateAndTime);
-        Date parsedDate = DateUtils
-            .parseDate(
-                dateAndTime,
-                DateUtils.DIS_BOARD_POST_SUMMARY_LIST_DATE_FORMAT);
+    private long parseDate(String dateString, String format) {
         long timeStamp = -1;
-        if(parsedDate != null) {
-            timeStamp = parsedDate.getTime();
+        if (!TextUtils.isEmpty(dateString)) {
+            int indexOfComma = dateString.indexOf(",");
+            if (indexOfComma != -1) {
+                dateString = dateString.substring(1,indexOfComma - 2) +
+                        dateString.substring(indexOfComma + 1);
+                dateString = dateString.replace("'", "");
+                dateString = dateString.replace("&nbsp;", " ");
+                dateString = dateString.replace("\n", "");
+            }
+            Date parsedDate = DateUtils.parseDate(dateString, format);
+            if (parsedDate != null) {
+                timeStamp = parsedDate.getTime();
+            }
+            if(DEBUG_PARSER) {
+                Log.d(TAG, "parse date =" + parsedDate.toString());
+            }
         }
         return timeStamp;
     }
-
 
     private void setNumberOfReplies() {
         int numberOfReplies = 0;
@@ -256,6 +270,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private void extractPostId(String tagString) {
         String postId = null;
+        Log.d(TAG, "Extract PostID = "+tagString);
         HashMap<String, String> parameters = createAttributeMapFromStartTag(tagString);
         if (parameters != null) {
             String href = parameters.get(HtmlConstants.HREF);

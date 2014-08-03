@@ -22,6 +22,7 @@ public class DateUtils {
 
     //17:13 April 15th, 2013
     public static final String DIS_BOARD_POST_DATE_FORMAT = "HH:mm MMMM dd yyyy";
+    public static final String DIS_BOARD_LAST_COMMENT_DATE_FORMAT =  "MMMM dd yyyy HH:mm";
 
     public static final String DATE_FORMAT_YEAR_FIRST = "yyyyMMdd";
 
@@ -59,6 +60,7 @@ public class DateUtils {
 
     private static final String[] dateFormats = {DATE_FORMAT_LONG, DATE_FORMAT_MEDIUM, DATE_FORMAT_MEDIUM_NO_DATE_SEPARATOR, DATE_FORMAT_SHORT, DATE_FORMAT_YEAR_FIRST};
 
+
     private static Hashtable<String, SimpleDateFormat> formats;
 
     static {
@@ -84,7 +86,7 @@ public class DateUtils {
     }
 
     public static SimpleDateFormat getOrCreate(String dateFormat) {
-        SimpleDateFormat format = (SimpleDateFormat) formats.get(dateFormat);
+        SimpleDateFormat format =  formats.get(dateFormat);
         if (null == format) {
             format = new SimpleDateFormat(dateFormat, Locale.UK);
             formats.put(dateFormat, format);
