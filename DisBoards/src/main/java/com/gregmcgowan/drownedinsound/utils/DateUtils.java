@@ -21,7 +21,7 @@ public class DateUtils {
     public static final String DIS_BOARD_COMMENT_DATE_FORMAT = "dd MMM yy HH:mm";
 
     //17:13 April 15th, 2013
-    public static final String DIS_BOARD_POST_DATE_FORMAT = "HH:mm MMMM dd yyyy";
+    public static final String DIS_BOARD_POST_DATE_FORMAT = "HH:mm dd MMMM yy";
     public static final String DIS_BOARD_LAST_COMMENT_DATE_FORMAT =  "MMMM dd yyyy HH:mm";
 
     public static final String DATE_FORMAT_YEAR_FIRST = "yyyyMMdd";
@@ -87,7 +87,7 @@ public class DateUtils {
 
     public static SimpleDateFormat getOrCreate(String dateFormat) {
         SimpleDateFormat format =  formats.get(dateFormat);
-        if (null == format) {
+        if (format == null) {
             format = new SimpleDateFormat(dateFormat, Locale.UK);
             formats.put(dateFormat, format);
         }

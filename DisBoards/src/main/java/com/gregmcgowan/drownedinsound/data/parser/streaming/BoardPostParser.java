@@ -28,7 +28,7 @@ public class BoardPostParser extends StreamingParser {
 
     private static final String MAIN_CONTENT_CLASS = "content no-border";
     private static final String EDITORIAL_CLASS = "editorial";
-    private static final boolean DEBUG_PARSER = false;
+    private static final boolean DEBUG_PARSER = true;
 
     private static final String COMMENT_CLASS = "comment";
 
@@ -291,13 +291,9 @@ public class BoardPostParser extends StreamingParser {
                                 currentBoardPost.setDateOfPost(dateAndTime);
                                 spanClass = null;
                                 if (dateAndTime != null) {
-                                    dateAndTime = dateAndTime.replace("th", "");
-                                    dateAndTime = dateAndTime.replace("st", "");
-                                    dateAndTime = dateAndTime.replace("rd", "");
-                                    dateAndTime = dateAndTime.replace("nd", "");
-                                    dateAndTime = dateAndTime.replace(",", "");
-                                    dateAndTime = dateAndTime.replace("'", "");
-
+                                    dateAndTime = dateAndTime.replace(",","");
+                                    dateAndTime = dateAndTime.replace("'","");
+                                    Log.d(TAG,"Date and time "+dateAndTime);
                                     Date parsedDate = DateUtils
                                         .parseDate(
                                             dateAndTime,
@@ -308,6 +304,8 @@ public class BoardPostParser extends StreamingParser {
                                         Log.d(TAG, "Date of post"
                                             + parsedDateLongValue);
                                         latestCommentTime = parsedDateLongValue;
+                                    } else {
+                                        Log.d(TAG,"Parsed date is null");
                                     }
                                 }
                             }
