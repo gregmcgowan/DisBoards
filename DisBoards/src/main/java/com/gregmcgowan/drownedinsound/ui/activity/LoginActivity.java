@@ -132,6 +132,9 @@ public class LoginActivity extends SherlockActivity {
         boolean loginSucceeded = event.isSuccess();
         if (loginSucceeded) {
             EventBus.getDefault().post(new LoginSucceededEvent());
+            Intent startMainActivityIntent = new Intent(this,
+                    MainCommunityActivity.class);
+            startActivity(startMainActivityIntent);
             finish();
         } else {
             setProgressVisibility(false);
