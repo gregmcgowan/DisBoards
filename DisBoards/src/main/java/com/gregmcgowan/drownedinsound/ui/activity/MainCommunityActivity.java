@@ -21,6 +21,7 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.gregmcgowan.drownedinsound.CookieManager;
 import com.gregmcgowan.drownedinsound.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
@@ -37,6 +38,8 @@ import com.viewpagerindicator.TitlePageIndicator;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+
+import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
@@ -64,11 +67,17 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
     private CharSequence mTitle;
     private final ArrayList<NavigationDrawerItem> navigationDrawerItems = new ArrayList<NavigationDrawerItem>();
 
+    @Inject
+    CookieManager cookieManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.community_layout);
+
+        DisBoardsApp disBoardsApp = DisBoardsApp.getApplication(this);
+        disBoardsApp.inject(this);
+
         EventBus.getDefault().register(this);
         mAdapter = new BoardsFragmentAdapter(getSupportFragmentManager(),
             DatabaseHelper.getInstance(getApplicationContext()));
@@ -123,7 +132,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
     }
 
     private void initialiseNavigationDrawerItems(){
-        boolean loggedIn = DisBoardsApp.getApplication(this).userIsLoggedIn();
+        boolean loggedIn = cookieManager.userIsLoggedIn();
         if(!loggedIn) {
             navigationDrawerItems.add(new LoginDrawerItem(this));
         }
@@ -271,7 +280,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 
     public void doLogoutAction(){
         //Might need to do a proper logout
-        DisBoardsApp.getApplication(this).clearCookies();
+        cookieManager.clearCookies();
         updateAfterLoginOrLogout();
     }
 

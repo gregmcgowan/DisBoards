@@ -33,19 +33,11 @@ public abstract class OkHttpAsyncResponseHandler implements Callback{
         } else {
             InputStream inputStream = null;
             try {
-                handleSuccess(response,inputStream);
+                handleSuccess(response,response.body().byteStream());
             } catch (IOException ioe){
               handleFailure(response.request(),ioe);
             } catch (IllegalStateException e) {
                 handleFailure(response.request(),e);
-            }  finally{
-                if(inputStream != null){
-                    try {
-                        inputStream.close();
-                    } catch (IOException e) {
-                        handleFailure(response.request(),e);
-                    }
-                }
             }
 
         }

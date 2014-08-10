@@ -20,7 +20,6 @@ public class DisBoardsApp extends Application {
     private static final float EXECUTOR_POOL_SIZE_PER_CORE = 1.5F;
     private final String TAG = DisBoardsConstants.LOG_TAG_PREFIX + "App";
 
-    private CookieManager cookieManager;
     private ExecutorService multiThreadedExecutorService;
     private ObjectGraph objectGraph;
 
@@ -32,7 +31,6 @@ public class DisBoardsApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        cookieManager = new CookieManager(this);
         buildObjectGraphAndInject();
     }
 
@@ -51,14 +49,6 @@ public class DisBoardsApp extends Application {
             }
         }
         return multiThreadedExecutorService;
-    }
-
-    public boolean userIsLoggedIn() {
-        return cookieManager.userIsLoggedIn();
-    }
-
-    public void clearCookies() {
-        cookieManager.clearCookies();
     }
 
     public void buildObjectGraphAndInject() {

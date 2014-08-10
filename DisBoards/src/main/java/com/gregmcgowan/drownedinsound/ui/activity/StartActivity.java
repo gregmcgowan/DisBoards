@@ -5,20 +5,29 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
 
+import com.gregmcgowan.drownedinsound.CookieManager;
 import com.gregmcgowan.drownedinsound.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.events.LoginSucceededEvent;
 import com.gregmcgowan.drownedinsound.events.LurkEvent;
 
 
+import javax.inject.Inject;
+
 import de.greenrobot.event.EventBus;
 
 public class StartActivity extends Activity {
 
+    @Inject
+    CookieManager cookieManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        DisBoardsApp disBoardsApp = DisBoardsApp.getApplication(this);
+        disBoardsApp.inject(this);
+
         EventBus.getDefault().register(this);
-        if (DisBoardsApp.getApplication(this).userIsLoggedIn()) {
+        if (cookieManager.userIsLoggedIn()) {
             goToMainActivity();
         } else {
            goToLoginActivity();

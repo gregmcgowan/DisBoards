@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.gregmcgowan.drownedinsound.CookieManager;
 import com.gregmcgowan.drownedinsound.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
@@ -20,6 +21,8 @@ import com.gregmcgowan.drownedinsound.events.LurkEvent;
 import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.data.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
+
+import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
@@ -32,6 +35,9 @@ import de.greenrobot.event.EventBus;
  */
 public class LoginActivity extends SherlockActivity {
 
+    @Inject
+    CookieManager cookieManager;
+
     private Button loginButton;
     private Button lurkButton;
     private EditText usernameField;
@@ -42,6 +48,8 @@ public class LoginActivity extends SherlockActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
+        DisBoardsApp disBoardsApp = DisBoardsApp.getApplication(this);
+        disBoardsApp.inject(this);
         EventBus.getDefault().register(this);
         setListeners();
     }
@@ -81,7 +89,7 @@ public class LoginActivity extends SherlockActivity {
     }
 
     protected void doLurkAction() {
-        DisBoardsApp.getApplication(this).clearCookies();
+        cookieManager.clearCookies();
         EventBus.getDefault().post(new LurkEvent());
         goToMainActivity();
     }

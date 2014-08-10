@@ -67,7 +67,7 @@ public class HttpClient {
                     String locationValue = locationHeader.getValue();
                     if("http://drownedinsound.com/login".equals(locationValue)) {
                         EventBus.getDefault().post(new UserIsNotLoggedInEvent());
-                        DisBoardsApp.getApplication(appContext).clearCookies();
+                        //DisBoardsApp.getApplication(appContext).clearCookies();
                         throw new UserNotLoggedInException();
                     }
                 }

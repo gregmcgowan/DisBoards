@@ -16,8 +16,7 @@ public class DisBoardsConstants {
     public static final String SOCIAL_BOARD_TITLE_START = "Social";
     public static final String LOGIN_TITLE = "Log In // Drowned In Sound ";
 
-    public static final String HASHED_FIELD_NAME = "hashed";
-    public static final String DIS_SESSION_FIELD_NAME = "dis_session";
+    public static final String DIS_SESSION_FIELD_NAME = "_dis_session";
     public static final String USER_CREDENTIALS_FIELD_NAME = "user_credentials";
     public static final String LOGGED_IN_FIELD_NAME = "logged_in";
 

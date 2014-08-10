@@ -17,6 +17,7 @@ import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.Board;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
+import com.gregmcgowan.drownedinsound.events.LoginResponseEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.data.network.HttpClient;
