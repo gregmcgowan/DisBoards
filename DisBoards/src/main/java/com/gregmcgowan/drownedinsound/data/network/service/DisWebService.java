@@ -1,6 +1,5 @@
 package com.gregmcgowan.drownedinsound.data.network.service;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,13 +10,12 @@ import android.content.Intent;
 import android.text.format.DateUtils;
 import android.util.Log;
 
-import com.gregmcgowan.drownedinsound.DisBoardsApp;
-import com.gregmcgowan.drownedinsound.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
+import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.Board;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
-import com.gregmcgowan.drownedinsound.events.LoginResponseEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.gregmcgowan.drownedinsound.data.network.HttpClient;
@@ -28,14 +26,11 @@ import com.gregmcgowan.drownedinsound.data.network.handlers.PostACommentHandler;
 import com.gregmcgowan.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.gregmcgowan.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.gregmcgowan.drownedinsound.data.network.handlers.ThisACommentHandler;
-import com.gregmcgowan.drownedinsound.utils.FileUtils;
 import com.gregmcgowan.drownedinsound.utils.NetworkUtils;
-import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
 
 import javax.inject.Inject;
 
@@ -308,7 +303,7 @@ public class DisWebService extends IntentService {
         Request.Builder requestBuilder = new Request.Builder();
         Request request = requestBuilder.post(requestBody).url(UrlConstants.LOGIN_URL).build();
 
-        httpClient.newCall(request).enqueue(new LoginResponseHandler());
+        httpClient.newCall(request).enqueue(new LoginResponseHandler(this));
 
     }
 

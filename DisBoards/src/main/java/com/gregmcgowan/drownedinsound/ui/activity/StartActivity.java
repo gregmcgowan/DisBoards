@@ -3,10 +3,10 @@ package com.gregmcgowan.drownedinsound.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
-import android.view.Menu;
 
-import com.gregmcgowan.drownedinsound.CookieManager;
-import com.gregmcgowan.drownedinsound.DisBoardsApp;
+import com.gregmcgowan.drownedinsound.data.UserSessionManager;
+import com.gregmcgowan.drownedinsound.data.network.CookieManager;
+import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.events.LoginSucceededEvent;
 import com.gregmcgowan.drownedinsound.events.LurkEvent;
 
@@ -18,7 +18,8 @@ import de.greenrobot.event.EventBus;
 public class StartActivity extends Activity {
 
     @Inject
-    CookieManager cookieManager;
+    UserSessionManager userSessionManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +28,7 @@ public class StartActivity extends Activity {
         disBoardsApp.inject(this);
 
         EventBus.getDefault().register(this);
-        if (cookieManager.userIsLoggedIn()) {
+        if (userSessionManager.isUserLoggedIn()){
             goToMainActivity();
         } else {
            goToLoginActivity();

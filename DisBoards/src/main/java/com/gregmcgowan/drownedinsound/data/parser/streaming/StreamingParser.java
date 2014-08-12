@@ -3,9 +3,8 @@ package com.gregmcgowan.drownedinsound.data.parser.streaming;
 import java.util.HashMap;
 
 import android.text.TextUtils;
-import android.util.Log;
 
-import com.gregmcgowan.drownedinsound.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 
 public class StreamingParser {
 

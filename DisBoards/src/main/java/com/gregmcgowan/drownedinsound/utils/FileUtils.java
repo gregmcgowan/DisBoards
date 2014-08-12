@@ -3,7 +3,7 @@ package com.gregmcgowan.drownedinsound.utils;
 import java.io.File;
 import java.io.IOException;
 
-import com.gregmcgowan.drownedinsound.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 
 import android.content.Context;
 

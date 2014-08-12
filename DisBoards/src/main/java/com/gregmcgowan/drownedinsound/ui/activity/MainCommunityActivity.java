@@ -21,12 +21,12 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.gregmcgowan.drownedinsound.CookieManager;
-import com.gregmcgowan.drownedinsound.DisBoardsApp;
-import com.gregmcgowan.drownedinsound.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.data.UserSessionManager;
+import com.gregmcgowan.drownedinsound.data.network.CookieManager;
+import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
+import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
-import com.gregmcgowan.drownedinsound.data.DatabaseService;
 import com.gregmcgowan.drownedinsound.data.model.NavigationDrawerItem;
 import com.gregmcgowan.drownedinsound.events.LoginSucceededEvent;
 import com.gregmcgowan.drownedinsound.ui.adapter.BoardsFragmentAdapter;
@@ -68,7 +68,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
     private final ArrayList<NavigationDrawerItem> navigationDrawerItems = new ArrayList<NavigationDrawerItem>();
 
     @Inject
-    CookieManager cookieManager;
+    UserSessionManager userSessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,7 +132,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
     }
 
     private void initialiseNavigationDrawerItems(){
-        boolean loggedIn = cookieManager.userIsLoggedIn();
+        boolean loggedIn = userSessionManager.isUserLoggedIn();
         if(!loggedIn) {
             navigationDrawerItems.add(new LoginDrawerItem(this));
         }
@@ -280,7 +280,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 
     public void doLogoutAction(){
         //Might need to do a proper logout
-        cookieManager.clearCookies();
+        userSessionManager.clearSession();
         updateAfterLoginOrLogout();
     }
 

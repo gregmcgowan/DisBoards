@@ -18,4 +18,5 @@ public class HtmlConstants {
     public static final String BREAK = "br";
     public static final String DATE_CLASS = "date";
     public static final String ID = "id";
+    public static final String META  = "meta";
 }

@@ -1,4 +1,4 @@
-package com.gregmcgowan.drownedinsound;
+package com.gregmcgowan.drownedinsound.core;
 
 /**
  * Created by gregmcgowan on 20/07/2014.

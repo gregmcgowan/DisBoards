@@ -7,7 +7,7 @@ import org.apache.http.Header;
 
 import android.util.Log;
 
-import com.gregmcgowan.drownedinsound.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.network.HttpClient;
 import com.gregmcgowan.drownedinsound.data.network.UserNotLoggedInException;
 import com.loopj.android.http.InputStreamAsyncHttpResponseHandler;

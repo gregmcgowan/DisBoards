@@ -23,8 +23,7 @@ import org.apache.http.protocol.HttpContext;
 import android.content.Context;
 import android.util.Log;
 
-import com.gregmcgowan.drownedinsound.DisBoardsApp;
-import com.gregmcgowan.drownedinsound.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.model.Board;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.events.UserIsNotLoggedInEvent;
@@ -131,41 +130,6 @@ public class HttpClient {
         asyncHttpClient.setCookieStore(cookieStore);
     }
 
-    /**
-     * Attempts to login to the drowned in sound social website
-     *
-     * @param username
-     *            the username to use in the login request
-     * @param password
-     *            the password for the given user name
-     * @param forwardPage
-     *            the page to go to after the login
-     * @param responseHandler
-     */
-    public static void makeLoginRequest(Context context, String username,
-                                        String password, String forwardPage,
-                                        AsyncHttpResponseHandler responseHandler) {
-        BasicHeader[] headers = getMandatoryDefaultHeaders();
-
-        List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-        pairs.add(new BasicNameValuePair("user_session[username]", username));
-        pairs.add(new BasicNameValuePair("user_session[password]", password));
-        pairs.add(new BasicNameValuePair("user_session[remember_me]", "1"));
-        pairs.add(new BasicNameValuePair("return_to", forwardPage));
-        pairs.add(new BasicNameValuePair("commit", "Go!*"));
-
-        HttpEntity entity = null;
-        try {
-            entity = new UrlEncodedFormEntity(pairs, CONTENT_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            if (DisBoardsConstants.DEBUG) {
-                e.printStackTrace();
-            }
-        }
-        asyncHttpClient.post(context, UrlConstants.LOGIN_URL, headers, entity,
-                REQUEST_CONTENT_TYPE, responseHandler);
-
-    }
 
     public static void postComment(Context context, String title,
                                    String content, String postID, String replyToCommentID,

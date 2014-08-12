@@ -1,9 +1,10 @@
-package com.gregmcgowan.drownedinsound;
+package com.gregmcgowan.drownedinsound.data.network;
 
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.network.PersistentCookieStore;
 import com.squareup.okhttp.OkHttpClient;
 

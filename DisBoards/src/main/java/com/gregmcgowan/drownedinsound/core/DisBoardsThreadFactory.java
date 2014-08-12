@@ -1,4 +1,4 @@
-package com.gregmcgowan.drownedinsound;
+package com.gregmcgowan.drownedinsound.core;
 
 import java.util.concurrent.ThreadFactory;
 

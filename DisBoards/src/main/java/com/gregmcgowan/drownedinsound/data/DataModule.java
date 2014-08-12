@@ -2,11 +2,10 @@ package com.gregmcgowan.drownedinsound.data;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.net.http.HttpResponseCache;
 
-import com.gregmcgowan.drownedinsound.CookieManager;
-import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
+import com.gregmcgowan.drownedinsound.data.network.CookieManager;
 import com.gregmcgowan.drownedinsound.data.network.NewHTTPClient;
+import com.gregmcgowan.drownedinsound.data.network.handlers.LoginResponseHandler;
 import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.ui.activity.LoginActivity;
 import com.gregmcgowan.drownedinsound.ui.activity.MainCommunityActivity;
@@ -27,6 +26,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 @Module(
         injects = {
+                LoginResponseHandler.class,
                 NewHTTPClient.class,
                 DisWebService.class,
                 MainCommunityActivity.class,
@@ -39,6 +39,12 @@ import static android.content.Context.MODE_PRIVATE;
 public class DataModule {
 
     static final int DISK_CACHE_SIZE = 50 * 1024 * 1024; // 50MB
+
+    @Provides
+    @Singleton
+    UserSessionManager provideUserSessionManager(CookieManager cookieManager){
+        return new UserSessionManager(cookieManager);
+    }
 
     @Provides
     @Singleton

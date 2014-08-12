@@ -1,16 +1,11 @@
-package com.gregmcgowan.drownedinsound;
+package com.gregmcgowan.drownedinsound.core;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
-
-import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
-import com.gregmcgowan.drownedinsound.data.network.HttpClient;
-import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
 
 import dagger.ObjectGraph;
 
@@ -52,8 +47,6 @@ public class DisBoardsApp extends Application {
     }
 
     public void buildObjectGraphAndInject() {
-        long start = System.nanoTime();
-
         objectGraph = ObjectGraph.create(Modules.list(this));
         objectGraph.inject(this);
     }

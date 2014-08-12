@@ -1,4 +1,4 @@
-package com.gregmcgowan.drownedinsound;
+package com.gregmcgowan.drownedinsound.core;
 
 /**
  * A class for constants that are used throughout the app

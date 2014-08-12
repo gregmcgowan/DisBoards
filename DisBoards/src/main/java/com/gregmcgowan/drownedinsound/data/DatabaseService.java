@@ -3,7 +3,7 @@ package com.gregmcgowan.drownedinsound.data;
 import android.app.IntentService;
 import android.content.Intent;
 
-import com.gregmcgowan.drownedinsound.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.events.RetrievedFavouritesEvent;
 import com.gregmcgowan.drownedinsound.events.SetBoardPostFavouriteStatusResultEvent;

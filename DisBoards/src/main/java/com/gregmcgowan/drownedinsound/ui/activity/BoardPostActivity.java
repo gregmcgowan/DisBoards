@@ -8,8 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.gregmcgowan.drownedinsound.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostFragment;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
