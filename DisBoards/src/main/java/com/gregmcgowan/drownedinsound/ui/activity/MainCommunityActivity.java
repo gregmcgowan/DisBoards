@@ -136,10 +136,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
         if(!loggedIn) {
             navigationDrawerItems.add(new LoginDrawerItem(this));
         }
-        //navigationDrawerItems.add(new NavigationDrawerItem("Boards"));
         navigationDrawerItems.add(new FavouritesDrawerItem(this));
-        navigationDrawerItems.add(new ProfileDrawerItem(this));
-        navigationDrawerItems.add(new MessagesDrawerItem(this));
         navigationDrawerItems.add(new SettingsDrawerItem(this));
         if(loggedIn) {
             navigationDrawerItems.add(new LogoutDrawerItem(this));
@@ -356,39 +353,6 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
                 mainCommunityActivity.doViewFavouritesAction();
             }
         }
-    }
-
-
-    public static class ProfileDrawerItem extends  NavigationDrawerItem {
-
-        public ProfileDrawerItem(Context context){
-            super("Profile",new WeakReference<Context>(context));
-        }
-
-        @Override
-        public void doNavigationDrawerItemSelectedAction() {
-            Context context = getContext();
-            if(context != null) {
-                MainCommunityActivity mainCommunityActivity = (MainCommunityActivity)context;
-            }
-        }
-
-    }
-
-    public static class MessagesDrawerItem extends  NavigationDrawerItem {
-
-        public MessagesDrawerItem(Context context){
-            super("Messages",new WeakReference<Context>(context));
-        }
-
-        @Override
-        public void doNavigationDrawerItemSelectedAction() {
-            Context context = getContext();
-            if(context != null) {
-                MainCommunityActivity mainCommunityActivity = (MainCommunityActivity)context;
-            }
-        }
-
     }
 
     public static class SettingsDrawerItem extends  NavigationDrawerItem {
