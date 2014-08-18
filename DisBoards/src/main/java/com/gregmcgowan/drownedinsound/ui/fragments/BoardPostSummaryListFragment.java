@@ -363,8 +363,10 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
                 }
                 if (summariesLoaded()) {
                     connectionErrorTextView.setVisibility(View.GONE);
+                    adapter.restartAppending();
                 } else {
                     connectionErrorTextView.setVisibility(View.VISIBLE);
+                    adapter.stopAppending();
                 }
                 setProgressBarVisiblity(false);
                 if (!append) {
