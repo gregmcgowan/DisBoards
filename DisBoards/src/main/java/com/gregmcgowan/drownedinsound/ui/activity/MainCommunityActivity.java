@@ -209,7 +209,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 
     private void checkForUpdates() {
         // Remove this for store builds!
-        UpdateManager.register(this, DisBoardsConstants.HOCKEY_APP_ID);
+       // UpdateManager.register(this, DisBoardsConstants.HOCKEY_APP_ID);
     }
 
     @Override

@@ -12,16 +12,13 @@ import com.gregmcgowan.drownedinsound.events.LoginResponseEvent;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Attributes;
-import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Segment;
 import net.htmlparser.jericho.StreamedSource;
 import net.htmlparser.jericho.Tag;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import javax.inject.Inject;
 

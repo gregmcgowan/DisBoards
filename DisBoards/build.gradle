@@ -52,7 +52,6 @@ dependencies {
 
     compile project(':Libraries:viewpager')
     compile project(':Libraries:actionbarsherlock')
-    compile project(':Libraries:asynchttp')
 
     compile files('libs/jericho-html-3.3.jar')
     compile files('libs/EventBus-2.0.1.jar')
@@ -60,7 +59,6 @@ dependencies {
     compile files('libs/CWAC-AdapterWrapper.jar')
     compile files('libs/ormlite-android-4.42.jar')
     compile files('libs/ormlite-core-4.42.jar')
-    compile files('libs/jsoup-1.7.1.jar')
     compile files('libs/endlessadapter.jar')
 
 }

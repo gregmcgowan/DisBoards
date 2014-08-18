@@ -1,10 +1,5 @@
 package com.gregmcgowan.drownedinsound.data.network.handlers;
 
-import java.io.InputStream;
-
-import org.apache.http.Header;
-import org.apache.http.client.HttpResponseException;
-
 import android.util.Log;
 
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
@@ -14,10 +9,17 @@ import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostEvent;
 import com.gregmcgowan.drownedinsound.events.UpdateCachedBoardPostEvent;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import org.apache.http.client.HttpResponseException;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import de.greenrobot.event.EventBus;
 
-public class RetrieveBoardPostHandler extends DisBoardAsyncInputStreamHandler {
+public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
         + "RetrieveBoardPostHandler";
@@ -28,18 +30,18 @@ public class RetrieveBoardPostHandler extends DisBoardAsyncInputStreamHandler {
 
     public RetrieveBoardPostHandler(String boardPostId, BoardType boardType,
                                     boolean updateUI, DatabaseHelper databaseHelper) {
-        super(boardPostId, updateUI);
         this.boardPostId = boardPostId;
         this.boardPostType = boardType;
         this.databaseHelper = databaseHelper;
+        setUpdateUI(updateUI);
     }
 
     @Override
-    public void doSuccessAction(int statusCode, Header[] headers, InputStream inputStream) {
+    public void handleSuccess(Response response, InputStream inputStream) throws IOException {
         BoardPost boardPost = null;
         if (inputStream != null) {
             BoardPostParser boardPostParser = new BoardPostParser(inputStream,
-                boardPostId, boardPostType);
+                    boardPostId, boardPostType);
             boardPost = boardPostParser.parse();
             BoardPost exisitingBoardPost = databaseHelper.getBoardPost(boardPost.getId());
             int numberOfTimesRead = 0;
@@ -54,14 +56,13 @@ public class RetrieveBoardPostHandler extends DisBoardAsyncInputStreamHandler {
         }
         if (isUpdateUI()) {
             EventBus.getDefault().post(
-                new RetrievedBoardPostEvent(boardPost, false, true));
+                    new RetrievedBoardPostEvent(boardPost, false, true));
         }
         EventBus.getDefault().post(new UpdateCachedBoardPostEvent(boardPost));
-
     }
 
     @Override
-    public void doFailureAction(Throwable throwable) {
+    public void handleFailure(Request request, Throwable throwable) {
         if (DisBoardsConstants.DEBUG) {
             if (throwable instanceof HttpResponseException) {
                 HttpResponseException exception = (HttpResponseException) throwable;
@@ -75,8 +76,7 @@ public class RetrieveBoardPostHandler extends DisBoardAsyncInputStreamHandler {
 
         if (isUpdateUI()) {
             EventBus.getDefault()
-                .post(new RetrievedBoardPostEvent(null, false, true));
+                    .post(new RetrievedBoardPostEvent(null, false, true));
         }
     }
-
 }
