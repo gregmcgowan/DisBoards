@@ -57,7 +57,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                                       BoardType boardType, DatabaseHelper databaseHelper) {
         this.inputStream = inputStream;
         this.boardType = boardType;
-        this.boardPosts = new ArrayList<BoardPost>();
+        this.boardPosts = new ArrayList<>();
         this.buffer = new StringBuilder(1024);
         this.databaseHelper = databaseHelper;
     }
