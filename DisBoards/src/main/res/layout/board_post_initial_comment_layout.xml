@@ -21,7 +21,7 @@
         android:background="@drawable/comment_background_normal"
         android:orientation="vertical" >
 
-        <TextView
+        <com.gregmcgowan.drownedinsound.ui.view.RobotoLightTextView
             android:id="@+id/board_post_initial_comment_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
