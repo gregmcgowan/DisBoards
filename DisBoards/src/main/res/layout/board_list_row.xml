@@ -1,4 +1,6 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent" 
     android:background="@android:color/white" >"
@@ -42,6 +44,7 @@
                 android:text="@string/sticky_text"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
+                android:textSize="@dimen/text_small"
                 android:visibility="visible" />
 
             <TextView
@@ -53,9 +56,10 @@
                 android:layout_marginLeft="@dimen/margin_medium"
                 android:layout_marginRight="@dimen/margin_small"
                 android:layout_marginTop="@dimen/margin_small"
-                android:text="Here is the title of the thread"
                 android:textColor="@color/darkest_grey"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textSize="@dimen/text_small"
+                tools:text="Here is the title of the thread"/>
         </LinearLayout>
 
         <TextView
@@ -66,13 +70,13 @@
             android:layout_marginBottom="@dimen/margin_small"
             android:layout_marginLeft="@dimen/margin_medium"
             android:layout_marginRight="@dimen/margin_medium"
-            android:text="by some author"
             android:paddingLeft="2dp"
             android:paddingRight="2dp"
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
             android:textColor="@color/highlighted_blue"
-            android:textSize="@dimen/text_micro" />
+            android:textSize="@dimen/text_micro"
+            tools:text="by some author"/>
 
         <TextView
             android:id="@+id/board_post_list_row_number_of_replies"
@@ -82,13 +86,13 @@
             android:layout_below="@id/board_post_list_row_author"
             android:layout_marginBottom="@dimen/margin_medium"
             android:layout_marginRight="@dimen/margin_medium"
-            android:text="500 replies"
             android:paddingLeft="2dp"
             android:paddingRight="2dp"
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
             android:textColor="@color/darkest_grey"
-            android:textSize="@dimen/text_really_micro" />
+            android:textSize="@dimen/text_micro"
+            tools:text="500 replies"/>
 
         <TextView
             android:id="@+id/board_post_list_row_last_updated"
@@ -103,9 +107,9 @@
             android:paddingRight="2dp"
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
-            android:text="Updated five minutes ago"
             android:textColor="@color/darkest_grey"
-            android:textSize="@dimen/text_really_micro" />
+            android:textSize="@dimen/text_micro"
+            tools:text="Updated five minutes ago"/>
     </RelativeLayout>
 
     <ProgressBar

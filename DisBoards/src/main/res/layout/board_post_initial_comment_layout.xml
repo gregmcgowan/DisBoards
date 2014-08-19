@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" 
-     android:orientation="vertical" >
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
 
     <View
         android:id="@+id/board_post_list_top_margin"
@@ -19,7 +21,7 @@
         android:background="@drawable/comment_background_normal"
         android:orientation="vertical" >
 
-        <com.gregmcgowan.drownedinsound.ui.view.RobotoLightTextView
+        <TextView
             android:id="@+id/board_post_initial_comment_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -29,11 +31,11 @@
             android:paddingRight="12dp"
             android:paddingTop="@dimen/comment_text_padding"
             android:paddingBottom="@dimen/comment_text_padding"
-            android:text="Here is a title"
             android:textColor="@color/darkest_grey"
             android:textIsSelectable="true"
             android:textSize="@dimen/text_medium"
-            android:textStyle="normal" />
+            android:textStyle="normal"
+            tools:text="Here is a title"/>
 
          <include layout="@layout/thicker_divider_grey" />
          
@@ -47,14 +49,14 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:layout_alignParentLeft="true"
-                android:text="Test"
                 android:layout_margin="@dimen/margin_small"
                 android:paddingLeft="@dimen/comment_text_padding"
                 android:paddingRight="12dp"
                 android:paddingTop="@dimen/comment_text_padding"
                 android:paddingBottom="@dimen/comment_text_padding"
                 android:textColor="@color/highlighted_blue"
-                android:textSize="@dimen/text_really_micro" />
+                android:textSize="@dimen/text_really_micro"
+                tools:text="Test"/>
 
          <TextView
                 android:id="@+id/board_post_initial_comment_date_time_subheading"
@@ -70,8 +72,8 @@
                 android:paddingBottom="@dimen/comment_text_padding"
                 android:textColor="@color/darkest_grey"
                 android:textIsSelectable="true"
-                android:textSize="@dimen/text_really_micro" 
-                android:text="18:14 Januray 29th,2013"/>
+                android:textSize="@dimen/text_really_micro"
+                tools:text="18:14 Januray 29th,2013"/>
 
             <TextView
                 android:id="@+id/board_post_initial_comment_replies_subheading"
@@ -88,7 +90,7 @@
                 android:textColor="@color/darkest_grey"
                 android:textIsSelectable="true"
                 android:textSize="@dimen/text_really_micro"
-                android:text="200 replies"  /> -->
+                tools:text="200 replies"  />
         </RelativeLayout>
 
         <include layout="@layout/dotted_divider_grey" /> 
@@ -104,9 +106,9 @@
             android:paddingBottom="@dimen/comment_text_padding"
             android:autoLink="web"
             android:textColor="@color/lighter_grey"
-            android:text="Here is some text"
             android:textIsSelectable="true"
-            android:textSize="@dimen/text_micro" />
+            android:textSize="@dimen/text_micro"
+            tools:text="Here is some text. That is the first comment in the thread"/>
     </LinearLayout>
 
 </LinearLayout>
