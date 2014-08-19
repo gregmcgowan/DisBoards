@@ -1,8 +1,5 @@
 package com.gregmcgowan.drownedinsound.ui.activity;
 
-import net.hockeyapp.android.CrashManager;
-import net.hockeyapp.android.UpdateManager;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -21,12 +18,11 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.gregmcgowan.drownedinsound.data.UserSessionManager;
-import com.gregmcgowan.drownedinsound.data.network.CookieManager;
+import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
-import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
+import com.gregmcgowan.drownedinsound.data.UserSessionManager;
 import com.gregmcgowan.drownedinsound.data.model.NavigationDrawerItem;
 import com.gregmcgowan.drownedinsound.events.LoginSucceededEvent;
 import com.gregmcgowan.drownedinsound.ui.adapter.BoardsFragmentAdapter;
@@ -35,6 +31,8 @@ import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
+
+import net.hockeyapp.android.CrashManager;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

@@ -1,8 +1,5 @@
 package com.gregmcgowan.drownedinsound.ui.activity;
 
-import net.hockeyapp.android.CrashManager;
-import net.hockeyapp.android.UpdateManager;
-
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +8,9 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostFragment;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
+
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.UpdateManager;
 
 /**
  * This will contain a board post fragment. A board post will be made of the

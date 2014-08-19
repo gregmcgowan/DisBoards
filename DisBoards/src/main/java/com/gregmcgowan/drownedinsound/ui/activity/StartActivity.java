@@ -1,15 +1,13 @@
 package com.gregmcgowan.drownedinsound.ui.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
 
-import com.gregmcgowan.drownedinsound.data.UserSessionManager;
-import com.gregmcgowan.drownedinsound.data.network.CookieManager;
 import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
+import com.gregmcgowan.drownedinsound.data.UserSessionManager;
 import com.gregmcgowan.drownedinsound.events.LoginSucceededEvent;
 import com.gregmcgowan.drownedinsound.events.LurkEvent;
-
 
 import javax.inject.Inject;
 

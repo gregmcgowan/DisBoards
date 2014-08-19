@@ -11,15 +11,15 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
-import com.gregmcgowan.drownedinsound.data.network.CookieManager;
+import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
-import com.gregmcgowan.drownedinsound.R;
+import com.gregmcgowan.drownedinsound.data.network.CookieManager;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.events.LoginResponseEvent;
 import com.gregmcgowan.drownedinsound.events.LoginSucceededEvent;
 import com.gregmcgowan.drownedinsound.events.LurkEvent;
-import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
-import com.gregmcgowan.drownedinsound.data.network.service.DisWebServiceConstants;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
 import javax.inject.Inject;

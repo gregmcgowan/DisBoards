@@ -3,7 +3,6 @@ package com.gregmcgowan.drownedinsound.ui.activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.gregmcgowan.drownedinsound.ui.fragments.FavouritesListFragment;
 
