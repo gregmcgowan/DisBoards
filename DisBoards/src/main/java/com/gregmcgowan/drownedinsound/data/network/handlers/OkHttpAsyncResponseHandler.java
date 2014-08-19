@@ -27,7 +27,7 @@ public abstract class OkHttpAsyncResponseHandler implements Callback{
            handleFailure(response.request(), new IOException("Response Code "+responseCode));
         } else {
             try {
-                handleSuccess(response,new GZIPInputStream(response.body().byteStream()));
+                handleSuccess(response, new GZIPInputStream(response.body().byteStream()));
             } catch (IOException ioe){
                 handleFailure(response.request(),ioe);
             } catch (IllegalStateException e) {

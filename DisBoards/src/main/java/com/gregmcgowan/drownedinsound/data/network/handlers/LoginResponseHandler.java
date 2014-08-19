@@ -37,16 +37,20 @@ public class LoginResponseHandler extends OkHttpAsyncResponseHandler {
     }
 
     @Override
-    public void handleSuccess(Response response, InputStream inputStream) throws IOException {
-        String url = response.request().urlString();
-        Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Login response url " + url);
+    public void onResponse(Response response) throws IOException {
+        try {
+            String url = response.request().urlString();
+            Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Login response url " + url);
 
-        boolean logInSuccess = UrlConstants.SOCIAL_URL.equals(url);
-        if(logInSuccess) {
-            getAuthToken(inputStream);
+            boolean logInSuccess = UrlConstants.SOCIAL_URL.equals(url);
+            if (logInSuccess) {
+                getAuthToken(response.body().byteStream());
+            }
+
+            EventBus.getDefault().post(new LoginResponseEvent(logInSuccess));
+        } catch (IOException ioe) {
+            EventBus.getDefault().post(new LoginResponseEvent(false));
         }
-
-        EventBus.getDefault().post(new LoginResponseEvent(logInSuccess));
     }
 
     private void getAuthToken(InputStream inputStream) throws IOException {
@@ -73,4 +77,9 @@ public class LoginResponseHandler extends OkHttpAsyncResponseHandler {
     public void handleFailure(Request request, Throwable throwable) {
         EventBus.getDefault().post(new LoginResponseEvent(false));
     }
-};
+
+    @Override
+    public void handleSuccess(Response response, InputStream inputStream) throws IOException {
+        //Do nothing
+    }
+}
