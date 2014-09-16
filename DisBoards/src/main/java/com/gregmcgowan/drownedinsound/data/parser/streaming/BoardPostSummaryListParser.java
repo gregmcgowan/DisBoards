@@ -100,6 +100,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                                     }
                                 }
                                 boardPosts.add(currentBoardPost);
+                                currentBoardPost = null;
                             }
                         }
                     } else if (tagName.equals(HtmlConstants.TABLE_CELL)) {
