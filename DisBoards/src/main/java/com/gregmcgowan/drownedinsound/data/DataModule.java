@@ -40,19 +40,8 @@ public class DataModule {
 
     @Provides
     @Singleton
-    UserSessionManager provideUserSessionManager(CookieManager cookieManager){
-        return new UserSessionManager(cookieManager);
-    }
-
-    @Provides
-    @Singleton
     SharedPreferences provideSharedPreferences(Application app) {
         return app.getSharedPreferences("DisBoards", MODE_PRIVATE);
-    }
-
-    @Provides @Singleton
-    CookieManager provideCookieManager(OkHttpClient okHttpClient, SharedPreferences sharedPreferences){
-        return new CookieManager(okHttpClient,sharedPreferences);
     }
 
     @Provides @Singleton

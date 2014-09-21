@@ -53,6 +53,8 @@ public class DisWebService extends IntentService {
 
     @Inject UserSessionManager userSessionManager;
 
+    @Inject EventBus eventBus;
+
     public DisWebService() {
         super(SERVICE_NAME);
     }
@@ -178,11 +180,11 @@ public class DisWebService extends IntentService {
                 Request request = requestBuilder.get().url(boardUrl)
                         .headers(headerBuilder.build()).build();
                 httpClient.newCall(request).enqueue(
-                        new RetrieveBoardSummaryListHandler(board.getBoardType(),
-                                updateUI,databaseHelper,append));
+                        new RetrieveBoardSummaryListHandler(this,board.getBoardType(),
+                                updateUI,append));
             } else {
                 if (updateUI) {
-                    EventBus.getDefault().post(
+                    eventBus.post(
                             new RetrievedBoardPostSummaryListEvent(
                                     cachedBoardPosts, board.getBoardType(),
                                     true, false));

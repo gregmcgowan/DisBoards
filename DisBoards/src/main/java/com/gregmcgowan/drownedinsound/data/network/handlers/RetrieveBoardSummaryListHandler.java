@@ -1,7 +1,9 @@
 package com.gregmcgowan.drownedinsound.data.network.handlers;
 
+import android.content.Context;
 import android.util.Log;
 
+import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.Board;
@@ -19,6 +21,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import de.greenrobot.event.EventBus;
 
 public class RetrieveBoardSummaryListHandler extends
@@ -28,13 +32,20 @@ public class RetrieveBoardSummaryListHandler extends
             + "RetrieveBoardSummaryListHandler";
 
     private BoardType boardType;
-    private DatabaseHelper databaseHelper;
     private boolean append;
 
-    public RetrieveBoardSummaryListHandler(BoardType boardType,
-                                           boolean updateUI, DatabaseHelper databaseHelper, boolean append) {
+    @Inject
+    DatabaseHelper databaseHelper;
+
+    @Inject
+    EventBus eventBus;
+
+    public RetrieveBoardSummaryListHandler(Context context,
+                                           BoardType boardType,
+                                           boolean updateUI,
+                                           boolean append) {
+        DisBoardsApp.getApplication(context).inject(this);
         this.boardType = boardType;
-        this.databaseHelper = databaseHelper;
         this.append = append;
         setUpdateUI(updateUI);
     }
@@ -60,7 +71,7 @@ public class RetrieveBoardSummaryListHandler extends
         }
 
         if (isUpdateUI()) {
-            EventBus.getDefault().post(
+            eventBus.post(
                     new RetrievedBoardPostSummaryListEvent(boardPostSummaries,
                             boardType, false, append));
         }
@@ -80,7 +91,7 @@ public class RetrieveBoardSummaryListHandler extends
         }
 
         if (isUpdateUI()) {
-            EventBus.getDefault().post(
+            eventBus.post(
                     new RetrievedBoardPostSummaryListEvent(null, boardType,
                             false, append));
         }

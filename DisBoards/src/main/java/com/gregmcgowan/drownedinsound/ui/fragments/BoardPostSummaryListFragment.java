@@ -3,7 +3,7 @@ package com.gregmcgowan.drownedinsound.ui.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -16,8 +16,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -27,6 +27,8 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.commonsware.cwac.endless.EndlessAdapter;
+import com.gregmcgowan.drownedinsound.annotations.UseDagger;
+import com.gregmcgowan.drownedinsound.annotations.UseEventBus;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.model.Board;
@@ -48,7 +50,8 @@ import com.gregmcgowan.drownedinsound.ui.widgets.AutoScrollListView;
 import com.gregmcgowan.drownedinsound.utils.NetworkUtils;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
-import de.greenrobot.event.EventBus;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 /**
  * A fragment that will represent a different section of the community board
@@ -57,22 +60,27 @@ import de.greenrobot.event.EventBus;
  *
  * @author Greg
  */
-public class BoardPostSummaryListFragment extends DisBoardsListFragment {
+@UseEventBus @UseDagger
+public class BoardPostSummaryListFragment extends DisBoardsFragment {
 
     private static final String CURRENTLY_SELECTED_BOARD_POST = "currentlySelectedBoardPost";
     private static final String WAS_IN_DUAL_PANE_MODE = "WasInDualPaneMode";
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
         + "BoardListFragment";
 
+    private static final String REQUEST_ON_START = "REQUEST_ON_START";
+
     private Drawable readDrawable;
     private Drawable unreadDrawable;
     private String boardUrl;
-    private ProgressBar progressBar;
-    private TextView connectionErrorTextView;
+
+    @InjectView(R.id.board_list_progress_bar) ProgressBar progressBar;
+    @InjectView(R.id.board_list_connection_error_text_view) TextView connectionErrorTextView;
+    @InjectView(R.id.board_post_summary_list) AutoScrollListView listView;
+
     private ArrayList<BoardPost> boardPostSummaries = new ArrayList<BoardPost>();
     private BoardPostSummaryListEndlessAdapter adapter;
-    private View rootView;
-    private AutoScrollListView listView;
+
     private boolean requestOnStart;
     private Board board;
     private BoardType boardType;
@@ -87,45 +95,69 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
     public BoardPostSummaryListFragment() {
     }
 
-    public static BoardPostSummaryListFragment newInstance(Board boardTypeInfo,
+    public static BoardPostSummaryListFragment newInstance(Board board,
                                                            boolean requestDataOnStart) {
         BoardPostSummaryListFragment boardListFragment = new BoardPostSummaryListFragment();
-        boardListFragment.board = boardTypeInfo;
-        boardListFragment.boardUrl = boardTypeInfo.getUrl();
-        boardListFragment.requestOnStart = requestDataOnStart;
-        boardListFragment.boardType = boardTypeInfo.getBoardType();
+
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(DisBoardsConstants.BOARD,board);
+        arguments.putBoolean(REQUEST_ON_START,requestDataOnStart);
+
+        boardListFragment.setArguments(arguments);
         return boardListFragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        setHasOptionsMenu(true);
+        board = getArguments().getParcelable(DisBoardsConstants.BOARD);
+        if(board != null) {
+            boardUrl = board.getUrl();
+            boardType = board.getBoardType();
+        }
+
+        this.requestOnStart = getArguments().getBoolean(REQUEST_ON_START);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        inflater = (LayoutInflater) inflater.getContext().getSystemService(
-            Context.LAYOUT_INFLATER_SERVICE);
-        rootView = inflater.inflate(R.layout.board_list_layout, null);
+        View rootView = inflater.inflate(R.layout.board_list_layout, container, false);
+
+        ButterKnife.inject(this,rootView);
+
+        readDrawable = getSherlockActivity().getResources().getDrawable(
+                R.drawable.white_circle_blue_outline);
+        unreadDrawable = getSherlockActivity().getResources().getDrawable(
+                R.drawable.filled_blue_circle);
+
+        adapter = new BoardPostSummaryListEndlessAdapter(new BoardPostSummaryListAdapter(getSherlockActivity(),
+                R.layout.board_list_row, boardPostSummaries));
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                BoardPostSummaryHolder holder = (BoardPostSummaryHolder) view
+                        .getTag();
+                if (Build.VERSION.SDK_INT > VERSION_CODES.JELLY_BEAN) {
+                    holder.postReadMarkerView.setBackground(readDrawable);
+                } else {
+                    holder.postReadMarkerView.setBackgroundDrawable(readDrawable);
+                }
+
+                showBoardPost(position);
+            }
+        });
+
         return rootView;
     }
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        progressBar = (ProgressBar) rootView
-            .findViewById(R.id.board_list_progress_bar);
-        connectionErrorTextView = (TextView) rootView
-            .findViewById(R.id.board_list_connection_error_text_view);
-
-        readDrawable = getSherlockActivity().getResources().getDrawable(
-            R.drawable.white_circle_blue_outline);
-        unreadDrawable = getSherlockActivity().getResources().getDrawable(
-            R.drawable.filled_blue_circle);
-
-        listView = (AutoScrollListView) getListView();
-        // connectionErrorTextView.setVisibility(View.GONE);
-        adapter = new BoardPostSummaryListEndlessAdapter(getSherlockActivity(),
-            new BoardPostSummaryListAdapter(getSherlockActivity(),
-                R.layout.board_list_row, boardPostSummaries));
-        setListAdapter(adapter);
-
         if (requestOnStart && !summariesLoaded()) {
             requestBoardSummaryPage(1, false);
         }
@@ -149,7 +181,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
                 .getSerializable(DisBoardsConstants.BOARD_TYPE);
             boardUrl = savedInstanceState
                 .getString(DisBoardsConstants.BOARD_URL);
-            board = (Board) savedInstanceState
+            board =  savedInstanceState
                 .getParcelable(DisBoardsConstants.BOARD);
         }
 
@@ -172,14 +204,6 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-        setHasOptionsMenu(true);
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(CURRENTLY_SELECTED_BOARD_POST, currentlySelectedPost);
@@ -189,12 +213,6 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
         outState.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
         outState.putString(DisBoardsConstants.BOARD_URL, boardUrl);
         outState.putParcelable(DisBoardsConstants.BOARD, board);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -239,7 +257,6 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
         NewPostFragment.newInstance(newPostDetails).show(getFragmentManager(),
             "NEW_POST_DIALOG");
     }
-
 
     public void onEventMainThread(FailedToPostNewThreadEvent event) {
         this.setProgressBarVisiblity(false);
@@ -410,20 +427,6 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
             Toast.LENGTH_SHORT).show();
     }
 
-    @SuppressLint("NewApi")
-    @Override
-    public void onListItemClick(ListView l, View rowView, int position, long id) {
-        BoardPostSummaryHolder holder = (BoardPostSummaryHolder) rowView
-            .getTag();
-        if (Build.VERSION.SDK_INT > VERSION_CODES.JELLY_BEAN) {
-            holder.postReadMarkerView.setBackground(readDrawable);
-        } else {
-            holder.postReadMarkerView.setBackgroundDrawable(readDrawable);
-        }
-
-        showBoardPost(position);
-    }
-
     private void showBoardPost(int position) {
         currentlySelectedPost = position;
         BoardPost boardPostSummary = boardPostSummaries.get(position);
@@ -476,8 +479,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 
     private class BoardPostSummaryListEndlessAdapter extends EndlessAdapter {
 
-        public BoardPostSummaryListEndlessAdapter(Context context,
-                                                  ListAdapter wrapped) {
+        public BoardPostSummaryListEndlessAdapter(ListAdapter wrapped) {
             super(wrapped);
             super.setRunInBackground(false);
         }
@@ -490,9 +492,7 @@ public class BoardPostSummaryListFragment extends DisBoardsListFragment {
 
         @Override
         protected boolean cacheInBackground() throws Exception {
-
             int pageToFetch = lastPageFetched + 1;
-            Log.d(TAG, "Cache in background called");
             requestBoardSummaryPage(pageToFetch, false);
             return true;
         }

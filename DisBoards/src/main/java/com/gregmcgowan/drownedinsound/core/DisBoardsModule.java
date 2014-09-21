@@ -14,7 +14,8 @@ import dagger.Provides;
  */
 @Module(
         includes = {
-                DataModule.class
+                DataModule.class,
+                ApplicationStateModule.class
         },
         injects = {
                 DisBoardsApp.class
