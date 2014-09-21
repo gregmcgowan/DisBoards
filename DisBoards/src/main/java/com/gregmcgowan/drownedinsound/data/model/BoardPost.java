@@ -1,18 +1,18 @@
 package com.gregmcgowan.drownedinsound.data.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.table.DatabaseTable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * This represents a board post. Board post contains the title, content, author
@@ -26,7 +26,8 @@ public class BoardPost implements Parcelable {
 
     public static final BoardPostComparator COMPARATOR = new BoardPostComparator();
 
-    public static final Parcelable.Creator<BoardPost> CREATOR = new Parcelable.Creator<BoardPost>() {
+    public static final Parcelable.Creator<BoardPost> CREATOR
+            = new Parcelable.Creator<BoardPost>() {
         public BoardPost createFromParcel(Parcel in) {
             return new BoardPost(in);
         }
@@ -39,6 +40,7 @@ public class BoardPost implements Parcelable {
     public static final String BOARD_TYPE_FIELD = "board_type";
 
     public static final String IS_FAVOURITED_FIELD_NAME = "isFavourited";
+
     private static final String ID_FIELD = "_id";
 
     @DatabaseField(id = true, columnName = ID_FIELD, generatedId = false)
@@ -147,19 +149,21 @@ public class BoardPost implements Parcelable {
     }
 
     private BoardPostCommentTreeNode makeTreeNode(BoardPostComment comment,
-                                                  Collection<BoardPostComment> allComments) {
+            Collection<BoardPostComment> allComments) {
         BoardPostCommentTreeNode node = new BoardPostCommentTreeNode(comment);
         int nodeLevel = comment.getCommentLevel();
         List<BoardPostComment> allCommentsList = new ArrayList<BoardPostComment>(
-            allComments);
+                allComments);
         int nodeIndex = allCommentsList.indexOf(comment);
         comment.setTreeNode(node);
         for (int i = nodeIndex + 1; i < allCommentsList.size(); i++) {
             BoardPostComment childComment = allCommentsList.get(i);
-            if (childComment.getCommentLevel() > nodeLevel + 1)
+            if (childComment.getCommentLevel() > nodeLevel + 1) {
                 continue;
-            if (childComment.getCommentLevel() <= nodeLevel)
+            }
+            if (childComment.getCommentLevel() <= nodeLevel) {
                 break;
+            }
             node.addChild(makeTreeNode(childComment, allCommentsList));
         }
         return node;
@@ -269,8 +273,8 @@ public class BoardPost implements Parcelable {
         StringBuilder lastUpdatedBuilder = new StringBuilder();
         if (lastUpdatedTime > 0) {
             CharSequence friendlyTime = DateUtils.getRelativeTimeSpanString(
-                lastUpdatedTime, System.currentTimeMillis(),
-                DateUtils.SECOND_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL);
+                    lastUpdatedTime, System.currentTimeMillis(),
+                    DateUtils.SECOND_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL);
             lastUpdatedBuilder.append("Last updated ");
             lastUpdatedBuilder.append(friendlyTime.toString());
 
@@ -302,7 +306,7 @@ public class BoardPost implements Parcelable {
     public void setFavourited(boolean isFavourited) {
         this.isFavourited = isFavourited;
     }
-    
+
     public void writeToParcel(Parcel parcel, int flag) {
         parcel.writeString(id);
         parcel.writeString(title);
@@ -357,18 +361,23 @@ public class BoardPost implements Parcelable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         BoardPost other = (BoardPost) obj;
         if (id == null) {
-            if (other.id != null)
+            if (other.id != null) {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        } else if (!id.equals(other.id)) {
             return false;
+        }
         return true;
     }
 
@@ -377,7 +386,7 @@ public class BoardPost implements Parcelable {
 
         @Override
         public int compare(BoardPost leftHandSideBoardPost,
-                           BoardPost rightHandSidePost) {
+                BoardPost rightHandSidePost) {
             if (leftHandSideBoardPost == null) {
                 return 1;
             }
@@ -396,9 +405,9 @@ public class BoardPost implements Parcelable {
             }
 
             long leftHandsideLastUpdatedTime = leftHandSideBoardPost
-                .getLastUpdatedTime();
+                    .getLastUpdatedTime();
             long rightHandsideLastUpdatedTime = rightHandSidePost
-                .getLastUpdatedTime();
+                    .getLastUpdatedTime();
 
             if (rightHandsideLastUpdatedTime > leftHandsideLastUpdatedTime) {
                 return 1;
@@ -414,13 +423,13 @@ public class BoardPost implements Parcelable {
     @Override
     public String toString() {
         return "BoardPost [id=" + id + ", title=" + title + ", isSticky="
-            + isSticky + ", summary=" + summary + ", content=" + content
-            + ", authorUsername=" + authorUsername + ", dateOfPost="
-            + dateOfPost + ", numberOfReplies=" + numberOfReplies
-            + ", boardPostStatus=" + boardPostStatus + ", lastViewedTime="
-            + lastViewedTime + ", createdTime=" + createdTime
-            + ", lastUpdatedTime=" + lastUpdatedTime + ", boardType="
-            + boardType + "]";
+                + isSticky + ", summary=" + summary + ", content=" + content
+                + ", authorUsername=" + authorUsername + ", dateOfPost="
+                + dateOfPost + ", numberOfReplies=" + numberOfReplies
+                + ", boardPostStatus=" + boardPostStatus + ", lastViewedTime="
+                + lastViewedTime + ", createdTime=" + createdTime
+                + ", lastUpdatedTime=" + lastUpdatedTime + ", boardType="
+                + boardType + "]";
     }
 
     public int getNumberOfTimesRead() {

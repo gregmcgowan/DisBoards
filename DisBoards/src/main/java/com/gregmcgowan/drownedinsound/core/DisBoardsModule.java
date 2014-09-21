@@ -1,8 +1,8 @@
 package com.gregmcgowan.drownedinsound.core;
 
-import android.app.Application;
-
 import com.gregmcgowan.drownedinsound.data.DataModule;
+
+import android.app.Application;
 
 import javax.inject.Singleton;
 
@@ -30,7 +30,9 @@ public class DisBoardsModule {
         this.app = app;
     }
 
-    @Provides @Singleton Application provideApplication() {
+    @Provides
+    @Singleton
+    Application provideApplication() {
         return app;
     }
 }

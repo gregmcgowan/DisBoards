@@ -1,9 +1,9 @@
 package com.gregmcgowan.drownedinsound.data.model;
 
-import java.util.ArrayList;
-
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.util.ArrayList;
 
 /**
  * Represents a board post comment which may be a reply to an
@@ -14,7 +14,9 @@ import android.os.Parcelable;
 public class BoardPostCommentTreeNode implements Parcelable {
 
     private BoardPostComment boardPostComment;
+
     private ArrayList<BoardPostCommentTreeNode> children;
+
     private BoardPostCommentTreeNode parent;
 
     public BoardPostCommentTreeNode(BoardPostComment boardPostComment) {
@@ -65,25 +67,30 @@ public class BoardPostCommentTreeNode implements Parcelable {
         final int prime = 31;
         int result = 1;
         result = prime
-            * result
-            + ((boardPostComment == null) ? 0 : boardPostComment.hashCode());
+                * result
+                + ((boardPostComment == null) ? 0 : boardPostComment.hashCode());
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         BoardPostCommentTreeNode other = (BoardPostCommentTreeNode) obj;
         if (boardPostComment == null) {
-            if (other.boardPostComment != null)
+            if (other.boardPostComment != null) {
                 return false;
-        } else if (!boardPostComment.equals(other.boardPostComment))
+            }
+        } else if (!boardPostComment.equals(other.boardPostComment)) {
             return false;
+        }
         return true;
     }
 
@@ -103,11 +110,13 @@ public class BoardPostCommentTreeNode implements Parcelable {
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(boardPostComment, flags);
-        dest.writeParcelableArray(children.toArray(new BoardPostCommentTreeNode[children.size()]), flags);
+        dest.writeParcelableArray(children.toArray(new BoardPostCommentTreeNode[children.size()]),
+                flags);
         dest.writeParcelable(parent, flags);
     }
 
-    public static final Parcelable.Creator<BoardPostCommentTreeNode> CREATOR = new Parcelable.Creator<BoardPostCommentTreeNode>() {
+    public static final Parcelable.Creator<BoardPostCommentTreeNode> CREATOR
+            = new Parcelable.Creator<BoardPostCommentTreeNode>() {
         public BoardPostCommentTreeNode createFromParcel(Parcel in) {
             return new BoardPostCommentTreeNode(in);
         }

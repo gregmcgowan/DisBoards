@@ -1,20 +1,5 @@
 package com.gregmcgowan.drownedinsound.ui.activity;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -33,6 +18,21 @@ import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
 import net.hockeyapp.android.CrashManager;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -53,17 +53,25 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX + "MainCommunityActivity";
 
     private BoardsFragmentAdapter mAdapter;
+
     private ViewPager mPager;
+
     private PageIndicator mIndicator;
 
     private DrawerLayout navigationDrawerLayout;
+
     private ListView navigationDrawerListView;
+
     private NavigationDrawerAdapter navigationDrawerAdapter;
+
     private ActionBarDrawerToggle navigationDrawerToggle;
 
     private CharSequence mDrawerTitle;
+
     private CharSequence mTitle;
-    private final ArrayList<NavigationDrawerItem> navigationDrawerItems = new ArrayList<NavigationDrawerItem>();
+
+    private final ArrayList<NavigationDrawerItem> navigationDrawerItems
+            = new ArrayList<NavigationDrawerItem>();
 
     @Inject
     UserSessionManager userSessionManager;
@@ -78,7 +86,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 
         EventBus.getDefault().register(this);
         mAdapter = new BoardsFragmentAdapter(getSupportFragmentManager(),
-            DatabaseHelper.getInstance(getApplicationContext()));
+                DatabaseHelper.getInstance(getApplicationContext()));
 
         initialiseViewPager();
         initialiseSlidingDrawer();
@@ -100,43 +108,45 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 
         initialiseNavigationDrawerItems();
 
-        navigationDrawerAdapter = new NavigationDrawerAdapter(this,R.layout.navigation_drawer_list_item, navigationDrawerItems);
+        navigationDrawerAdapter = new NavigationDrawerAdapter(this,
+                R.layout.navigation_drawer_list_item, navigationDrawerItems);
         navigationDrawerListView.setAdapter(navigationDrawerAdapter);
-        navigationDrawerListView.setOnItemClickListener(new DrawerItemClickListener(new WeakReference<MainCommunityActivity>(this)));
+        navigationDrawerListView.setOnItemClickListener(
+                new DrawerItemClickListener(new WeakReference<MainCommunityActivity>(this)));
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-            navigationDrawerToggle = new ActionBarDrawerToggle(
+        navigationDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 navigationDrawerLayout,         /* DrawerLayout object */
                 R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
-            R.string.drawer_open,  /* "open drawer" description for accessibility */
-               R.string.drawer_close  /* "close drawer" description for accessibility */
+                R.string.drawer_open,  /* "open drawer" description for accessibility */
+                R.string.drawer_close  /* "close drawer" description for accessibility */
         ) {
-           public void onDrawerClosed(View view) {
-               super.onDrawerClosed(view);
-               invalidateOptionsMenu();
-           }
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu();
+            }
 
-           public void onDrawerOpened(View drawerView) {
-               getSupportActionBar().setTitle(mDrawerTitle);
-               invalidateOptionsMenu();
-           }
-       };
+            public void onDrawerOpened(View drawerView) {
+                getSupportActionBar().setTitle(mDrawerTitle);
+                invalidateOptionsMenu();
+            }
+        };
         navigationDrawerLayout.setDrawerListener(navigationDrawerToggle);
 
     }
 
-    private void initialiseNavigationDrawerItems(){
+    private void initialiseNavigationDrawerItems() {
         boolean loggedIn = userSessionManager.isUserLoggedIn();
-        if(!loggedIn) {
+        if (!loggedIn) {
             navigationDrawerItems.add(new LoginDrawerItem(this));
         }
         navigationDrawerItems.add(new FavouritesDrawerItem(this));
         navigationDrawerItems.add(new SettingsDrawerItem(this));
-        if(loggedIn) {
+        if (loggedIn) {
             navigationDrawerItems.add(new LogoutDrawerItem(this));
         }
     }
@@ -178,11 +188,12 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
             private void checkIfPageNeedsUpdating(int position) {
                 Log.d(TAG, "Checking if page  " + position + " needs updating");
                 String fragmentName = UiUtils.makeFragmentPagerAdapterTagName(
-                    R.id.boards_pager, position);
+                        R.id.boards_pager, position);
                 Fragment fragment = getSupportFragmentManager()
-                    .findFragmentByTag(fragmentName);
+                        .findFragmentByTag(fragmentName);
                 if (fragment instanceof BoardPostSummaryListFragment) {
-                    BoardPostSummaryListFragment listFragment = (BoardPostSummaryListFragment) fragment;
+                    BoardPostSummaryListFragment listFragment
+                            = (BoardPostSummaryListFragment) fragment;
                     listFragment.loadListIfNotAlready();
                 }
             }
@@ -204,7 +215,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 
     private void checkForUpdates() {
         // Remove this for store builds!
-       // UpdateManager.register(this, DisBoardsConstants.HOCKEY_APP_ID);
+        // UpdateManager.register(this, DisBoardsConstants.HOCKEY_APP_ID);
     }
 
     @Override
@@ -225,7 +236,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         boolean menuVisibilty = !navigationDrawerLayout.isDrawerOpen(navigationDrawerListView);
         int numberOfMenuItems = menu.size();
-        for(int i = 0; i < numberOfMenuItems; i++) {
+        for (int i = 0; i < numberOfMenuItems; i++) {
             MenuItem item = menu.getItem(i);
             item.setEnabled(menuVisibilty);
         }
@@ -246,16 +257,16 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
     }
 
     //TODO rename
-    private void updateAfterLoginOrLogout(){
-        navigationDrawerLayout.postDelayed( new Runnable() {
+    private void updateAfterLoginOrLogout() {
+        navigationDrawerLayout.postDelayed(new Runnable() {
             @Override
             public void run() {
 
-               navigationDrawerItems.clear();
-               initialiseNavigationDrawerItems();
-               navigationDrawerAdapter.notifyDataSetChanged();
+                navigationDrawerItems.clear();
+                initialiseNavigationDrawerItems();
+                navigationDrawerAdapter.notifyDataSetChanged();
             }
-        },500);
+        }, 500);
 
     }
 
@@ -263,9 +274,9 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
         updateAfterLoginOrLogout();
     }
 
-    public void doNavigationDrawerAction(int position){
+    public void doNavigationDrawerAction(int position) {
         NavigationDrawerItem navigationDrawerItem = navigationDrawerItems.get(position);
-        if(navigationDrawerItem != null) {
+        if (navigationDrawerItem != null) {
             navigationDrawerItem.doNavigationDrawerItemSelectedAction();
         }
         if (navigationDrawerLayout.isDrawerOpen(navigationDrawerListView)) {
@@ -273,14 +284,14 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
         }
     }
 
-    public void doLogoutAction(){
+    public void doLogoutAction() {
         //Might need to do a proper logout
         userSessionManager.clearSession();
         updateAfterLoginOrLogout();
     }
 
-    public void doViewFavouritesAction(){
-        Intent displayFavouritesIntent = new Intent(this,FavouritesActivity.class);
+    public void doViewFavouritesAction() {
+        Intent displayFavouritesIntent = new Intent(this, FavouritesActivity.class);
         startActivity(displayFavouritesIntent);
     }
 
@@ -289,48 +300,51 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 
         private WeakReference<MainCommunityActivity> mainCommunityActivityWeakReference;
 
-        public DrawerItemClickListener(WeakReference<MainCommunityActivity> mainCommunityActivityWeakReference){
+        public DrawerItemClickListener(
+                WeakReference<MainCommunityActivity> mainCommunityActivityWeakReference) {
             this.mainCommunityActivityWeakReference = mainCommunityActivityWeakReference;
         }
+
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if(mainCommunityActivityWeakReference != null) {
-                MainCommunityActivity mainCommunityActivity = mainCommunityActivityWeakReference.get();
-                if(mainCommunityActivity != null) {
+            if (mainCommunityActivityWeakReference != null) {
+                MainCommunityActivity mainCommunityActivity = mainCommunityActivityWeakReference
+                        .get();
+                if (mainCommunityActivity != null) {
                     mainCommunityActivity.doNavigationDrawerAction(position);
                 }
             }
         }
     }
 
-    public static class LoginDrawerItem extends  NavigationDrawerItem {
+    public static class LoginDrawerItem extends NavigationDrawerItem {
 
-        public LoginDrawerItem(Context context){
-           super("Login",new WeakReference<Context>(context));
+        public LoginDrawerItem(Context context) {
+            super("Login", new WeakReference<Context>(context));
         }
 
         @Override
         public void doNavigationDrawerItemSelectedAction() {
             Context context = getContext();
-            if(context != null) {
-                Intent loginIntent = new Intent(context,LoginActivity.class);
+            if (context != null) {
+                Intent loginIntent = new Intent(context, LoginActivity.class);
                 context.startActivity(loginIntent);
             }
         }
 
     }
 
-    public static class LogoutDrawerItem extends  NavigationDrawerItem {
+    public static class LogoutDrawerItem extends NavigationDrawerItem {
 
-        public LogoutDrawerItem(Context context){
-            super("Logout",new WeakReference<Context>(context));
+        public LogoutDrawerItem(Context context) {
+            super("Logout", new WeakReference<Context>(context));
         }
 
         @Override
         public void doNavigationDrawerItemSelectedAction() {
             Context context = getContext();
-            if(context != null) {
-                MainCommunityActivity mainCommunityActivity = (MainCommunityActivity)context;
+            if (context != null) {
+                MainCommunityActivity mainCommunityActivity = (MainCommunityActivity) context;
                 mainCommunityActivity.doLogoutAction();
             }
         }
@@ -346,24 +360,24 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
         @Override
         public void doNavigationDrawerItemSelectedAction() {
             Context context = getContext();
-            if(context != null) {
-                MainCommunityActivity mainCommunityActivity = (MainCommunityActivity)context;
+            if (context != null) {
+                MainCommunityActivity mainCommunityActivity = (MainCommunityActivity) context;
                 mainCommunityActivity.doViewFavouritesAction();
             }
         }
     }
 
-    public static class SettingsDrawerItem extends  NavigationDrawerItem {
+    public static class SettingsDrawerItem extends NavigationDrawerItem {
 
-        public SettingsDrawerItem(Context context){
-            super("Settings",new WeakReference<Context>(context));
+        public SettingsDrawerItem(Context context) {
+            super("Settings", new WeakReference<Context>(context));
         }
 
         @Override
         public void doNavigationDrawerItemSelectedAction() {
             Context context = getContext();
-            if(context != null) {
-                MainCommunityActivity mainCommunityActivity = (MainCommunityActivity)context;
+            if (context != null) {
+                MainCommunityActivity mainCommunityActivity = (MainCommunityActivity) context;
             }
         }
 

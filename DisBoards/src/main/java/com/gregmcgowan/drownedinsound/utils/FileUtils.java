@@ -1,11 +1,11 @@
 package com.gregmcgowan.drownedinsound.utils;
 
-import java.io.File;
-import java.io.IOException;
-
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 
 import android.content.Context;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Some common file tasks
@@ -19,7 +19,7 @@ public class FileUtils {
         File tempFile = null;
         try {
             tempFile = File.createTempFile(prefix, ".html",
-                context.getCacheDir());
+                    context.getCacheDir());
         } catch (IOException e) {
             if (DisBoardsConstants.DEBUG) {
                 e.printStackTrace();

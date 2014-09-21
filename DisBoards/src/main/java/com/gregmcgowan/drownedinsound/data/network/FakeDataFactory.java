@@ -1,18 +1,24 @@
 package com.gregmcgowan.drownedinsound.data.network;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FakeDataFactory {
 
     private final static String USER_NAME = "A drowned in sound user";
+
     private final static String SHORT_BOARD_POST = "Here is a short board post";
-    private final static String MEDIUM_BOARD_POST = "<p>problem is, I no longer require his services. dunno why I agreed in the first place, tbh. real sucker for this type of doorstep manipulation, me</p>\n<p>don't get me wrong, he does an OK job, but I just don't really need my windows cleaned once a month.  every year is perfectly fine. every other year, in fact. </p>\n<p>problem is:</p>\n<p>a) I don't like letting people down. kid has to earn a living and shiiiit\n<br />b) he looks a right hard fuck and may pummel me to dust</p>\n<p>I've tried avoiding him, but as long as I have windows, he'll always be cleaning them</p>\n<p>guess I'm gonna have to move or something</p>\n<p>what you say?</p>";
+
+    private final static String MEDIUM_BOARD_POST
+            = "<p>problem is, I no longer require his services. dunno why I agreed in the first place, tbh. real sucker for this type of doorstep manipulation, me</p>\n<p>don't get me wrong, he does an OK job, but I just don't really need my windows cleaned once a month.  every year is perfectly fine. every other year, in fact. </p>\n<p>problem is:</p>\n<p>a) I don't like letting people down. kid has to earn a living and shiiiit\n<br />b) he looks a right hard fuck and may pummel me to dust</p>\n<p>I've tried avoiding him, but as long as I have windows, he'll always be cleaning them</p>\n<p>guess I'm gonna have to move or something</p>\n<p>what you say?</p>";
+
     private final static String SHORT_COMMENT = "";
-    private final static String LONG_COMMENT = "<p>Here is a much larger comment</p> <p>gerwgggggggggggggggggggggggggggggggggggggggggggggg</p> <p>fffffffffffffffff</>";
+
+    private final static String LONG_COMMENT
+            = "<p>Here is a much larger comment</p> <p>gerwgggggggggggggggggggggggggggggggggggggggggggggg</p> <p>fffffffffffffffff</>";
 
     // private final static String REALLY_LONG_BOARD_POST = ""
 
@@ -311,13 +317,13 @@ public class FakeDataFactory {
     }
 
     private static BoardPostComment createRandomCommentAtLevel(int level,
-                                                               boolean includeTitle, boolean includeContent,
-                                                               boolean includeUsersThatHaveThised) {
+            boolean includeTitle, boolean includeContent,
+            boolean includeUsersThatHaveThised) {
         long currentTime = System.currentTimeMillis();
 
         BoardPostComment boardPostComment = new BoardPostComment();
         boardPostComment.setAuthorUsername("Random user name"
-            + System.currentTimeMillis());
+                + System.currentTimeMillis());
         if (includeTitle) {
             boardPostComment.setTitle("Here is a title");
         }
@@ -336,8 +342,8 @@ public class FakeDataFactory {
                 users = new String[]{"GREG", "SOMEONEELSE"};
             } else {
                 users = new String[]{"SOMEONEELSE", "SOMEONEELSE",
-                    "SOMEONEELSE", "SOMEONEELSE", "SOMEONEELSE",
-                    "SOMEONEELSE", "SOMEONEELSE"};
+                        "SOMEONEELSE", "SOMEONEELSE", "SOMEONEELSE",
+                        "SOMEONEELSE", "SOMEONEELSE"};
             }
             // boardPostComment.setUsersWhoHaveThissed(users);
         }
@@ -351,7 +357,7 @@ public class FakeDataFactory {
             BoardPost boardPostSummary = new BoardPost();
             boardPostSummary.setAuthorUsername(USER_NAME);
             boardPostSummary
-                .setTitle("Here is a drowned in sound post no " + i);
+                    .setTitle("Here is a drowned in sound post no " + i);
             boardPostSummary.setNumberOfReplies(10);
             //boardPostSummary.setLastPostDate(new Date());
             boardPostSummary.setId(String.valueOf(i));

@@ -6,9 +6,10 @@ package com.gregmcgowan.drownedinsound.events;
 public class SetBoardPostFavouriteStatusResultEvent {
 
     boolean success;
+
     boolean newStatus;
 
-    public SetBoardPostFavouriteStatusResultEvent(boolean success,boolean newStatus) {
+    public SetBoardPostFavouriteStatusResultEvent(boolean success, boolean newStatus) {
         this.success = success;
         this.newStatus = newStatus;
 

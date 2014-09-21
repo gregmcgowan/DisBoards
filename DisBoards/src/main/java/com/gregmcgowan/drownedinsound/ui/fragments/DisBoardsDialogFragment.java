@@ -1,10 +1,10 @@
 package com.gregmcgowan.drownedinsound.ui.fragments;
 
+import com.actionbarsherlock.app.SherlockDialogFragment;
+
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.Window;
-
-import com.actionbarsherlock.app.SherlockDialogFragment;
 
 public class DisBoardsDialogFragment extends SherlockDialogFragment {
 

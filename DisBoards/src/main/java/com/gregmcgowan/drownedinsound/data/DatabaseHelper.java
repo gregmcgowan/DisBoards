@@ -1,16 +1,5 @@
 package com.gregmcgowan.drownedinsound.data;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
-
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.model.Board;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
@@ -26,6 +15,17 @@ import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
+
 /**
  * Database helper class used to manage the creation and upgrading of the the
  * DisBoards database. This provides the DAOs used by the other classes. The
@@ -37,18 +37,25 @@ import com.j256.ormlite.table.TableUtils;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
-        + "DatabaseHelper";
+            + "DatabaseHelper";
+
     private static final Class<?>[] DATA_CLASSES = {BoardPost.class,
-        BoardPostComment.class, Board.class,DraftBoardPost.class};
+            BoardPostComment.class, Board.class, DraftBoardPost.class};
+
     private static final String DATABASE_NAME = "disBoards.db";
+
     private static final int DATABASE_VERSION = 2;
 
     private static DatabaseHelper instance;
 
     private Dao<BoardPost, String> boardPostDao;
+
     private Dao<BoardPostComment, String> boardPostCommentDao;
+
     private Dao<Board, BoardType> boardDao;
-    private Dao<DraftBoardPost,String> draftBoardPostDao;
+
+    private Dao<DraftBoardPost, String> draftBoardPostDao;
+
     private ArrayList<Board> boards;
 
     public synchronized static DatabaseHelper getInstance(Context context) {
@@ -100,24 +107,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private void initliaseBoardType() {
         boards = new ArrayList<Board>();
         boards.add(new Board(BoardType.MUSIC,
-            BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 19));
+                BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 19));
         boards.add(new Board(BoardType.SOCIAL,
-            BoardTypeConstants.SOCIAL_DISPLAY_NAME, UrlConstants.SOCIAL_URL, 20));
+                BoardTypeConstants.SOCIAL_DISPLAY_NAME, UrlConstants.SOCIAL_URL, 20));
         boards.add(new Board(BoardType.ANNOUNCEMENTS_CLASSIFIEDS,
-            BoardTypeConstants.ANNOUNCEMENTS_CLASSIFIEDS_DISPLAY_NAME,
-            UrlConstants.ANNOUNCEMENTS_CLASSIFIEDS_URL, 21));
+                BoardTypeConstants.ANNOUNCEMENTS_CLASSIFIEDS_DISPLAY_NAME,
+                UrlConstants.ANNOUNCEMENTS_CLASSIFIEDS_URL, 21));
         boards.add(new Board(BoardType.MUSICIANS,
-            BoardTypeConstants.MUSICIANS_DISPLAY_NAME,
-            UrlConstants.MUSICIANS_URL, 22));
+                BoardTypeConstants.MUSICIANS_DISPLAY_NAME,
+                UrlConstants.MUSICIANS_URL, 22));
         boards.add(new Board(BoardType.FESTIVALS,
-            BoardTypeConstants.FESTIVALS_DISPLAY_NAME,
-            UrlConstants.FESTIVALS_URL, 23));
+                BoardTypeConstants.FESTIVALS_DISPLAY_NAME,
+                UrlConstants.FESTIVALS_URL, 23));
         boards.add(new Board(BoardType.YOUR_MUSIC,
-            BoardTypeConstants.YOUR_MUSIC_DISPLAY_NAME,
-            UrlConstants.YOUR_MUSIC_URL, 24));
+                BoardTypeConstants.YOUR_MUSIC_DISPLAY_NAME,
+                UrlConstants.YOUR_MUSIC_URL, 24));
         boards.add(new Board(BoardType.ERRORS_SUGGESTIONS,
-            BoardTypeConstants.ERROR_SUGGESTIONS_DISPLAY_NAME,
-            UrlConstants.ERRORS_SUGGESTIONS_URL, 25));
+                BoardTypeConstants.ERROR_SUGGESTIONS_DISPLAY_NAME,
+                UrlConstants.ERRORS_SUGGESTIONS_URL, 25));
         for (Board board : boards) {
             Board storedBoard = getBoard(board.getBoardType());
             if (storedBoard == null) {
@@ -134,7 +141,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource,
-                          int oldVersion, int newVersion) {
+            int oldVersion, int newVersion) {
         try {
             if (DisBoardsConstants.DEBUG) {
                 Log.i(TAG, "onUpgrade");
@@ -161,7 +168,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     }
 
     private Dao<BoardPostComment, String> getBoardPostCommentDao()
-        throws SQLException {
+            throws SQLException {
         if (boardPostCommentDao == null) {
             boardPostCommentDao = getDao(BoardPostComment.class);
         }
@@ -175,8 +182,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return boardDao;
     }
 
-    private Dao<DraftBoardPost,String> getDraftBoardPostDao() throws SQLException {
-        if(draftBoardPostDao == null) {
+    private Dao<DraftBoardPost, String> getDraftBoardPostDao() throws SQLException {
+        if (draftBoardPostDao == null) {
             draftBoardPostDao = getDao(DraftBoardPost.class);
         }
         return draftBoardPostDao;
@@ -185,9 +192,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     /**
      * Gets the board post with the provided ID from the database. null is
      * returned if the post does not exist
-     *
-     * @param postId
-     * @return
      */
     public BoardPost getBoardPost(final String postId) {
         BoardPost boardPost = null;
@@ -209,8 +213,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     /**
      * Saves the board post provided to the database
-     *
-     * @param boardPost
      */
     public void setBoardPost(final BoardPost boardPost) {
 
@@ -223,25 +225,25 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                 @Override
                 public Void call() throws Exception {
                     CreateOrUpdateStatus status = boardPostDao
-                        .createOrUpdate(boardPost);
+                            .createOrUpdate(boardPost);
                     if (status.getNumLinesChanged() == 0) {
                         if (DisBoardsConstants.DEBUG) {
                             Log.d(TAG, "Could not create or update board post "
-                                + boardPost.getId());
+                                    + boardPost.getId());
                         }
                     }
                     Collection<BoardPostComment> boardPostComments = boardPost
-                        .getComments();
+                            .getComments();
                     if (boardPostComments != null
-                        && boardPostComments.size() > 0) {
+                            && boardPostComments.size() > 0) {
                         for (BoardPostComment boardPostComment : boardPostComments) {
                             status = boardPostCommentDao
-                                .createOrUpdate(boardPostComment);
+                                    .createOrUpdate(boardPostComment);
                             if (status.getNumLinesChanged() == 0) {
                                 if (DisBoardsConstants.DEBUG) {
                                     Log.d(TAG,
-                                        "Could not create or update comments for board post "
-                                            + boardPost.getId());
+                                            "Could not create or update comments for board post "
+                                                    + boardPost.getId());
                                 }
                             }
                         }
@@ -261,42 +263,43 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     public DraftBoardPost getDraftBoardPost(BoardType boardType) {
         DraftBoardPost draftBoardPost = null;
         try {
-            final Dao<DraftBoardPost,String> draftBoardPostDao = getDraftBoardPostDao();
-            List<DraftBoardPost> draftBoardPosts = draftBoardPostDao.queryForEq(DraftBoardPost.BOARD_TYPE_FIELD,boardType);
-            if(draftBoardPosts != null) {
-                Log.d(DisBoardsConstants.LOG_TAG_PREFIX,"Number of draft board posts ="+draftBoardPosts.size());
+            final Dao<DraftBoardPost, String> draftBoardPostDao = getDraftBoardPostDao();
+            List<DraftBoardPost> draftBoardPosts = draftBoardPostDao
+                    .queryForEq(DraftBoardPost.BOARD_TYPE_FIELD, boardType);
+            if (draftBoardPosts != null) {
+                Log.d(DisBoardsConstants.LOG_TAG_PREFIX,
+                        "Number of draft board posts =" + draftBoardPosts.size());
             }
-            if(draftBoardPosts != null && draftBoardPosts.size() > 0) {
+            if (draftBoardPosts != null && draftBoardPosts.size() > 0) {
                 draftBoardPost = draftBoardPosts.get(0);
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
         }
 
-
-        return  draftBoardPost;
+        return draftBoardPost;
     }
 
-    
+
     public void setDraftBoardPost(DraftBoardPost draftBoardPost) {
         try {
-            final Dao<DraftBoardPost,String> draftBoardPostDao = getDraftBoardPostDao();
+            final Dao<DraftBoardPost, String> draftBoardPostDao = getDraftBoardPostDao();
             removeDraftBoardPost(draftBoardPost.getBoardType());
             int i = draftBoardPostDao.create(draftBoardPost);
-            Log.d(DisBoardsConstants.LOG_TAG_PREFIX,"Added "+i+" Draft board posts");
+            Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Added " + i + " Draft board posts");
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
-        }        
+        }
     }
 
 
     public void removeDraftBoardPost(BoardType boardType) {
         try {
-            final Dao<DraftBoardPost,String> draftBoardPostDao = getDraftBoardPostDao();
-            DeleteBuilder<DraftBoardPost,String> deleteBuilder = draftBoardPostDao.deleteBuilder();
-            deleteBuilder.where().eq(DraftBoardPost.BOARD_TYPE_FIELD,boardType);
+            final Dao<DraftBoardPost, String> draftBoardPostDao = getDraftBoardPostDao();
+            DeleteBuilder<DraftBoardPost, String> deleteBuilder = draftBoardPostDao.deleteBuilder();
+            deleteBuilder.where().eq(DraftBoardPost.BOARD_TYPE_FIELD, boardType);
             int i = deleteBuilder.delete();
-            Log.d(DisBoardsConstants.LOG_TAG_PREFIX,"Deleted "+i+" Draft board posts");
+            Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Deleted " + i + " Draft board posts");
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
         }
@@ -304,15 +307,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     /**
      * Fetches all the boardPosts from the database with the suppied boardTypeId
-     *
-     * @return
      */
     public List<BoardPost> getBoardPosts(BoardType boardType) {
         List<BoardPost> posts = new ArrayList<BoardPost>();
         try {
             final Dao<BoardPost, String> boardPostDao = getBoardPostDao();
             posts = boardPostDao.queryForEq(BoardPost.BOARD_TYPE_FIELD,
-                boardType);
+                    boardType);
         } catch (SQLException e) {
             if (DisBoardsConstants.DEBUG) {
                 e.printStackTrace();
@@ -320,8 +321,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         }
         if (DisBoardsConstants.DEBUG) {
             Log.d(TAG,
-                "Found "
-                    + (posts.size() + " posts for " + boardType.name()));
+                    "Found "
+                            + (posts.size() + " posts for " + boardType.name()));
         }
         Collections.sort(posts, BoardPost.COMPARATOR);
         return posts;
@@ -329,8 +330,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     /**
      * Saves the board posts provided to the database
-     *
-     * @param boardPosts
      */
     public void setBoardPosts(List<BoardPost> boardPosts) {
         if (boardPosts != null) {
@@ -342,9 +341,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     /**
      * Gets the requested board type from the database
-     *
-     * @param boardType
-     * @return
      */
     public Board getBoard(BoardType boardType) {
         Board board = null;
@@ -361,8 +357,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     /**
      * Saves the provided board to the database.
-     *
-     * @param board
      */
     public void setBoard(Board board) {
         try {
@@ -377,8 +371,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     /**
      * Returns the board are stored in memory
-     *
-     * @return
      */
     public ArrayList<Board> getCachedBoards() {
         return boards;
@@ -395,14 +387,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                 @Override
                 public Void call() throws Exception {
                     CreateOrUpdateStatus status = boardPostDao
-                        .createOrUpdate(boardPost);
+                            .createOrUpdate(boardPost);
                     if (status.getNumLinesChanged() == 0) {
                         if (DisBoardsConstants.DEBUG) {
                             Log.d(TAG, "Could not create or update board post "
-                                + boardPost.getId());
+                                    + boardPost.getId());
                         }
                     } else {
-                        Log.d(TAG,"Updated favourite status for board post "+boardPost.getId());
+                        Log.d(TAG, "Updated favourite status for board post " + boardPost.getId());
                     }
 
                     return null;
@@ -420,15 +412,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     /**
      * Fetches all the boardPosts from the database with the suppied boardTypeId
-     *
-     * @return
      */
     public List<BoardPost> getFavouritedBoardPosts() {
         List<BoardPost> posts = new ArrayList<BoardPost>();
         try {
             final Dao<BoardPost, String> boardPostDao = getBoardPostDao();
             posts = boardPostDao.queryForEq(BoardPost.IS_FAVOURITED_FIELD_NAME,
-                true);
+                    true);
         } catch (SQLException e) {
             if (DisBoardsConstants.DEBUG) {
                 e.printStackTrace();
@@ -436,8 +426,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         }
         if (DisBoardsConstants.DEBUG) {
             Log.d(TAG,
-                "Found "
-                    + (posts.size() + " favourited board posts"));
+                    "Found "
+                            + (posts.size() + " favourited board posts"));
         }
         Collections.sort(posts, BoardPost.COMPARATOR);
         return posts;

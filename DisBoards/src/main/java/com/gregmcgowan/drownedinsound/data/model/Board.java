@@ -1,14 +1,14 @@
 package com.gregmcgowan.drownedinsound.data.model;
 
-import java.util.ArrayList;
+import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
+import java.util.ArrayList;
 
 /**
  * This represents information for a specific type of board.
@@ -115,45 +115,50 @@ public class Board implements Parcelable {
         final int prime = 31;
         int result = 1;
         result = prime * result
-            + ((boardType == null) ? 0 : boardType.hashCode());
+                + ((boardType == null) ? 0 : boardType.hashCode());
         result = prime * result
-            + ((displayName == null) ? 0 : displayName.hashCode());
+                + ((displayName == null) ? 0 : displayName.hashCode());
         result = prime * result + ((url == null) ? 0 : url.hashCode());
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Board other = (Board) obj;
-        if (boardType != other.boardType)
+        if (boardType != other.boardType) {
             return false;
+        }
         if (displayName == null) {
-            if (other.displayName != null)
+            if (other.displayName != null) {
                 return false;
-        } else if (!displayName.equals(other.displayName))
+            }
+        } else if (!displayName.equals(other.displayName)) {
             return false;
+        }
         if (url == null) {
-            if (other.url != null)
+            if (other.url != null) {
                 return false;
-        } else if (!url.equals(other.url))
+            }
+        } else if (!url.equals(other.url)) {
             return false;
+        }
         return true;
     }
 
     /**
      * Returns the 2 closets boards to the board provided.
-     *
-     * @param board
-     * @return
      */
     public static ArrayList<Board> getBoardsToFetch(
-        Board board, Context context) {
+            Board board, Context context) {
         ArrayList<Board> boards = DatabaseHelper.getInstance(context).getCachedBoards();
         ArrayList<Board> next2Tabs = new ArrayList<Board>();
         int indexOfBoardTypeInfo = boards.indexOf(board);

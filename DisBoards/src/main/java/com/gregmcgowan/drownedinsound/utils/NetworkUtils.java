@@ -8,7 +8,7 @@ public class NetworkUtils {
 
     public static boolean isConnected(Context context) {
         ConnectivityManager mgr = (ConnectivityManager) context
-            .getSystemService(Context.CONNECTIVITY_SERVICE);
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = mgr.getActiveNetworkInfo();
         return info != null && info.isConnectedOrConnecting();
     }

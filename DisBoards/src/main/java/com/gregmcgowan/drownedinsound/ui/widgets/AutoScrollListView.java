@@ -35,11 +35,13 @@ public class AutoScrollListView extends ListView {
      * Position the element at about 1/3 of the list height
      */
     private static final float PREFERRED_SELECTION_OFFSET_FROM_TOP = 0.33f;
+
     private static final int NUMBER_OF_SCREENS = 5;
 
     private static boolean IS_PRE_HONEYCOMB = Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB;
 
     private int mRequestedScrollPosition = INVALID_POSITION;
+
     private boolean mSmoothScrollRequested;
 
     public AutoScrollListView(Context context) {

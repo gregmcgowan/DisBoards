@@ -1,15 +1,5 @@
 package com.gregmcgowan.drownedinsound.ui.activity;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-
 import com.actionbarsherlock.app.SherlockActivity;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
@@ -21,6 +11,16 @@ import com.gregmcgowan.drownedinsound.events.LoginResponseEvent;
 import com.gregmcgowan.drownedinsound.events.LoginSucceededEvent;
 import com.gregmcgowan.drownedinsound.events.LurkEvent;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -39,9 +39,13 @@ public class LoginActivity extends SherlockActivity {
     CookieManager cookieManager;
 
     private Button loginButton;
+
     private Button lurkButton;
+
     private EditText usernameField;
+
     private EditText passwordField;
+
     private ProgressBar progressBar;
 
     @Override
@@ -56,7 +60,7 @@ public class LoginActivity extends SherlockActivity {
 
     private void goToMainActivity() {
         Intent startMainActivityIntent = new Intent(this,
-            MainCommunityActivity.class);
+                MainCommunityActivity.class);
         startActivity(startMainActivityIntent);
         finish();
     }
@@ -104,7 +108,7 @@ public class LoginActivity extends SherlockActivity {
             attemptLogin(username, password);
         } else {
             Toast.makeText(this, "Please enter a username and password",
-                Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_LONG).show();
             if (!usernameEntered) {
                 usernameField.requestFocus();
             } else {
@@ -119,8 +123,8 @@ public class LoginActivity extends SherlockActivity {
         setProgressVisibility(true);
         Intent disWebServiceIntent = new Intent(this, DisWebService.class);
         disWebServiceIntent.putExtra(
-            DisWebServiceConstants.SERVICE_REQUESTED_ID,
-            DisWebServiceConstants.LOGIN_SERVICE_ID);
+                DisWebServiceConstants.SERVICE_REQUESTED_ID,
+                DisWebServiceConstants.LOGIN_SERVICE_ID);
         disWebServiceIntent.putExtra(DisBoardsConstants.USERNAME, username);
         disWebServiceIntent.putExtra(DisBoardsConstants.PASSWORD, password);
         startService(disWebServiceIntent);
@@ -149,7 +153,6 @@ public class LoginActivity extends SherlockActivity {
             handleLoginFailed();
         }
     }
-
 
 
     private void handleLoginFailed() {

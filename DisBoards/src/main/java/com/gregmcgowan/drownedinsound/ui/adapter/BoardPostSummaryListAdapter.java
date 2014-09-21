@@ -1,5 +1,9 @@
 package com.gregmcgowan.drownedinsound.ui.adapter;
 
+import com.gregmcgowan.drownedinsound.R;
+import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.data.model.BoardPost;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -8,10 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
-import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
-import com.gregmcgowan.drownedinsound.R;
-import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -26,23 +26,26 @@ public class BoardPostSummaryListAdapter extends ArrayAdapter<BoardPost> {
     private WeakReference<Context> contextWeakReference;
 
     private Drawable whiteBackgroundSelector;
+
     private Drawable alternateColorSelector;
 
     private Drawable readDrawable;
+
     private Drawable unreadDrawable;
 
     public BoardPostSummaryListAdapter(Context context,
-                                       int textViewResourceId, List<BoardPost> boardPostSummaries) {
+            int textViewResourceId, List<BoardPost> boardPostSummaries) {
         super(context, textViewResourceId, boardPostSummaries);
         this.contextWeakReference = new WeakReference<Context>(context);
         this.summaries = boardPostSummaries;
         this.readDrawable = context.getResources().getDrawable(
-            R.drawable.white_circle_blue_outline);
+                R.drawable.white_circle_blue_outline);
         this.unreadDrawable = context.getResources().getDrawable(
-            R.drawable.filled_blue_circle);
+                R.drawable.filled_blue_circle);
         this.whiteBackgroundSelector = getContext().getResources().getDrawable(
-            R.drawable.board_list_row_selector);
-        this.alternateColorSelector = context.getResources().getDrawable(R.drawable.alternate_board_list_row_selector);
+                R.drawable.board_list_row_selector);
+        this.alternateColorSelector = context.getResources()
+                .getDrawable(R.drawable.alternate_board_list_row_selector);
     }
 
     @Override
@@ -57,33 +60,34 @@ public class BoardPostSummaryListAdapter extends ArrayAdapter<BoardPost> {
         BoardPostSummaryHolder holder = null;
         Context context = contextWeakReference.get();
         if (context == null) {
-            Log.w(DisBoardsConstants.LOG_TAG_PREFIX, "Null context in board post summary list adapter");
+            Log.w(DisBoardsConstants.LOG_TAG_PREFIX,
+                    "Null context in board post summary list adapter");
             return null;
         }
         if (boardPostSummaryRowView == null) {
             if (context != null) {
                 LayoutInflater vi = (LayoutInflater) context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 boardPostSummaryRowView = vi.inflate(R.layout.board_list_row,
-                    null);
+                        null);
                 holder = new BoardPostSummaryHolder();
                 holder.titleTextView = (TextView) boardPostSummaryRowView
-                    .findViewById(R.id.board_post_list_row_title);
+                        .findViewById(R.id.board_post_list_row_title);
                 holder.authorTextView = (TextView) boardPostSummaryRowView
-                    .findViewById(R.id.board_post_list_row_author);
+                        .findViewById(R.id.board_post_list_row_author);
                 holder.numberOfRepliesTextView = (TextView) boardPostSummaryRowView
-                    .findViewById(R.id.board_post_list_row_number_of_replies);
+                        .findViewById(R.id.board_post_list_row_number_of_replies);
                 holder.stickyTextView = (TextView) boardPostSummaryRowView
-                    .findViewById(R.id.board_post_list_row_sticky);
+                        .findViewById(R.id.board_post_list_row_sticky);
                 holder.lastUpdatedTextView = (TextView) boardPostSummaryRowView
-                    .findViewById(R.id.board_post_list_row_last_updated);
+                        .findViewById(R.id.board_post_list_row_last_updated);
                 holder.postReadMarkerView = boardPostSummaryRowView
-                    .findViewById(R.id.board_post_list_row_read_marker);
+                        .findViewById(R.id.board_post_list_row_read_marker);
                 boardPostSummaryRowView.setTag(holder);
             }
         } else {
             holder = (BoardPostSummaryHolder) boardPostSummaryRowView
-                .getTag();
+                    .getTag();
         }
 
         if (summary != null) {
@@ -93,19 +97,19 @@ public class BoardPostSummaryListAdapter extends ArrayAdapter<BoardPost> {
             String numberOfRepliesText = null;
             if (numberOfReplies > 0) {
                 numberOfRepliesText = numberOfReplies
-                    + (numberOfReplies > 1 ? " replies " : "  reply");
+                        + (numberOfReplies > 1 ? " replies " : "  reply");
             } else {
                 numberOfRepliesText = "No replies";
             }
             String lastUpdatedText = summary
-                .getLastUpdatedInReadableString();
+                    .getLastUpdatedInReadableString();
             int stickyVisible = summary.isSticky() ? View.VISIBLE
-                : View.GONE;
+                    : View.GONE;
 
             long lastViewedTime = summary.getLastViewedTime();
             long lastUpdatedTime = summary.getLastUpdatedTime();
             boolean markAsRead = lastViewedTime > 0
-                && lastViewedTime >= lastUpdatedTime;
+                    && lastViewedTime >= lastUpdatedTime;
 
             holder.titleTextView.setText(title);
             holder.authorTextView.setText(authorusername);
@@ -114,25 +118,25 @@ public class BoardPostSummaryListAdapter extends ArrayAdapter<BoardPost> {
             holder.stickyTextView.setVisibility(stickyVisible);
             if (markAsRead) {
                 holder.postReadMarkerView
-                    .setBackgroundDrawable(readDrawable);
+                        .setBackgroundDrawable(readDrawable);
             } else {
                 holder.postReadMarkerView
-                    .setBackgroundDrawable(unreadDrawable);
+                        .setBackgroundDrawable(unreadDrawable);
             }
 
             if (position % 2 == 0) {
                 whiteBackgroundSelector = context
-                    .getResources().getDrawable(
-                        R.drawable.board_list_row_selector);
+                        .getResources().getDrawable(
+                                R.drawable.board_list_row_selector);
                 boardPostSummaryRowView
-                    .setBackgroundDrawable(whiteBackgroundSelector);
+                        .setBackgroundDrawable(whiteBackgroundSelector);
             } else {
                 alternateColorSelector = context
-                    .getResources()
-                    .getDrawable(
-                        R.drawable.alternate_board_list_row_selector);
+                        .getResources()
+                        .getDrawable(
+                                R.drawable.alternate_board_list_row_selector);
                 boardPostSummaryRowView
-                    .setBackgroundDrawable(alternateColorSelector);
+                        .setBackgroundDrawable(alternateColorSelector);
             }
 
         }

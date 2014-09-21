@@ -1,8 +1,8 @@
 package com.gregmcgowan.drownedinsound.core;
 
-import java.util.concurrent.ThreadFactory;
-
 import android.text.TextUtils;
+
+import java.util.concurrent.ThreadFactory;
 
 public class DisBoardsThreadFactory implements ThreadFactory {
 

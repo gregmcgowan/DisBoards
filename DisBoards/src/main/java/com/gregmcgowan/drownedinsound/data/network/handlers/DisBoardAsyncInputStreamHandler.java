@@ -1,29 +1,28 @@
 package com.gregmcgowan.drownedinsound.data.network.handlers;
 
 
-import java.io.InputStream;
+import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.data.network.UserNotLoggedInException;
 
 import org.apache.http.Header;
 
 import android.util.Log;
 
-import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
-import com.gregmcgowan.drownedinsound.data.network.HttpClient;
-import com.gregmcgowan.drownedinsound.data.network.UserNotLoggedInException;
+import java.io.InputStream;
 
-public abstract class DisBoardAsyncInputStreamHandler  {
+public abstract class DisBoardAsyncInputStreamHandler {
 
     private boolean updateUI;
 
     public DisBoardAsyncInputStreamHandler(String identifier, boolean updateUI) {
-     //   super.setIdentifier(identifier);
+        //   super.setIdentifier(identifier);
         setUpdateUI(updateUI);
     }
 
     public void handleSuccess(int statusCode, Header[] headers, InputStream inputStream) {
         Log.d(DisBoardsConstants.LOG_TAG_PREFIX + this.getClass(), "Request was successful");
         doSuccessAction(statusCode, headers, inputStream);
-    //    HttpClient.requestHasCompleted(getIdentifier());
+        //    HttpClient.requestHasCompleted(getIdentifier());
     }
 
 
@@ -35,7 +34,8 @@ public abstract class DisBoardAsyncInputStreamHandler  {
         } else {
             doFailureAction(e);
         }
-        Log.d(DisBoardsConstants.LOG_TAG_PREFIX + this.getClass(), "Request failed throwable " + e.getClass() + " cause " + causeOfCause.getClass());
+        Log.d(DisBoardsConstants.LOG_TAG_PREFIX + this.getClass(),
+                "Request failed throwable " + e.getClass() + " cause " + causeOfCause.getClass());
         //HttpClient.requestHasCompleted(getIdentifier());
     }
 

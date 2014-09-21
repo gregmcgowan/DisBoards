@@ -18,11 +18,13 @@ public class DateUtils {
 
 
     public static final String DIS_BOARD_POST_SUMMARY_LIST_DATE_FORMAT = "dd MMM HH:MM";
+
     public static final String DIS_BOARD_COMMENT_DATE_FORMAT = "dd MMM yy HH:mm";
 
     //17:13 April 15th, 2013
     public static final String DIS_BOARD_POST_DATE_FORMAT = "HH:mm dd MMMM yy";
-    public static final String DIS_BOARD_LAST_COMMENT_DATE_FORMAT =  "MMMM dd yyyy HH:mm";
+
+    public static final String DIS_BOARD_LAST_COMMENT_DATE_FORMAT = "MMMM dd yyyy HH:mm";
 
     public static final String DATE_FORMAT_YEAR_FIRST = "yyyyMMdd";
 
@@ -58,7 +60,8 @@ public class DateUtils {
      */
     public static final String TIME_FORMAT_24 = "HH:mm";
 
-    private static final String[] dateFormats = {DATE_FORMAT_LONG, DATE_FORMAT_MEDIUM, DATE_FORMAT_MEDIUM_NO_DATE_SEPARATOR, DATE_FORMAT_SHORT, DATE_FORMAT_YEAR_FIRST};
+    private static final String[] dateFormats = {DATE_FORMAT_LONG, DATE_FORMAT_MEDIUM,
+            DATE_FORMAT_MEDIUM_NO_DATE_SEPARATOR, DATE_FORMAT_SHORT, DATE_FORMAT_YEAR_FIRST};
 
 
     private static Hashtable<String, SimpleDateFormat> formats;
@@ -69,7 +72,8 @@ public class DateUtils {
         formats.put(DATE_FORMAT_MEDIUM, new SimpleDateFormat(DATE_FORMAT_MEDIUM, Locale.UK));
         formats.put(DATE_FORMAT_SHORT, new SimpleDateFormat(DATE_FORMAT_SHORT, Locale.UK));
         formats.put(DATE_FORMAT_ALT, new SimpleDateFormat(DATE_FORMAT_ALT, Locale.UK));
-        formats.put(DATE_FORMAT_ALT_WITH_TIME, new SimpleDateFormat(DATE_FORMAT_ALT_WITH_TIME, Locale.UK));
+        formats.put(DATE_FORMAT_ALT_WITH_TIME,
+                new SimpleDateFormat(DATE_FORMAT_ALT_WITH_TIME, Locale.UK));
         formats.put(TIME_FORMAT_24, new SimpleDateFormat(TIME_FORMAT_24, Locale.UK));
     }
 
@@ -86,7 +90,7 @@ public class DateUtils {
     }
 
     public static SimpleDateFormat getOrCreate(String dateFormat) {
-        SimpleDateFormat format =  formats.get(dateFormat);
+        SimpleDateFormat format = formats.get(dateFormat);
         if (format == null) {
             format = new SimpleDateFormat(dateFormat, Locale.UK);
             formats.put(dateFormat, format);
@@ -114,7 +118,6 @@ public class DateUtils {
      *
      * @param date1 the first date to compare
      * @param date2 the second date to compare
-     * @return
      */
     public static int compare(Date date1, Date date2) {
         long time1 = date1.getTime();
@@ -133,7 +136,6 @@ public class DateUtils {
      * @param dayOfMonth 1-31
      * @param monthNo    1-12
      * @param year       Full 4 digit year
-     * @return
      */
     public static Date getDate(int dayOfMonth, int monthNo, int year) {
         Calendar cal = Calendar.getInstance();

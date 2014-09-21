@@ -29,7 +29,7 @@ public class RobotoLightTextView extends TextView {
 
         if (!isInEditMode()) {
             mRobotoLightTypeface = Typeface.createFromAsset(
-                context.getAssets(), "fonts/Roboto-Light.ttf");
+                    context.getAssets(), "fonts/Roboto-Light.ttf");
             setTypeface(mRobotoLightTypeface);
         }
     }

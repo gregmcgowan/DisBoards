@@ -1,9 +1,5 @@
 package com.gregmcgowan.drownedinsound.data;
 
-import android.app.Application;
-import android.content.SharedPreferences;
-
-import com.gregmcgowan.drownedinsound.data.network.CookieManager;
 import com.gregmcgowan.drownedinsound.data.network.handlers.LoginResponseHandler;
 import com.gregmcgowan.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
@@ -13,6 +9,8 @@ import com.gregmcgowan.drownedinsound.ui.activity.StartActivity;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 
+import android.app.Application;
+import android.content.SharedPreferences;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,13 +45,15 @@ public class DataModule {
         return app.getSharedPreferences("DisBoards", MODE_PRIVATE);
     }
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     DatabaseHelper provideDatabaseHelper(Application app) {
         return new DatabaseHelper(app);
     }
 
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     OkHttpClient provideOkHttpClient(Application app) {
         return createOkHttpClient(app);
     }

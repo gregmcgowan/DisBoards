@@ -1,7 +1,31 @@
 package com.gregmcgowan.drownedinsound.ui.fragments;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.commonsware.cwac.endless.EndlessAdapter;
+import com.gregmcgowan.drownedinsound.R;
+import com.gregmcgowan.drownedinsound.annotations.UseDagger;
+import com.gregmcgowan.drownedinsound.annotations.UseEventBus;
+import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.data.model.Board;
+import com.gregmcgowan.drownedinsound.data.model.BoardPost;
+import com.gregmcgowan.drownedinsound.data.model.BoardType;
+import com.gregmcgowan.drownedinsound.data.network.HttpClient;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebServiceConstants;
+import com.gregmcgowan.drownedinsound.events.FailedToPostNewThreadEvent;
+import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
+import com.gregmcgowan.drownedinsound.events.SentNewPostEvent;
+import com.gregmcgowan.drownedinsound.events.SentNewPostEvent.SentNewPostState;
+import com.gregmcgowan.drownedinsound.events.UpdateCachedBoardPostEvent;
+import com.gregmcgowan.drownedinsound.events.UserIsNotLoggedInEvent;
+import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
+import com.gregmcgowan.drownedinsound.ui.adapter.BoardPostSummaryHolder;
+import com.gregmcgowan.drownedinsound.ui.adapter.BoardPostSummaryListAdapter;
+import com.gregmcgowan.drownedinsound.ui.widgets.AutoScrollListView;
+import com.gregmcgowan.drownedinsound.utils.NetworkUtils;
+import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,32 +46,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.commonsware.cwac.endless.EndlessAdapter;
-import com.gregmcgowan.drownedinsound.annotations.UseDagger;
-import com.gregmcgowan.drownedinsound.annotations.UseEventBus;
-import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
-import com.gregmcgowan.drownedinsound.R;
-import com.gregmcgowan.drownedinsound.data.model.Board;
-import com.gregmcgowan.drownedinsound.data.model.BoardPost;
-import com.gregmcgowan.drownedinsound.data.model.BoardType;
-import com.gregmcgowan.drownedinsound.events.FailedToPostNewThreadEvent;
-import com.gregmcgowan.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
-import com.gregmcgowan.drownedinsound.events.SentNewPostEvent;
-import com.gregmcgowan.drownedinsound.events.SentNewPostEvent.SentNewPostState;
-import com.gregmcgowan.drownedinsound.events.UpdateCachedBoardPostEvent;
-import com.gregmcgowan.drownedinsound.events.UserIsNotLoggedInEvent;
-import com.gregmcgowan.drownedinsound.data.network.HttpClient;
-import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
-import com.gregmcgowan.drownedinsound.data.network.service.DisWebServiceConstants;
-import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
-import com.gregmcgowan.drownedinsound.ui.adapter.BoardPostSummaryHolder;
-import com.gregmcgowan.drownedinsound.ui.adapter.BoardPostSummaryListAdapter;
-import com.gregmcgowan.drownedinsound.ui.widgets.AutoScrollListView;
-import com.gregmcgowan.drownedinsound.utils.NetworkUtils;
-import com.gregmcgowan.drownedinsound.utils.UiUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -59,34 +59,52 @@ import butterknife.InjectView;
  *
  * @author Greg
  */
-@UseEventBus @UseDagger
+@UseEventBus
+@UseDagger
 public class BoardPostSummaryListFragment extends DisBoardsFragment {
 
     private static final String CURRENTLY_SELECTED_BOARD_POST = "currentlySelectedBoardPost";
+
     private static final String WAS_IN_DUAL_PANE_MODE = "WasInDualPaneMode";
+
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
-        + "BoardListFragment";
+            + "BoardListFragment";
 
     private static final String REQUEST_ON_START = "REQUEST_ON_START";
 
     private Drawable readDrawable;
+
     private Drawable unreadDrawable;
+
     private String boardUrl;
 
-    @InjectView(R.id.board_list_progress_bar) ProgressBar progressBar;
-    @InjectView(R.id.board_list_connection_error_text_view) TextView connectionErrorTextView;
-    @InjectView(R.id.board_post_summary_list) AutoScrollListView listView;
+    @InjectView(R.id.board_list_progress_bar)
+    ProgressBar progressBar;
+
+    @InjectView(R.id.board_list_connection_error_text_view)
+    TextView connectionErrorTextView;
+
+    @InjectView(R.id.board_post_summary_list)
+    AutoScrollListView listView;
 
     private ArrayList<BoardPost> boardPostSummaries = new ArrayList<BoardPost>();
+
     private BoardPostSummaryListEndlessAdapter adapter;
 
     private boolean requestOnStart;
+
     private Board board;
+
     private BoardType boardType;
+
     private boolean dualPaneMode;
+
     private boolean wasInDualPaneMode;
+
     private int currentlySelectedPost;
+
     private String postId;
+
     private String postUrl;
 
     private int lastPageFetched;
@@ -95,12 +113,12 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
     }
 
     public static BoardPostSummaryListFragment newInstance(Board board,
-                                                           boolean requestDataOnStart) {
+            boolean requestDataOnStart) {
         BoardPostSummaryListFragment boardListFragment = new BoardPostSummaryListFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putParcelable(DisBoardsConstants.BOARD,board);
-        arguments.putBoolean(REQUEST_ON_START,requestDataOnStart);
+        arguments.putParcelable(DisBoardsConstants.BOARD, board);
+        arguments.putBoolean(REQUEST_ON_START, requestDataOnStart);
 
         boardListFragment.setArguments(arguments);
         return boardListFragment;
@@ -112,7 +130,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
         setRetainInstance(true);
         setHasOptionsMenu(true);
         board = getArguments().getParcelable(DisBoardsConstants.BOARD);
-        if(board != null) {
+        if (board != null) {
             boardUrl = board.getUrl();
             boardType = board.getBoardType();
         }
@@ -122,18 +140,19 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.board_list_layout, container, false);
 
-        ButterKnife.inject(this,rootView);
+        ButterKnife.inject(this, rootView);
 
         readDrawable = getSherlockActivity().getResources().getDrawable(
                 R.drawable.white_circle_blue_outline);
         unreadDrawable = getSherlockActivity().getResources().getDrawable(
                 R.drawable.filled_blue_circle);
 
-        adapter = new BoardPostSummaryListEndlessAdapter(new BoardPostSummaryListAdapter(getSherlockActivity(),
-                R.layout.board_list_row, boardPostSummaries));
+        adapter = new BoardPostSummaryListEndlessAdapter(
+                new BoardPostSummaryListAdapter(getSherlockActivity(),
+                        R.layout.board_list_row, boardPostSummaries));
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -169,32 +188,32 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
         if (savedInstanceState != null) {
             // Restore last state for checked position.
             currentlySelectedPost = savedInstanceState.getInt(
-                CURRENTLY_SELECTED_BOARD_POST, -1);
+                    CURRENTLY_SELECTED_BOARD_POST, -1);
             wasInDualPaneMode = savedInstanceState.getBoolean(
-                WAS_IN_DUAL_PANE_MODE, false);
+                    WAS_IN_DUAL_PANE_MODE, false);
             postUrl = savedInstanceState
-                .getString(DisBoardsConstants.BOARD_POST_URL);
+                    .getString(DisBoardsConstants.BOARD_POST_URL);
             postId = savedInstanceState
-                .getString(DisBoardsConstants.BOARD_POST_ID);
+                    .getString(DisBoardsConstants.BOARD_POST_ID);
             boardType = (BoardType) savedInstanceState
-                .getSerializable(DisBoardsConstants.BOARD_TYPE);
+                    .getSerializable(DisBoardsConstants.BOARD_TYPE);
             boardUrl = savedInstanceState
-                .getString(DisBoardsConstants.BOARD_URL);
-            board =  savedInstanceState
-                .getParcelable(DisBoardsConstants.BOARD);
+                    .getString(DisBoardsConstants.BOARD_URL);
+            board = savedInstanceState
+                    .getParcelable(DisBoardsConstants.BOARD);
         }
 
         if (dualPaneMode && summariesLoaded() && currentlySelectedPost != -1) {
-           // listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            // listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             showBoardPost(currentlySelectedPost);
         }
 
         // TODO This does not work at the moment. SavedInstanceState always
         // seems to be null
         if (wasInDualPaneMode
-            && currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+                && currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
             Intent viewPostIntent = new Intent(getSherlockActivity(),
-                BoardPostActivity.class);
+                    BoardPostActivity.class);
             viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_URL, postUrl);
             viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_ID, postId);
             startActivity(viewPostIntent);
@@ -219,15 +238,15 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
         super.onResume();
 
         int errorTextVisibility = showNetworkConnectionErrorText() ? View.VISIBLE
-            : View.GONE;
+                : View.GONE;
         connectionErrorTextView.setVisibility(errorTextVisibility);
     }
 
     private boolean showNetworkConnectionErrorText() {
         boolean haveNetworkConnection = NetworkUtils
-            .isConnected(getSherlockActivity());
+                .isConnected(getSherlockActivity());
         return !haveNetworkConnection && boardPostSummaries.size() == 0
-            && !isBoardBeingRequested();
+                && !isBoardBeingRequested();
     }
 
     @Override
@@ -254,18 +273,18 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
         newPostDetails.putParcelable(DisBoardsConstants.BOARD, board);
 
         NewPostFragment.newInstance(newPostDetails).show(getFragmentManager(),
-            "NEW_POST_DIALOG");
+                "NEW_POST_DIALOG");
     }
 
     public void onEventMainThread(FailedToPostNewThreadEvent event) {
         this.setProgressBarVisiblity(false);
         Toast.makeText(getSherlockActivity(), "Failed to create post",
-            Toast.LENGTH_SHORT).show();
+                Toast.LENGTH_SHORT).show();
     }
 
     private boolean isBoardBeingRequested() {
         boolean requested = false;
-        if(boardType != null) {
+        if (boardType != null) {
             HttpClient.requestIsInProgress(boardType.name());
         }
         return requested;
@@ -302,17 +321,16 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
                 setProgressBarVisiblity(true);
             }
 
-
             Intent disWebServiceIntent = new Intent(getSherlockActivity(),
-                DisWebService.class);
+                    DisWebService.class);
             Bundle parametersBundle = new Bundle();
 
             parametersBundle.putInt(
-                DisWebServiceConstants.SERVICE_REQUESTED_ID,
-                DisWebServiceConstants.GET_POSTS_SUMMARY_LIST_ID);
+                    DisWebServiceConstants.SERVICE_REQUESTED_ID,
+                    DisWebServiceConstants.GET_POSTS_SUMMARY_LIST_ID);
             parametersBundle.putParcelable(DisBoardsConstants.BOARD, board);
             parametersBundle.putBoolean(DisBoardsConstants.FORCE_FETCH,
-                forceUpdate);
+                    forceUpdate);
             parametersBundle.putInt(DisBoardsConstants.BOARD_PAGE_NUMBER, page);
             disWebServiceIntent.putExtras(parametersBundle);
             getSherlockActivity().startService(disWebServiceIntent);
@@ -337,9 +355,9 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
                 for (BoardPost boardPost : boardPostSummaries) {
                     if (postId != null && postId.equals(boardPost.getId())) {
                         boardPost.setLastViewedTime(boardPostToUpdate
-                            .getLastViewedTime());
+                                .getLastViewedTime());
                         Log.d(TAG, "Setting post " + postId + " to "
-                            + boardPostToUpdate.getLastViewedTime());
+                                + boardPostToUpdate.getLastViewedTime());
                     }
                 }
             }
@@ -352,7 +370,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
         if (eventBoardType != null && eventBoardType.equals(boardType)) {
             if (isValid()) {
                 Log.d(TAG, "Event for board type " + eventBoardType
-                    + " current board Type " + boardType);
+                        + " current board Type " + boardType);
                 List<BoardPost> summaries = event.getBoardPostSummaryList();
                 boolean append = event.isAppend();
                 if (summaries != null && summaries.size() > 0) {
@@ -372,7 +390,6 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
                     adapter.onDataReady();
                 }
 
-
                 Log.d(TAG, "Updated UI for " + eventBoardType);
                 if (event.isCached()) {
                     displayIsCachedPopup();
@@ -390,7 +407,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
                 }
             } else {
                 Log.d(TAG, "Board type " + boardType
-                    + " was not attached to a activity");
+                        + " was not attached to a activity");
             }
 
         } else {
@@ -416,14 +433,14 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
 
         setProgressBarVisiblity(false);
         Toast.makeText(getSherlockActivity(),
-            "User is not logged in", Toast.LENGTH_SHORT)
-            .show();
+                "User is not logged in", Toast.LENGTH_SHORT)
+                .show();
     }
 
 
     private void displayIsCachedPopup() {
         Toast.makeText(getSherlockActivity(), "This is an cached version",
-            Toast.LENGTH_SHORT).show();
+                Toast.LENGTH_SHORT).show();
     }
 
     private void showBoardPost(int position) {
@@ -435,21 +452,23 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
 
             if (dualPaneMode) {
                 BoardPostFragment boardPostFragment = (BoardPostFragment) getFragmentManager()
-                    .findFragmentById(R.id.board_post_details);
+                        .findFragmentById(R.id.board_post_details);
                 if (boardPostFragment == null
-                    || !postId.equals(boardPostFragment.getBoardPostId())) {
-                    boardPostFragment = BoardPostFragment.newInstance(postUrl,postId,true,boardType);
+                        || !postId.equals(boardPostFragment.getBoardPostId())) {
+                    boardPostFragment = BoardPostFragment
+                            .newInstance(postUrl, postId, true, boardType);
                     // Execute a transaction, replacing any existing fragment
                     // with this one inside the frame.
                     FragmentTransaction ft = getFragmentManager()
-                        .beginTransaction();
+                            .beginTransaction();
                     ft.replace(R.id.board_post_details, boardPostFragment);
                     ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                     ft.commit();
                 }
 
             } else {
-                startActivity(BoardPostActivity.getIntent(getSherlockActivity(),postUrl,postId,boardType));
+                startActivity(BoardPostActivity
+                        .getIntent(getSherlockActivity(), postUrl, postId, boardType));
             }
         }
     }
@@ -477,22 +496,20 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
         @Override
         protected View getPendingView(ViewGroup parent) {
             LayoutInflater vi = (LayoutInflater) getActivity()
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View pendingRow = vi.inflate(R.layout.board_list_row, null);
 
             RelativeLayout detail = (RelativeLayout) pendingRow
-                .findViewById(R.id.board_list_row_detail);
+                    .findViewById(R.id.board_list_row_detail);
             detail.setVisibility(View.INVISIBLE);
 
             ProgressBar progressBar = (ProgressBar) pendingRow
-                .findViewById(R.id.board_list_row_progress_bar);
+                    .findViewById(R.id.board_list_row_progress_bar);
             progressBar.setVisibility(View.VISIBLE);
             return pendingRow;
         }
 
     }
-
-
 
 
 }

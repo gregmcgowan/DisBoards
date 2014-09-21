@@ -23,16 +23,16 @@ public class UserSessionManager {
         this.authenticityToken = authenticityToken;
     }
 
-    public boolean isUserLoggedIn(){
+    public boolean isUserLoggedIn() {
         boolean loggedIn = false;
-        if(cookieManager != null) {
+        if (cookieManager != null) {
             loggedIn = cookieManager.userIsLoggedIn();
         }
-        return  loggedIn;
+        return loggedIn;
     }
 
-    public void clearSession(){
-        if(cookieManager != null) {
+    public void clearSession() {
+        if (cookieManager != null) {
             cookieManager.clearCookies();
         }
         authenticityToken = null;

@@ -1,16 +1,15 @@
 package com.gregmcgowan.drownedinsound.data.model;
 
-import android.graphics.Paint;
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by gregmcgowan on 17/10/2013.
  */
-@DatabaseTable(tableName="draft_board_post")
+@DatabaseTable(tableName = "draft_board_post")
 public class DraftBoardPost implements Parcelable {
 
     public static final String BOARD_TYPE_FIELD = "board_type";
@@ -53,7 +52,7 @@ public class DraftBoardPost implements Parcelable {
         this.boardType = boardType;
     }
 
-    public DraftBoardPost(){
+    public DraftBoardPost() {
 
     }
 
@@ -61,7 +60,7 @@ public class DraftBoardPost implements Parcelable {
         id = in.readString();
         title = in.readString();
         content = in.readString();
-        boardType = (BoardType)in.readSerializable();
+        boardType = (BoardType) in.readSerializable();
     }
 
     public int describeContents() {
@@ -75,7 +74,8 @@ public class DraftBoardPost implements Parcelable {
         dest.writeSerializable(boardType);
     }
 
-    public static final Parcelable.Creator<DraftBoardPost> CREATOR = new Parcelable.Creator<DraftBoardPost>() {
+    public static final Parcelable.Creator<DraftBoardPost> CREATOR
+            = new Parcelable.Creator<DraftBoardPost>() {
         public DraftBoardPost createFromParcel(Parcel in) {
             return new DraftBoardPost(in);
         }

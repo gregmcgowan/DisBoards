@@ -1,6 +1,7 @@
 package com.gregmcgowan.drownedinsound.events;
 
 public class SentNewPostEvent {
+
     private SentNewPostState state;
 
     public SentNewPostEvent(SentNewPostState state) {

@@ -1,28 +1,10 @@
 package com.gregmcgowan.drownedinsound.ui.fragments;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.actionbarsherlock.view.MenuItem;
+import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.annotations.UseDagger;
 import com.gregmcgowan.drownedinsound.annotations.UseEventBus;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
-import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.DatabaseService;
 import com.gregmcgowan.drownedinsound.data.model.Board;
@@ -35,51 +17,82 @@ import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
 import com.gregmcgowan.drownedinsound.ui.adapter.BoardPostSummaryHolder;
 import com.gregmcgowan.drownedinsound.ui.adapter.BoardPostSummaryListAdapter;
 import com.gregmcgowan.drownedinsound.ui.widgets.AutoScrollListView;
-
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
+
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import de.greenrobot.event.EventBus;
 
 /**
  * Created by gregmcgowan on 29/10/2013.
  */
-@UseDagger @UseEventBus
+@UseDagger
+@UseEventBus
 public class FavouritesListFragment extends DisBoardsFragment {
 
     private static final String CURRENTLY_SELECTED_BOARD_POST = "currentlySelectedBoardPost";
+
     private static final String WAS_IN_DUAL_PANE_MODE = "WasInDualPaneMode";
+
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
-        + "FavouritesListFragment";
+            + "FavouritesListFragment";
 
     private Drawable readDrawable;
+
     private Drawable unreadDrawable;
 
     private ArrayList<BoardPost> favouriteBoardPosts = new ArrayList<BoardPost>();
+
     private BoardPostSummaryListAdapter adapter;
 
     private boolean isRequesting;
+
     private boolean dualPaneMode;
+
     private boolean wasInDualPaneMode;
+
     private int currentlySelectedPost;
+
     private String postId;
+
     private String postUrl;
 
-    protected  @InjectView(R.id.board_list_progress_bar) ProgressBar progressBar;
-    protected  @InjectView(R.id.board_list_connection_error_text_view) TextView connectionErrorTextView;
-    protected  @InjectView(R.id.board_post_summary_list) AutoScrollListView listView;
+    protected
+    @InjectView(R.id.board_list_progress_bar)
+    ProgressBar progressBar;
+
+    protected
+    @InjectView(R.id.board_list_connection_error_text_view)
+    TextView connectionErrorTextView;
+
+    protected
+    @InjectView(R.id.board_post_summary_list)
+    AutoScrollListView listView;
 
     public FavouritesListFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.board_list_layout, container, false);
-        ButterKnife.inject(this,rootView);
+        ButterKnife.inject(this, rootView);
         return rootView;
     }
 
@@ -88,9 +101,9 @@ public class FavouritesListFragment extends DisBoardsFragment {
         super.onActivityCreated(savedInstanceState);
 
         readDrawable = getSherlockActivity().getResources().getDrawable(
-            R.drawable.white_circle_blue_outline);
+                R.drawable.white_circle_blue_outline);
         unreadDrawable = getSherlockActivity().getResources().getDrawable(
-            R.drawable.filled_blue_circle);
+                R.drawable.filled_blue_circle);
 
         adapter = new BoardPostSummaryListAdapter(getSherlockActivity(),
                 R.layout.board_list_row, favouriteBoardPosts);
@@ -121,13 +134,13 @@ public class FavouritesListFragment extends DisBoardsFragment {
         if (savedInstanceState != null) {
             // Restore last state for checked position.
             currentlySelectedPost = savedInstanceState.getInt(
-                CURRENTLY_SELECTED_BOARD_POST, -1);
+                    CURRENTLY_SELECTED_BOARD_POST, -1);
             wasInDualPaneMode = savedInstanceState.getBoolean(
-                WAS_IN_DUAL_PANE_MODE, false);
+                    WAS_IN_DUAL_PANE_MODE, false);
             postUrl = savedInstanceState
-                .getString(DisBoardsConstants.BOARD_POST_URL);
+                    .getString(DisBoardsConstants.BOARD_POST_URL);
             postId = savedInstanceState
-                .getString(DisBoardsConstants.BOARD_POST_ID);
+                    .getString(DisBoardsConstants.BOARD_POST_ID);
         }
 
         if (dualPaneMode && favouritesLoaded() && currentlySelectedPost != -1) {
@@ -138,9 +151,9 @@ public class FavouritesListFragment extends DisBoardsFragment {
         // TODO This does not work at the moment. SavedInstanceState always
         // seems to be null
         if (wasInDualPaneMode
-            && currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+                && currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
             Intent viewPostIntent = new Intent(getSherlockActivity(),
-                BoardPostActivity.class);
+                    BoardPostActivity.class);
             viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_URL, postUrl);
             viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_ID, postId);
             startActivity(viewPostIntent);
@@ -181,12 +194,12 @@ public class FavouritesListFragment extends DisBoardsFragment {
     public void getFavourites() {
         if (!isRequesting) {
             Intent disWebServiceIntent = new Intent(getSherlockActivity(),
-                DatabaseService.class);
+                    DatabaseService.class);
             Bundle parametersBundle = new Bundle();
 
             parametersBundle.putInt(
-                DatabaseService.DATABASE_SERVICE_REQUESTED_KEY,
-                DatabaseService.GET_FAVOURITE_BOARD_POSTS);
+                    DatabaseService.DATABASE_SERVICE_REQUESTED_KEY,
+                    DatabaseService.GET_FAVOURITE_BOARD_POSTS);
             disWebServiceIntent.putExtras(parametersBundle);
             getSherlockActivity().startService(disWebServiceIntent);
             setProgressBarVisiblity(true);
@@ -206,7 +219,7 @@ public class FavouritesListFragment extends DisBoardsFragment {
     public void onEventMainThread(RetrievedFavouritesEvent event) {
         favouriteBoardPosts.addAll(event.getFavourites());
         adapter.notifyDataSetChanged();
-        if(!favouritesLoaded()) {
+        if (!favouritesLoaded()) {
             connectionErrorTextView.setText("No favourites found");
             connectionErrorTextView.setVisibility(View.VISIBLE);
 
@@ -216,7 +229,7 @@ public class FavouritesListFragment extends DisBoardsFragment {
             public void run() {
                 setProgressBarVisiblity(false);
             }
-        },1500);
+        }, 1500);
     }
 
     public void onEventBackgroundThread(UpdateCachedBoardPostEvent event) {
@@ -227,20 +240,21 @@ public class FavouritesListFragment extends DisBoardsFragment {
                 for (BoardPost boardPost : favouriteBoardPosts) {
                     if (postId != null && postId.equals(boardPost.getId())) {
                         boardPost.setLastViewedTime(boardPostToUpdate
-                            .getLastViewedTime());
+                                .getLastViewedTime());
                         Log.d(TAG, "Setting post " + postId + " to "
-                            + boardPostToUpdate.getLastViewedTime());
+                                + boardPostToUpdate.getLastViewedTime());
                     }
                 }
             }
         }
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {
             case android.R.id.home:
-                if(UiUtils.isDualPaneMode(getSherlockActivity())) {
+                if (UiUtils.isDualPaneMode(getSherlockActivity())) {
                     return false;
                 }
                 getSherlockActivity().finish();
@@ -257,14 +271,14 @@ public class FavouritesListFragment extends DisBoardsFragment {
 
         setProgressBarVisiblity(false);
         Toast.makeText(getSherlockActivity(),
-            "User is not logged in", Toast.LENGTH_SHORT)
-            .show();
+                "User is not logged in", Toast.LENGTH_SHORT)
+                .show();
     }
 
 
     private void displayIsCachedPopup() {
         Toast.makeText(getSherlockActivity(), "This is an cached version",
-            Toast.LENGTH_SHORT).show();
+                Toast.LENGTH_SHORT).show();
     }
 
 
@@ -281,14 +295,15 @@ public class FavouritesListFragment extends DisBoardsFragment {
             if (dualPaneMode) {
                 // listView.setItemChecked(position, true);
                 BoardPostFragment boardPostFragment = (BoardPostFragment) getFragmentManager()
-                    .findFragmentById(R.id.board_post_details);
+                        .findFragmentById(R.id.board_post_details);
                 if (boardPostFragment == null
-                    || !postId.equals(boardPostFragment.getBoardPostId())) {
-                    boardPostFragment = BoardPostFragment.newInstance(postUrl,postId,true,boardType);
+                        || !postId.equals(boardPostFragment.getBoardPostId())) {
+                    boardPostFragment = BoardPostFragment
+                            .newInstance(postUrl, postId, true, boardType);
                     // Execute a transaction, replacing any existing fragment
                     // with this one inside the frame.
                     FragmentTransaction ft = getFragmentManager()
-                        .beginTransaction();
+                            .beginTransaction();
                     ft.replace(R.id.board_post_details, boardPostFragment);
                     ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                     ft.commit();
@@ -296,14 +311,14 @@ public class FavouritesListFragment extends DisBoardsFragment {
 
             } else {
                 Intent viewPostIntent = new Intent(getSherlockActivity(),
-                    BoardPostActivity.class);
+                        BoardPostActivity.class);
                 Bundle parametersBundle = new Bundle();
                 parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
-                    postUrl);
+                        postUrl);
                 parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
-                    postId);
+                        postId);
                 parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
-                    boardType);
+                        boardType);
                 viewPostIntent.putExtras(parametersBundle);
 
                 startActivity(viewPostIntent);

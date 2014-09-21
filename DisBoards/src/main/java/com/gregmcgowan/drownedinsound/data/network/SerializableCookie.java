@@ -25,10 +25,12 @@ import java.io.Serializable;
 import java.net.HttpCookie;
 
 /**
- * A wrapper class around {@link org.apache.http.cookie.Cookie} and/or {@link org.apache.http.impl.cookie.BasicClientCookie}
+ * A wrapper class around {@link org.apache.http.cookie.Cookie} and/or {@link
+ * org.apache.http.impl.cookie.BasicClientCookie}
  * designed for use in {@link com.loopj.android.http.PersistentCookieStore}.
  */
 public class SerializableCookie implements Serializable {
+
     private static final long serialVersionUID = 6374381828722046732L;
 
     private transient HttpCookie cookie;
@@ -56,12 +58,12 @@ public class SerializableCookie implements Serializable {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
 
-        String name = (String)in.readObject();
-        String value = (String)in.readObject();
-        cookie = new HttpCookie(name,value);
-        cookie.setComment((String)in.readObject());
-        cookie.setDomain((String)in.readObject());
-        cookie.setPath((String)in.readObject());
+        String name = (String) in.readObject();
+        String value = (String) in.readObject();
+        cookie = new HttpCookie(name, value);
+        cookie.setComment((String) in.readObject());
+        cookie.setDomain((String) in.readObject());
+        cookie.setPath((String) in.readObject());
         cookie.setVersion(in.readInt());
         cookie.setSecure(in.readBoolean());
         cookie.setMaxAge(in.readLong());

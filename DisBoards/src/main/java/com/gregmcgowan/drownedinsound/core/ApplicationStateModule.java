@@ -1,8 +1,5 @@
 package com.gregmcgowan.drownedinsound.core;
 
-import android.app.Application;
-import android.content.SharedPreferences;
-
 import com.gregmcgowan.drownedinsound.data.DatabaseService;
 import com.gregmcgowan.drownedinsound.data.UserSessionManager;
 import com.gregmcgowan.drownedinsound.data.network.CookieManager;
@@ -15,16 +12,16 @@ import com.gregmcgowan.drownedinsound.ui.activity.MainCommunityActivity;
 import com.gregmcgowan.drownedinsound.ui.activity.StartActivity;
 import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostFragment;
 import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
-import com.gregmcgowan.drownedinsound.ui.fragments.DisBoardsFragment;
 import com.gregmcgowan.drownedinsound.ui.fragments.FavouritesListFragment;
 import com.squareup.okhttp.OkHttpClient;
+
+import android.content.SharedPreferences;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import de.greenrobot.event.EventBus;
-
 
 
 /**
@@ -51,17 +48,20 @@ public class ApplicationStateModule {
 
     @Provides
     @Singleton
-    UserSessionManager provideUserSessionManager(CookieManager cookieManager){
+    UserSessionManager provideUserSessionManager(CookieManager cookieManager) {
         return new UserSessionManager(cookieManager);
     }
 
-    @Provides @Singleton
-    CookieManager provideCookieManager(OkHttpClient okHttpClient, SharedPreferences sharedPreferences){
-        return new CookieManager(okHttpClient,sharedPreferences);
+    @Provides
+    @Singleton
+    CookieManager provideCookieManager(OkHttpClient okHttpClient,
+            SharedPreferences sharedPreferences) {
+        return new CookieManager(okHttpClient, sharedPreferences);
     }
 
-    @Provides @Singleton
-    EventBus provideEventBus(){
+    @Provides
+    @Singleton
+    EventBus provideEventBus() {
         return new EventBus();
     }
 

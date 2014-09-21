@@ -1,8 +1,5 @@
 package com.gregmcgowan.drownedinsound.data.network.handlers;
 
-import android.content.Context;
-import android.util.Log;
-
 import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
@@ -16,6 +13,9 @@ import com.squareup.okhttp.Response;
 
 import org.apache.http.client.HttpResponseException;
 
+import android.content.Context;
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -26,12 +26,13 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 
 public class RetrieveBoardSummaryListHandler extends
-    OkHttpAsyncResponseHandler {
+        OkHttpAsyncResponseHandler {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
             + "RetrieveBoardSummaryListHandler";
 
     private BoardType boardType;
+
     private boolean append;
 
     @Inject
@@ -41,9 +42,9 @@ public class RetrieveBoardSummaryListHandler extends
     EventBus eventBus;
 
     public RetrieveBoardSummaryListHandler(Context context,
-                                           BoardType boardType,
-                                           boolean updateUI,
-                                           boolean append) {
+            BoardType boardType,
+            boolean updateUI,
+            boolean append) {
         DisBoardsApp.getApplication(context).inject(this);
         this.boardType = boardType;
         this.append = append;

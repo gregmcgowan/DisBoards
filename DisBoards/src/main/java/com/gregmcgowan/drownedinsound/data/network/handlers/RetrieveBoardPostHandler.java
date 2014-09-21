@@ -1,8 +1,5 @@
 package com.gregmcgowan.drownedinsound.data.network.handlers;
 
-import android.content.Context;
-import android.util.Log;
-
 import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
@@ -16,6 +13,9 @@ import com.squareup.okhttp.Response;
 
 import org.apache.http.client.HttpResponseException;
 
+import android.content.Context;
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -26,9 +26,10 @@ import de.greenrobot.event.EventBus;
 public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
-        + "RetrieveBoardPostHandler";
+            + "RetrieveBoardPostHandler";
 
     private String boardPostId;
+
     private BoardType boardPostType;
 
     @Inject
@@ -38,7 +39,7 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
     EventBus eventBus;
 
     public RetrieveBoardPostHandler(Context context, String boardPostId, BoardType boardType,
-                                    boolean updateUI) {
+            boolean updateUI) {
         DisBoardsApp.getApplication(context).inject(this);
         this.boardPostId = boardPostId;
         this.boardPostType = boardType;

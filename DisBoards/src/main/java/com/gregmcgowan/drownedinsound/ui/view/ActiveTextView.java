@@ -14,12 +14,12 @@ package com.gregmcgowan.drownedinsound.ui.view;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
@@ -54,9 +54,13 @@ public class ActiveTextView extends TextView {
     }
 
     private boolean mLinkSet, mDisplayMinLongPress;
+
     private String mUrl;
+
     private SpannableStringBuilder mSpannable;
+
     private ActiveTextView.OnLinkClickedListener mListener;
+
     private ActiveTextView.OnLongPressedLinkListener mLongPressedLinkListener;
 
     private void setup() {
@@ -81,8 +85,9 @@ public class ActiveTextView extends TextView {
                 if (mLongPressedLinkListener != null) {
                     if (isLinkPending()) {
                         defaultLongPressAction();
-                    } else
+                    } else {
                         mLongPressedLinkListener.onLongPressed();
+                    }
 
                     cancelLink();
                     return true;
@@ -97,8 +102,9 @@ public class ActiveTextView extends TextView {
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isLinkPending() && mListener != null)
+                if (!isLinkPending() && mListener != null) {
                     mListener.onClick(null);
+                }
                 cancelLink();
             }
         });
@@ -107,7 +113,7 @@ public class ActiveTextView extends TextView {
     private boolean singlePressAction(TextView widget, Spannable buffer, MotionEvent event) {
         int action = event.getAction();
         if (action == MotionEvent.ACTION_UP ||
-            action == MotionEvent.ACTION_DOWN) {
+                action == MotionEvent.ACTION_DOWN) {
             int x = (int) event.getX();
             int y = (int) event.getY();
 
@@ -131,9 +137,9 @@ public class ActiveTextView extends TextView {
                         // If a link click listener is set, call that
                         // Otherwise just open the link
                         if (mLinkSet) {
-                            if (mListener != null)
+                            if (mListener != null) {
                                 mListener.onClick(mUrl);
-                            else {
+                            } else {
                                 if (mUrl != null) {
                                     Intent i = new Intent(Intent.ACTION_VIEW);
                                     i.setData(Uri.parse(mUrl));
@@ -145,8 +151,8 @@ public class ActiveTextView extends TextView {
                         return true;
                     } else if (action == MotionEvent.ACTION_DOWN) {
                         Selection.setSelection(buffer,
-                            buffer.getSpanStart(link[0]),
-                            buffer.getSpanEnd(link[0]));
+                                buffer.getSpanStart(link[0]),
+                                buffer.getSpanEnd(link[0]));
                         URLSpan s = (URLSpan) link[0];
                         mUrl = s.getURL();
                         mLinkSet = true;
@@ -167,35 +173,43 @@ public class ActiveTextView extends TextView {
         // Create the dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setItems(
-            mDisplayMinLongPress ? new String[]{"Open in browser", "Copy link address", "Share link"} :
-                new String[]{"Open in browser", "Copy link address", "Share link", "Long press parent"},
-            new DialogInterface.OnClickListener() {
-                @SuppressWarnings("deprecation")
-                public void onClick(DialogInterface dialog, int item) {
-                    if (item == 0) {
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse(mUrl));
-                        getContext().startActivity(i);
-                    } else if (item == 1) {
-                        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                            clipboard.setText(mUrl);
-                        } else {
-                            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                            android.content.ClipData clip = android.content.ClipData.newPlainText("Link", mUrl);
-                            clipboard.setPrimaryClip(clip);
+                mDisplayMinLongPress ? new String[]{"Open in browser", "Copy link address",
+                        "Share link"} :
+                        new String[]{"Open in browser", "Copy link address", "Share link",
+                                "Long press parent"},
+                new DialogInterface.OnClickListener() {
+                    @SuppressWarnings("deprecation")
+                    public void onClick(DialogInterface dialog, int item) {
+                        if (item == 0) {
+                            Intent i = new Intent(Intent.ACTION_VIEW);
+                            i.setData(Uri.parse(mUrl));
+                            getContext().startActivity(i);
+                        } else if (item == 1) {
+                            if (android.os.Build.VERSION.SDK_INT
+                                    < android.os.Build.VERSION_CODES.HONEYCOMB) {
+                                android.text.ClipboardManager clipboard
+                                        = (android.text.ClipboardManager) getContext()
+                                        .getSystemService(Context.CLIPBOARD_SERVICE);
+                                clipboard.setText(mUrl);
+                            } else {
+                                android.content.ClipboardManager clipboard
+                                        = (android.content.ClipboardManager) getContext()
+                                        .getSystemService(Context.CLIPBOARD_SERVICE);
+                                android.content.ClipData clip = android.content.ClipData
+                                        .newPlainText("Link", mUrl);
+                                clipboard.setPrimaryClip(clip);
+                            }
+                        } else if (item == 2) {
+                            Intent share = new Intent(android.content.Intent.ACTION_SEND);
+                            share.putExtra(android.content.Intent.EXTRA_SUBJECT, mUrl);
+                            share.putExtra(android.content.Intent.EXTRA_TEXT, mUrl);
+                            share.setType("text/plain");
+                            getContext().startActivity(Intent.createChooser(share, "Share"));
+                        } else if (item == 3) {
+                            mLongPressedLinkListener.onLongPressed();
                         }
-                    } else if (item == 2) {
-                        Intent share = new Intent(android.content.Intent.ACTION_SEND);
-                        share.putExtra(android.content.Intent.EXTRA_SUBJECT, mUrl);
-                        share.putExtra(android.content.Intent.EXTRA_TEXT, mUrl);
-                        share.setType("text/plain");
-                        getContext().startActivity(Intent.createChooser(share, "Share"));
-                    } else if (item == 3) {
-                        mLongPressedLinkListener.onLongPressed();
                     }
-                }
-            });
+                });
 
         AlertDialog alert = builder.create();
         alert.setTitle(mUrl);
@@ -219,8 +233,9 @@ public class ActiveTextView extends TextView {
         if (mLinkSet) {
             states = Button.EMPTY_STATE_SET;
             return states;
-        } else
+        } else {
             return super.onCreateDrawableState(extraSpace);
+        }
     }
 
     // Implemented to stop the following bug with TextViews in Jelly Bean
@@ -239,8 +254,9 @@ public class ActiveTextView extends TextView {
                     mSpannable.removeSpan(a[0]);
                     setText(mSpannable);
                     onMeasure(widthMeasureSpec, heightMeasureSpec);
-                } else
+                } else {
                     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+                }
             } else if (getText() instanceof SpannableString) {
                 SpannableString s = (SpannableString) getText();
                 mSpannable.clear();
@@ -250,8 +266,9 @@ public class ActiveTextView extends TextView {
                     mSpannable.removeSpan(a[0]);
                     setText(mSpannable);
                     onMeasure(widthMeasureSpec, heightMeasureSpec);
-                } else
+                } else {
                     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+                }
             }
         }
     }
@@ -271,8 +288,9 @@ public class ActiveTextView extends TextView {
                 if (a.length > 0) {
                     mSpannable.removeSpan(a[0]);
                     super.setText(mSpannable, type);
-                } else
+                } else {
                     setText(text.toString());
+                }
             } else if (text instanceof SpannableString) {
                 SpannableString s = (SpannableString) text;
                 mSpannable.clear();
@@ -281,19 +299,22 @@ public class ActiveTextView extends TextView {
                 if (a.length > 0) {
                     mSpannable.removeSpan(a[0]);
                     super.setText(mSpannable, type);
-                } else
+                } else {
                     setText(text.toString());
+                }
             }
         }
     }
 
     // Called when a link in long clicked
     public interface OnLinkClickedListener {
+
         void onClick(String url);
     }
 
     // Called when a link in long clicked
     public interface OnLongPressedLinkListener {
+
         void onLongPressed();
     }
 
@@ -310,10 +331,13 @@ public class ActiveTextView extends TextView {
      * Set a long press listener, this is called when a user long presses on a link
      * a small submenu with a few options is then displayed
      *
-     * @param longPressedListener Sets the long press listener to call when "Long press parent" is called
-     * @param minDisplay          Enable a smaller submenu when long pressed (removes the option Long press parent)
+     * @param longPressedListener Sets the long press listener to call when "Long press parent" is
+     *                            called
+     * @param minDisplay          Enable a smaller submenu when long pressed (removes the option
+     *                            Long press parent)
      */
-    public void setLongPressedLinkListener(ActiveTextView.OnLongPressedLinkListener longPressedLinkListener, boolean minDisplay) {
+    public void setLongPressedLinkListener(
+            ActiveTextView.OnLongPressedLinkListener longPressedLinkListener, boolean minDisplay) {
         this.mLongPressedLinkListener = longPressedLinkListener;
         this.mDisplayMinLongPress = minDisplay;
     }

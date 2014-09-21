@@ -1,8 +1,5 @@
 package com.gregmcgowan.drownedinsound.data.network.handlers;
 
-import android.content.Context;
-import android.util.Log;
-
 import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.UserSessionManager;
@@ -16,6 +13,9 @@ import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.Segment;
 import net.htmlparser.jericho.StreamedSource;
 import net.htmlparser.jericho.Tag;
+
+import android.content.Context;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,11 +59,11 @@ public class LoginResponseHandler extends OkHttpAsyncResponseHandler {
             if (segment instanceof Tag) {
                 Tag tag = (Tag) segment;
                 String tagName = tag.getName();
-                if(HtmlConstants.META.equals(tagName)){
+                if (HtmlConstants.META.equals(tagName)) {
                     String metaString = tag.toString();
-                    if(metaString.contains(AUTHENTICITY_TOKEN_NAME)){
+                    if (metaString.contains(AUTHENTICITY_TOKEN_NAME)) {
                         Attributes attributes = tag.parseAttributes();
-                        if(attributes != null) {
+                        if (attributes != null) {
                             String authToken = attributes.getValue("content");
                             userSessionManager.setAuthenticityToken(authToken);
                         }

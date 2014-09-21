@@ -1,13 +1,13 @@
 package com.gregmcgowan.drownedinsound.ui.activity;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-
 import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.data.UserSessionManager;
 import com.gregmcgowan.drownedinsound.events.LoginSucceededEvent;
 import com.gregmcgowan.drownedinsound.events.LurkEvent;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
 
 import javax.inject.Inject;
 
@@ -26,24 +26,24 @@ public class StartActivity extends Activity {
         disBoardsApp.inject(this);
 
         EventBus.getDefault().register(this);
-        if (userSessionManager.isUserLoggedIn()){
+        if (userSessionManager.isUserLoggedIn()) {
             goToMainActivity();
         } else {
-           goToLoginActivity();
+            goToLoginActivity();
         }
         finish();
     }
 
     private void goToLoginActivity() {
         Intent startLoginActivity = new Intent(this,
-            LoginActivity.class);
+                LoginActivity.class);
         startActivity(startLoginActivity);
     }
 
 
     private void goToMainActivity() {
         Intent startMainActivityIntent = new Intent(this,
-            MainCommunityActivity.class);
+                MainCommunityActivity.class);
         startActivity(startMainActivityIntent);
         finish();
     }
@@ -55,10 +55,11 @@ public class StartActivity extends Activity {
     public void onEventMainThread(LurkEvent event) {
         goToMainActivity();
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
-    
+
 }

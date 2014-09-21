@@ -1,9 +1,9 @@
 package com.gregmcgowan.drownedinsound.events;
 
-import java.util.List;
-
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
+
+import java.util.List;
 
 public class RetrievedBoardPostSummaryListEvent {
 
@@ -16,7 +16,8 @@ public class RetrievedBoardPostSummaryListEvent {
     private boolean append;
 
     public RetrievedBoardPostSummaryListEvent(
-        List<BoardPost> boardPostSummaryList, BoardType boardType, boolean isCached, boolean append) {
+            List<BoardPost> boardPostSummaryList, BoardType boardType, boolean isCached,
+            boolean append) {
         setBoardPostSummaryList(boardPostSummaryList);
         setBoardType(boardType);
         setCached(isCached);
@@ -28,7 +29,7 @@ public class RetrievedBoardPostSummaryListEvent {
     }
 
     public void setBoardPostSummaryList(
-        List<BoardPost> boardPostSummaryList) {
+            List<BoardPost> boardPostSummaryList) {
         this.boardPostSummaryList = boardPostSummaryList;
     }
 

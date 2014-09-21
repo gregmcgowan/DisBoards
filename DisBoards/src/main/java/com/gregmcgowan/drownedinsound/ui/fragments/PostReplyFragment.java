@@ -1,5 +1,12 @@
 package com.gregmcgowan.drownedinsound.ui.fragments;
 
+import com.gregmcgowan.drownedinsound.R;
+import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.data.model.BoardType;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
+import com.gregmcgowan.drownedinsound.data.network.service.DisWebServiceConstants;
+import com.gregmcgowan.drownedinsound.events.BoardPostCommentSentEvent;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,25 +19,23 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
-import com.gregmcgowan.drownedinsound.R;
-import com.gregmcgowan.drownedinsound.data.model.BoardType;
-import com.gregmcgowan.drownedinsound.events.BoardPostCommentSentEvent;
-import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
-import com.gregmcgowan.drownedinsound.data.network.service.DisWebServiceConstants;
-
 import de.greenrobot.event.EventBus;
 
 public class PostReplyFragment extends DisBoardsDialogFragment {
 
     private TextView replyToTextView;
+
     private ImageButton replyButton;
+
     // private TextView originalCommentTextView;
     private EditText commentTitleEditView;
+
     private EditText commentContentEditView;
 
     private String boardPostId;
+
     private BoardType boardType;
+
     private String replyToCommentID;
 
     public static PostReplyFragment newInstance(Bundle passedInData) {
@@ -47,25 +52,25 @@ public class PostReplyFragment extends DisBoardsDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.getWindow().setSoftInputMode(
-            WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         return dialog;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.board_post_reply, container,
-            false);
+                false);
 
         commentTitleEditView = (EditText) view
-            .findViewById(R.id.board_post_reply_subject);
+                .findViewById(R.id.board_post_reply_subject);
         commentContentEditView = (EditText) view
-            .findViewById(R.id.board_post_reply_reply);
+                .findViewById(R.id.board_post_reply_reply);
         replyToTextView = (TextView) view
-            .findViewById(R.id.board_post_reply_to_author);
+                .findViewById(R.id.board_post_reply_to_author);
 
         replyButton = (ImageButton) view
-            .findViewById(R.id.board_post_reply_button);
+                .findViewById(R.id.board_post_reply_button);
         replyButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,25 +78,25 @@ public class PostReplyFragment extends DisBoardsDialogFragment {
             }
         });
     /*
-	 * originalCommentTextView = (TextView) view
+         * originalCommentTextView = (TextView) view
 	 * .findViewById(R.id.board_post_reply_original_comment);
 	 */
 
         String originalComment = getArguments().getString(
-            DisBoardsConstants.REPLY_TO_TEXT);
+                DisBoardsConstants.REPLY_TO_TEXT);
         String replyToAuthor = getArguments().getString(
-            DisBoardsConstants.REPLY_TO_AUTHOR);
+                DisBoardsConstants.REPLY_TO_AUTHOR);
         String replyToText = "In reply to " + replyToAuthor;
 
         // originalCommentTextView.setText(Html.fromHtml(originalComment));
         replyToTextView.setText(replyToText);
 
         this.boardPostId = getArguments().getString(
-            DisBoardsConstants.BOARD_POST_ID);
+                DisBoardsConstants.BOARD_POST_ID);
         this.boardType = (BoardType) getArguments().getSerializable(
-            DisBoardsConstants.BOARD_TYPE);
+                DisBoardsConstants.BOARD_TYPE);
         this.replyToCommentID = getArguments().getString(
-            DisBoardsConstants.BOARD_COMMENT_ID);
+                DisBoardsConstants.BOARD_COMMENT_ID);
 
         return view;
     }
@@ -106,20 +111,20 @@ public class PostReplyFragment extends DisBoardsDialogFragment {
         // TODO check to see if data has been entered
 
         Intent disWebServiceIntent = new Intent(getSherlockActivity(),
-            DisWebService.class);
+                DisWebService.class);
         Bundle parametersBundle = new Bundle();
         parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
-            boardPostId);
+                boardPostId);
         parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
-            boardType);
+                boardType);
         parametersBundle.putString(DisBoardsConstants.COMMENT_CONTENT,
-            commentContentEditView.getText().toString());
+                commentContentEditView.getText().toString());
         parametersBundle.putString(DisBoardsConstants.COMMENT_TITLE,
-            commentTitleEditView.getText().toString());
+                commentTitleEditView.getText().toString());
         parametersBundle.putString(DisBoardsConstants.BOARD_COMMENT_ID,
-            replyToCommentID);
+                replyToCommentID);
         parametersBundle.putInt(DisWebServiceConstants.SERVICE_REQUESTED_ID,
-            DisWebServiceConstants.POST_A_COMMENT);
+                DisWebServiceConstants.POST_A_COMMENT);
         disWebServiceIntent.putExtras(parametersBundle);
 
         getSherlockActivity().startService(disWebServiceIntent);

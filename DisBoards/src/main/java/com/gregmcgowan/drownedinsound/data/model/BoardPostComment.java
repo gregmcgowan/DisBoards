@@ -1,10 +1,10 @@
 package com.gregmcgowan.drownedinsound.data.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Represents a comment that has been made against a drowned in sound board post
@@ -18,18 +18,25 @@ public class BoardPostComment implements Parcelable {
 
     @DatabaseField(id = true, columnName = ID_FIELD, generatedId = false)
     private String id;
+
     @DatabaseField
     private String title;
+
     @DatabaseField
     private String content;
+
     @DatabaseField
     private String authorUsername;
+
     @DatabaseField
     private String replyToUsername;
+
     @DatabaseField
     private String usersWhoHaveThissed;
+
     @DatabaseField
     private String dateAndTimeOfComment;
+
     @DatabaseField(canBeNull = false, foreign = true)
     private BoardPost boardPost;
 
@@ -43,6 +50,7 @@ public class BoardPostComment implements Parcelable {
 
 
     private boolean actionSectionVisible;
+
     private BoardPostCommentTreeNode treeNode;
 
     private boolean doHighlightedAnimation;
@@ -168,7 +176,8 @@ public class BoardPostComment implements Parcelable {
         dest.writeInt(actionSectionVisible ? 1 : 0);
     }
 
-    public static final Parcelable.Creator<BoardPostComment> CREATOR = new Parcelable.Creator<BoardPostComment>() {
+    public static final Parcelable.Creator<BoardPostComment> CREATOR
+            = new Parcelable.Creator<BoardPostComment>() {
         public BoardPostComment createFromParcel(Parcel in) {
             return new BoardPostComment(in);
         }
@@ -181,11 +190,12 @@ public class BoardPostComment implements Parcelable {
     @Override
     public String toString() {
         return "BoardPostComment [id=" + id + ", title=" + title + ", content="
-            + content + ", authorUsername=" + authorUsername
-            + ", usersWhoHaveThissed=" + usersWhoHaveThissed
-            + ", dateAndTimeOfComment=" + dateAndTimeOfComment
-            + ", boardPost=" + (boardPost != null ? boardPost.getId() : boardPost) + ", commentLevel=" + commentLevel
-            + ", actionSectionVisible=" + actionSectionVisible + "]";
+                + content + ", authorUsername=" + authorUsername
+                + ", usersWhoHaveThissed=" + usersWhoHaveThissed
+                + ", dateAndTimeOfComment=" + dateAndTimeOfComment
+                + ", boardPost=" + (boardPost != null ? boardPost.getId() : boardPost)
+                + ", commentLevel=" + commentLevel
+                + ", actionSectionVisible=" + actionSectionVisible + "]";
     }
 
     public void setDoHighlightedAnimation(boolean doHighlightedAnimation) {

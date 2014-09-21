@@ -1,14 +1,14 @@
 package com.gregmcgowan.drownedinsound.ui.adapter;
 
-import java.util.ArrayList;
+import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
+import com.gregmcgowan.drownedinsound.data.model.Board;
+import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
-import com.gregmcgowan.drownedinsound.data.model.Board;
-import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
+import java.util.ArrayList;
 
 /**
  * Adapter to handle the different board pages

@@ -18,11 +18,13 @@ import de.greenrobot.event.EventBus;
 public class PostACommentHandler extends OkHttpAsyncResponseHandler {
 
     private String postID;
+
     private BoardType boardType;
+
     private DatabaseHelper databaseHelper;
 
     public PostACommentHandler(String boardPostId, BoardType boardType,
-                               DatabaseHelper databaseHelper) {
+            DatabaseHelper databaseHelper) {
         this.postID = boardPostId;
         this.boardType = boardType;
         this.databaseHelper = databaseHelper;

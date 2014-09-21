@@ -1,11 +1,5 @@
 package com.gregmcgowan.drownedinsound.ui.activity;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
@@ -14,6 +8,12 @@ import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 
 /**
  * This will contain a board post fragment. A board post will be made of the
@@ -25,13 +25,14 @@ import net.hockeyapp.android.UpdateManager;
 public class BoardPostActivity extends SherlockFragmentActivity {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
-        + "BoardPostActivity";
+            + "BoardPostActivity";
 
     private FragmentManager fragmentManager;
 
     private BoardPostFragment boardPostFragment;
 
-    public static Intent getIntent(Context context, String postUrl, String postID, BoardType boardType) {
+    public static Intent getIntent(Context context, String postUrl, String postID,
+            BoardType boardType) {
         Intent boardPostActivityIntent = new Intent(context, BoardPostActivity.class);
 
         Bundle parametersBundle = new Bundle();
@@ -56,7 +57,7 @@ public class BoardPostActivity extends SherlockFragmentActivity {
         int screenWidthPixels = getResources().getDisplayMetrics().widthPixels;
         int screenWidthDp = UiUtils.convertPixelsToDp(getResources(), screenWidthPixels);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE &&
-            screenWidthDp >= UiUtils.MIN_WIDTH_DP_FOR_DUAL_MODE) {
+                screenWidthDp >= UiUtils.MIN_WIDTH_DP_FOR_DUAL_MODE) {
             // If the screen is now in landscape mode, we can show the
             // dialog in-line with the list so we don't need this activity.
             finish();
@@ -67,11 +68,12 @@ public class BoardPostActivity extends SherlockFragmentActivity {
             // During initial setup, plug in the details fragment.
             String postUrl = getIntent().getStringExtra(DisBoardsConstants.BOARD_POST_URL);
             String postID = getIntent().getStringExtra(DisBoardsConstants.BOARD_POST_ID);
-            BoardType boardType = (BoardType) getIntent().getSerializableExtra(DisBoardsConstants.BOARD_TYPE);
+            BoardType boardType = (BoardType) getIntent()
+                    .getSerializableExtra(DisBoardsConstants.BOARD_TYPE);
 
-            boardPostFragment = BoardPostFragment.newInstance(postUrl,postID,false,boardType);
+            boardPostFragment = BoardPostFragment.newInstance(postUrl, postID, false, boardType);
             fragmentManager.beginTransaction()
-                .add(android.R.id.content, boardPostFragment).commit();
+                    .add(android.R.id.content, boardPostFragment).commit();
         }
 
     }
@@ -97,7 +99,7 @@ public class BoardPostActivity extends SherlockFragmentActivity {
         UpdateManager.register(this, DisBoardsConstants.HOCKEY_APP_ID);
     }
 
-    public void refreshMenu(){
+    public void refreshMenu() {
         this.supportInvalidateOptionsMenu();
     }
 

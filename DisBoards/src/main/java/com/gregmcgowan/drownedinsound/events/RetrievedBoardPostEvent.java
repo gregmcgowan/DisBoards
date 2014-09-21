@@ -5,12 +5,15 @@ import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 public class RetrievedBoardPostEvent {
 
     private BoardPost boardPost;
+
     private boolean isCached;
+
     private String commentIDToScrollTo;
+
     private boolean displayGotToLatestCommentOption;
 
     public RetrievedBoardPostEvent(BoardPost boardPost, boolean isCached,
-                                   boolean showGotToLastCommentOption) {
+            boolean showGotToLastCommentOption) {
         setBoardPost(boardPost);
         setCached(isCached);
         setDisplayGotToLatestCommentOption(showGotToLastCommentOption);
@@ -45,7 +48,7 @@ public class RetrievedBoardPostEvent {
     }
 
     public void setDisplayGotToLatestCommentOption(
-        boolean displayGotToLatestCommentOption) {
+            boolean displayGotToLatestCommentOption) {
         this.displayGotToLatestCommentOption = displayGotToLatestCommentOption;
     }
 }

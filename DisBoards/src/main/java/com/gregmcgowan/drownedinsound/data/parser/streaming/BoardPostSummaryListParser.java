@@ -1,10 +1,10 @@
 package com.gregmcgowan.drownedinsound.data.parser.streaming;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
+import com.gregmcgowan.drownedinsound.data.model.BoardPost;
+import com.gregmcgowan.drownedinsound.data.model.BoardType;
+import com.gregmcgowan.drownedinsound.utils.DateUtils;
 
 import net.htmlparser.jericho.EndTag;
 import net.htmlparser.jericho.Segment;
@@ -16,22 +16,24 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
-import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
-import com.gregmcgowan.drownedinsound.data.model.BoardPost;
-import com.gregmcgowan.drownedinsound.data.model.BoardType;
-import com.gregmcgowan.drownedinsound.utils.DateUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 public class BoardPostSummaryListParser extends StreamingParser {
 
     private static final int POST_URL_ANCHOR_INDEX = 1;
 
     private static final int DESCRIPTION_TABLE_ROW_INDEX = 2;
+
     private static final int REPLIES_TABLE_ROW_INDEX = 3;
+
     private static final int LAST_POST_TABLE_ROW_INDEX = 4;
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
-        + "BoardPostParser";
+            + "BoardPostParser";
 
     private static final Object STICKY_CLASS = "content_type_label";
 
@@ -42,6 +44,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
     private BoardType boardType;
 
     private boolean inBoardPostTable;
+
     private int tableRowCell;
 
     private int spanNumber;
@@ -49,12 +52,15 @@ public class BoardPostSummaryListParser extends StreamingParser {
     private int anchorNumber;
 
     private ArrayList<BoardPost> boardPosts;
+
     private BoardPost currentBoardPost;
+
     private StringBuilder buffer;
+
     private DatabaseHelper databaseHelper;
 
     public BoardPostSummaryListParser(InputStream inputStream,
-                                      BoardType boardType, DatabaseHelper databaseHelper) {
+            BoardType boardType, DatabaseHelper databaseHelper) {
         this.inputStream = inputStream;
         this.boardType = boardType;
         this.boardPosts = new ArrayList<>();
@@ -86,16 +92,16 @@ public class BoardPostSummaryListParser extends StreamingParser {
                                 // set it here
                                 if (databaseHelper != null) {
                                     BoardPost existingPost = databaseHelper
-                                        .getBoardPost(currentBoardPost
-                                            .getId());
+                                            .getBoardPost(currentBoardPost
+                                                    .getId());
                                     // We don't want to overwrite certain values
                                     if (existingPost != null) {
                                         currentBoardPost
-                                            .setLastViewedTime(existingPost
-                                                .getLastViewedTime());
+                                                .setLastViewedTime(existingPost
+                                                        .getLastViewedTime());
                                         currentBoardPost
-                                            .setNumberOfTimesRead(existingPost
-                                                .getNumberOfTimesRead());
+                                                .setNumberOfTimesRead(existingPost
+                                                        .getNumberOfTimesRead());
                                         currentBoardPost.setFavourited(existingPost.isFavourited());
                                     }
                                 }
@@ -110,7 +116,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                             spanNumber = 0;
                         } else {
                             if (inBoardPostTable
-                                && tableRowCell == REPLIES_TABLE_ROW_INDEX) {
+                                    && tableRowCell == REPLIES_TABLE_ROW_INDEX) {
                                 setNumberOfReplies();
                             }
                         }
@@ -120,7 +126,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                             if (inBoardPostTable) {
                                 String tagString = tag.toString();
                                 if (anchorNumber == POST_URL_ANCHOR_INDEX
-                                    && tableRowCell == DESCRIPTION_TABLE_ROW_INDEX) {
+                                        && tableRowCell == DESCRIPTION_TABLE_ROW_INDEX) {
                                     extractPostId(tagString);
                                 } else if (tableRowCell == LAST_POST_TABLE_ROW_INDEX) {
                                     int titleIndex = tagString.indexOf(HtmlConstants.TITLE);
@@ -128,10 +134,11 @@ public class BoardPostSummaryListParser extends StreamingParser {
                                         String title = tagString.substring(titleIndex,
                                                 tagString.length() - 1);
                                         String[] keyValue = title.split("=");
-                                        if(keyValue != null && keyValue.length == 2){
+                                        if (keyValue != null && keyValue.length == 2) {
                                             String value = keyValue[1];
-                                            long timestamp = parseDate(value,DateUtils.DIS_BOARD_LAST_COMMENT_DATE_FORMAT);
-                                            if(timestamp != -1) {
+                                            long timestamp = parseDate(value,
+                                                    DateUtils.DIS_BOARD_LAST_COMMENT_DATE_FORMAT);
+                                            if (timestamp != -1) {
                                                 currentBoardPost.setLastUpdatedTime(timestamp);
                                             }
                                         }
@@ -141,15 +148,15 @@ public class BoardPostSummaryListParser extends StreamingParser {
                             }
                         } else {
                             if (inBoardPostTable
-                                && tableRowCell == DESCRIPTION_TABLE_ROW_INDEX) {
+                                    && tableRowCell == DESCRIPTION_TABLE_ROW_INDEX) {
                                 String bufferOutput = Html.fromHtml(
-                                    buffer.toString().trim()).toString();
+                                        buffer.toString().trim()).toString();
                                 parseDescriptionRowAnchorText(bufferOutput);
                             }
                         }
                     } else if (tagName.endsWith(HtmlConstants.SPAN)) {
                         if (inBoardPostTable) {
-                            if (tag instanceof EndTag ) {
+                            if (tag instanceof EndTag) {
                                 parseSpanSegment(segment);
                             }
                         }
@@ -172,7 +179,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
         }
         if (DisBoardsConstants.DEBUG && DEBUG_PARSER) {
             Log.d(TAG, "Parsed " + boardPosts.size() + " board posts in "
-                + (System.currentTimeMillis() - start) + " ms");
+                    + (System.currentTimeMillis() - start) + " ms");
             for (BoardPost boardPost : boardPosts) {
                 Log.d(TAG, boardPost.toString());
             }
@@ -203,7 +210,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
 //                }
             }
         } else if (tableRowCell == DESCRIPTION_TABLE_ROW_INDEX
-            && spanNumber == 2 && currentBoardPost.isSticky()) {
+                && spanNumber == 2 && currentBoardPost.isSticky()) {
             //TODO not sure if we actually need this
             //long timeStamp = parseDate();
             //currentBoardPost.setCreatedTime(timeStamp);
@@ -215,7 +222,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
         if (!TextUtils.isEmpty(dateString)) {
             int indexOfComma = dateString.indexOf(",");
             if (indexOfComma != -1) {
-                dateString = dateString.substring(1,indexOfComma - 2) +
+                dateString = dateString.substring(1, indexOfComma - 2) +
                         dateString.substring(indexOfComma + 1);
                 dateString = dateString.replace("'", "");
                 dateString = dateString.replace("&nbsp;", " ");
@@ -225,7 +232,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
             if (parsedDate != null) {
                 timeStamp = parsedDate.getTime();
             }
-            if(DEBUG_PARSER) {
+            if (DEBUG_PARSER) {
                 Log.d(TAG, "parse date =" + parsedDate.toString());
             }
         }
@@ -251,7 +258,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
     private boolean isStartOfNewPostTr(String trString) {
         // TODO better way to do this
         return trString != null
-            && trString.startsWith("<tr style='background-color");
+                && trString.startsWith("<tr style='background-color");
     }
 
     private void parseDescriptionRowAnchorText(String bufferOutput) {

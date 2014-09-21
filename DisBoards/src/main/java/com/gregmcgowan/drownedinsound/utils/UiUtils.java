@@ -20,13 +20,10 @@ public class UiUtils {
     /**
      * This will attempt to hide the softkeyboard if it is displayed at the
      * moment
-     *
-     * @param context
-     * @param windowToken
      */
     public static void hideSoftKeyboard(Context context, IBinder windowToken) {
         InputMethodManager mgr = (InputMethodManager) context
-            .getSystemService(Context.INPUT_METHOD_SERVICE);
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
         mgr.hideSoftInputFromWindow(windowToken, 0);
     }
 
@@ -37,7 +34,6 @@ public class UiUtils {
      *
      * @param viewId the id of the fragment
      * @param index  the page index
-     * @return
      */
     public static String makeFragmentPagerAdapterTagName(int viewId, int index) {
         return "android:switcher:" + viewId + ":" + index;
@@ -52,19 +48,15 @@ public class UiUtils {
      */
     public static int convertDpToPixels(Resources resources, int dp) {
         return (int) TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp,
-            resources.getDisplayMetrics()
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp,
+                resources.getDisplayMetrics()
         );
 
     }
 
     /**
      * Converts a value from pixels to dp
-     *
-     * @param resources
-     * @param pixels
-     * @return
      */
     public static int convertPixelsToDp(Resources resources, int pixels) {
         DisplayMetrics metrics = resources.getDisplayMetrics();
@@ -73,14 +65,14 @@ public class UiUtils {
     }
 
 
-    public static boolean isDualPaneMode(Context context){
+    public static boolean isDualPaneMode(Context context) {
         Resources resources = context.getResources();
         int screenWidthPixels = resources.getDisplayMetrics().widthPixels;
         int screenWidthDp = UiUtils.convertPixelsToDp(resources,
-            screenWidthPixels);
+                screenWidthPixels);
         int currentOrientation = resources.getConfiguration().orientation;
         return currentOrientation == Configuration.ORIENTATION_LANDSCAPE
-            && screenWidthDp >= UiUtils.MIN_WIDTH_DP_FOR_DUAL_MODE;
+                && screenWidthDp >= UiUtils.MIN_WIDTH_DP_FOR_DUAL_MODE;
     }
 
 }

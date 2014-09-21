@@ -10,9 +10,10 @@ import java.lang.ref.WeakReference;
 public abstract class NavigationDrawerItem {
 
     private WeakReference<Context> contextWeakReference;
+
     private String displayText;
 
-    public NavigationDrawerItem(String displayText, WeakReference<Context> contextWeakReference){
+    public NavigationDrawerItem(String displayText, WeakReference<Context> contextWeakReference) {
         this.displayText = displayText;
         this.contextWeakReference = contextWeakReference;
     }
@@ -21,9 +22,9 @@ public abstract class NavigationDrawerItem {
         return displayText;
     }
 
-    protected Context getContext(){
+    protected Context getContext() {
         Context context = null;
-        if(contextWeakReference != null) {
+        if (contextWeakReference != null) {
             context = contextWeakReference.get();
         }
         return context;
