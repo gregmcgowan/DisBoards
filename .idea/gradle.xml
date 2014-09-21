@@ -11,7 +11,6 @@
             <option value="$PROJECT_DIR$/DisBoards" />
             <option value="$PROJECT_DIR$/Libraries" />
             <option value="$PROJECT_DIR$/Libraries/actionbarsherlock" />
-            <option value="$PROJECT_DIR$/Libraries/asynchttp" />
             <option value="$PROJECT_DIR$/Libraries/viewpager" />
           </set>
         </option>
