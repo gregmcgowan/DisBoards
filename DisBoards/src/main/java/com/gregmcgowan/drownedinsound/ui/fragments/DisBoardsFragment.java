@@ -1,11 +1,13 @@
 package com.gregmcgowan.drownedinsound.ui.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.gregmcgowan.drownedinsound.annotations.UseDagger;
 import com.gregmcgowan.drownedinsound.annotations.UseEventBus;
 import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
+import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 
 import java.lang.annotation.Annotation;
 
@@ -30,7 +32,7 @@ public class DisBoardsFragment extends SherlockFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(containsAnnotation(UseDagger.class)) {
+        if(containsAnnotation(UseDagger.class) || containsAnnotation(UseEventBus.class)) {
             DisBoardsApp.getApplication(getActivity()).inject(this);
         }
 

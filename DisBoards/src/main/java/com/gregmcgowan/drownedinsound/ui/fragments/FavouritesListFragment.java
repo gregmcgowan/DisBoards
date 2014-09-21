@@ -12,12 +12,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.view.MenuItem;
+import com.gregmcgowan.drownedinsound.annotations.UseDagger;
+import com.gregmcgowan.drownedinsound.annotations.UseEventBus;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
@@ -37,12 +40,15 @@ import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
 
 /**
  * Created by gregmcgowan on 29/10/2013.
  */
-public class FavouritesListFragment extends DisBoardsListFragment {
+@UseDagger @UseEventBus
+public class FavouritesListFragment extends DisBoardsFragment {
 
     private static final String CURRENTLY_SELECTED_BOARD_POST = "currentlySelectedBoardPost";
     private static final String WAS_IN_DUAL_PANE_MODE = "WasInDualPaneMode";
@@ -51,12 +57,9 @@ public class FavouritesListFragment extends DisBoardsListFragment {
 
     private Drawable readDrawable;
     private Drawable unreadDrawable;
-    private ProgressBar progressBar;
-    private TextView connectionErrorTextView;
+
     private ArrayList<BoardPost> favouriteBoardPosts = new ArrayList<BoardPost>();
     private BoardPostSummaryListAdapter adapter;
-    private View rootView;
-    private AutoScrollListView listView;
 
     private boolean isRequesting;
     private boolean dualPaneMode;
@@ -65,6 +68,9 @@ public class FavouritesListFragment extends DisBoardsListFragment {
     private String postId;
     private String postUrl;
 
+    protected  @InjectView(R.id.board_list_progress_bar) ProgressBar progressBar;
+    protected  @InjectView(R.id.board_list_connection_error_text_view) TextView connectionErrorTextView;
+    protected  @InjectView(R.id.board_post_summary_list) AutoScrollListView listView;
 
     public FavouritesListFragment() {
     }
@@ -72,31 +78,37 @@ public class FavouritesListFragment extends DisBoardsListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        inflater = (LayoutInflater) inflater.getContext().getSystemService(
-            Context.LAYOUT_INFLATER_SERVICE);
-        rootView = inflater.inflate(R.layout.board_list_layout, null);
+        View rootView = inflater.inflate(R.layout.board_list_layout, container, false);
+        ButterKnife.inject(this,rootView);
         return rootView;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        progressBar = (ProgressBar) rootView
-            .findViewById(R.id.board_list_progress_bar);
-        connectionErrorTextView = (TextView) rootView
-            .findViewById(R.id.board_list_connection_error_text_view);
 
         readDrawable = getSherlockActivity().getResources().getDrawable(
             R.drawable.white_circle_blue_outline);
         unreadDrawable = getSherlockActivity().getResources().getDrawable(
             R.drawable.filled_blue_circle);
 
-        listView = (AutoScrollListView) getListView();
-        // connectionErrorTextView.setVisibility(View.GONE);
         adapter = new BoardPostSummaryListAdapter(getSherlockActivity(),
                 R.layout.board_list_row, favouriteBoardPosts);
-        setListAdapter(adapter);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View rowView, int position, long id) {
+                BoardPostSummaryHolder holder = (BoardPostSummaryHolder) rowView
+                        .getTag();
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
+                    holder.postReadMarkerView.setBackground(readDrawable);
+                } else {
+                    holder.postReadMarkerView.setBackgroundDrawable(readDrawable);
+                }
 
+                showBoardPost(position);
+            }
+        });
         if (!favouritesLoaded()) {
             getFavourites();
         }
@@ -141,7 +153,6 @@ public class FavouritesListFragment extends DisBoardsListFragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
-        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -153,13 +164,6 @@ public class FavouritesListFragment extends DisBoardsListFragment {
         outState.putString(DisBoardsConstants.BOARD_POST_URL, postUrl);
 
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
-    }
-
 
     private boolean favouritesLoaded() {
         return favouriteBoardPosts != null && favouriteBoardPosts.size() > 0;
@@ -263,19 +267,6 @@ public class FavouritesListFragment extends DisBoardsListFragment {
             Toast.LENGTH_SHORT).show();
     }
 
-    @SuppressLint("NewApi")
-    @Override
-    public void onListItemClick(ListView l, View rowView, int position, long id) {
-        BoardPostSummaryHolder holder = (BoardPostSummaryHolder) rowView
-            .getTag();
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
-            holder.postReadMarkerView.setBackground(readDrawable);
-        } else {
-            holder.postReadMarkerView.setBackgroundDrawable(readDrawable);
-        }
-
-        showBoardPost(position);
-    }
 
     private void showBoardPost(int position) {
         currentlySelectedPost = position;
@@ -293,17 +284,7 @@ public class FavouritesListFragment extends DisBoardsListFragment {
                     .findFragmentById(R.id.board_post_details);
                 if (boardPostFragment == null
                     || !postId.equals(boardPostFragment.getBoardPostId())) {
-                    boardPostFragment = new BoardPostFragment();
-                    Bundle arguments = new Bundle();
-                    arguments.putString(DisBoardsConstants.BOARD_POST_ID,
-                        postId);
-                    arguments.putString(DisBoardsConstants.BOARD_POST_URL,
-                        postUrl);
-                    arguments.putBoolean(DisBoardsConstants.DUAL_PANE_MODE,
-                        true);
-                    arguments.putSerializable(DisBoardsConstants.BOARD_TYPE,
-                        boardType);
-                    boardPostFragment.setArguments(arguments);
+                    boardPostFragment = BoardPostFragment.newInstance(postUrl,postId,true,boardType);
                     // Execute a transaction, replacing any existing fragment
                     // with this one inside the frame.
                     FragmentTransaction ft = getFragmentManager()

@@ -127,7 +127,7 @@ public class DisWebService extends IntentService {
                 Request request = requestBuilder.get().url(boardPostUrl)
                         .headers(headerBuilder.build()).build();
                 httpClient.newCall(request).enqueue( new
-                        RetrieveBoardPostHandler(boardPostId,boardType,true,databaseHelper));
+                        RetrieveBoardPostHandler(this,boardPostId,boardType,true));
             }
 
         } else {

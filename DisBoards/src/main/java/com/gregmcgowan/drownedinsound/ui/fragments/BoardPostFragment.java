@@ -24,9 +24,12 @@ import android.widget.Toast;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.gregmcgowan.drownedinsound.annotations.UseDagger;
+import com.gregmcgowan.drownedinsound.annotations.UseEventBus;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.R;
 import com.gregmcgowan.drownedinsound.data.DatabaseService;
+import com.gregmcgowan.drownedinsound.data.model.Board;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardPostComment;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
@@ -52,6 +55,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
 
 /**
@@ -60,20 +65,18 @@ import de.greenrobot.event.EventBus;
  *
  * @author Greg
  */
-public class BoardPostFragment extends DisBoardsListFragment {
+@UseDagger @UseEventBus
+public class BoardPostFragment extends DisBoardsFragment {
 
     private static final int SHOW_GO_TO_LAST_COMMENT_TIMEOUT = 5000;
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
         + "BoardPost";
+    private static final String DUAL_PANE_MODE = "DUAL_PANE_MODE";
 
     private BoardPost boardPost;
-    private View rootView;
-    private ProgressBar progressBar;
-    private TextView connectionErrorTextView;
-    private AutoScrollListView commentsList;
-    private TextView scrollToLastCommentTextView;
-    private List<BoardPostComment> boardPostComments = new ArrayList<BoardPostComment>();
+
+    private List<BoardPostComment> boardPostComments = new ArrayList<>();
     private BoardPostListAdapter adapter;
     private boolean requestingPost;
     private String boardPostUrl;
@@ -83,6 +86,26 @@ public class BoardPostFragment extends DisBoardsListFragment {
     private boolean inDualPaneMode;
     private boolean animatingScrollToLastCommentView;
 
+    protected @InjectView(R.id.board_post_progress_bar)ProgressBar progressBar;
+    protected @InjectView(R.id.board_post_connection_error_text_view) TextView connectionErrorTextView;
+    protected @InjectView(R.id.board_post_comment_list) AutoScrollListView commentsList;
+    protected @InjectView(R.id.board_post_move_to_first_or_last_comment_layout) RelativeLayout moveToFirstOrLastCommentLayout;
+    protected @InjectView(R.id.board_post_move_to_last_comment_text_view) TextView scrollToLastCommentTextView;
+
+
+    public static BoardPostFragment newInstance(String boardPostUrl,
+                                                String boardPostID,
+                                                boolean inDualPaneMode, BoardType boardType) {
+        BoardPostFragment boardPostFragment = new BoardPostFragment();
+        Bundle arguments = new Bundle();
+        arguments.putString(DisBoardsConstants.BOARD_POST_URL,boardPostUrl);
+        arguments.putString(DisBoardsConstants.BOARD_POST_ID,boardPostID);
+        arguments.putBoolean(DisBoardsConstants.DUAL_PANE_MODE,inDualPaneMode);
+        arguments.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
+        boardPostFragment.setArguments(arguments);
+        return boardPostFragment;
+    }
+
     public BoardPostFragment() {
 
     }
@@ -90,7 +113,6 @@ public class BoardPostFragment extends DisBoardsListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
         setHasOptionsMenu(true);
     }
 
@@ -102,43 +124,34 @@ public class BoardPostFragment extends DisBoardsListFragment {
         if (container == null) {
             return null;
         }
-        inflater = (LayoutInflater) inflater.getContext().getSystemService(
-            Context.LAYOUT_INFLATER_SERVICE);
-        rootView = inflater.inflate(R.layout.board_post_layout, null);
+        View rootView = inflater.inflate(R.layout.board_post_layout, container,false);
+        ButterKnife.inject(this,rootView);
+
+        adapter = new BoardPostListAdapter(getSherlockActivity(),
+                R.layout.board_post_comment_layout, boardPostComments,
+                new WeakReference<>(this));
+        commentsList.setAdapter(adapter);
+
+        moveToFirstOrLastCommentLayout
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        scrollToLatestComment();
+
+                    }
+
+                });
+
         return rootView;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (rootView != null) {
-            progressBar = (ProgressBar) rootView
-                .findViewById(R.id.board_post_progress_bar);
-            connectionErrorTextView = (TextView) rootView
-                .findViewById(R.id.board_post_connection_error_text_view);
-            connectionErrorTextView.setVisibility(View.GONE);
-            commentsList = (AutoScrollListView) getListView();
-            scrollToLastCommentTextView = (TextView) rootView
-                .findViewById(R.id.board_post_move_to_last_comment_view);
-            scrollToLastCommentTextView
-                .setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        scrollToLatestComment();
-                        displayScrollToHiddenCommentOption(false);
-                    }
-
-                });
-        }
-
-        adapter = new BoardPostListAdapter(getSherlockActivity(),
-            R.layout.board_post_comment_layout, boardPostComments,
-            new WeakReference<BoardPostFragment>(this));
-        setListAdapter(adapter);
-        initliase(savedInstanceState);
+        initialise(savedInstanceState);
     }
 
-    private void initliase(Bundle savedInstanceState) {
+    private void initialise(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             boardPostUrl = (String) getArguments().get(
                 DisBoardsConstants.BOARD_POST_URL);
@@ -203,13 +216,6 @@ public class BoardPostFragment extends DisBoardsListFragment {
                     + showGoToLastCommentOption);
                 if (showGoToLastCommentOption) {
                     displayScrollToHiddenCommentOption(true);
-                    scrollToLastCommentTextView.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            displayScrollToHiddenCommentOption(false);
-                        }
-
-                    }, SHOW_GO_TO_LAST_COMMENT_TIMEOUT);
                 }
             } else {
                 connectionErrorTextView.setVisibility(View.VISIBLE);
@@ -279,9 +285,9 @@ public class BoardPostFragment extends DisBoardsListFragment {
             int listVisibility = progressBarVisible ? View.INVISIBLE
                 : View.VISIBLE;
             progressBar.setVisibility(progressBarVisiblity);
-            getListView().setVisibility(listVisibility);
+            commentsList.setVisibility(listVisibility);
             if (progressBarVisible) {
-                scrollToLastCommentTextView.setVisibility(View.INVISIBLE);
+                moveToFirstOrLastCommentLayout.setVisibility(View.INVISIBLE);
             }
         }
     }
@@ -299,6 +305,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
             setProgressBarAndFragmentVisibility(true);
             if (!requestingPost) {
                 connectionErrorTextView.setVisibility(View.GONE);
+
                 Intent disWebServiceIntent = new Intent(getSherlockActivity(),
                     DisWebService.class);
                 Bundle parametersBundle = new Bundle();
@@ -330,11 +337,6 @@ public class BoardPostFragment extends DisBoardsListFragment {
         outState.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -445,7 +447,7 @@ public class BoardPostFragment extends DisBoardsListFragment {
     }
 
     private void displayScrollToHiddenCommentOption(final boolean display) {
-        boolean alreadyHidden = scrollToLastCommentTextView.getVisibility() != View.VISIBLE;
+        boolean alreadyHidden = moveToFirstOrLastCommentLayout.getVisibility() != View.VISIBLE;
         if (!display && alreadyHidden) {
             return;
         }
@@ -461,9 +463,9 @@ public class BoardPostFragment extends DisBoardsListFragment {
                 offset[1] = 50f;
                 offset[2] = 100f;
             }
-            scrollToLastCommentTextView.setVisibility(View.VISIBLE);
+            moveToFirstOrLastCommentLayout.setVisibility(View.VISIBLE);
             ObjectAnimator animateScrollToLastCommentOption = ObjectAnimator
-                .ofFloat(scrollToLastCommentTextView, "translationY",
+                .ofFloat(moveToFirstOrLastCommentLayout, "translationY",
                     offset);
             animateScrollToLastCommentOption.setDuration(1000);
             animateScrollToLastCommentOption
@@ -474,10 +476,10 @@ public class BoardPostFragment extends DisBoardsListFragment {
 
                     public void onAnimationEnd(Animator animation) {
                         if (display) {
-                            scrollToLastCommentTextView
+                            moveToFirstOrLastCommentLayout
                                 .setVisibility(View.VISIBLE);
                         } else {
-                            scrollToLastCommentTextView
+                            moveToFirstOrLastCommentLayout
                                 .setVisibility(View.GONE);
                         }
                         animatingScrollToLastCommentView = false;

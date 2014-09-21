@@ -1,11 +1,14 @@
 package com.gregmcgowan.drownedinsound.ui.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
+import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostFragment;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
@@ -28,6 +31,21 @@ public class BoardPostActivity extends SherlockFragmentActivity {
 
     private BoardPostFragment boardPostFragment;
 
+    public static Intent getIntent(Context context, String postUrl, String postID, BoardType boardType) {
+        Intent boardPostActivityIntent = new Intent(context, BoardPostActivity.class);
+
+        Bundle parametersBundle = new Bundle();
+        parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
+                postUrl);
+        parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
+                postID);
+        parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
+                boardType);
+        boardPostActivityIntent.putExtras(parametersBundle);
+        return boardPostActivityIntent;
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,8 +65,11 @@ public class BoardPostActivity extends SherlockFragmentActivity {
 
         if (savedInstanceState == null) {
             // During initial setup, plug in the details fragment.
-            boardPostFragment = new BoardPostFragment();
-            boardPostFragment.setArguments(getIntent().getExtras());
+            String postUrl = getIntent().getStringExtra(DisBoardsConstants.BOARD_POST_URL);
+            String postID = getIntent().getStringExtra(DisBoardsConstants.BOARD_POST_ID);
+            BoardType boardType = (BoardType) getIntent().getSerializableExtra(DisBoardsConstants.BOARD_TYPE);
+
+            boardPostFragment = BoardPostFragment.newInstance(postUrl,postID,false,boardType);
             fragmentManager.beginTransaction()
                 .add(android.R.id.content, boardPostFragment).commit();
         }

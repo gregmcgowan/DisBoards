@@ -1,7 +1,9 @@
 package com.gregmcgowan.drownedinsound.data.network.handlers;
 
+import android.content.Context;
 import android.util.Log;
 
+import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
@@ -17,6 +19,8 @@ import org.apache.http.client.HttpResponseException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.inject.Inject;
+
 import de.greenrobot.event.EventBus;
 
 public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
@@ -26,13 +30,18 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
 
     private String boardPostId;
     private BoardType boardPostType;
-    private DatabaseHelper databaseHelper;
 
-    public RetrieveBoardPostHandler(String boardPostId, BoardType boardType,
-                                    boolean updateUI, DatabaseHelper databaseHelper) {
+    @Inject
+    DatabaseHelper databaseHelper;
+
+    @Inject
+    EventBus eventBus;
+
+    public RetrieveBoardPostHandler(Context context, String boardPostId, BoardType boardType,
+                                    boolean updateUI) {
+        DisBoardsApp.getApplication(context).inject(this);
         this.boardPostId = boardPostId;
         this.boardPostType = boardType;
-        this.databaseHelper = databaseHelper;
         setUpdateUI(updateUI);
     }
 
@@ -55,10 +64,9 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
             }
         }
         if (isUpdateUI()) {
-            EventBus.getDefault().post(
-                    new RetrievedBoardPostEvent(boardPost, false, true));
+            eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true));
         }
-        EventBus.getDefault().post(new UpdateCachedBoardPostEvent(boardPost));
+        eventBus.post(new UpdateCachedBoardPostEvent(boardPost));
     }
 
     @Override
@@ -75,8 +83,7 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
         }
 
         if (isUpdateUI()) {
-            EventBus.getDefault()
-                    .post(new RetrievedBoardPostEvent(null, false, true));
+            eventBus.post(new RetrievedBoardPostEvent(null, false, true));
         }
     }
 }

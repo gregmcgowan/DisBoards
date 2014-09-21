@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.gregmcgowan.drownedinsound.data.network.CookieManager;
 import com.gregmcgowan.drownedinsound.data.network.handlers.LoginResponseHandler;
+import com.gregmcgowan.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.ui.activity.LoginActivity;
 import com.gregmcgowan.drownedinsound.ui.activity.MainCommunityActivity;
@@ -26,7 +27,9 @@ import static android.content.Context.MODE_PRIVATE;
 @Module(
         injects = {
                 LoginResponseHandler.class,
+                RetrieveBoardPostHandler.class,
                 DisWebService.class,
+                DatabaseService.class,
                 MainCommunityActivity.class,
                 LoginActivity.class,
                 StartActivity.class

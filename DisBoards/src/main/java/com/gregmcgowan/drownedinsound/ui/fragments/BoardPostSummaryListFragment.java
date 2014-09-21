@@ -435,22 +435,11 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
             postUrl = boardUrl + "/" + postId;
 
             if (dualPaneMode) {
-               // listView.setItemChecked(position, true);
                 BoardPostFragment boardPostFragment = (BoardPostFragment) getFragmentManager()
                     .findFragmentById(R.id.board_post_details);
                 if (boardPostFragment == null
                     || !postId.equals(boardPostFragment.getBoardPostId())) {
-                    boardPostFragment = new BoardPostFragment();
-                    Bundle arguments = new Bundle();
-                    arguments.putString(DisBoardsConstants.BOARD_POST_ID,
-                        postId);
-                    arguments.putString(DisBoardsConstants.BOARD_POST_URL,
-                        postUrl);
-                    arguments.putBoolean(DisBoardsConstants.DUAL_PANE_MODE,
-                        true);
-                    arguments.putSerializable(DisBoardsConstants.BOARD_TYPE,
-                        boardType);
-                    boardPostFragment.setArguments(arguments);
+                    boardPostFragment = BoardPostFragment.newInstance(postUrl,postId,true,boardType);
                     // Execute a transaction, replacing any existing fragment
                     // with this one inside the frame.
                     FragmentTransaction ft = getFragmentManager()
@@ -461,18 +450,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
                 }
 
             } else {
-                Intent viewPostIntent = new Intent(getSherlockActivity(),
-                    BoardPostActivity.class);
-                Bundle parametersBundle = new Bundle();
-                parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
-                    postUrl);
-                parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
-                    postId);
-                parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
-                    boardType);
-                viewPostIntent.putExtras(parametersBundle);
-
-                startActivity(viewPostIntent);
+                startActivity(BoardPostActivity.getIntent(getSherlockActivity(),postUrl,postId,boardType));
             }
         }
     }

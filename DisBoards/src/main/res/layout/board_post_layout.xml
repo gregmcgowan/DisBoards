@@ -7,7 +7,7 @@
     android:background="@color/background_colour_light">
 
     <com.gregmcgowan.drownedinsound.ui.widgets.AutoScrollListView
-        android:id="@android:id/list"
+        android:id="@+id/board_post_comment_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@android:color/transparent"
@@ -36,16 +36,25 @@
         android:textSize="@dimen/text_medium"
         android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/board_post_move_to_last_comment_view"
+
+    <RelativeLayout
+        android:id="@+id/board_post_move_to_first_or_last_comment_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:background="@color/yellow_start_colour"
-        android:gravity="center"
-        android:padding="10dip"
-        android:textColor="@color/darkest_grey"
-        android:text="@string/go_to_latest_comment"
-        android:visibility="gone" />
+        android:layout_alignParentBottom="true"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/board_post_move_to_last_comment_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="16dip"
+            android:textColor="@color/darkest_grey"
+            android:text="@string/go_to_latest_comment" />
+
+    </RelativeLayout>
+
 
 </RelativeLayout>

@@ -3,6 +3,7 @@ package com.gregmcgowan.drownedinsound.data;
 import android.app.IntentService;
 import android.content.Intent;
 
+import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.events.RetrievedFavouritesEvent;
@@ -10,6 +11,8 @@ import com.gregmcgowan.drownedinsound.events.SetBoardPostFavouriteStatusResultEv
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
@@ -27,16 +30,22 @@ public class DatabaseService extends IntentService {
 
     private  static final String SERVICE_NAME = "DatabaseService";
 
-    private DatabaseHelper databaseHelper;
+
+    @Inject
+    DatabaseHelper databaseHelper;
+
+    @Inject
+    EventBus eventBus;
 
     public DatabaseService() {
         super(SERVICE_NAME);
-
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
+        DisBoardsApp disBoardsApp = DisBoardsApp.getApplication(this);
+        disBoardsApp.inject(this);
+
         int requestedService = intent.getIntExtra(
             DATABASE_SERVICE_REQUESTED_KEY, 0);
         switch(requestedService) {
@@ -55,12 +64,12 @@ public class DatabaseService extends IntentService {
        BoardPost boardPost = intent.getParcelableExtra(DisBoardsConstants.BOARD_POST_KEY);
        boolean isFavourite = intent.getBooleanExtra(DisBoardsConstants.IS_FAVOURITE,false);
        boolean updated =  databaseHelper.setBoardPostFavouriteStatus(boardPost,isFavourite);
-       EventBus.getDefault().post(new SetBoardPostFavouriteStatusResultEvent(updated,isFavourite));
+       eventBus.post(new SetBoardPostFavouriteStatusResultEvent(updated,isFavourite));
     }
 
 
     private void doGetFavouriteBoardPostsAction(Intent intent) {
         List<BoardPost> favouritedBoardPosts = databaseHelper.getFavouritedBoardPosts();
-        EventBus.getDefault().post(new RetrievedFavouritesEvent(new ArrayList<BoardPost>(favouritedBoardPosts)));
+        eventBus.post(new RetrievedFavouritesEvent(new ArrayList<>(favouritedBoardPosts)));
     }
 }
