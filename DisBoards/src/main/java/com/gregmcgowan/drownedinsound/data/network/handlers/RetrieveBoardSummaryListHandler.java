@@ -92,9 +92,17 @@ public class RetrieveBoardSummaryListHandler extends
         }
 
         if (isUpdateUI()) {
-            eventBus.post(
-                    new RetrievedBoardPostSummaryListEvent(null, boardType,
-                            false, append));
+            List<BoardPost> cachedBoardPosts = databaseHelper.getBoardPosts(boardType);
+            if(cachedBoardPosts.size() > 0) {
+                eventBus.post(
+                        new RetrievedBoardPostSummaryListEvent(cachedBoardPosts, boardType,
+                                true, append));
+            } else {
+                eventBus.post(
+                        new RetrievedBoardPostSummaryListEvent(null, boardType,
+                                false, append));
+            }
+
         }
     }
 
