@@ -17,7 +17,6 @@ import com.gregmcgowan.drownedinsound.utils.UiUtils;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
-import net.hockeyapp.android.CrashManager;
 
 import android.content.Context;
 import android.content.Intent;
@@ -210,7 +209,7 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
     }
 
     private void checkForCrashes() {
-        CrashManager.register(this, DisBoardsConstants.HOCKEY_APP_ID);
+
     }
 
     private void checkForUpdates() {

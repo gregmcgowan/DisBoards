@@ -6,8 +6,6 @@ import com.gregmcgowan.drownedinsound.data.model.BoardType;
 import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostFragment;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
 
-import net.hockeyapp.android.CrashManager;
-import net.hockeyapp.android.UpdateManager;
 
 import android.content.Context;
 import android.content.Intent;
@@ -87,16 +85,10 @@ public class BoardPostActivity extends SherlockFragmentActivity {
     public void onResume() {
         super.onResume();
         checkForCrashes();
-        checkForUpdates();
     }
 
     private void checkForCrashes() {
-        CrashManager.register(this, DisBoardsConstants.HOCKEY_APP_ID);
-    }
 
-    private void checkForUpdates() {
-        // Remove this for store builds!
-        UpdateManager.register(this, DisBoardsConstants.HOCKEY_APP_ID);
     }
 
     public void refreshMenu() {

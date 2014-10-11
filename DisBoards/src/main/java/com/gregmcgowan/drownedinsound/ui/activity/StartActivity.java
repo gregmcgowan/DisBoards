@@ -1,5 +1,7 @@
 package com.gregmcgowan.drownedinsound.ui.activity;
 
+import com.crashlytics.android.Crashlytics;
+import com.gregmcgowan.drownedinsound.BuildConfig;
 import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.data.UserSessionManager;
 import com.gregmcgowan.drownedinsound.events.LoginSucceededEvent;
@@ -21,6 +23,12 @@ public class StartActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(BuildConfig.BUILD_TYPE.equals("beta")
+                || BuildConfig.BUILD_TYPE.equals("release")) {
+            Crashlytics.start(this);
+        }
+
 
         DisBoardsApp disBoardsApp = DisBoardsApp.getApplication(this);
         disBoardsApp.inject(this);

@@ -1,5 +1,8 @@
 package com.gregmcgowan.drownedinsound.core;
 
+import com.gregmcgowan.drownedinsound.BuildConfig;
+import com.gregmcgowan.drownedinsound.utils.CrashlyticsTree;
+
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
@@ -8,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import dagger.ObjectGraph;
+import timber.log.Timber;
 
 public class DisBoardsApp extends Application {
 
@@ -21,6 +25,16 @@ public class DisBoardsApp extends Application {
     public void onCreate() {
         super.onCreate();
         buildObjectGraphAndInject();
+        initialiseLogging();
+    }
+
+    private void initialiseLogging() {
+        Timber.tag(DisBoardsConstants.LOG_TAG_PREFIX);
+        if(BuildConfig.BUILD_TYPE.equals(BuildConfig.RELEASE_BUILD_TYPE)) {
+            Timber.plant(new CrashlyticsTree());
+        } else {
+            Timber.plant(new Timber.DebugTree());
+        }
     }
 
 

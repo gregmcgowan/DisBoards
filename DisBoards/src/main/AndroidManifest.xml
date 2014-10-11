@@ -1,19 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.gregmcgowan.drownedinsound"
-    android:versionCode="1"
-    android:versionName="0.0.2" >
+    package="com.gregmcgowan.drownedinsound" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_LOGS" />
-    <uses-permission android:name="android.permission.GET_TASKS" />
-
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="15" />
 
     <application
         android:name=".core.DisBoardsApp"
@@ -30,7 +21,6 @@
 
         <service android:name="com.gregmcgowan.drownedinsound.data.DatabaseService" />
 
-        <activity android:name="net.hockeyapp.android.UpdateActivity" />
         <activity
             android:name="com.gregmcgowan.drownedinsound.ui.activity.StartActivity" >
             <intent-filter>
@@ -38,6 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="cbf1e3f91081369d89e7101d65a0721a48066835"/>
     </application>
 
 </manifest>
