@@ -2,6 +2,7 @@ package com.gregmcgowan.drownedinsound.data;
 
 import com.gregmcgowan.drownedinsound.data.network.handlers.LoginResponseHandler;
 import com.gregmcgowan.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
+import com.gregmcgowan.drownedinsound.data.network.handlers.ThisACommentHandler;
 import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.ui.activity.LoginActivity;
 import com.gregmcgowan.drownedinsound.ui.activity.MainCommunityActivity;
@@ -14,6 +15,7 @@ import android.content.SharedPreferences;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
@@ -26,6 +28,7 @@ import static android.content.Context.MODE_PRIVATE;
         injects = {
                 LoginResponseHandler.class,
                 RetrieveBoardPostHandler.class,
+                ThisACommentHandler.class,
                 DisWebService.class,
                 DatabaseService.class,
                 MainCommunityActivity.class,
@@ -61,6 +64,9 @@ public class DataModule {
 
     private OkHttpClient createOkHttpClient(Application app) {
         OkHttpClient client = new OkHttpClient();
+        client.setConnectTimeout(10, TimeUnit.SECONDS);
+        client.setReadTimeout(5,TimeUnit.SECONDS);
+        client.setConnectTimeout(5,TimeUnit.SECONDS);
         // Install an HTTP cache in the application cache directory.
         try {
             File cacheDir = new File(app.getCacheDir(), "http");

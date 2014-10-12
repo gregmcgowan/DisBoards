@@ -219,7 +219,7 @@ public class DisWebService extends IntentService {
         Request request = requestBuilder.get().url(fullUrl)
                 .headers(headerBuilder.build()).build();
         httpClient.newCall(request)
-                .enqueue(new ThisACommentHandler(boardPostId, boardType, databaseHelper));
+                .enqueue(new ThisACommentHandler(this,boardPostId, boardType));
     }
 
     private void newPost(Intent intent) {

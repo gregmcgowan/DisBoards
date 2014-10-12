@@ -1,5 +1,6 @@
 package com.gregmcgowan.drownedinsound.data.network.handlers;
 
+import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
 import com.gregmcgowan.drownedinsound.data.model.BoardPost;
 import com.gregmcgowan.drownedinsound.data.model.BoardType;
@@ -11,8 +12,12 @@ import com.gregmcgowan.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import android.content.Context;
+
 import java.io.IOException;
 import java.io.InputStream;
+
+import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
@@ -22,12 +27,15 @@ public class ThisACommentHandler extends OkHttpAsyncResponseHandler {
 
     private BoardType boardType;
 
-    private DatabaseHelper databaseHelper;
+    @Inject
+    protected DatabaseHelper databaseHelper;
 
-    public ThisACommentHandler(String postID, BoardType boardType,
-            DatabaseHelper databaseHelper) {
+    @Inject
+    protected EventBus eventBus;
+
+    public ThisACommentHandler(Context context, String postID, BoardType boardType) {
+        DisBoardsApp.getApplication(context).inject(this);
         this.postID = postID;
-        this.databaseHelper = databaseHelper;
         this.boardType = boardType;
         setUpdateUI(true);
     }
@@ -42,19 +50,19 @@ public class ThisACommentHandler extends OkHttpAsyncResponseHandler {
             if (boardPost != null) {
                 databaseHelper.setBoardPost(boardPost);
                 if (isUpdateUI()) {
-                    EventBus.getDefault().post(
+                    eventBus.post(
                             new RetrievedBoardPostEvent(boardPost, false, false));
                 }
-                EventBus.getDefault().post(
+                eventBus.post(
                         new UpdateCachedBoardPostEvent(boardPost));
             }
         } else {
-            EventBus.getDefault().post(new UserIsNotLoggedInEvent());
+            eventBus.post(new UserIsNotLoggedInEvent());
         }
     }
 
     @Override
     public void handleFailure(Request request, Throwable throwable) {
-        EventBus.getDefault().post(new FailedToThisThisEvent());
+        eventBus.post(new FailedToThisThisEvent());
     }
 }
