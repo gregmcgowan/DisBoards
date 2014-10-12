@@ -277,7 +277,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
     }
 
     private void extractPostId(String tagString) {
-        String postId = null;
+        String postId;
         HashMap<String, String> parameters = createAttributeMapFromStartTag(tagString);
         if (parameters != null) {
             String href = parameters.get(HtmlConstants.HREF);
@@ -285,6 +285,11 @@ public class BoardPostSummaryListParser extends StreamingParser {
                 int indexOfLastForwardSlash = href.lastIndexOf("/");
                 if (indexOfLastForwardSlash != -1) {
                     postId = href.substring(indexOfLastForwardSlash + 1);
+                    if( postId.contains("#last")){
+                        postId = postId.replace("#last","");
+                    } else  if(postId.contains("#")) {
+                        postId = postId.replace("#","");
+                    }
                     currentBoardPost.setId(postId);
                 }
             }
