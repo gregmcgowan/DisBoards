@@ -23,3 +23,5 @@ build
 .gradle
 Libraries/*/build
 .DS_Store
+
+crashlytics-build.properties
