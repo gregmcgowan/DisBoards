@@ -109,6 +109,14 @@
             android:textIsSelectable="true"
             android:textSize="@dimen/text_micro"
             tools:text="Here is some text. That is the first comment in the thread"/>
+
+
     </LinearLayout>
+
+    <View
+            android:id="@+id/board_post_list_bottom_margin"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin_large"
+            android:background="@android:color/transparent" />
 
 </LinearLayout>
