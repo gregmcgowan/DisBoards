@@ -1,14 +1,14 @@
+Remvoe getDefault eventBus
 Fully test new post
 Fully test new comment
 Fully test poor network connectivity
 Reply for tablet landscape mode
 Save drafts for replies
 Remove old posts from the database
-Fix text sizes
-Fix bottom comment - shold be some margin between that and the bottom
-Improve nativation drawer UI - maybe use logged in profile picture
 Reply and this UI
 Hide reply,this,new post etc when the user is logged out.
 Remove actionbarsherlock project
+Remove nineoldandroids
+
 
 
