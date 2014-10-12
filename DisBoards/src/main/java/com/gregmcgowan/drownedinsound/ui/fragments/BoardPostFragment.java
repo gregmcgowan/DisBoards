@@ -24,10 +24,9 @@ import com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity;
 import com.gregmcgowan.drownedinsound.ui.view.ActiveTextView;
 import com.gregmcgowan.drownedinsound.ui.widgets.AutoScrollListView;
 import com.gregmcgowan.drownedinsound.utils.UiUtils;
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.Animator.AnimatorListener;
-import com.nineoldandroids.animation.ObjectAnimator;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.TransitionDrawable;
@@ -112,7 +111,6 @@ public class BoardPostFragment extends DisBoardsFragment {
     @InjectView(R.id.board_post_move_to_last_comment_text_view)
     TextView scrollToLastCommentTextView;
 
-
     public static BoardPostFragment newInstance(String boardPostUrl,
             String boardPostID,
             boolean inDualPaneMode, BoardType boardType) {
@@ -151,13 +149,12 @@ public class BoardPostFragment extends DisBoardsFragment {
                 R.layout.board_post_comment_layout, boardPostComments,
                 new WeakReference<>(this));
         commentsList.setAdapter(adapter);
-
         moveToFirstOrLastCommentLayout
                 .setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         scrollToLatestComment();
-
+                        displayScrollToHiddenCommentOption(false);
                     }
 
                 });
@@ -491,7 +488,7 @@ public class BoardPostFragment extends DisBoardsFragment {
                             offset);
             animateScrollToLastCommentOption.setDuration(1000);
             animateScrollToLastCommentOption
-                    .addListener(new AnimatorListener() {
+                    .addListener(new Animator.AnimatorListener() {
 
                         public void onAnimationStart(Animator animation) {
                         }
@@ -1075,7 +1072,7 @@ public class BoardPostFragment extends DisBoardsFragment {
                     actionLayout, "scaleY", offset);
             removeObjectAnimator.setDuration(500);
             removeObjectAnimator.setInterpolator(new AccelerateInterpolator());
-            removeObjectAnimator.addListener(new AnimatorListener() {
+            removeObjectAnimator.addListener(new Animator.AnimatorListener() {
 
                 public void onAnimationStart(Animator animation) {
                 }
