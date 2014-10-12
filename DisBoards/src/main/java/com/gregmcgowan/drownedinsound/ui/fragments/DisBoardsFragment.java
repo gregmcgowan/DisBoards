@@ -6,14 +6,18 @@ import com.gregmcgowan.drownedinsound.annotations.UseEventBus;
 import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 
 import android.os.Bundle;
+import android.os.Handler;
 
 import java.lang.annotation.Annotation;
+
 
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
 public class DisBoardsFragment extends SherlockFragment {
+
+    protected Handler fragmentHander;
 
     @Inject
     protected EventBus eventBus;
@@ -29,6 +33,8 @@ public class DisBoardsFragment extends SherlockFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        fragmentHander = new Handler();
 
         if (containsAnnotation(UseDagger.class) || containsAnnotation(UseEventBus.class)) {
             DisBoardsApp.getApplication(getActivity()).inject(this);
