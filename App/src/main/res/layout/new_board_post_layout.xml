@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_medium" >
 
-        <com.gregmcgowan.drownedinsound.ui.view.RobotoLightTextView
+        <com.drownedinsound.ui.view.RobotoLightTextView
             android:id="@+id/new_board_post_heading"
             android:layout_width="0px"
             android:layout_height="wrap_content"

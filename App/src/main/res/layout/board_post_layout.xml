@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_colour_light">
 
-    <com.gregmcgowan.drownedinsound.ui.widgets.AutoScrollListView
+    <com.drownedinsound.ui.widgets.AutoScrollListView
         android:id="@+id/board_post_comment_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

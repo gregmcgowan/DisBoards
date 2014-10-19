@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.gregmcgowan.drownedinsound" >
+    package="com.drownedinsound" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -11,18 +11,18 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Dis_boards" >
-        <activity android:name="com.gregmcgowan.drownedinsound.ui.activity.LoginActivity"  android:label="" />
-        <activity android:name="com.gregmcgowan.drownedinsound.ui.activity.MainCommunityActivity" android:label="" />
-        <activity android:name="com.gregmcgowan.drownedinsound.ui.activity.BoardPostActivity"  android:label="" />
-        <activity android:name="com.gregmcgowan.drownedinsound.ui.activity.FavouritesActivity" android:label="Favourite Posts"
+        <activity android:name=".ui.activity.LoginActivity"  android:label="" />
+        <activity android:name=".ui.activity.MainCommunityActivity" android:label="" />
+        <activity android:name=".ui.activity.BoardPostActivity"  android:label="" />
+        <activity android:name=".ui.activity.FavouritesActivity" android:label="Favourite Posts"
             android:icon="@null"/>
 
         <service android:name=".data.network.service.DisWebService" />
 
-        <service android:name="com.gregmcgowan.drownedinsound.data.DatabaseService" />
+        <service android:name=".data.DatabaseService" />
 
         <activity
-            android:name="com.gregmcgowan.drownedinsound.ui.activity.StartActivity" >
+            android:name=".ui.activity.StartActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -21,7 +21,7 @@
         android:background="@drawable/comment_background_normal"
         android:orientation="vertical" >
 
-        <com.gregmcgowan.drownedinsound.ui.view.RobotoLightTextView
+        <com.drownedinsound.ui.view.RobotoLightTextView
             android:id="@+id/board_post_initial_comment_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -95,7 +95,7 @@
 
         <include layout="@layout/dotted_divider_grey" /> 
          
-        <com.gregmcgowan.drownedinsound.ui.view.ActiveTextView
+        <com.drownedinsound.ui.view.ActiveTextView
             android:id="@+id/board_post_initial_comment_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

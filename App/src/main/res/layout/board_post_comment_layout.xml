@@ -45,7 +45,7 @@
 
             <include layout="@layout/thicker_divider_grey" />
 
-            <com.gregmcgowan.drownedinsound.ui.view.ActiveTextView
+            <com.drownedinsound.ui.view.ActiveTextView
                 android:id="@+id/board_post_comment_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
