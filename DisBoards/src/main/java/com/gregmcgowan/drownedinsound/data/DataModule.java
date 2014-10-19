@@ -1,7 +1,10 @@
 package com.gregmcgowan.drownedinsound.data;
 
 import com.gregmcgowan.drownedinsound.data.network.handlers.LoginResponseHandler;
+import com.gregmcgowan.drownedinsound.data.network.handlers.NewPostHandler;
+import com.gregmcgowan.drownedinsound.data.network.handlers.PostACommentHandler;
 import com.gregmcgowan.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
+import com.gregmcgowan.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.gregmcgowan.drownedinsound.data.network.handlers.ThisACommentHandler;
 import com.gregmcgowan.drownedinsound.data.network.service.DisWebService;
 import com.gregmcgowan.drownedinsound.ui.activity.LoginActivity;
@@ -27,7 +30,10 @@ import static android.content.Context.MODE_PRIVATE;
 @Module(
         injects = {
                 LoginResponseHandler.class,
+                NewPostHandler.class,
                 RetrieveBoardPostHandler.class,
+                RetrieveBoardSummaryListHandler.class,
+                PostACommentHandler.class,
                 ThisACommentHandler.class,
                 DisWebService.class,
                 DatabaseService.class,

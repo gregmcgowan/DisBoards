@@ -2,6 +2,8 @@ package com.gregmcgowan.drownedinsound.ui.activity;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.gregmcgowan.drownedinsound.R;
+import com.gregmcgowan.drownedinsound.annotations.UseDagger;
+import com.gregmcgowan.drownedinsound.annotations.UseEventBus;
 import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.network.CookieManager;
@@ -33,7 +35,8 @@ import de.greenrobot.event.EventBus;
  *
  * @author Greg
  */
-public class LoginActivity extends SherlockActivity {
+@UseDagger @UseEventBus
+public class LoginActivity extends DisBoardsActivity {
 
     @Inject
     CookieManager cookieManager;
@@ -52,9 +55,6 @@ public class LoginActivity extends SherlockActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
-        DisBoardsApp disBoardsApp = DisBoardsApp.getApplication(this);
-        disBoardsApp.inject(this);
-        EventBus.getDefault().register(this);
         setListeners();
     }
 
@@ -63,12 +63,6 @@ public class LoginActivity extends SherlockActivity {
                 MainCommunityActivity.class);
         startActivity(startMainActivityIntent);
         finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
     }
 
     private void setListeners() {
@@ -94,7 +88,7 @@ public class LoginActivity extends SherlockActivity {
 
     protected void doLurkAction() {
         cookieManager.clearCookies();
-        EventBus.getDefault().post(new LurkEvent());
+        eventBus.post(new LurkEvent());
         goToMainActivity();
     }
 
@@ -143,7 +137,7 @@ public class LoginActivity extends SherlockActivity {
     public void onEventMainThread(LoginResponseEvent event) {
         boolean loginSucceeded = event.isSuccess();
         if (loginSucceeded) {
-            EventBus.getDefault().post(new LoginSucceededEvent());
+            eventBus.post(new LoginSucceededEvent());
             Intent startMainActivityIntent = new Intent(this,
                     MainCommunityActivity.class);
             startActivity(startMainActivityIntent);

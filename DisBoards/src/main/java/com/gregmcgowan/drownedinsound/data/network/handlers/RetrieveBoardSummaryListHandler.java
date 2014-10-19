@@ -35,16 +35,11 @@ public class RetrieveBoardSummaryListHandler extends
 
     private boolean append;
 
-    @Inject
-    DatabaseHelper databaseHelper;
-
-    @Inject
-    EventBus eventBus;
-
     public RetrieveBoardSummaryListHandler(Context context,
             BoardType boardType,
             boolean updateUI,
             boolean append) {
+        super(context);
         DisBoardsApp.getApplication(context).inject(this);
         this.boardType = boardType;
         this.append = append;

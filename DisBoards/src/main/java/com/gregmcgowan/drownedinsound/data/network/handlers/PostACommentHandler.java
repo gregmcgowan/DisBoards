@@ -10,6 +10,8 @@ import com.gregmcgowan.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import android.content.Context;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -21,13 +23,11 @@ public class PostACommentHandler extends OkHttpAsyncResponseHandler {
 
     private BoardType boardType;
 
-    private DatabaseHelper databaseHelper;
 
-    public PostACommentHandler(String boardPostId, BoardType boardType,
-            DatabaseHelper databaseHelper) {
+    public PostACommentHandler(Context context, String boardPostId, BoardType boardType) {
+        super(context);
         this.postID = boardPostId;
         this.boardType = boardType;
-        this.databaseHelper = databaseHelper;
         setUpdateUI(true);
     }
 
@@ -43,15 +43,15 @@ public class PostACommentHandler extends OkHttpAsyncResponseHandler {
             }
         }
         if (isUpdateUI()) {
-            EventBus.getDefault().post(
+            eventBus.post(
                     new RetrievedBoardPostEvent(boardPost, false, false));
         }
-        EventBus.getDefault().post(new UpdateCachedBoardPostEvent(boardPost));
+        eventBus.post(new UpdateCachedBoardPostEvent(boardPost));
     }
 
     @Override
     public void handleFailure(Request request, Throwable throwable) {
-        EventBus.getDefault().post(new FailedToPostCommentEvent());
+        eventBus.post(new FailedToPostCommentEvent());
     }
 
 

@@ -1,12 +1,21 @@
 package com.gregmcgowan.drownedinsound.data.network.handlers;
 
+import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
+import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
+import com.gregmcgowan.drownedinsound.data.UserSessionManager;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import android.content.Context;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
+
+import javax.inject.Inject;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by gregmcgowan on 20/07/2014.
@@ -14,6 +23,21 @@ import java.util.zip.GZIPInputStream;
 public abstract class OkHttpAsyncResponseHandler implements Callback {
 
     private boolean updateUI;
+
+    @Inject
+    protected DatabaseHelper databaseHelper;
+
+    @Inject
+    UserSessionManager userSessionManager;
+
+    @Inject
+    EventBus eventBus;
+
+    public OkHttpAsyncResponseHandler(Context context) {
+        if (context != null) {
+            DisBoardsApp.getApplication(context).inject(this);
+        }
+    }
 
     @Override
     public void onFailure(Request request, IOException e) {

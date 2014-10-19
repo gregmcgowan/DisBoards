@@ -127,7 +127,7 @@ public class NewPostFragment extends DisBoardsDialogFragment {
             disWebService.putExtras(parametersBundle);
 
             getSherlockActivity().startService(disWebService);
-            EventBus.getDefault().post(new SentNewPostEvent(SentNewPostState.SENT));
+            eventBus.post(new SentNewPostEvent(SentNewPostState.SENT));
             dismiss();
         } else {
             Toast.makeText(getSherlockActivity(), "You must at least add a title",

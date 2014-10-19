@@ -4,6 +4,8 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.gregmcgowan.drownedinsound.R;
+import com.gregmcgowan.drownedinsound.annotations.UseDagger;
+import com.gregmcgowan.drownedinsound.annotations.UseEventBus;
 import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.core.DisBoardsConstants;
 import com.gregmcgowan.drownedinsound.data.DatabaseHelper;
@@ -47,7 +49,8 @@ import de.greenrobot.event.EventBus;
  *
  * @author Greg
  */
-public class MainCommunityActivity extends SherlockFragmentActivity {
+@UseEventBus @UseDagger
+public class MainCommunityActivity extends DisBoardsActivity {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX + "MainCommunityActivity";
 
@@ -80,21 +83,11 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.community_layout);
 
-        DisBoardsApp disBoardsApp = DisBoardsApp.getApplication(this);
-        disBoardsApp.inject(this);
-
-        EventBus.getDefault().register(this);
         mAdapter = new BoardsFragmentAdapter(getSupportFragmentManager(),
                 DatabaseHelper.getInstance(getApplicationContext()));
 
         initialiseViewPager();
         initialiseSlidingDrawer();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
     }
 
     private void initialiseSlidingDrawer() {
@@ -199,22 +192,6 @@ public class MainCommunityActivity extends SherlockFragmentActivity {
 
 
         });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        checkForCrashes();
-        checkForUpdates();
-    }
-
-    private void checkForCrashes() {
-
-    }
-
-    private void checkForUpdates() {
-        // Remove this for store builds!
-        // UpdateManager.register(this, DisBoardsConstants.HOCKEY_APP_ID);
     }
 
     @Override

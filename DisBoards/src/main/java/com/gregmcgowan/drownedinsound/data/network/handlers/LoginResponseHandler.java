@@ -28,12 +28,8 @@ public class LoginResponseHandler extends OkHttpAsyncResponseHandler {
 
     private static final String AUTHENTICITY_TOKEN_NAME = "csrf-token";
 
-    @Inject
-    UserSessionManager userSessionManager;
-
     public LoginResponseHandler(Context context) {
-        DisBoardsApp disBoardsApp = DisBoardsApp.getApplication(context);
-        disBoardsApp.inject(this);
+        super(context);
     }
 
     @Override
@@ -47,9 +43,9 @@ public class LoginResponseHandler extends OkHttpAsyncResponseHandler {
                 getAuthToken(response.body().byteStream());
             }
 
-            EventBus.getDefault().post(new LoginResponseEvent(logInSuccess));
+            eventBus.post(new LoginResponseEvent(logInSuccess));
         } catch (IOException ioe) {
-            EventBus.getDefault().post(new LoginResponseEvent(false));
+            eventBus.post(new LoginResponseEvent(false));
         }
     }
 
@@ -75,7 +71,7 @@ public class LoginResponseHandler extends OkHttpAsyncResponseHandler {
 
     @Override
     public void handleFailure(Request request, Throwable throwable) {
-        EventBus.getDefault().post(new LoginResponseEvent(false));
+        eventBus.post(new LoginResponseEvent(false));
     }
 
     @Override

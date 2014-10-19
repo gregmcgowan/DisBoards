@@ -32,15 +32,9 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
 
     private BoardType boardPostType;
 
-    @Inject
-    DatabaseHelper databaseHelper;
-
-    @Inject
-    EventBus eventBus;
-
     public RetrieveBoardPostHandler(Context context, String boardPostId, BoardType boardType,
             boolean updateUI) {
-        DisBoardsApp.getApplication(context).inject(this);
+        super(context);
         this.boardPostId = boardPostId;
         this.boardPostType = boardType;
         setUpdateUI(updateUI);

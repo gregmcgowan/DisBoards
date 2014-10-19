@@ -13,6 +13,8 @@ import com.gregmcgowan.drownedinsound.ui.activity.StartActivity;
 import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostFragment;
 import com.gregmcgowan.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
 import com.gregmcgowan.drownedinsound.ui.fragments.FavouritesListFragment;
+import com.gregmcgowan.drownedinsound.ui.fragments.NewPostFragment;
+import com.gregmcgowan.drownedinsound.ui.fragments.PostReplyFragment;
 import com.squareup.okhttp.OkHttpClient;
 
 import android.content.SharedPreferences;
@@ -39,7 +41,10 @@ import de.greenrobot.event.EventBus;
                 BoardPostSummaryListFragment.class,
                 MainCommunityActivity.class,
                 LoginActivity.class,
-                StartActivity.class
+                StartActivity.class,
+                PostReplyFragment.class,
+                NewPostFragment.class
+
         },
         complete = false,
         library = true

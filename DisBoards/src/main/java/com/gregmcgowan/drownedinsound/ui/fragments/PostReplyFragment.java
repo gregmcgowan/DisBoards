@@ -130,7 +130,7 @@ public class PostReplyFragment extends DisBoardsDialogFragment {
         getSherlockActivity().startService(disWebServiceIntent);
 
         dismiss();
-        EventBus.getDefault().post(new BoardPostCommentSentEvent());
+        eventBus.post(new BoardPostCommentSentEvent());
     }
 
 }

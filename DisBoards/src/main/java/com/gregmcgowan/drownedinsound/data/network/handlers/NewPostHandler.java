@@ -9,22 +9,25 @@ import com.gregmcgowan.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.inject.Inject;
+
 import de.greenrobot.event.EventBus;
+
 
 public class NewPostHandler extends OkHttpAsyncResponseHandler {
 
     private Board board;
 
-    private DatabaseHelper databaseHelper;
 
-    public NewPostHandler(Board board, DatabaseHelper databaseHelper) {
+    public NewPostHandler(Context context,Board board) {
+        super(context);
         this.board = board;
-        this.databaseHelper = databaseHelper;
     }
 
     @Override
@@ -33,12 +36,12 @@ public class NewPostHandler extends OkHttpAsyncResponseHandler {
         String locationHeader = response.header("location");
         Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Location Header " + locationHeader);
         databaseHelper.removeDraftBoardPost(board.getBoardType());
-        EventBus.getDefault().post(new SentNewPostEvent(SentNewPostState.CONFIRMED));
+        eventBus.post(new SentNewPostEvent(SentNewPostState.CONFIRMED));
     }
 
     @Override
     public void handleFailure(Request request, Throwable throwable) {
-        EventBus.getDefault().post(new FailedToPostNewThreadEvent());
+        eventBus.post(new FailedToPostNewThreadEvent());
     }
 
 

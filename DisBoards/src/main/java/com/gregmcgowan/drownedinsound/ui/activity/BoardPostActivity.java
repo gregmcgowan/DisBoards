@@ -20,12 +20,10 @@ import android.support.v4.app.FragmentManager;
  *
  * @author Greg
  */
-public class BoardPostActivity extends SherlockFragmentActivity {
+public class BoardPostActivity extends DisBoardsActivity {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
             + "BoardPostActivity";
-
-    private FragmentManager fragmentManager;
 
     private BoardPostFragment boardPostFragment;
 
@@ -48,8 +46,6 @@ public class BoardPostActivity extends SherlockFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        fragmentManager = getSupportFragmentManager();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         int screenWidthPixels = getResources().getDisplayMetrics().widthPixels;
@@ -84,11 +80,6 @@ public class BoardPostActivity extends SherlockFragmentActivity {
     @Override
     public void onResume() {
         super.onResume();
-        checkForCrashes();
-    }
-
-    private void checkForCrashes() {
-
     }
 
     public void refreshMenu() {

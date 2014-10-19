@@ -27,14 +27,8 @@ public class ThisACommentHandler extends OkHttpAsyncResponseHandler {
 
     private BoardType boardType;
 
-    @Inject
-    protected DatabaseHelper databaseHelper;
-
-    @Inject
-    protected EventBus eventBus;
-
     public ThisACommentHandler(Context context, String postID, BoardType boardType) {
-        DisBoardsApp.getApplication(context).inject(this);
+        super(context);
         this.postID = postID;
         this.boardType = boardType;
         setUpdateUI(true);

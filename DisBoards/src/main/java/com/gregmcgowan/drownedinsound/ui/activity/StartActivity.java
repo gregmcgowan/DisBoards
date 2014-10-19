@@ -2,6 +2,8 @@ package com.gregmcgowan.drownedinsound.ui.activity;
 
 import com.crashlytics.android.Crashlytics;
 import com.gregmcgowan.drownedinsound.BuildConfig;
+import com.gregmcgowan.drownedinsound.annotations.UseDagger;
+import com.gregmcgowan.drownedinsound.annotations.UseEventBus;
 import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 import com.gregmcgowan.drownedinsound.data.UserSessionManager;
 import com.gregmcgowan.drownedinsound.events.LoginSucceededEvent;
@@ -15,7 +17,8 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
-public class StartActivity extends Activity {
+@UseEventBus @UseDagger
+public class StartActivity extends DisBoardsActivity {
 
     @Inject
     UserSessionManager userSessionManager;
@@ -29,11 +32,6 @@ public class StartActivity extends Activity {
             Crashlytics.start(this);
         }
 
-
-        DisBoardsApp disBoardsApp = DisBoardsApp.getApplication(this);
-        disBoardsApp.inject(this);
-
-        EventBus.getDefault().register(this);
         if (userSessionManager.isUserLoggedIn()) {
             goToMainActivity();
         } else {
@@ -62,12 +60,6 @@ public class StartActivity extends Activity {
 
     public void onEventMainThread(LurkEvent event) {
         goToMainActivity();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
     }
 
 }

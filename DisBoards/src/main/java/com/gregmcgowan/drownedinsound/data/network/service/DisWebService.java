@@ -135,7 +135,7 @@ public class DisWebService extends IntentService {
             }
 
         } else {
-            EventBus.getDefault().post(
+            eventBus.post(
                     new RetrievedBoardPostEvent(cachedPost, true, true));
         }
 
@@ -242,7 +242,7 @@ public class DisWebService extends IntentService {
         Request request = requestBuilder.post(requestBody).headers(headerBuilder.build())
                 .url(UrlConstants.NEW_POST_URL).build();
 
-        httpClient.newCall(request).enqueue(new NewPostHandler(board, databaseHelper));
+        httpClient.newCall(request).enqueue(new NewPostHandler(this,board));
     }
 
     private void postComment(Intent intent) {
@@ -273,8 +273,7 @@ public class DisWebService extends IntentService {
         Request request = requestBuilder.post(requestBody).headers(headerBuilder.build())
                 .url(UrlConstants.COMMENTS_URL).build();
 
-        httpClient.newCall(request).enqueue(new PostACommentHandler(boardPostId, boardType,
-                databaseHelper));
+        httpClient.newCall(request).enqueue(new PostACommentHandler(this, boardPostId, boardType));
     }
 
     private boolean recentlyFetched(Board cachedBoard) {

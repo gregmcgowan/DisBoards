@@ -9,9 +9,7 @@ import android.support.v4.app.FragmentManager;
 /**
  * Created by gregmcgowan on 29/10/2013.
  */
-public class FavouritesActivity extends SherlockFragmentActivity {
-
-    private FragmentManager fragmentManager;
+public class FavouritesActivity extends DisBoardsActivity {
 
     private FavouritesListFragment favouritesListFragment;
 
@@ -19,7 +17,6 @@ public class FavouritesActivity extends SherlockFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        fragmentManager = getSupportFragmentManager();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Favourite Posts");
         getSupportActionBar().setIcon(null);

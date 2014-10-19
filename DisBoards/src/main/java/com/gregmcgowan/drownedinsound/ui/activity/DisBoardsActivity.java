@@ -1,56 +1,44 @@
-package com.gregmcgowan.drownedinsound.ui.fragments;
+package com.gregmcgowan.drownedinsound.ui.activity;
 
-import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.gregmcgowan.drownedinsound.annotations.UseDagger;
 import com.gregmcgowan.drownedinsound.annotations.UseEventBus;
 import com.gregmcgowan.drownedinsound.core.DisBoardsApp;
 
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.v4.app.FragmentManager;
 
 import java.lang.annotation.Annotation;
-
 
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
-import timber.log.Timber;
 
-public class DisBoardsFragment extends SherlockFragment {
+/**
+ * Created by gregmcgowan on 19/10/2014.
+ */
+public class DisBoardsActivity extends SherlockFragmentActivity {
 
-    protected Handler fragmentHander;
+    protected FragmentManager fragmentManager;
 
     @Inject
     protected EventBus eventBus;
 
-    /**
-     * Checks if this fragment is attached to a activity
-     */
-    public boolean isValid() {
-        return getSherlockActivity() != null;
-    }
-
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        fragmentHander = new Handler();
+        fragmentManager = getSupportFragmentManager();
 
-        Timber.d("Get activity = "+ (getSherlockActivity()));
-
-        if (containsAnnotation(UseDagger.class) || containsAnnotation(UseEventBus.class)) {
-            DisBoardsApp.getApplication(getSherlockActivity()).inject(this);
+        if (containsAnnotation(UseDagger.class)
+                || containsAnnotation(UseEventBus.class)) {
+            DisBoardsApp.getApplication(this).inject(this);
         }
 
         if (containsAnnotation(UseEventBus.class)) {
             eventBus.register(this);
         }
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
     }
 
     private boolean containsAnnotation(Class<? extends Annotation> annotationType) {
