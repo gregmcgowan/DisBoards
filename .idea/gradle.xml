@@ -8,7 +8,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/DisBoards" />
+            <option value="$PROJECT_DIR$/App" />
             <option value="$PROJECT_DIR$/Libraries" />
             <option value="$PROJECT_DIR$/Libraries/actionbarsherlock" />
             <option value="$PROJECT_DIR$/Libraries/viewpager" />

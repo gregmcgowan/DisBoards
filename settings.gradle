@@ -1,1 +1,1 @@
-include ':DisBoards',':Libraries:actionbarsherlock',':Libraries:viewpager'
+include ':App',':Libraries:actionbarsherlock',':Libraries:viewpager'

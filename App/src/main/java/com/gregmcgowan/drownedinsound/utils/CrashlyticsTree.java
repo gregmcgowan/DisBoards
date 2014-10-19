@@ -17,13 +17,11 @@ public class CrashlyticsTree extends Timber.HollowTree {
 
     @Override
     public void e(String message, Object... args) {
-        super.e(message, args);
         Crashlytics.log(String.format(message,args));
     }
 
     @Override
     public void e(Throwable t, String message, Object... args) {
-        super.e(t, message, args);
         Crashlytics.logException(t);
     }
 }

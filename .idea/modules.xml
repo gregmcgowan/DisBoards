@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/App/App.iml" filepath="$PROJECT_DIR$/App/App.iml" />
       <module fileurl="file://$PROJECT_DIR$/DisBoards.iml" filepath="$PROJECT_DIR$/DisBoards.iml" />
-      <module fileurl="file://$PROJECT_DIR$/DisBoards/DisBoards-DisBoards.iml" filepath="$PROJECT_DIR$/DisBoards/DisBoards-DisBoards.iml" />
       <module fileurl="file://$PROJECT_DIR$/DisBoardsProject.iml" filepath="$PROJECT_DIR$/DisBoardsProject.iml" />
       <module fileurl="file://$PROJECT_DIR$/Libraries/actionbarsherlock/actionbarsherlock.iml" filepath="$PROJECT_DIR$/Libraries/actionbarsherlock/actionbarsherlock.iml" />
       <module fileurl="file://$PROJECT_DIR$/Libraries/viewpager/viewpager.iml" filepath="$PROJECT_DIR$/Libraries/viewpager/viewpager.iml" />
