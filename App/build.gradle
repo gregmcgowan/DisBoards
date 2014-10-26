@@ -102,7 +102,6 @@ android {
 dependencies {
     compile 'com.android.support:support-v4:20.0.0'
 
-    compile 'com.nineoldandroids:library:2.4.0'
     apt "com.squareup.dagger:dagger-compiler:1.2.1"
     compile "com.squareup.dagger:dagger:1.2.1"
     compile 'com.squareup.okhttp:okhttp:2.0.0'
