@@ -1,7 +1,6 @@
 package com.drownedinsound.ui.activity;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
+
 import com.drownedinsound.ui.adapter.NavigationDrawerAdapter;
 import com.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
 import com.drownedinsound.R;
@@ -18,17 +17,19 @@ import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -79,7 +80,7 @@ public class MainCommunityActivity extends DisBoardsActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.community_layout);
 
-        mAdapter = new BoardsFragmentAdapter(getSupportFragmentManager(),
+        mAdapter = new BoardsFragmentAdapter(getFragmentManager(),
                 DatabaseHelper.getInstance(getApplicationContext()));
 
         initialiseViewPager();
@@ -103,8 +104,8 @@ public class MainCommunityActivity extends DisBoardsActivity {
                 new DrawerItemClickListener(new WeakReference<MainCommunityActivity>(this)));
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
 
         navigationDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
@@ -119,7 +120,7 @@ public class MainCommunityActivity extends DisBoardsActivity {
             }
 
             public void onDrawerOpened(View drawerView) {
-                getSupportActionBar().setTitle(mDrawerTitle);
+                getActionBar().setTitle(mDrawerTitle);
                 invalidateOptionsMenu();
             }
         };
@@ -177,7 +178,7 @@ public class MainCommunityActivity extends DisBoardsActivity {
                 Log.d(TAG, "Checking if page  " + position + " needs updating");
                 String fragmentName = UiUtils.makeFragmentPagerAdapterTagName(
                         R.id.boards_pager, position);
-                Fragment fragment = getSupportFragmentManager()
+                Fragment fragment = getFragmentManager()
                         .findFragmentByTag(fragmentName);
                 if (fragment instanceof BoardPostSummaryListFragment) {
                     BoardPostSummaryListFragment listFragment

@@ -72,7 +72,7 @@ public class NewPostFragment extends DisBoardsDialogFragment {
         clearButton = (ImageButton) view.findViewById(R.id.new_board_post_abandon);
         board = getArguments().getParcelable(DisBoardsConstants.BOARD);
 
-        DraftBoardPost existingDraftPost = DatabaseHelper.getInstance(getSherlockActivity())
+        DraftBoardPost existingDraftPost = DatabaseHelper.getInstance(getActivity())
                 .getDraftBoardPost(board.getBoardType());
         if (existingDraftPost != null) {
             postTitleEditText.setText(existingDraftPost.getTitle());
@@ -113,7 +113,7 @@ public class NewPostFragment extends DisBoardsDialogFragment {
         String title = postTitleEditText.getText().toString();
         if (!TextUtils.isEmpty(title)) {
             //TODO make sure the text is not a ridiculous length
-            Intent disWebService = new Intent(getSherlockActivity(),
+            Intent disWebService = new Intent(getActivity(),
                     DisWebService.class);
             Bundle parametersBundle = new Bundle();
             parametersBundle.putParcelable(DisBoardsConstants.BOARD, board);
@@ -124,11 +124,11 @@ public class NewPostFragment extends DisBoardsDialogFragment {
                     DisWebServiceConstants.NEW_POST);
             disWebService.putExtras(parametersBundle);
 
-            getSherlockActivity().startService(disWebService);
+            getActivity().startService(disWebService);
             eventBus.post(new SentNewPostEvent(SentNewPostState.SENT));
             dismiss();
         } else {
-            Toast.makeText(getSherlockActivity(), "You must at least add a title",
+            Toast.makeText(getActivity(), "You must at least add a title",
                     Toast.LENGTH_LONG).show();
         }
 
@@ -141,6 +141,6 @@ public class NewPostFragment extends DisBoardsDialogFragment {
         draftBoardPost.setTitle(postTitleEditText.getText().toString());
         draftBoardPost.setContent(postContentEditText.getText().toString());
         draftBoardPost.setBoardType(board.getBoardType());
-        DatabaseHelper.getInstance(getSherlockActivity()).setDraftBoardPost(draftBoardPost);
+        DatabaseHelper.getInstance(getActivity()).setDraftBoardPost(draftBoardPost);
     }
 }

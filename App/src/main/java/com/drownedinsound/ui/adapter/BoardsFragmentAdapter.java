@@ -4,9 +4,9 @@ import com.drownedinsound.data.DatabaseHelper;
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+
+import android.app.Fragment;
+import android.app.FragmentManager;
 
 import java.util.ArrayList;
 

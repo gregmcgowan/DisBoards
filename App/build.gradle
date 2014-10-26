@@ -114,7 +114,6 @@ dependencies {
     compile 'com.commonsware.cwac:endless:1.2.3'
 
     compile project(':Libraries:viewpager')
-    compile project(':Libraries:actionbarsherlock')
 
     compile files('libs/jericho-html-3.3.jar')
     compile files('libs/ormlite-android-4.42.jar')

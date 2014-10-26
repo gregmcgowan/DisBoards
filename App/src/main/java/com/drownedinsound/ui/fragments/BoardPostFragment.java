@@ -1,8 +1,6 @@
 package com.drownedinsound.ui.fragments;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
+
 import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.annotations.UseEventBus;
@@ -27,15 +25,19 @@ import com.drownedinsound.utils.UiUtils;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
+
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -145,7 +147,7 @@ public class BoardPostFragment extends DisBoardsFragment {
         View rootView = inflater.inflate(R.layout.board_post_layout, container, false);
         ButterKnife.inject(this, rootView);
 
-        adapter = new BoardPostListAdapter(getSherlockActivity(),
+        adapter = new BoardPostListAdapter(getActivity(),
                 R.layout.board_post_comment_layout, boardPostComments,
                 new WeakReference<>(this));
         commentsList.setAdapter(adapter);
@@ -244,14 +246,14 @@ public class BoardPostFragment extends DisBoardsFragment {
 
     public void onEventMainThread(FailedToThisThisEvent event) {
         setProgressBarAndFragmentVisibility(false);
-        Toast.makeText(getSherlockActivity(),
+        Toast.makeText(getActivity(),
                 "Failed to this this. You could try again", Toast.LENGTH_SHORT)
                 .show();
     }
 
     public void onEventMainThread(FailedToPostCommentEvent event) {
         setProgressBarAndFragmentVisibility(false);
-        Toast.makeText(getSherlockActivity(),
+        Toast.makeText(getActivity(),
                 "Failed to post comment. You could try again",
                 Toast.LENGTH_SHORT).show();
     }
@@ -262,7 +264,7 @@ public class BoardPostFragment extends DisBoardsFragment {
         }
 
         setProgressBarAndFragmentVisibility(false);
-        Toast.makeText(getSherlockActivity(),
+        Toast.makeText(getActivity(),
                 "User is not logged in", Toast.LENGTH_SHORT)
                 .show();
     }
@@ -277,7 +279,7 @@ public class BoardPostFragment extends DisBoardsFragment {
             boardPost.setFavourited(event.isNewStatus());
             updateFavouriteMenuItemStatus();
         } else {
-            Toast.makeText(getSherlockActivity(), "Could not save to favourites",
+            Toast.makeText(getActivity(), "Could not save to favourites",
                     Toast.LENGTH_SHORT).show();
         }
     }
@@ -292,7 +294,7 @@ public class BoardPostFragment extends DisBoardsFragment {
     }
 
     private void displayIsCachedPopup() {
-        Toast.makeText(getSherlockActivity(), "This is an cached version",
+        Toast.makeText(getActivity(), "This is an cached version",
                 Toast.LENGTH_SHORT).show();
     }
 
@@ -324,7 +326,7 @@ public class BoardPostFragment extends DisBoardsFragment {
             if (!requestingPost) {
                 connectionErrorTextView.setVisibility(View.GONE);
 
-                Intent disWebServiceIntent = new Intent(getSherlockActivity(),
+                Intent disWebServiceIntent = new Intent(getActivity(),
                         DisWebService.class);
                 Bundle parametersBundle = new Bundle();
                 parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
@@ -338,7 +340,7 @@ public class BoardPostFragment extends DisBoardsFragment {
                         DisWebServiceConstants.GET_BOARD_POST_ID);
                 disWebServiceIntent.putExtras(parametersBundle);
 
-                getSherlockActivity().startService(disWebServiceIntent);
+                getActivity().startService(disWebServiceIntent);
                 requestingPost = true;
             }
         }
@@ -386,7 +388,7 @@ public class BoardPostFragment extends DisBoardsFragment {
         int itemId = item.getItemId();
         switch (itemId) {
             case android.R.id.home:
-                if (UiUtils.isDualPaneMode(getSherlockActivity())) {
+                if (UiUtils.isDualPaneMode(getActivity())) {
                     return false;
                 }
                 hideFragment();
@@ -413,14 +415,14 @@ public class BoardPostFragment extends DisBoardsFragment {
                     DatabaseService.SET_BOARD_POST_FAVOURITE_STATUS);
             serviceBundle.putBoolean(DisBoardsConstants.IS_FAVOURITE, !existingFavouriteStatus);
 
-            Intent databaseServiceIntent = new Intent(getSherlockActivity(), DatabaseService.class);
+            Intent databaseServiceIntent = new Intent(getActivity(), DatabaseService.class);
             databaseServiceIntent.putExtras(serviceBundle);
-            getSherlockActivity().startService(databaseServiceIntent);
+            getActivity().startService(databaseServiceIntent);
         }
     }
 
     private void hideFragment() {
-        ((BoardPostActivity) getSherlockActivity()).removeBoardPostFragment();
+        ((BoardPostActivity) getActivity()).removeBoardPostFragment();
     }
 
     private void doReplyAction() {
@@ -516,8 +518,8 @@ public class BoardPostFragment extends DisBoardsFragment {
     }
 
     private void updateFavouriteMenuItemStatus() {
-        if (!UiUtils.isDualPaneMode(getSherlockActivity())) {
-            ((BoardPostActivity) (getSherlockActivity())).refreshMenu();
+        if (!UiUtils.isDualPaneMode(getActivity())) {
+            ((BoardPostActivity) (getActivity())).refreshMenu();
         }
     }
 
@@ -539,7 +541,7 @@ public class BoardPostFragment extends DisBoardsFragment {
             }
             //TODO remove comment if there is one
             Log.d(TAG, "PostID = " + postId);
-            Intent viewPostIntent = new Intent(getSherlockActivity(),
+            Intent viewPostIntent = new Intent(getActivity(),
                     BoardPostActivity.class);
             Bundle parametersBundle = new Bundle();
             parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
@@ -729,8 +731,8 @@ public class BoardPostFragment extends DisBoardsFragment {
                                             new WeakReference<BoardPostListAdapter>(
                                                     adapter),
                                             new WeakReference<FragmentManager>(
-                                                    getSherlockActivity()
-                                                            .getSupportFragmentManager()))));
+                                                    getActivity()
+                                                            .getFragmentManager()))));
                     boardPostCommentHolder.thisTextView
                             .setOnClickListener(new CommentSectionClickListener(
                                     position,
@@ -939,7 +941,7 @@ public class BoardPostFragment extends DisBoardsFragment {
                 fragment.setProgressBarAndFragmentVisibility(true);
 
                 Intent thisCommentIntent = new Intent(
-                        fragment.getSherlockActivity(), DisWebService.class);
+                        fragment.getActivity(), DisWebService.class);
                 Bundle parametersBundle = new Bundle();
                 parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
                         postUrl);
@@ -954,7 +956,7 @@ public class BoardPostFragment extends DisBoardsFragment {
                         DisWebServiceConstants.THIS_A_COMMENT_ID);
                 thisCommentIntent.putExtras(parametersBundle);
 
-                fragment.getSherlockActivity().startService(thisCommentIntent);
+                fragment.getActivity().startService(thisCommentIntent);
 
             }
         }
@@ -966,7 +968,7 @@ public class BoardPostFragment extends DisBoardsFragment {
 
         private WeakReference<BoardPostListAdapter> adapterWeakReference;
 
-        private WeakReference<FragmentManager> fragmentManagerReference;
+        private WeakReference<android.app.FragmentManager> fragmentManagerReference;
 
         public ReplyToCommentListener(
                 WeakReference<BoardPostListAdapter> adapterWeakReference,

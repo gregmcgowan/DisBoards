@@ -45,7 +45,7 @@ public class BoardPostActivity extends DisBoardsActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         int screenWidthPixels = getResources().getDisplayMetrics().widthPixels;
         int screenWidthDp = UiUtils.convertPixelsToDp(getResources(), screenWidthPixels);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE &&
@@ -81,7 +81,7 @@ public class BoardPostActivity extends DisBoardsActivity {
     }
 
     public void refreshMenu() {
-        this.supportInvalidateOptionsMenu();
+        this.invalidateOptionsMenu();
     }
 
 }

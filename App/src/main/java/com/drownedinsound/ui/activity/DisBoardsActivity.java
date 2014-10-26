@@ -1,12 +1,12 @@
 package com.drownedinsound.ui.activity;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.core.DisBoardsApp;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 
 import java.lang.annotation.Annotation;
 
@@ -17,7 +17,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by gregmcgowan on 19/10/2014.
  */
-public class DisBoardsActivity extends SherlockFragmentActivity {
+public class DisBoardsActivity extends Activity {
 
     protected FragmentManager fragmentManager;
 
@@ -28,7 +28,7 @@ public class DisBoardsActivity extends SherlockFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        fragmentManager = getSupportFragmentManager();
+        fragmentManager = getFragmentManager();
 
         if (containsAnnotation(UseDagger.class)
                 || containsAnnotation(UseEventBus.class)) {

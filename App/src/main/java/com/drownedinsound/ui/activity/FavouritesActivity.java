@@ -15,9 +15,9 @@ public class FavouritesActivity extends DisBoardsActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Favourite Posts");
-        getSupportActionBar().setIcon(null);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setTitle("Favourite Posts");
+        getActionBar().setIcon(null);
         if (savedInstanceState == null) {
             favouritesListFragment = new FavouritesListFragment();
             fragmentManager.beginTransaction()

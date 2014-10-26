@@ -1,10 +1,10 @@
 package com.drownedinsound.ui.fragments;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.core.DisBoardsApp;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -16,7 +16,7 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 import timber.log.Timber;
 
-public class DisBoardsFragment extends SherlockFragment {
+public class DisBoardsFragment extends Fragment {
 
     protected Handler fragmentHander;
 
@@ -27,7 +27,7 @@ public class DisBoardsFragment extends SherlockFragment {
      * Checks if this fragment is attached to a activity
      */
     public boolean isValid() {
-        return getSherlockActivity() != null;
+        return getActivity() != null;
     }
 
 
@@ -37,10 +37,10 @@ public class DisBoardsFragment extends SherlockFragment {
 
         fragmentHander = new Handler();
 
-        Timber.d("Get activity = "+ (getSherlockActivity()));
+        Timber.d("Get activity = "+ (getActivity()));
 
         if (containsAnnotation(UseDagger.class) || containsAnnotation(UseEventBus.class)) {
-            DisBoardsApp.getApplication(getSherlockActivity()).inject(this);
+            DisBoardsApp.getApplication(getActivity()).inject(this);
         }
 
         if (containsAnnotation(UseEventBus.class)) {

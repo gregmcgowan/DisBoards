@@ -1,4 +1,3 @@
-Remvoe getDefault eventBus
 Fully test new post
 Fully test new comment
 Fully test poor network connectivity
