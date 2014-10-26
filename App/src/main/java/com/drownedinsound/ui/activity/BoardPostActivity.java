@@ -1,5 +1,6 @@
 package com.drownedinsound.ui.activity;
 
+import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.ui.fragments.BoardPostFragment;
@@ -68,6 +69,11 @@ public class BoardPostActivity extends DisBoardsActivity {
                     .add(android.R.id.content, boardPostFragment).commit();
         }
 
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.board_post_container;
     }
 
     public void removeBoardPostFragment() {

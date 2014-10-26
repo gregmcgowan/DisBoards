@@ -58,4 +58,8 @@ public class StartActivity extends DisBoardsActivity {
         goToMainActivity();
     }
 
+    @Override
+    protected int getLayoutResource() {
+        return 0;
+    }
 }

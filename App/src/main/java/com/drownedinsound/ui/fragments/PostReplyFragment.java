@@ -108,7 +108,7 @@ public class PostReplyFragment extends DisBoardsDialogFragment {
     private void doReplyAction() {
         // TODO check to see if data has been entered
 
-        Intent disWebServiceIntent = new Intent(getSherlockActivity(),
+        Intent disWebServiceIntent = new Intent(getActivity(),
                 DisWebService.class);
         Bundle parametersBundle = new Bundle();
         parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
@@ -125,7 +125,7 @@ public class PostReplyFragment extends DisBoardsDialogFragment {
                 DisWebServiceConstants.POST_A_COMMENT);
         disWebServiceIntent.putExtras(parametersBundle);
 
-        getSherlockActivity().startService(disWebServiceIntent);
+        getActivity().startService(disWebServiceIntent);
 
         dismiss();
         eventBus.post(new BoardPostCommentSentEvent());

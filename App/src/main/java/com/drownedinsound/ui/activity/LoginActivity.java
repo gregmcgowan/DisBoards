@@ -50,8 +50,12 @@ public class LoginActivity extends DisBoardsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login_activity);
         setListeners();
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.login_activity;
     }
 
     private void goToMainActivity() {

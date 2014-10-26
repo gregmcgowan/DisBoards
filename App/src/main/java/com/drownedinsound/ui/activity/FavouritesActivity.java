@@ -1,5 +1,6 @@
 package com.drownedinsound.ui.activity;
 
+import com.drownedinsound.R;
 import com.drownedinsound.ui.fragments.FavouritesListFragment;
 
 import android.os.Bundle;
@@ -23,6 +24,11 @@ public class FavouritesActivity extends DisBoardsActivity {
             fragmentManager.beginTransaction()
                     .add(android.R.id.content, favouritesListFragment).commit();
         }
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.community_layout;
     }
 
 

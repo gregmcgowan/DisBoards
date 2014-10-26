@@ -1,17 +1,18 @@
 package com.drownedinsound.ui.fragments;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.drownedinsound.core.DisBoardsApp;
 
 import android.app.Dialog;
+
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.view.Window;
 
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
-public class DisBoardsDialogFragment extends SherlockDialogFragment {
+public class DisBoardsDialogFragment extends DialogFragment {
 
     @Inject
     protected EventBus eventBus;

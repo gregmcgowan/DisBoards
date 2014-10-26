@@ -1,7 +1,5 @@
 package com.drownedinsound.ui.activity;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.drownedinsound.ui.adapter.NavigationDrawerAdapter;
 import com.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
 import com.drownedinsound.R;
@@ -29,6 +27,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -77,13 +77,17 @@ public class MainCommunityActivity extends DisBoardsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.community_layout);
 
         mAdapter = new BoardsFragmentAdapter(getSupportFragmentManager(),
                 DatabaseHelper.getInstance(getApplicationContext()));
 
         initialiseViewPager();
         initialiseSlidingDrawer();
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.community_layout;
     }
 
     private void initialiseSlidingDrawer() {
@@ -109,7 +113,7 @@ public class MainCommunityActivity extends DisBoardsActivity {
         navigationDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 navigationDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
+               R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
                 R.string.drawer_open,  /* "open drawer" description for accessibility */
                 R.string.drawer_close  /* "close drawer" description for accessibility */
         ) {

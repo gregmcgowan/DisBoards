@@ -1,6 +1,6 @@
 package com.drownedinsound.ui.fragments;
 
-import com.actionbarsherlock.view.MenuItem;
+
 import com.drownedinsound.ui.adapter.BoardPostSummaryHolder;
 import com.drownedinsound.ui.adapter.BoardPostSummaryListAdapter;
 import com.drownedinsound.R;
@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -100,12 +101,12 @@ public class FavouritesListFragment extends DisBoardsFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        readDrawable = getSherlockActivity().getResources().getDrawable(
+        readDrawable = getActivity().getResources().getDrawable(
                 R.drawable.white_circle_blue_outline);
-        unreadDrawable = getSherlockActivity().getResources().getDrawable(
+        unreadDrawable = getActivity().getResources().getDrawable(
                 R.drawable.filled_blue_circle);
 
-        adapter = new BoardPostSummaryListAdapter(getSherlockActivity(),
+        adapter = new BoardPostSummaryListAdapter(getActivity(),
                 R.layout.board_list_row, favouriteBoardPosts);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -129,7 +130,7 @@ public class FavouritesListFragment extends DisBoardsFragment {
         // Check to see if we have a frame in which to embed the details
 
         int currentOrientation = getResources().getConfiguration().orientation;
-        dualPaneMode = UiUtils.isDualPaneMode(getSherlockActivity());
+        dualPaneMode = UiUtils.isDualPaneMode(getActivity());
 
         if (savedInstanceState != null) {
             // Restore last state for checked position.
@@ -152,7 +153,7 @@ public class FavouritesListFragment extends DisBoardsFragment {
         // seems to be null
         if (wasInDualPaneMode
                 && currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
-            Intent viewPostIntent = new Intent(getSherlockActivity(),
+            Intent viewPostIntent = new Intent(getActivity(),
                     BoardPostActivity.class);
             viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_URL, postUrl);
             viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_ID, postId);
@@ -193,7 +194,7 @@ public class FavouritesListFragment extends DisBoardsFragment {
 
     public void getFavourites() {
         if (!isRequesting) {
-            Intent disWebServiceIntent = new Intent(getSherlockActivity(),
+            Intent disWebServiceIntent = new Intent(getActivity(),
                     DatabaseService.class);
             Bundle parametersBundle = new Bundle();
 
@@ -201,7 +202,7 @@ public class FavouritesListFragment extends DisBoardsFragment {
                     DatabaseService.DATABASE_SERVICE_REQUESTED_KEY,
                     DatabaseService.GET_FAVOURITE_BOARD_POSTS);
             disWebServiceIntent.putExtras(parametersBundle);
-            getSherlockActivity().startService(disWebServiceIntent);
+            getActivity().startService(disWebServiceIntent);
             setProgressBarVisiblity(true);
             isRequesting = true;
         } else {
@@ -254,10 +255,10 @@ public class FavouritesListFragment extends DisBoardsFragment {
         int itemId = item.getItemId();
         switch (itemId) {
             case android.R.id.home:
-                if (UiUtils.isDualPaneMode(getSherlockActivity())) {
+                if (UiUtils.isDualPaneMode(getActivity())) {
                     return false;
                 }
-                getSherlockActivity().finish();
+                getActivity().finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -270,14 +271,14 @@ public class FavouritesListFragment extends DisBoardsFragment {
         }
 
         setProgressBarVisiblity(false);
-        Toast.makeText(getSherlockActivity(),
+        Toast.makeText(getActivity(),
                 "User is not logged in", Toast.LENGTH_SHORT)
                 .show();
     }
 
 
     private void displayIsCachedPopup() {
-        Toast.makeText(getSherlockActivity(), "This is an cached version",
+        Toast.makeText(getActivity(), "This is an cached version",
                 Toast.LENGTH_SHORT).show();
     }
 
@@ -287,7 +288,7 @@ public class FavouritesListFragment extends DisBoardsFragment {
         BoardPost boardPostSummary = favouriteBoardPosts.get(position);
         if (boardPostSummary != null) {
             BoardType boardType = boardPostSummary.getBoardType();
-            Board board = DatabaseHelper.getInstance(getSherlockActivity()).getBoard(boardType);
+            Board board = DatabaseHelper.getInstance(getActivity()).getBoard(boardType);
             postId = boardPostSummary.getId();
 
             postUrl = board.getUrl() + "/" + postId;
@@ -310,7 +311,7 @@ public class FavouritesListFragment extends DisBoardsFragment {
                 }
 
             } else {
-                Intent viewPostIntent = new Intent(getSherlockActivity(),
+                Intent viewPostIntent = new Intent(getActivity(),
                         BoardPostActivity.class);
                 Bundle parametersBundle = new Bundle();
                 parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,

@@ -4,7 +4,6 @@ buildscript {
         maven { url 'http://download.crashlytics.com/maven' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.2'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
         classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.13.1'
     }
@@ -27,7 +26,7 @@ android {
     def versionPatch = 0
     def versionBuild = 2
 
-    compileSdkVersion 19
+    compileSdkVersion 21
     buildToolsVersion "19.1.0"
 
     compileOptions {
@@ -37,7 +36,7 @@ android {
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 19
+        targetSdkVersion 21
         defaultConfig {
             versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
             versionName "${versionMajor}.${versionMinor}.${versionPatch}"
@@ -100,7 +99,8 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:20.0.0'
+    compile 'com.android.support:support-v4:21.0.0'
+    compile 'com.android.support:appcompat-v7:21.0.0'
 
     compile 'com.nineoldandroids:library:2.4.0'
     apt "com.squareup.dagger:dagger-compiler:1.2.1"
@@ -114,7 +114,6 @@ dependencies {
     compile 'com.commonsware.cwac:endless:1.2.3'
 
     compile project(':Libraries:viewpager')
-    compile project(':Libraries:actionbarsherlock')
 
     compile files('libs/jericho-html-3.3.jar')
     compile files('libs/ormlite-android-4.42.jar')
