@@ -29,7 +29,9 @@
     <color name="board_list_row_selected">#DBF2FF</color>
     <color name="board_list_row_alternate_color">#F9F9FF</color>
     <color name="yellow_start_colour">#EEFEFFC6</color>
-
+    <color name="yellow_1">#FEFFC6</color>
+    <color name="yellow_2">#FEFF90</color>
+    <color name="yellow_3">#FEFF61</color>
 
     <color name="almost_white_light">#FBFBFB</color>
     <color name="font_colour_light">#333333</color>

@@ -292,7 +292,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
         return requested;
     }
 
-    private void doRefreshAction() {
+    public void doRefreshAction() {
         requestBoardSummaryPage(1, true);
     }
 
