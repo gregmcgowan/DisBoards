@@ -46,7 +46,7 @@ public class BoardPostActivity extends DisBoardsActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         int screenWidthPixels = getResources().getDisplayMetrics().widthPixels;
         int screenWidthDp = UiUtils.convertPixelsToDp(getResources(), screenWidthPixels);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE &&
@@ -66,7 +66,7 @@ public class BoardPostActivity extends DisBoardsActivity {
 
             boardPostFragment = BoardPostFragment.newInstance(postUrl, postID, false, boardType);
             fragmentManager.beginTransaction()
-                    .add(android.R.id.content, boardPostFragment).commit();
+                    .add(R.id.board_post_fragment_holder, boardPostFragment).commit();
         }
 
     }

@@ -24,6 +24,7 @@ import com.drownedinsound.ui.widgets.AutoScrollListView;
 import com.drownedinsound.utils.NetworkUtils;
 import com.drownedinsound.utils.UiUtils;
 
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -31,7 +32,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -128,7 +128,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        setHasOptionsMenu(true);
+      //  setHasOptionsMenu(true);
         board = getArguments().getParcelable(DisBoardsConstants.BOARD);
         if (board != null) {
             boardUrl = board.getUrl();
@@ -249,24 +249,24 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
                 && !isBoardBeingRequested();
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.main_community_activity_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        switch (itemId) {
-            case R.id.menu_list_refresh:
-                doRefreshAction();
-                return true;
-            case R.id.menu_new_post:
-                doNewPostAction();
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        inflater.inflate(R.menu.main_community_activity_menu, menu);
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        int itemId = item.getItemId();
+//        switch (itemId) {
+//            case R.id.menu_list_refresh:
+//                doRefreshAction();
+//                return true;
+//            case R.id.menu_new_post:
+//                doNewPostAction();
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 
     private void doNewPostAction() {
         Bundle newPostDetails = new Bundle();

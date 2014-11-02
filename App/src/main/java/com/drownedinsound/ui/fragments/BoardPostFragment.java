@@ -25,11 +25,12 @@ import com.drownedinsound.utils.UiUtils;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
+
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -132,7 +133,7 @@ public class BoardPostFragment extends DisBoardsFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+      //  setHasOptionsMenu(true);
     }
 
     @Override
@@ -357,19 +358,19 @@ public class BoardPostFragment extends DisBoardsFragment {
     }
 
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (!inDualPaneMode) {
-            inflater.inflate(R.menu.board_post_menu, menu);
-        }
-        findAndUpdateFavouritesMenuItem(menu);
-    }
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+////        if (!inDualPaneMode) {
+////            inflater.inflate(R.menu.board_post_menu, menu);
+////        }
+//        findAndUpdateFavouritesMenuItem(menu);
+//    }
 
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        findAndUpdateFavouritesMenuItem(menu);
-    }
+//    @Override
+//    public void onPrepareOptionsMenu(Menu menu) {
+//        super.onPrepareOptionsMenu(menu);
+//        findAndUpdateFavouritesMenuItem(menu);
+//    }
 
     private void findAndUpdateFavouritesMenuItem(Menu menu) {
         MenuItem favouriteMenuItem = menu.findItem(R.id.menu_favourite);
@@ -731,7 +732,7 @@ public class BoardPostFragment extends DisBoardsFragment {
                                                     adapter),
                                             new WeakReference<FragmentManager>(
                                                     getActivity()
-                                                            .getSupportFragmentManager()))));
+                                                            .getFragmentManager()))));
                     boardPostCommentHolder.thisTextView
                             .setOnClickListener(new CommentSectionClickListener(
                                     position,

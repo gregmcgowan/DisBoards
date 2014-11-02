@@ -5,7 +5,6 @@ import com.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
 import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.annotations.UseEventBus;
-import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.DatabaseHelper;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.ui.adapter.BoardsFragmentAdapter;
@@ -34,8 +33,6 @@ import butterknife.InjectView;
 @UseDagger @UseEventBus
 public class MainCommunityActivity extends DisBoardsActivity {
 
-    private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX + "MainCommunityActivity";
-
     private BoardsFragmentAdapter mAdapter;
 
     @InjectView(R.id.swipeToRefreshLayout)
@@ -59,7 +56,7 @@ public class MainCommunityActivity extends DisBoardsActivity {
                 DatabaseHelper.getInstance(getApplicationContext()));
 
         initialiseViewPager();
-        swipeRefreshLayout.setColorScheme(R.color.yellow_1,R.color.yellow_2,R.color.yellow_3,R.color.yellow_start_colour);
+        swipeRefreshLayout.setColorSchemeColors(R.color.highlighted_blue);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
