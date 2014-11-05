@@ -43,6 +43,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
@@ -57,6 +58,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * Represents a board fragment. This will consist of the board post and all the
@@ -112,6 +114,7 @@ public class BoardPostFragment extends DisBoardsFragment {
     protected
     @InjectView(R.id.board_post_move_to_last_comment_text_view)
     TextView scrollToLastCommentTextView;
+
 
     public static BoardPostFragment newInstance(String boardPostUrl,
             String boardPostID,
@@ -387,12 +390,6 @@ public class BoardPostFragment extends DisBoardsFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {
-            case android.R.id.home:
-                if (UiUtils.isDualPaneMode(getActivity())) {
-                    return false;
-                }
-                hideFragment();
-                return true;
             case R.id.menu_post_refresh:
                 doRefreshAction();
                 return true;
@@ -419,10 +416,6 @@ public class BoardPostFragment extends DisBoardsFragment {
             databaseServiceIntent.putExtras(serviceBundle);
             getActivity().startService(databaseServiceIntent);
         }
-    }
-
-    private void hideFragment() {
-        ((BoardPostActivity) getActivity()).removeBoardPostFragment();
     }
 
     private void doReplyAction() {

@@ -12,6 +12,9 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 /**
  * This will contain a board post fragment. A board post will be made of the
  * original post and comments. This activity will not do much apart from load
@@ -57,6 +60,8 @@ public class BoardPostActivity extends DisBoardsActivity {
             return;
         }
 
+        ButterKnife.inject(this);
+
         if (savedInstanceState == null) {
             // During initial setup, plug in the details fragment.
             String postUrl = getIntent().getStringExtra(DisBoardsConstants.BOARD_POST_URL);
@@ -71,13 +76,19 @@ public class BoardPostActivity extends DisBoardsActivity {
 
     }
 
+
+
     @Override
     protected int getLayoutResource() {
         return R.layout.board_post_container;
     }
 
-    public void removeBoardPostFragment() {
-        finish();
+
+    @OnClick(R.id.back_button)
+    public void backAction() {
+        if (!UiUtils.isDualPaneMode(this)) {
+            finish();
+        }
     }
 
 
