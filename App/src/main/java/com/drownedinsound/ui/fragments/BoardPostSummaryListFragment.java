@@ -23,6 +23,7 @@ import com.drownedinsound.ui.adapter.BoardPostSummaryListAdapter;
 import com.drownedinsound.ui.widgets.AutoScrollListView;
 import com.drownedinsound.utils.NetworkUtils;
 import com.drownedinsound.utils.UiUtils;
+import com.melnykov.fab.FloatingActionButton;
 
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -51,6 +52,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * A fragment that will represent a different section of the community board
@@ -86,6 +88,9 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
 
     @InjectView(R.id.board_post_summary_list)
     AutoScrollListView listView;
+
+    @InjectView(R.id.floating_add_button)
+    FloatingActionButton floatingAddButton;
 
     private ArrayList<BoardPost> boardPostSummaries = new ArrayList<BoardPost>();
 
@@ -168,6 +173,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
                 showBoardPost(position);
             }
         });
+        floatingAddButton.attachToListView(listView);
 
         return rootView;
     }
@@ -268,7 +274,8 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
 //        }
 //    }
 
-    private void doNewPostAction() {
+    @OnClick(R.id.floating_add_button)
+    public void doNewPostAction() {
         Bundle newPostDetails = new Bundle();
         newPostDetails.putParcelable(DisBoardsConstants.BOARD, board);
 

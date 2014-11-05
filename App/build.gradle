@@ -25,7 +25,7 @@ android {
     def versionMajor = 0
     def versionMinor = 5
     def versionPatch = 0
-    def versionBuild = 5
+    def versionBuild = 6
 
     compileSdkVersion 21
     buildToolsVersion "19.1.0"
@@ -102,6 +102,7 @@ android {
 dependencies {
     compile 'com.android.support:support-v4:21.0.0'
     compile 'com.android.support:appcompat-v7:21.0.0'
+    compile 'com.melnykov:floatingactionbutton:1.0.6'
 
     apt "com.squareup.dagger:dagger-compiler:1.2.1"
     compile "com.squareup.dagger:dagger:1.2.1"
