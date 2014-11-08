@@ -37,7 +37,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:layout_margin="16dp"
-            android:src="@drawable/ic_add_white_48dp"
+            android:src="@drawable/ic_add_white"
             fab:fab_colorNormal="@color/highlighted_colour"
             fab:fab_colorPressed="@color/pressed_dis_boards"
             fab:fab_colorRipple="@color/highlighted_colour"/>

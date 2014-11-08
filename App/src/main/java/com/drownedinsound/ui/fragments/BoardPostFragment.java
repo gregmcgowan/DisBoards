@@ -379,9 +379,9 @@ public class BoardPostFragment extends DisBoardsFragment {
         MenuItem favouriteMenuItem = menu.findItem(R.id.menu_favourite);
         if (favouriteMenuItem != null) {
             if (boardPost != null && boardPost.isFavourited()) {
-                favouriteMenuItem.setIcon(R.drawable.favourite_selected);
+                //favouriteMenuItem.setIcon(R.drawable.favourite_selected);
             } else {
-                favouriteMenuItem.setIcon(R.drawable.favourite_not_selected);
+                //favouriteMenuItem.setIcon(R.drawable.favourite_not_selected);
             }
         }
     }
