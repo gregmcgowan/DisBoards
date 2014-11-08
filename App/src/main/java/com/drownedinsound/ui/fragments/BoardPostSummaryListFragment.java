@@ -33,6 +33,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -74,12 +75,6 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
 
     private static final String REQUEST_ON_START = "REQUEST_ON_START";
 
-    private Drawable readDrawable;
-
-    private Drawable unreadDrawable;
-
-    private String boardUrl;
-
     @InjectView(R.id.board_list_progress_bar)
     ProgressBar progressBar;
 
@@ -91,6 +86,15 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
 
     @InjectView(R.id.floating_add_button)
     FloatingActionButton floatingAddButton;
+
+    @InjectView(R.id.swipeToRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
+
+    private Drawable readDrawable;
+
+    private Drawable unreadDrawable;
+
+    private String boardUrl;
 
     private ArrayList<BoardPost> boardPostSummaries = new ArrayList<BoardPost>();
 
@@ -149,6 +153,13 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
         View rootView = inflater.inflate(R.layout.board_list_layout, container, false);
 
         ButterKnife.inject(this, rootView);
+        swipeRefreshLayout.setColorSchemeResources(R.color.highlighted_blue);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                doRefreshAction();
+            }
+        });
 
         readDrawable = getActivity().getResources().getDrawable(
                 R.drawable.white_circle_blue_outline);
@@ -420,6 +431,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
         } else {
             Log.d(TAG, "Event for wrong board type");
         }
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     public void onEventMainThread(SentNewPostEvent event) {

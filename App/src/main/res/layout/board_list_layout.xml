@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-
-    <com.drownedinsound.ui.widgets.AutoScrollListView
-        android:id="@+id/board_post_summary_list"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:fab="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@color/heading_background"
-        android:dividerHeight="0.5dip"/>
+        android:orientation="vertical">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeToRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <com.drownedinsound.ui.widgets.AutoScrollListView
+                android:id="@+id/board_post_summary_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@color/heading_background"
+                android:dividerHeight="0.5dip"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <ProgressBar
-        android:id="@+id/board_list_progress_bar"
-        style="?android:attr/progressBarStyleInverse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:indeterminateDrawable="@drawable/spinner"
-        android:indeterminate="true"
-        android:visibility="invisible" >
+            android:id="@+id/board_list_progress_bar"
+            style="?android:attr/progressBarStyleInverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminateDrawable="@drawable/spinner"
+            android:indeterminate="true"
+            android:visibility="invisible">
     </ProgressBar>
 
     <com.melnykov.fab.FloatingActionButton
@@ -34,15 +40,16 @@
             android:src="@drawable/ic_add_white_48dp"
             fab:fab_colorNormal="@color/highlighted_colour"
             fab:fab_colorPressed="@color/pressed_dis_boards"
-            fab:fab_colorRipple="@color/highlighted_colour" />
+            fab:fab_colorRipple="@color/highlighted_colour"/>
+
     <TextView
-        android:id="@+id/board_list_connection_error_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:text="@string/connection_error_text"
-        android:textSize="@dimen/text_medium"
-        android:visibility="gone" />
+            android:id="@+id/board_list_connection_error_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/connection_error_text"
+            android:textSize="@dimen/text_medium"
+            android:visibility="gone"/>
 
 </RelativeLayout>

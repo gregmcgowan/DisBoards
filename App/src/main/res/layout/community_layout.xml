@@ -1,39 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout
+<LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/swipeToRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/parent_layout"
+        android:background="@color/background_colour_light">
 
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:id="@+id/parent_layout"
-            android:background="@color/background_colour_light">
-
-        <include
-                android:id="@+id/toolbar"
-                layout="@layout/main_action_bar_layout"/>
+    <include
+            android:id="@+id/toolbar"
+            layout="@layout/main_action_bar_layout"/>
 
 
-        <com.viewpagerindicator.TitlePageIndicator
-                android:id="@+id/boards_pager_indicator"
-                android:padding="10dip"
-                android:layout_height="wrap_content"
-                android:layout_width="fill_parent"
-                android:textColor="@color/lighter_grey"
-                app:selectedColor="@color/darkest_grey"
-                />
+    <com.viewpagerindicator.TitlePageIndicator
+            android:id="@+id/boards_pager_indicator"
+            android:padding="10dip"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:textColor="@color/lighter_grey"
+            app:selectedColor="@color/darkest_grey"
+            />
 
-        <android.support.v4.view.ViewPager
-                android:id="@+id/boards_pager"
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                />
 
-    </LinearLayout>
-</android.support.v4.widget.SwipeRefreshLayout>
+    <android.support.v4.view.ViewPager
+            android:id="@+id/boards_pager"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            />
+
+</LinearLayout>
+
 

@@ -30,13 +30,10 @@ import butterknife.InjectView;
  *
  * @author Greg
  */
-@UseDagger @UseEventBus
+@UseDagger
 public class MainCommunityActivity extends DisBoardsActivity {
 
     private BoardsFragmentAdapter mAdapter;
-
-    @InjectView(R.id.swipeToRefreshLayout)
-    SwipeRefreshLayout swipeRefreshLayout;
 
     @InjectView(R.id.boards_pager)
     ViewPager mPager;
@@ -56,17 +53,6 @@ public class MainCommunityActivity extends DisBoardsActivity {
                 DatabaseHelper.getInstance(getApplicationContext()));
 
         initialiseViewPager();
-        swipeRefreshLayout.setColorSchemeColors(R.color.highlighted_blue);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                BoardPostSummaryListFragment boardPostSummaryListFragment
-                        = getListFragment(mPager.getCurrentItem());
-                if(boardPostSummaryListFragment != null) {
-                    boardPostSummaryListFragment.doRefreshAction();
-                }
-            }
-        });
     }
 
     @Override
@@ -141,10 +127,6 @@ public class MainCommunityActivity extends DisBoardsActivity {
     public void doViewFavouritesAction() {
         Intent displayFavouritesIntent = new Intent(this, FavouritesActivity.class);
         startActivity(displayFavouritesIntent);
-    }
-
-    public void onEventMainThread(RetrievedBoardPostSummaryListEvent event) {
-        swipeRefreshLayout.setRefreshing(false);
     }
 
 
