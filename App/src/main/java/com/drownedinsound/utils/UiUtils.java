@@ -3,9 +3,12 @@ package com.drownedinsound.utils;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 /**
@@ -73,6 +76,17 @@ public class UiUtils {
         int currentOrientation = resources.getConfiguration().orientation;
         return currentOrientation == Configuration.ORIENTATION_LANDSCAPE
                 && screenWidthDp >= UiUtils.MIN_WIDTH_DP_FOR_DUAL_MODE;
+    }
+
+
+    public static void setBackgroundDrawable(View view, Drawable backgroundDrawble){
+        if(view != null) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
+                view.setBackground(backgroundDrawble);
+            } else {
+                view.setBackgroundDrawable(backgroundDrawble);
+            }
+        }
     }
 
 }

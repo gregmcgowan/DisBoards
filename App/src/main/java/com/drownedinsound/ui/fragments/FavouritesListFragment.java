@@ -115,11 +115,7 @@ public class FavouritesListFragment extends DisBoardsFragment {
             public void onItemClick(AdapterView<?> parent, View rowView, int position, long id) {
                 BoardPostSummaryHolder holder = (BoardPostSummaryHolder) rowView
                         .getTag();
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
-                    holder.postReadMarkerView.setBackground(readDrawable);
-                } else {
-                    holder.postReadMarkerView.setBackgroundDrawable(readDrawable);
-                }
+                UiUtils.setBackgroundDrawable(holder.postReadMarkerView,readDrawable);
 
                 showBoardPost(position);
             }

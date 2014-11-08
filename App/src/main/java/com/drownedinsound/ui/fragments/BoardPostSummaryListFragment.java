@@ -175,11 +175,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BoardPostSummaryHolder holder = (BoardPostSummaryHolder) view
                         .getTag();
-                if (Build.VERSION.SDK_INT > VERSION_CODES.JELLY_BEAN) {
-                    holder.postReadMarkerView.setBackground(readDrawable);
-                } else {
-                    holder.postReadMarkerView.setBackgroundDrawable(readDrawable);
-                }
+                UiUtils.setBackgroundDrawable(holder.postReadMarkerView,readDrawable);
 
                 showBoardPost(position);
             }

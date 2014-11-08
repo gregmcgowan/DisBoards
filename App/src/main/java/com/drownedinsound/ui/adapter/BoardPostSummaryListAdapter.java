@@ -3,6 +3,7 @@ package com.drownedinsound.ui.adapter;
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.BoardPost;
+import com.drownedinsound.utils.UiUtils;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -94,7 +95,7 @@ public class BoardPostSummaryListAdapter extends ArrayAdapter<BoardPost> {
             String title = summary.getTitle();
             String authorusername = "by " + summary.getAuthorUsername();
             int numberOfReplies = summary.getNumberOfReplies();
-            String numberOfRepliesText = null;
+            String numberOfRepliesText;
             if (numberOfReplies > 0) {
                 numberOfRepliesText = numberOfReplies
                         + (numberOfReplies > 1 ? " replies " : "  reply");
@@ -117,26 +118,22 @@ public class BoardPostSummaryListAdapter extends ArrayAdapter<BoardPost> {
             holder.lastUpdatedTextView.setText(lastUpdatedText);
             holder.stickyTextView.setVisibility(stickyVisible);
             if (markAsRead) {
-                holder.postReadMarkerView
-                        .setBackgroundDrawable(readDrawable);
+                UiUtils.setBackgroundDrawable(holder.postReadMarkerView,readDrawable);
             } else {
-                holder.postReadMarkerView
-                        .setBackgroundDrawable(unreadDrawable);
+                UiUtils.setBackgroundDrawable(holder.postReadMarkerView,unreadDrawable);
             }
 
             if (position % 2 == 0) {
                 whiteBackgroundSelector = context
-                        .getResources().getDrawable(
-                                R.drawable.board_list_row_selector);
-                boardPostSummaryRowView
-                        .setBackgroundDrawable(whiteBackgroundSelector);
+                            .getResources().getDrawable(
+                                    R.drawable.board_list_row_selector);
+                UiUtils.setBackgroundDrawable(boardPostSummaryRowView,whiteBackgroundSelector);
             } else {
                 alternateColorSelector = context
-                        .getResources()
-                        .getDrawable(
-                                R.drawable.alternate_board_list_row_selector);
-                boardPostSummaryRowView
-                        .setBackgroundDrawable(alternateColorSelector);
+                            .getResources()
+                            .getDrawable(
+                                    R.drawable.alternate_board_list_row_selector);
+                UiUtils.setBackgroundDrawable(boardPostSummaryRowView,alternateColorSelector);
             }
 
         }
