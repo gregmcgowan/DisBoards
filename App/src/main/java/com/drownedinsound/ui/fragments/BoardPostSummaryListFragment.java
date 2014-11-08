@@ -190,7 +190,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (requestOnStart && !summariesLoaded()) {
-            requestBoardSummaryPage(1, false);
+            requestBoardSummaryPage(1, false, true);
         }
 
         // Check to see if we have a frame in which to embed the details
@@ -305,7 +305,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
     }
 
     public void doRefreshAction() {
-        requestBoardSummaryPage(1, true);
+        requestBoardSummaryPage(1, true, false);
     }
 
     private boolean summariesLoaded() {
@@ -316,7 +316,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
         if (isValid()) {
             connectionErrorTextView.setVisibility(View.GONE);
             if (!summariesLoaded()) {
-                requestBoardSummaryPage(1, false);
+                requestBoardSummaryPage(1, false, true);
             } else {
                 if (isBoardBeingRequested()) {
                     setProgressBarVisiblity(true);
@@ -328,9 +328,9 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
         }
     }
 
-    public void requestBoardSummaryPage(int page, boolean forceUpdate) {
+    public void requestBoardSummaryPage(int page, boolean forceUpdate, boolean showProgressDialog) {
         if (!isBoardBeingRequested()) {
-            if (page <= 1) {
+            if(showProgressDialog) {
                 connectionErrorTextView.setVisibility(View.GONE);
                 setProgressBarVisiblity(true);
             }
@@ -436,7 +436,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
             this.setProgressBarVisiblity(true);
         } else if (state.equals(SentNewPostState.CONFIRMED)) {
             //Refresh the current list
-            requestBoardSummaryPage(1, true);
+            requestBoardSummaryPage(1, true, false);
         }
 
     }
@@ -504,7 +504,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
         @Override
         protected boolean cacheInBackground() throws Exception {
             int pageToFetch = lastPageFetched + 1;
-            requestBoardSummaryPage(pageToFetch, false);
+            requestBoardSummaryPage(pageToFetch, false, false);
             return true;
         }
 
