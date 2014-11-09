@@ -19,17 +19,23 @@
 
 <resources>
 
-    <style name="Theme.Dis_boards" parent="@style/Theme.AppCompat" >
+    <style name="Theme.Dis_boards" parent="@style/Theme.AppCompat.Light" >
         <!-- TODO find out what this does -->
         <!--<item name="actionBarItemBackground">@drawable/selectable_background_dis_boards_style</item>-->
         <!--<item name="android:actionBarItemBackground">@drawable/selectable_background_dis_boards_style</item>-->
         <item name="colorPrimary">@color/background_colour</item>
         <item name="colorAccent">@color/highlighted_blue</item>
-        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+        <item name="colorPrimaryDark">@color/background_gradient_end</item>
+        <item name="colorControlNormal">@color/highlighted_blue</item>
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
-
+        <item name="android:textColor">@color/font_colour_light</item>
         <item name="actionBarItemBackground">@drawable/selectable_background_dis_boards</item>
-    </style>
+
+    <!-- You can also set colorControlNormal, colorControlActivated
+         colorControlHighlight, and colorSwitchThumbNormal. -->
+
+
+</style>
 
 </resources>

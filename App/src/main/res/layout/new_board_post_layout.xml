@@ -1,6 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_colour"
     android:minHeight="@dimen/reply_dialog_min_height"
     android:minWidth="@dimen/reply_dialog_min_width"
     android:orientation="vertical" >
@@ -17,18 +18,21 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:gravity="center_vertical"
+            android:textColor="@color/font_colour_light"
             android:paddingLeft="8dp"
             android:textSize="18sp"
             android:text="@string/new_post" />
-
+        <ImageButton
+                android:id="@+id/new_board_post_abandon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_delete_black_24dp"/>
         <ImageButton
             android:id="@+id/new_board_post_add_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <ImageButton
-            android:id="@+id/new_board_post_abandon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_send_black_24dp"/>
+
     </LinearLayout>
 
 
