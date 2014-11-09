@@ -139,7 +139,7 @@ public class LoginActivity extends DisBoardsActivity {
         if (loginSucceeded) {
             eventBus.post(new LoginSucceededEvent());
             Intent startMainActivityIntent = new Intent(this,
-                    MainCommunityActivity.class);
+                    MainCommunityActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(startMainActivityIntent);
             finish();
         } else {

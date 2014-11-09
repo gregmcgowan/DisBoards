@@ -137,7 +137,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-      //  setHasOptionsMenu(true);
+
         board = getArguments().getParcelable(DisBoardsConstants.BOARD);
         if (board != null) {
             boardUrl = board.getUrl();
@@ -261,25 +261,6 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
         return !haveNetworkConnection && boardPostSummaries.size() == 0
                 && !isBoardBeingRequested();
     }
-
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        inflater.inflate(R.menu.main_community_activity_menu, menu);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        int itemId = item.getItemId();
-//        switch (itemId) {
-//            case R.id.menu_list_refresh:
-//                doRefreshAction();
-//                return true;
-//            case R.id.menu_new_post:
-//                doNewPostAction();
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
 
     @OnClick(R.id.floating_add_button)
     public void doNewPostAction() {

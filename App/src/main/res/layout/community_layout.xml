@@ -10,7 +10,7 @@
 
     <include
             android:id="@+id/toolbar"
-            layout="@layout/main_action_bar_layout"/>
+            layout="@layout/main_toolbar_layout"/>
 
 
     <com.viewpagerindicator.TitlePageIndicator

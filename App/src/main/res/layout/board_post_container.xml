@@ -7,7 +7,7 @@
 
     <include
             android:id="@+id/toolbar"
-            layout="@layout/board_post_action_bar_layout"/>
+            layout="@layout/board_post_toolbar_layout"/>
 
     <LinearLayout
         android:id="@+id/board_post_fragment_holder"

@@ -17,11 +17,14 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * This allows the user to move between the different message boards that are
@@ -118,6 +121,18 @@ public class MainCommunityActivity extends DisBoardsActivity {
         }
         return boardPostSummaryListFragment;
     }
+
+    @OnClick(R.id.profile_button)
+    public void profileButtonPressed(){
+        if(userSessionManager.isUserLoggedIn()) {
+            Toast.makeText(this,"Profile page coming soon",Toast.LENGTH_SHORT).show();
+        } else {
+            Intent startLoginActivity = new Intent(this,
+                    LoginActivity.class);
+            startActivity(startLoginActivity);
+        }
+    }
+
 
     public void doLogoutAction() {
         //Might need to do a proper logout

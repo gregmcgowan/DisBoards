@@ -53,7 +53,6 @@ public abstract class DisBoardsActivity extends ActionBarActivity {
         }
     }
 
-
     protected abstract int getLayoutResource();
 
     private boolean containsAnnotation(Class<? extends Annotation> annotationType) {
