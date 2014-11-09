@@ -133,11 +133,6 @@ public class BoardPostFragment extends DisBoardsFragment {
 
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-      //  setHasOptionsMenu(true);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -360,21 +355,6 @@ public class BoardPostFragment extends DisBoardsFragment {
         outState.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
     }
 
-
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-////        if (!inDualPaneMode) {
-////            inflater.inflate(R.menu.board_post_menu, menu);
-////        }
-//        findAndUpdateFavouritesMenuItem(menu);
-//    }
-
-//    @Override
-//    public void onPrepareOptionsMenu(Menu menu) {
-//        super.onPrepareOptionsMenu(menu);
-//        findAndUpdateFavouritesMenuItem(menu);
-//    }
-
     private void findAndUpdateFavouritesMenuItem(Menu menu) {
         MenuItem favouriteMenuItem = menu.findItem(R.id.menu_favourite);
         if (favouriteMenuItem != null) {
@@ -430,7 +410,7 @@ public class BoardPostFragment extends DisBoardsFragment {
                 "REPLY-DIALOG");
     }
 
-    private void doRefreshAction() {
+    public void doRefreshAction() {
         fetchBoardPost();
         Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Refresh  post");
     }

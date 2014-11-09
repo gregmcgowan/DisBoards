@@ -91,6 +91,13 @@ public class BoardPostActivity extends DisBoardsActivity {
         }
     }
 
+    @OnClick(R.id.refresh_board_posts_button)
+    public void refreshButtonAction() {
+        if(boardPostFragment != null) {
+            boardPostFragment.doRefreshAction();
+        }
+    }
+
 
     @Override
     public void onResume() {
