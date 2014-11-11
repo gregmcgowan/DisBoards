@@ -34,8 +34,13 @@
 
     <!-- You can also set colorControlNormal, colorControlActivated
          colorControlHighlight, and colorSwitchThumbNormal. -->
+    </style>
 
-
-</style>
+    <style name="Theme.Dis_boards.toolbarButton">
+        <item name="android:paddingLeft">@dimen/margin_medium</item>
+        <item name="android:paddingRight">@dimen/margin_medium</item>
+        <item name="android:background">@drawable/selectable_background_dis_boards</item>
+        <item name="android:layout_centerVertical">true</item>
+    </style>
 
 </resources>

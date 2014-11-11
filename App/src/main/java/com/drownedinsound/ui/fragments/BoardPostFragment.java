@@ -22,6 +22,7 @@ import com.drownedinsound.ui.activity.BoardPostActivity;
 import com.drownedinsound.ui.view.ActiveTextView;
 import com.drownedinsound.ui.widgets.AutoScrollListView;
 import com.drownedinsound.utils.UiUtils;
+import com.melnykov.fab.FloatingActionButton;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -42,6 +43,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -115,6 +117,9 @@ public class BoardPostFragment extends DisBoardsFragment {
     @InjectView(R.id.board_post_move_to_last_comment_text_view)
     TextView scrollToLastCommentTextView;
 
+    protected
+    @InjectView(R.id.floating_reply_button)
+    FloatingActionButton floatingReplyButton;
 
     public static BoardPostFragment newInstance(String boardPostUrl,
             String boardPostID,
@@ -158,7 +163,13 @@ public class BoardPostFragment extends DisBoardsFragment {
                     }
 
                 });
-
+        floatingReplyButton.attachToListView(commentsList, new FloatingActionButton.FabOnScrollListener(){
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                super.onScrollStateChanged(view, scrollState);
+                displayScrollToHiddenCommentOption(false);
+            }
+        });
         return rootView;
     }
 
@@ -233,6 +244,8 @@ public class BoardPostFragment extends DisBoardsFragment {
                         + showGoToLastCommentOption);
                 if (showGoToLastCommentOption) {
                     displayScrollToHiddenCommentOption(true);
+                } else {
+                    floatingReplyButton.show(true);
                 }
             } else {
                 connectionErrorTextView.setVisibility(View.VISIBLE);
@@ -306,6 +319,7 @@ public class BoardPostFragment extends DisBoardsFragment {
             commentsList.setVisibility(listVisibility);
             if (progressBarVisible) {
                 moveToFirstOrLastCommentLayout.setVisibility(View.INVISIBLE);
+                floatingReplyButton.hide(false);
             }
         }
     }
@@ -398,7 +412,8 @@ public class BoardPostFragment extends DisBoardsFragment {
         }
     }
 
-    private void doReplyAction() {
+    @OnClick(R.id.floating_reply_button)
+    public void doReplyAction() {
         Bundle replyDetails = new Bundle();
         String replyToAuthor = boardPost.getAuthorUsername();
         replyDetails.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
@@ -416,8 +431,6 @@ public class BoardPostFragment extends DisBoardsFragment {
     }
 
     public boolean showGoToLastCommentOption() {
-        // TODO
-
         return boardPost != null && boardPost.getNumberOfTimesRead() > 1;
     }
 
