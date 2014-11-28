@@ -24,6 +24,6 @@ public class UrlConstants {
 
     public final static String COMMENTS_URL = BASE_URL + "/comments";
 
-    public final static String NEW_POST_URL = "http://drownedinsound.com/community/topics";
+    public final static String NEW_POST_URL = "http://drownedinsound.com/topics";
 
 }

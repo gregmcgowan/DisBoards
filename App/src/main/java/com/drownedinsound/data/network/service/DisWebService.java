@@ -235,8 +235,7 @@ public class DisWebService extends IntentService {
                 .add("topic[title]", title)
                 .add("topic[content_raw]", content)
                 .add("topic[sticky]", "0")
-                .add("authenticity_token", userSessionManager.getAuthenticityToken())
-                .add("commit", "Post it").build();
+                .add("authenticity_token", userSessionManager.getAuthenticityToken()).build();
         Request.Builder requestBuilder = new Request.Builder();
 
         Request request = requestBuilder.post(requestBody).headers(headerBuilder.build())
