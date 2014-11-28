@@ -17,7 +17,7 @@ public class DisBoardsConstants {
 
     public static final String LOGIN_TITLE = "Log In // Drowned In Sound ";
 
-    public static final String DIS_SESSION_FIELD_NAME = "_dis_session";
+    public static final String DIS_SESSION_FIELD_NAME = "_dis_session_production";
 
     public static final String USER_CREDENTIALS_FIELD_NAME = "user_credentials";
 
