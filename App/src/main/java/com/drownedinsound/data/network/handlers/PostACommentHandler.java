@@ -32,7 +32,7 @@ public class PostACommentHandler extends OkHttpAsyncResponseHandler {
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
         BoardPost boardPost = null;
         if (inputStream != null) {
-            BoardPostParser boardPostParser = new BoardPostParser(inputStream,
+            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,inputStream,
                     postID, boardType);
             boardPost = boardPostParser.parse();
             if (boardPost != null) {

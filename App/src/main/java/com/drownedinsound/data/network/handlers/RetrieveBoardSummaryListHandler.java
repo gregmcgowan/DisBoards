@@ -49,7 +49,7 @@ public class RetrieveBoardSummaryListHandler extends
         }
         if (inputStream != null) {
             BoardPostSummaryListParser parser = new BoardPostSummaryListParser(
-                    inputStream, boardType, databaseHelper);
+                    userSessionManager, inputStream, boardType, databaseHelper);
             boardPostSummaries = parser.parse();
             if (boardPostSummaries.size() > 0) {
                 databaseHelper.setBoardPosts(boardPostSummaries);

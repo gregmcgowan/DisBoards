@@ -20,8 +20,6 @@ import java.io.InputStream;
 
 public class LoginResponseHandler extends OkHttpAsyncResponseHandler {
 
-    private static final String AUTHENTICITY_TOKEN_NAME = "csrf-token";
-
     public LoginResponseHandler(Context context) {
         super(context);
     }
@@ -51,7 +49,7 @@ public class LoginResponseHandler extends OkHttpAsyncResponseHandler {
                 String tagName = tag.getName();
                 if (HtmlConstants.META.equals(tagName)) {
                     String metaString = tag.toString();
-                    if (metaString.contains(AUTHENTICITY_TOKEN_NAME)) {
+                    if (metaString.contains(HtmlConstants.AUTHENTICITY_TOKEN_NAME)) {
                         Attributes attributes = tag.parseAttributes();
                         if (attributes != null) {
                             String authToken = attributes.getValue("content");

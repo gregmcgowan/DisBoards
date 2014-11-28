@@ -38,7 +38,7 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
         BoardPost boardPost = null;
         if (inputStream != null) {
-            BoardPostParser boardPostParser = new BoardPostParser(inputStream,
+            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,inputStream,
                     boardPostId, boardPostType);
             boardPost = boardPostParser.parse();
             BoardPost exisitingBoardPost = databaseHelper.getBoardPost(boardPost.getId());

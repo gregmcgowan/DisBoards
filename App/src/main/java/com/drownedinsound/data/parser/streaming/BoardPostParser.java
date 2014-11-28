@@ -1,11 +1,13 @@
 package com.drownedinsound.data.parser.streaming;
 
 import com.drownedinsound.core.DisBoardsConstants;
+import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardPostComment;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.utils.DateUtils;
 
+import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.EndTag;
 import net.htmlparser.jericho.Segment;
 import net.htmlparser.jericho.StartTag;
@@ -79,11 +81,15 @@ public class BoardPostParser extends StreamingParser {
 
     private String latestCommentId;
 
-    public BoardPostParser(InputStream inputStream, String boardPostId,
+    private UserSessionManager userSessionManager;
+
+    public BoardPostParser(UserSessionManager userSessionManager,
+            InputStream inputStream, String boardPostId,
             BoardType boardType) {
         this.boardPostId = boardPostId;
         this.boardType = boardType;
         this.inputStream = inputStream;
+        this.userSessionManager = userSessionManager;
         this.buffer = new StringBuilder(1024);
         comments = new ArrayList<BoardPostComment>();
         boardPostCommentLevel = -1;
@@ -160,6 +166,15 @@ public class BoardPostParser extends StreamingParser {
 
                             if (isInPageState(PageState.INITIAL_CONTENT_DIV)) {
                                 initialContentDivLevel++;
+                            }
+                        } else if (HtmlConstants.META.equals(tagName)) {
+                            String metaString = tag.toString();
+                            if (metaString.contains(HtmlConstants.AUTHENTICITY_TOKEN_NAME)) {
+                                Attributes attributes = tag.parseAttributes();
+                                if (attributes != null) {
+                                    String authToken = attributes.getValue("content");
+                                    userSessionManager.setAuthenticityToken(authToken);
+                                }
                             }
                         } else {
                             if (isInPageState(PageState.INITIAL_CONTENT_DIV)) {

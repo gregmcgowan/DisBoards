@@ -1,11 +1,13 @@
 package com.drownedinsound.data.parser.streaming;
 
 import com.drownedinsound.core.DisBoardsConstants;
+import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.DatabaseHelper;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.utils.DateUtils;
 
+import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.EndTag;
 import net.htmlparser.jericho.Segment;
 import net.htmlparser.jericho.StartTag;
@@ -59,13 +61,17 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private DatabaseHelper databaseHelper;
 
-    public BoardPostSummaryListParser(InputStream inputStream,
+    private UserSessionManager userSessionManager;
+
+    public BoardPostSummaryListParser(UserSessionManager userSessionManager,
+            InputStream inputStream,
             BoardType boardType, DatabaseHelper databaseHelper) {
         this.inputStream = inputStream;
         this.boardType = boardType;
         this.boardPosts = new ArrayList<>();
         this.buffer = new StringBuilder(1024);
         this.databaseHelper = databaseHelper;
+        this.userSessionManager = userSessionManager;
     }
 
     public ArrayList<BoardPost> parse() {
@@ -78,6 +84,15 @@ public class BoardPostSummaryListParser extends StreamingParser {
                     String tagName = tag.getName();
                     if (tagName.equals(HtmlConstants.TABLE)) {
                         inBoardPostTable = tag instanceof StartTag;
+                    } else if (HtmlConstants.META.equals(tagName)) {
+                        String metaString = tag.toString();
+                        if (metaString.contains(HtmlConstants.AUTHENTICITY_TOKEN_NAME)) {
+                            Attributes attributes = tag.parseAttributes();
+                            if (attributes != null) {
+                                String authToken = attributes.getValue("content");
+                                userSessionManager.setAuthenticityToken(authToken);
+                            }
+                        }
                     } else if (tagName.equals(HtmlConstants.TABLE_ROW)) {
                         if (tag instanceof StartTag) {
                             String trString = tag.toString();
@@ -160,7 +175,18 @@ public class BoardPostSummaryListParser extends StreamingParser {
                                 parseSpanSegment(segment);
                             }
                         }
+                    } else if (HtmlConstants.META.equals(tagName)) {
+                            String metaString = tag.toString();
+                            if (metaString.contains(HtmlConstants.AUTHENTICITY_TOKEN_NAME)) {
+                                Attributes attributes = tag.parseAttributes();
+                                if (attributes != null) {
+                                    String authToken = attributes.getValue("content");
+                                    userSessionManager.setAuthenticityToken(authToken);
+                                }
+                            }
                     }
+
+
                     if (tag instanceof EndTag) {
                         clearBuffer();
                     }
