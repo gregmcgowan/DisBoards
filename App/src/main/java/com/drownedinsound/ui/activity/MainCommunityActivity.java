@@ -1,24 +1,22 @@
 package com.drownedinsound.ui.activity;
 
-import com.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
 import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
-import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.data.DatabaseHelper;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.ui.adapter.BoardsFragmentAdapter;
+import com.drownedinsound.ui.fragments.SimpleDialogFragment;
 import com.drownedinsound.utils.UiUtils;
 import com.viewpagerindicator.PageIndicator;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.widget.ImageButton;
-import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -35,6 +33,8 @@ import butterknife.OnClick;
  */
 @UseDagger
 public class MainCommunityActivity extends DisBoardsActivity {
+
+    private static final String LOGOUT_DIALOG = "LOGOUT_DIALOG";
 
     private BoardsFragmentAdapter mAdapter;
 
@@ -125,7 +125,25 @@ public class MainCommunityActivity extends DisBoardsActivity {
     @OnClick(R.id.profile_button)
     public void profileButtonPressed(){
         if(userSessionManager.isUserLoggedIn()) {
-            Toast.makeText(this,"Profile page coming soon",Toast.LENGTH_SHORT).show();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            SimpleDialogFragment existingLogoutDialog =
+                    (SimpleDialogFragment) fragmentManager.findFragmentByTag(LOGOUT_DIALOG);
+            if(existingLogoutDialog != null) {
+                fragmentTransaction.remove(existingLogoutDialog);
+            }
+
+            SimpleDialogFragment logoutDialog =
+                    SimpleDialogFragment.newInstance(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if(which == DialogInterface.BUTTON_POSITIVE) {
+                        doLogoutAction();
+                    }
+                }
+            },"","Do you want to logout?","Yes","No");
+
+            logoutDialog.show(fragmentTransaction,LOGOUT_DIALOG);
+
         } else {
             Intent startLoginActivity = new Intent(this,
                     LoginActivity.class);
