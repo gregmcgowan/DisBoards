@@ -8,9 +8,6 @@ import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
-import com.drownedinsound.data.network.HttpClient;
-import com.drownedinsound.data.network.service.DisWebService;
-import com.drownedinsound.data.network.service.DisWebServiceConstants;
 import com.drownedinsound.events.FailedToPostNewThreadEvent;
 import com.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.drownedinsound.events.SentNewPostEvent;
@@ -30,15 +27,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -258,8 +250,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
     private boolean showNetworkConnectionErrorText() {
         boolean haveNetworkConnection = NetworkUtils
                 .isConnected(getActivity());
-        return !haveNetworkConnection && boardPostSummaries.size() == 0
-                && !isBoardBeingRequested();
+        return !haveNetworkConnection && boardPostSummaries.size() == 0;
     }
 
     @OnClick(R.id.floating_add_button)
@@ -277,14 +268,6 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
                 Toast.LENGTH_SHORT).show();
     }
 
-    private boolean isBoardBeingRequested() {
-        boolean requested = false;
-        if (boardType != null) {
-            HttpClient.requestIsInProgress(boardType.name());
-        }
-        return requested;
-    }
-
     public void doRefreshAction() {
         requestBoardSummaryPage(1, true, false);
     }
@@ -299,40 +282,18 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
             if (!summariesLoaded()) {
                 requestBoardSummaryPage(1, false, true);
             } else {
-                if (isBoardBeingRequested()) {
-                    setProgressBarVisiblity(true);
-                } else {
-                    adapter.notifyDataSetChanged();
-                    setProgressBarVisiblity(false);
-                }
+                 adapter.notifyDataSetChanged();
+                 setProgressBarVisiblity(false);
             }
         }
     }
 
     public void requestBoardSummaryPage(int page, boolean forceUpdate, boolean showProgressDialog) {
-        if (!isBoardBeingRequested()) {
-            if(showProgressDialog) {
-                connectionErrorTextView.setVisibility(View.GONE);
-                setProgressBarVisiblity(true);
-            }
-
-            Intent disWebServiceIntent = new Intent(getActivity(),
-                    DisWebService.class);
-            Bundle parametersBundle = new Bundle();
-
-            parametersBundle.putInt(
-                    DisWebServiceConstants.SERVICE_REQUESTED_ID,
-                    DisWebServiceConstants.GET_POSTS_SUMMARY_LIST_ID);
-            parametersBundle.putParcelable(DisBoardsConstants.BOARD, board);
-            parametersBundle.putBoolean(DisBoardsConstants.FORCE_FETCH,
-                    forceUpdate);
-            parametersBundle.putInt(DisBoardsConstants.BOARD_PAGE_NUMBER, page);
-            disWebServiceIntent.putExtras(parametersBundle);
-            getActivity().startService(disWebServiceIntent);
-        } else {
-            Log.d(TAG, "Already requesting " + boardType);
+        if (showProgressDialog) {
+            connectionErrorTextView.setVisibility(View.GONE);
             setProgressBarVisiblity(true);
         }
+        getDisApiClient().getBoardPostSummaryList(page, board, forceUpdate, true);
     }
 
     private void setProgressBarVisiblity(boolean visible) {

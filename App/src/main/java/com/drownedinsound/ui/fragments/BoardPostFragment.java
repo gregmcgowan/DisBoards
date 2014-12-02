@@ -5,13 +5,11 @@ import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.DatabaseService;
+import com.drownedinsound.database.DatabaseService;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardPostComment;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.network.UrlConstants;
-import com.drownedinsound.data.network.service.DisWebService;
-import com.drownedinsound.data.network.service.DisWebServiceConstants;
 import com.drownedinsound.events.BoardPostCommentSentEvent;
 import com.drownedinsound.events.FailedToPostCommentEvent;
 import com.drownedinsound.events.FailedToThisThisEvent;
@@ -37,7 +35,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,7 +42,6 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
@@ -337,22 +333,7 @@ public class BoardPostFragment extends DisBoardsFragment {
             setProgressBarAndFragmentVisibility(true);
             if (!requestingPost) {
                 connectionErrorTextView.setVisibility(View.GONE);
-
-                Intent disWebServiceIntent = new Intent(getActivity(),
-                        DisWebService.class);
-                Bundle parametersBundle = new Bundle();
-                parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
-                        boardPostUrl);
-                parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
-                        boardPostId);
-                parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
-                        boardType);
-                parametersBundle.putInt(
-                        DisWebServiceConstants.SERVICE_REQUESTED_ID,
-                        DisWebServiceConstants.GET_BOARD_POST_ID);
-                disWebServiceIntent.putExtras(parametersBundle);
-
-                getActivity().startService(disWebServiceIntent);
+                disApiClient.getBoardPost(boardPostUrl,boardPostId,boardType);
                 requestingPost = true;
             }
         }
@@ -925,25 +906,10 @@ public class BoardPostFragment extends DisBoardsFragment {
             BoardPostFragment fragment = boardPostFragmentWeakReference.get();
             if (adapter != null && fragment != null) {
                 fragment.setProgressBarAndFragmentVisibility(true);
-
-                Intent thisCommentIntent = new Intent(
-                        fragment.getActivity(), DisWebService.class);
-                Bundle parametersBundle = new Bundle();
-                parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
-                        postUrl);
-                parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
-                        postID);
-                parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
-                        boardType);
-                parametersBundle.putString(DisBoardsConstants.BOARD_COMMENT_ID,
-                        commentID);
-                parametersBundle.putInt(
-                        DisWebServiceConstants.SERVICE_REQUESTED_ID,
-                        DisWebServiceConstants.THIS_A_COMMENT_ID);
-                thisCommentIntent.putExtras(parametersBundle);
-
-                fragment.getActivity().startService(thisCommentIntent);
-
+                if(boardPostFragmentWeakReference.get() != null) {
+                    boardPostFragmentWeakReference.get().getDisApiClient().
+                            thisAComment(postUrl,postID,commentID,boardType);
+                }
             }
         }
 

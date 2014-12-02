@@ -1,12 +1,12 @@
 package com.drownedinsound.core;
 
-import com.drownedinsound.data.DatabaseService;
+import com.drownedinsound.database.DatabaseService;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.network.CookieManager;
+import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.handlers.LoginResponseHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
-import com.drownedinsound.data.network.service.DisWebService;
 import com.drownedinsound.ui.activity.LoginActivity;
 import com.drownedinsound.ui.activity.MainCommunityActivity;
 import com.drownedinsound.ui.activity.StartActivity;
@@ -35,7 +35,7 @@ import de.greenrobot.event.EventBus;
                 RetrieveBoardSummaryListHandler.class,
                 RetrieveBoardPostHandler.class,
                 FavouritesListFragment.class,
-                DisWebService.class,
+                DisApiClient.class,
                 DatabaseService.class,
                 BoardPostFragment.class,
                 BoardPostSummaryListFragment.class,

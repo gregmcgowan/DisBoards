@@ -3,7 +3,7 @@ package com.drownedinsound.data.parser.streaming;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.DatabaseHelper;
+import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.utils.DateUtils;
 

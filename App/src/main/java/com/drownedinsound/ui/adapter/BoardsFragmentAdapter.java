@@ -1,6 +1,6 @@
 package com.drownedinsound.ui.adapter;
 
-import com.drownedinsound.data.DatabaseHelper;
+import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
 

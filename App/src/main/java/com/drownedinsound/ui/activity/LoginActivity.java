@@ -3,10 +3,7 @@ package com.drownedinsound.ui.activity;
 import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.annotations.UseEventBus;
-import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.network.CookieManager;
-import com.drownedinsound.data.network.service.DisWebService;
-import com.drownedinsound.data.network.service.DisWebServiceConstants;
 import com.drownedinsound.events.LoginResponseEvent;
 import com.drownedinsound.events.LoginSucceededEvent;
 import com.drownedinsound.events.LurkEvent;
@@ -115,13 +112,7 @@ public class LoginActivity extends DisBoardsActivity {
     private void attemptLogin(String username, String password) {
         UiUtils.hideSoftKeyboard(this, loginButton.getApplicationWindowToken());
         setProgressVisibility(true);
-        Intent disWebServiceIntent = new Intent(this, DisWebService.class);
-        disWebServiceIntent.putExtra(
-                DisWebServiceConstants.SERVICE_REQUESTED_ID,
-                DisWebServiceConstants.LOGIN_SERVICE_ID);
-        disWebServiceIntent.putExtra(DisBoardsConstants.USERNAME, username);
-        disWebServiceIntent.putExtra(DisBoardsConstants.PASSWORD, password);
-        startService(disWebServiceIntent);
+        disApiClient.loginUser(username,password);
     }
 
     private void setProgressVisibility(boolean visible) {

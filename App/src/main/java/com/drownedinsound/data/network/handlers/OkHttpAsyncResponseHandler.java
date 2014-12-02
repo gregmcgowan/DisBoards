@@ -1,7 +1,7 @@
 package com.drownedinsound.data.network.handlers;
 
 import com.drownedinsound.core.DisBoardsApp;
-import com.drownedinsound.data.DatabaseHelper;
+import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.data.UserSessionManager;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
@@ -22,16 +22,16 @@ import de.greenrobot.event.EventBus;
  */
 public abstract class OkHttpAsyncResponseHandler implements Callback {
 
-    private boolean updateUI;
-
     @Inject
-    protected DatabaseHelper databaseHelper;
+    DatabaseHelper databaseHelper;
 
     @Inject
     UserSessionManager userSessionManager;
 
     @Inject
     EventBus eventBus;
+
+    private boolean updateUI;
 
     public OkHttpAsyncResponseHandler(Context context) {
         if (context != null) {

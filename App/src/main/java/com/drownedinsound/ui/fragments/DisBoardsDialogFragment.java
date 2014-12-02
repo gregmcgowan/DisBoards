@@ -1,6 +1,7 @@
 package com.drownedinsound.ui.fragments;
 
 import com.drownedinsound.core.DisBoardsApp;
+import com.drownedinsound.data.network.DisApiClient;
 
 import android.app.Dialog;
 
@@ -18,6 +19,8 @@ public class DisBoardsDialogFragment extends DialogFragment {
     @Inject
     protected EventBus eventBus;
 
+    protected DisApiClient disApiClient;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +30,8 @@ public class DisBoardsDialogFragment extends DialogFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         DisBoardsApp.getApplication(getActivity()).inject(this);
+
+        disApiClient = DisBoardsApp.getApplication(getActivity()).getDisApiClient();
     }
 
     @Override

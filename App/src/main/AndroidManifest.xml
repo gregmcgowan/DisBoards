@@ -17,9 +17,7 @@
         <activity android:name=".ui.activity.FavouritesActivity" android:label="Favourite Posts"
             android:icon="@null"/>
 
-        <service android:name=".data.network.service.DisWebService" />
-
-        <service android:name=".data.DatabaseService" />
+        <service android:name=".database.DatabaseService" />
 
         <activity
             android:name=".ui.activity.StartActivity" >

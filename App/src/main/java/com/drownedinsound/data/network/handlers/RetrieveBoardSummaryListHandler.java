@@ -6,6 +6,7 @@ import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.parser.streaming.BoardPostSummaryListParser;
+import com.drownedinsound.events.RequestCompletedEvent;
 import com.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -66,6 +67,7 @@ public class RetrieveBoardSummaryListHandler extends
                     new RetrievedBoardPostSummaryListEvent(boardPostSummaries,
                             boardType, false, append));
         }
+        eventBus.post(new RequestCompletedEvent(boardType.name()));
     }
 
     @Override
@@ -94,6 +96,7 @@ public class RetrieveBoardSummaryListHandler extends
             }
 
         }
+        eventBus.post(new RequestCompletedEvent(boardType.name()));
     }
 
 }

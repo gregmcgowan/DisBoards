@@ -4,6 +4,7 @@ import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
+import com.drownedinsound.events.RequestCompletedEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
 import com.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.squareup.okhttp.Request;
@@ -56,6 +57,7 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
             eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true));
         }
         eventBus.post(new UpdateCachedBoardPostEvent(boardPost));
+        eventBus.post(new RequestCompletedEvent(boardPostId));
     }
 
     @Override
@@ -74,5 +76,6 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
         if (isUpdateUI()) {
             eventBus.post(new RetrievedBoardPostEvent(null, false, true));
         }
+        eventBus.post(new RequestCompletedEvent(boardPostId));
     }
 }

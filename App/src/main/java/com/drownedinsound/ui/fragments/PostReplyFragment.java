@@ -3,8 +3,6 @@ package com.drownedinsound.ui.fragments;
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.BoardType;
-import com.drownedinsound.data.network.service.DisWebService;
-import com.drownedinsound.data.network.service.DisWebServiceConstants;
 import com.drownedinsound.events.BoardPostCommentSentEvent;
 
 import android.app.Dialog;
@@ -107,25 +105,10 @@ public class PostReplyFragment extends DisBoardsDialogFragment {
 
     private void doReplyAction() {
         // TODO check to see if data has been entered
-
-        Intent disWebServiceIntent = new Intent(getActivity(),
-                DisWebService.class);
-        Bundle parametersBundle = new Bundle();
-        parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
-                boardPostId);
-        parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
-                boardType);
-        parametersBundle.putString(DisBoardsConstants.COMMENT_CONTENT,
-                commentContentEditView.getText().toString());
-        parametersBundle.putString(DisBoardsConstants.COMMENT_TITLE,
-                commentTitleEditView.getText().toString());
-        parametersBundle.putString(DisBoardsConstants.BOARD_COMMENT_ID,
-                replyToCommentID);
-        parametersBundle.putInt(DisWebServiceConstants.SERVICE_REQUESTED_ID,
-                DisWebServiceConstants.POST_A_COMMENT);
-        disWebServiceIntent.putExtras(parametersBundle);
-
-        getActivity().startService(disWebServiceIntent);
+        disApiClient.postComment(boardPostId,
+                replyToCommentID,
+                commentTitleEditView.getText().toString(),
+                commentContentEditView.getText().toString(),boardType);
 
         dismiss();
         eventBus.post(new BoardPostCommentSentEvent());

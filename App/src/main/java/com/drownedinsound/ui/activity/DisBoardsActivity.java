@@ -4,6 +4,7 @@ import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.core.DisBoardsApp;
+import com.drownedinsound.data.network.DisApiClient;
 
 import android.app.FragmentManager;
 import android.os.Bundle;
@@ -29,6 +30,9 @@ public abstract class DisBoardsActivity extends ActionBarActivity {
     @Inject
     protected EventBus eventBus;
 
+
+    protected DisApiClient disApiClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +55,8 @@ public abstract class DisBoardsActivity extends ActionBarActivity {
         if (containsAnnotation(UseEventBus.class)) {
             eventBus.register(this);
         }
+
+        disApiClient = DisBoardsApp.getApplication(this).getDisApiClient();
     }
 
     protected abstract int getLayoutResource();
@@ -67,5 +73,9 @@ public abstract class DisBoardsActivity extends ActionBarActivity {
                 eventBus.unregister(this);
             }
         }
+
+//        if(disApiClient != null) {
+//            disApiClient.onDestroy();
+//        }
     }
 }

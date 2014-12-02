@@ -2,20 +2,19 @@ package com.drownedinsound.ui.fragments;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.DatabaseHelper;
+import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.DraftBoardPost;
-import com.drownedinsound.data.network.service.DisWebService;
-import com.drownedinsound.data.network.service.DisWebServiceConstants;
 import com.drownedinsound.events.SentNewPostEvent;
 import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.drownedinsound.ui.view.RobotoLightTextView;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,6 +23,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 
 public class NewPostFragment extends DisBoardsDialogFragment {
 
@@ -90,16 +90,53 @@ public class NewPostFragment extends DisBoardsDialogFragment {
                 clearAction();
             }
         });
+        postContentEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s,
+                    int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s,
+                    int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                checkForContent();
+            }
+        });
+        postTitleEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                checkForContent();
+            }
+        });
 
         heading.setText("New " + board.getDisplayName() + " Post");
 
         return view;
     }
 
+    private void checkForContent() {
+    }
+
     private void clearAction() {
         String content = postContentEditText.getText().toString();
         String title = postTitleEditText.getText().toString();
-        if (!TextUtils.isEmpty(content) && !TextUtils.isEmpty(title)) {
+        if (!TextUtils.isEmpty(content) || !TextUtils.isEmpty(title)) {
             postContentEditText.setText("");
             postTitleEditText.setText("");
         } else {
@@ -113,18 +150,7 @@ public class NewPostFragment extends DisBoardsDialogFragment {
         String title = postTitleEditText.getText().toString();
         if (!TextUtils.isEmpty(title)) {
             //TODO make sure the text is not a ridiculous length
-            Intent disWebService = new Intent(getActivity(),
-                    DisWebService.class);
-            Bundle parametersBundle = new Bundle();
-            parametersBundle.putParcelable(DisBoardsConstants.BOARD, board);
-            parametersBundle
-                    .putString(DisBoardsConstants.NEW_POST_CONTENT, content);
-            parametersBundle.putString(DisBoardsConstants.NEW_POST_TITLE, title);
-            parametersBundle.putInt(DisWebServiceConstants.SERVICE_REQUESTED_ID,
-                    DisWebServiceConstants.NEW_POST);
-            disWebService.putExtras(parametersBundle);
-
-            getActivity().startService(disWebService);
+            disApiClient.addNewPost(board,title,content);
             eventBus.post(new SentNewPostEvent(SentNewPostState.SENT));
             dismiss();
         } else {

@@ -7,8 +7,8 @@ import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.DatabaseHelper;
-import com.drownedinsound.data.DatabaseService;
+import com.drownedinsound.database.DatabaseHelper;
+import com.drownedinsound.database.DatabaseService;
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
@@ -23,7 +23,6 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 
 import android.util.Log;

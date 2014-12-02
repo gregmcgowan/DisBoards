@@ -1,4 +1,4 @@
-package com.drownedinsound.data;
+package com.drownedinsound.database;
 
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.Board;

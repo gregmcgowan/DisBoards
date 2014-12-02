@@ -3,7 +3,7 @@ package com.drownedinsound.ui.activity;
 import com.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
 import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
-import com.drownedinsound.data.DatabaseHelper;
+import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.ui.adapter.BoardsFragmentAdapter;
 import com.drownedinsound.ui.fragments.SimpleDialogFragment;

@@ -1,15 +1,23 @@
 package com.drownedinsound.data;
 
+import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.handlers.LoginResponseHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.NewPostHandler;
 import com.drownedinsound.data.network.handlers.PostACommentHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
-import com.drownedinsound.data.network.service.DisWebService;
+import com.drownedinsound.database.DatabaseHelper;
+import com.drownedinsound.database.DatabaseService;
+import com.drownedinsound.qualifiers.ForDatabase;
+import com.drownedinsound.qualifiers.ForNetworkRequests;
 import com.drownedinsound.ui.activity.LoginActivity;
 import com.drownedinsound.ui.activity.MainCommunityActivity;
 import com.drownedinsound.ui.activity.StartActivity;
+import com.drownedinsound.ui.fragments.BoardPostFragment;
+import com.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
+import com.drownedinsound.ui.fragments.NewPostFragment;
+import com.drownedinsound.ui.fragments.PostReplyFragment;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -18,6 +26,8 @@ import android.content.SharedPreferences;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
@@ -35,11 +45,15 @@ import static android.content.Context.MODE_PRIVATE;
                 RetrieveBoardSummaryListHandler.class,
                 PostACommentHandler.class,
                 ThisACommentHandler.class,
-                DisWebService.class,
+                DisApiClient.class,
                 DatabaseService.class,
-                MainCommunityActivity.class,
+                StartActivity.class,
                 LoginActivity.class,
-                StartActivity.class
+                MainCommunityActivity.class,
+                BoardPostFragment.class,
+                BoardPostSummaryListFragment.class,
+                PostReplyFragment.class,
+                NewPostFragment.class
         },
         complete = false,
         library = true
@@ -61,12 +75,23 @@ public class DataModule {
     }
 
 
+    @Provides @Singleton @ForNetworkRequests
+    public ExecutorService provideMultiThreadExecutor() {
+        final int numberCores = Runtime.getRuntime().availableProcessors();
+        return Executors.newFixedThreadPool(numberCores * 2 + 1);
+    }
+
+    @Provides @Singleton @ForDatabase
+    public ExecutorService provideDbExecutorService(){
+        return Executors.newSingleThreadExecutor();
+    }
+
+
     @Provides
     @Singleton
     OkHttpClient provideOkHttpClient(Application app) {
         return createOkHttpClient(app);
     }
-
 
     private OkHttpClient createOkHttpClient(Application app) {
         OkHttpClient client = new OkHttpClient();

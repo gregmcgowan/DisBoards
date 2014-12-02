@@ -1,10 +1,13 @@
 package com.drownedinsound.core;
 
 import com.drownedinsound.BuildConfig;
+import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.utils.CrashlyticsTree;
 
 import android.app.Application;
 import android.content.Context;
+
+import javax.inject.Inject;
 
 import dagger.ObjectGraph;
 import timber.log.Timber;
@@ -12,6 +15,9 @@ import timber.log.Timber;
 public class DisBoardsApp extends Application {
 
     private ObjectGraph objectGraph;
+
+    @Inject
+    DisApiClient disApiClient;
 
     public static DisBoardsApp getApplication(Context context) {
         return (DisBoardsApp) context.getApplicationContext();
@@ -41,5 +47,9 @@ public class DisBoardsApp extends Application {
 
     public void inject(Object o) {
         objectGraph.inject(o);
+    }
+
+    public DisApiClient getDisApiClient() {
+        return disApiClient;
     }
 }

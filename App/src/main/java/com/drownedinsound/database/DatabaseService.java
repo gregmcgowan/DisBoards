@@ -1,4 +1,4 @@
-package com.drownedinsound.data;
+package com.drownedinsound.database;
 
 import com.drownedinsound.core.DisBoardsApp;
 import com.drownedinsound.core.DisBoardsConstants;
@@ -29,6 +29,8 @@ public class DatabaseService extends IntentService {
     public static final int GET_FAVOURITE_BOARD_POSTS = 2;
 
     public static final int REMOVE_OLD_POSTS = 3;
+
+    public static final int FETCH_CACHED_BOARD_SUMMARY_LIST = 4;
 
     private static final String SERVICE_NAME = "DatabaseService";
 
@@ -74,4 +76,7 @@ public class DatabaseService extends IntentService {
         List<BoardPost> favouritedBoardPosts = databaseHelper.getFavouritedBoardPosts();
         eventBus.post(new RetrievedFavouritesEvent(new ArrayList<>(favouritedBoardPosts)));
     }
+
+
+
 }

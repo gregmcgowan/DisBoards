@@ -3,6 +3,7 @@ package com.drownedinsound.ui.fragments;
 import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.core.DisBoardsApp;
+import com.drownedinsound.data.network.DisApiClient;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -22,6 +23,8 @@ public class DisBoardsFragment extends Fragment {
 
     @Inject
     protected EventBus eventBus;
+
+    DisApiClient disApiClient;
 
     /**
      * Checks if this fragment is attached to a activity
@@ -46,15 +49,22 @@ public class DisBoardsFragment extends Fragment {
         if (containsAnnotation(UseEventBus.class)) {
             eventBus.register(this);
         }
+
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        disApiClient = DisBoardsApp.getApplication(getActivity()).getDisApiClient();
     }
 
     private boolean containsAnnotation(Class<? extends Annotation> annotationType) {
         return ((Object) this).getClass().getAnnotation(annotationType) != null;
+    }
+
+    protected DisApiClient getDisApiClient(){
+        return disApiClient;
     }
 
     @Override
@@ -65,5 +75,9 @@ public class DisBoardsFragment extends Fragment {
                 eventBus.unregister(this);
             }
         }
+
+//        if(disApiClient != null) {
+//            disApiClient.onDestroy();
+//        }
     }
 }
