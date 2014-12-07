@@ -11,6 +11,7 @@ import com.drownedinsound.data.network.handlers.PostACommentHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
+import com.drownedinsound.data.network.requests.AddANewPostRunnable;
 import com.drownedinsound.data.network.requests.PostACommentRunnable;
 import com.drownedinsound.data.network.requests.ThisACommentRunnable;
 import com.drownedinsound.database.DatabaseHelper;
@@ -50,11 +51,6 @@ import timber.log.Timber;
  * @author Greg
  */
 public class DisApiClient {
-
-    private static final String SERVICE_NAME = "DisWebService";
-
-    private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
-            + "DisWebService";
 
     private Context applicationContext;
 
@@ -162,7 +158,28 @@ public class DisApiClient {
         } else {
             Timber.d("Request for " + boardListName + " is already in progress ");
         }
+    }
 
+    private boolean recentlyFetched(Board cachedBoard) {
+        BoardType type = cachedBoard.getBoardType();
+        Board board = databaseHelper.getBoard(type);
+        long lastFetchedTime = board.getLastFetchedTime();
+        long oneMinuteAgo = System.currentTimeMillis()
+                - (DateUtils.MINUTE_IN_MILLIS);
+
+        boolean recentlyFetched = lastFetchedTime > oneMinuteAgo;
+
+        if (DisBoardsConstants.DEBUG) {
+            Timber.d(" last fetched time =  "
+                    + lastFetchedTime
+                    + " one  minute ago =  "
+                    + oneMinuteAgo
+                    + " so it has been "
+                    + (recentlyFetched ? "recently fetched"
+                    : "not recently fetched"));
+        }
+
+        return recentlyFetched;
     }
 
     public void thisAComment(String boardPostUrl, String boardPostId, String commentId, BoardType boardType) {
@@ -171,20 +188,9 @@ public class DisApiClient {
     }
 
     public void addNewPost(Board board, String title, String content) {
-        Headers.Builder headerBuilder = null;//getMandatoryDefaultHeaders();
-        headerBuilder.add("Referer", board.getUrl());
-        RequestBody requestBody = new FormEncodingBuilder().add("section_id", String.valueOf(board
-                .getSectionId()))
-                .add("topic[title]", title)
-                .add("topic[content_raw]", content)
-                .add("topic[sticky]", "0")
-                .add("authenticity_token", userSessionManager.getAuthenticityToken()).build();
-        Request.Builder requestBuilder = new Request.Builder();
-
-        Request request = requestBuilder.post(requestBody).headers(headerBuilder.build())
-                .url(UrlConstants.NEW_POST_URL).build();
-
-        httpClient.newCall(request).enqueue(new NewPostHandler(applicationContext, board));
+        NewPostHandler newPostHandler = new NewPostHandler(applicationContext,board);
+        String authToken = userSessionManager.getAuthenticityToken();
+        networkRequestExecutorService.execute(new AddANewPostRunnable(newPostHandler,httpClient,board,title,content,authToken));
     }
 
     public void postComment(String boardPostId, String commentId, String title, String content,
@@ -198,30 +204,6 @@ public class DisApiClient {
                         title, content, authToken));
     }
 
-
-    private boolean recentlyFetched(Board cachedBoard) {
-        boolean recentlyFetched = false;
-        BoardType type = cachedBoard.getBoardType();
-        Board board = databaseHelper.getBoard(type);
-        long lastFetchedTime = board.getLastFetchedTime();
-        long oneMinuteAgo = System.currentTimeMillis()
-                - (DateUtils.MINUTE_IN_MILLIS);
-
-        recentlyFetched = lastFetchedTime > oneMinuteAgo;
-
-        if (DisBoardsConstants.DEBUG) {
-            Log.d(TAG, " last fetched time =  "
-                    + lastFetchedTime
-                    + " one  minute ago =  "
-                    + oneMinuteAgo
-                    + " so it has been "
-                    + (recentlyFetched ? "recently fetched"
-                    : "not recently fetched"));
-        }
-
-        return recentlyFetched;
-    }
-
     public void onEvent(RequestCompletedEvent requestCompletedEvent) {
         String idenfifer = requestCompletedEvent.getIdentifier();
         Timber.d("Completed request for " + idenfifer);
@@ -231,69 +213,4 @@ public class DisApiClient {
     }
 
 }
-    // TODO Not sure if this just causes more problems
-//    private static class FetchBoardRunnable implements Runnable {
-//
-//        private DatabaseHelper databaseHelper;
-//        private WeakReference<Context> context;
-//        private ArrayList<Board> boards;
-//        private boolean forceFetch;
-//
-//        FetchBoardRunnable(ArrayList<Board> boards,
-//                           WeakReference<Context> context, DatabaseHelper databaseHelper,
-//                           boolean forceFetch) {
-//            this.boards = boards;
-//            this.context = context;
-//            this.databaseHelper = databaseHelper;
-//            this.forceFetch = forceFetch;
-//        }
-//
-//        @Override
-//        public void run() {
-//            for (Board boardToFetch : boards) {
-//                fetchBoardType(boardToFetch);
-//            }
-//        }
-//
-//        private void fetchBoardType(Board board) {
-//            boolean requestIsInProgress = HttpClient.requestIsInProgress(board
-//                .getBoardType().name());
-//            if (!requestIsInProgress) {
-//                if (NetworkUtils.isConnected(context.get())) {
-//                    if (forceFetch || !recentlyFetched(board)) {
-//                        HttpClient.requestBoardSummary(
-//                            context.get(),
-//                            board.getUrl(),
-//                            board.getBoardType(),
-//                            new RetrieveBoardSummaryListHandler(board
-//                                .getBoardType(), forceFetch,
-//                                databaseHelper, false), 1);
-//                    }
-//                }
-//            }
-//        }
-//
-//        private boolean recentlyFetched(Board cachedBoard) {
-//            boolean recentlyFetched = false;
-//            BoardType type = cachedBoard.getBoardType();
-//            Board board = databaseHelper.getBoard(type);
-//            long lastFetchedTime = board.getLastFetchedTime();
-//            long oneMinuteAgo = System.currentTimeMillis()
-//                - (DateUtils.MINUTE_IN_MILLIS);
-//
-//            recentlyFetched = lastFetchedTime > oneMinuteAgo;
-//
-//            if (DisBoardsConstants.DEBUG) {
-//                Log.d(TAG, " last fetched time =  "
-//                    + lastFetchedTime
-//                    + " one  minute ago =  "
-//                    + oneMinuteAgo
-//                    + " so it has been "
-//                    + (recentlyFetched ? "recently fetched"
-//                    : "not recently fetched"));
-//            }
-//
-//            return recentlyFetched;
-//        }
-//    }
 
