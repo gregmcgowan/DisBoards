@@ -11,6 +11,7 @@ import com.drownedinsound.data.network.handlers.PostACommentHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
+import com.drownedinsound.data.network.requests.PostACommentRunnable;
 import com.drownedinsound.data.network.requests.ThisACommentRunnable;
 import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.data.network.requests.GetBoardPostRunnable;
@@ -186,27 +187,15 @@ public class DisApiClient {
         httpClient.newCall(request).enqueue(new NewPostHandler(applicationContext, board));
     }
 
-    public void postComment(String boardPostId, String commentId, String title, String content, BoardType boardType) {
-        Headers.Builder headerBuilder = null;// getMandatoryDefaultHeaders();
-        if (commentId == null) {
-            commentId = "";
-        }
+    public void postComment(String boardPostId, String commentId, String title, String content,
+            BoardType boardType) {
+        String authToken = userSessionManager.getAuthenticityToken();
 
-        RequestBody requestBody = new FormEncodingBuilder()
-                .add("comment[commentable_id]", boardPostId)
-                .add("comment[title]", title)
-                .add("comment[commentable_type]", "Topic")
-                .add("comment[content_raw]", content)
-                .add("parent_id", commentId)
-                .add("authenticity_token", userSessionManager.getAuthenticityToken())
-                .add("commit", "Post reply").build();
-        Request.Builder requestBuilder = new Request.Builder();
-
-        Request request = requestBuilder.post(requestBody).headers(headerBuilder.build())
-                .url(UrlConstants.COMMENTS_URL).build();
-
-        httpClient.newCall(request)
-                .enqueue(new PostACommentHandler(applicationContext, boardPostId, boardType));
+        PostACommentHandler postACommentHandler = new PostACommentHandler(applicationContext,
+                boardPostId, boardType);
+        networkRequestExecutorService.execute(
+                new PostACommentRunnable(postACommentHandler, httpClient, boardPostId, commentId,
+                        title, content, authToken));
     }
 
 
