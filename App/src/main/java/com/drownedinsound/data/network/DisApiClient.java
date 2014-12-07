@@ -11,6 +11,7 @@ import com.drownedinsound.data.network.handlers.PostACommentHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
+import com.drownedinsound.data.network.requests.ThisACommentRunnable;
 import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.data.network.requests.GetBoardPostRunnable;
 import com.drownedinsound.data.network.requests.GetBoardPostSummaryListRunnable;
@@ -164,18 +165,8 @@ public class DisApiClient {
     }
 
     public void thisAComment(String boardPostUrl, String boardPostId, String commentId, BoardType boardType) {
-
-        String fullUrl = boardPostUrl + "/" + commentId + "/this";
-        if (DisBoardsConstants.DEBUG) {
-            Log.d(TAG, "Going to request  =" + fullUrl);
-        }
-
-        Headers.Builder headerBuilder = null;// getMandatoryDefaultHeaders();
-        Request.Builder requestBuilder = new Request.Builder();
-        Request request = requestBuilder.get().url(fullUrl)
-                .headers(headerBuilder.build()).build();
-        httpClient.newCall(request)
-                .enqueue(new ThisACommentHandler(applicationContext, boardPostId, boardType));
+        ThisACommentHandler thisACommentHandler = new ThisACommentHandler(applicationContext, boardPostId, boardType);
+        networkRequestExecutorService.execute(new ThisACommentRunnable(boardPostUrl,commentId,thisACommentHandler,httpClient));
     }
 
     public void addNewPost(Board board, String title, String content) {
