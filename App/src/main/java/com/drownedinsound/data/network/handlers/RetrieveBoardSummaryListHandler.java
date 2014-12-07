@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
+
 public class RetrieveBoardSummaryListHandler extends
         OkHttpAsyncResponseHandler {
 
@@ -76,10 +78,10 @@ public class RetrieveBoardSummaryListHandler extends
             if (throwable instanceof HttpResponseException) {
                 HttpResponseException exception = (HttpResponseException) throwable;
                 int statusCode = exception.getStatusCode();
-                Log.d(TAG, "Status code " + statusCode);
-                Log.d(TAG, "Message " + exception.getMessage());
+                Timber.d("Status code " + statusCode);
+                Timber.d( "Message " + exception.getMessage());
             } else {
-                Log.d(TAG, "Something went really wrong");
+                Timber.d("Something went really wrong throwable = "+throwable);
             }
         }
 

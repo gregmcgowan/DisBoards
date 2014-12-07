@@ -18,6 +18,8 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 
+import timber.log.Timber;
+
 public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
@@ -66,10 +68,10 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
             if (throwable instanceof HttpResponseException) {
                 HttpResponseException exception = (HttpResponseException) throwable;
                 int statusCode = exception.getStatusCode();
-                Log.d(TAG, "Status code " + statusCode);
-                Log.d(TAG, "Message " + exception.getMessage());
+                Timber.d( "Status code " + statusCode);
+                Timber.d( "Message " + exception.getMessage());
             } else {
-                Log.d(TAG, "Something went really wrong");
+                Timber.d( "Something went really wrong throwable = "+throwable);
             }
         }
 
