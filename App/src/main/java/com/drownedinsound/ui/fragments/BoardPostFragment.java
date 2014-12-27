@@ -508,34 +508,11 @@ public class BoardPostFragment extends DisBoardsFragment {
             }
             //TODO remove comment if there is one
             Log.d(TAG, "PostID = " + postId);
-            Intent viewPostIntent = new Intent(getActivity(),
-                    BoardPostActivity.class);
-            Bundle parametersBundle = new Bundle();
-            parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
-                    url);
-            parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
-                    postId);
-            parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
-                    getBoardTypeFromUrl(url));
-            viewPostIntent.putExtras(parametersBundle);
-
-            startActivity(viewPostIntent);
+            BoardType boardType = UrlConstants.getBoardType(url);
+            startActivity(BoardPostActivity.getIntent(getActivity(),url,postId,boardType));
         }
 
 
-    }
-
-    private BoardType getBoardTypeFromUrl(String url) {
-        BoardType boardtype = null;
-        if (!TextUtils.isEmpty(url)) {
-            if (url.startsWith(UrlConstants.MUSIC_URL)) {
-                boardtype = BoardType.MUSIC;
-            } else if (url.startsWith(UrlConstants.SOCIAL_URL)) {
-                boardtype = BoardType.SOCIAL;
-            }
-            //TODO the rest
-        }
-        return boardtype;
     }
 
     private class BoardPostListAdapter extends ArrayAdapter<BoardPostComment> {

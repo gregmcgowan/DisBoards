@@ -11,13 +11,31 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Dis_boards" >
+
+        <service android:name=".database.DatabaseService" />
+
         <activity android:name=".ui.activity.LoginActivity"  android:label="" />
         <activity android:name=".ui.activity.MainCommunityActivity" android:label="" />
         <activity android:name=".ui.activity.BoardPostActivity"  android:label="" />
         <activity android:name=".ui.activity.FavouritesActivity" android:label="Favourite Posts"
             android:icon="@null"/>
 
-        <service android:name=".database.DatabaseService" />
+        <activity android:name=".ui.activity.DeepLinkClickedActivity" android:label="">
+             <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+                 <category android:name="android.intent.category.DEFAULT" />
+                 <data android:scheme="http"
+                       android:host="www.drownedinsound.com"
+                       android:pathPrefix="/community/boards" />
+             </intent-filter>
+            <intent-filter android:label="@string/app_name" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="http"
+                      android:host="drownedinsound.com"
+                      android:pathPrefix="/community/boards" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".ui.activity.StartActivity" >
@@ -26,6 +44,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data android:name="com.crashlytics.ApiKey"
                    android:value="cbf1e3f91081369d89e7101d65a0721a48066835"/>
     </application>
