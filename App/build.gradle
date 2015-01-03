@@ -4,15 +4,14 @@ buildscript {
         maven { url 'http://download.crashlytics.com/maven' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.2'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
-        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.13.1'
+        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.+'
+        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
     }
 }
 apply plugin: 'com.android.application'
 apply plugin: 'crashlytics'
 apply plugin: 'android-apt'
-
 
 repositories {
     mavenCentral()
@@ -20,43 +19,29 @@ repositories {
     maven { url "https://repo.commonsware.com.s3.amazonaws.com" }
 }
 
+def versionMajor = 0
+def versionMinor = 5
+def versionPatch = 0
+def versionBuild = 12
+
 android {
 
-    def versionMajor = 0
-    def versionMinor = 5
-    def versionPatch = 0
-    def versionBuild = 11
-
     compileSdkVersion 21
-    buildToolsVersion "19.1.0"
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
+    buildToolsVersion "21.1.2"
 
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 21
-        defaultConfig {
-            versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
-            versionName "${versionMajor}.${versionMinor}.${versionPatch}"
-            buildConfigField 'String', 'BETA_BUILD_TYPE', '"beta"'
-            buildConfigField 'String', 'DEBUG_BUILD_TYPE', '"debug"'
-            buildConfigField 'String', 'RELEASE_BUILD_TYPE', '"release"'
-        }
+        versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+        buildConfigField 'String', 'BETA_BUILD_TYPE', '"beta"'
+        buildConfigField 'String', 'DEBUG_BUILD_TYPE', '"debug"'
+        buildConfigField 'String', 'RELEASE_BUILD_TYPE', '"release"'
     }
 
-    sourceSets {
-        main {
-            manifest.srcFile 'src/main/AndroidManifest.xml'
-            java.srcDirs = ['src/main/java']
-            resources.srcDirs = ['src/res']
-            aidl.srcDirs = ['src']
-            renderscript.srcDirs = ['src']
-            res.srcDirs = ['src/main/res']
-            assets.srcDirs = ['src/main/assets']
-        }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 
     signingConfigs{
@@ -74,21 +59,22 @@ android {
 
     buildTypes {
         debug {
+            minifyEnabled false
             applicationIdSuffix '.debug'
             signingConfig signingConfigs.debug
         }
 
         beta {
+            minifyEnabled true
             applicationIdSuffix '.beta'
             signingConfig signingConfigs.debug
             debuggable true
         }
 
         release {
-            signingConfig signingConfigs.release
-            runProguard false
+            minifyEnabled false
             proguardFile getDefaultProguardFile('proguard-android.txt')
-
+            signingConfig signingConfigs.release
         }
     }
 
@@ -100,14 +86,15 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:21.0.0'
-    compile 'com.android.support:appcompat-v7:21.0.0'
+    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.android.support:appcompat-v7:21.0.3'
+
     compile 'com.melnykov:floatingactionbutton:1.0.6'
 
-    apt "com.squareup.dagger:dagger-compiler:1.2.1"
-    compile "com.squareup.dagger:dagger:1.2.1"
-    compile 'com.squareup.okhttp:okhttp:2.0.0'
-    compile 'com.squareup.okio:okio:1.0.0'
+    apt "com.squareup.dagger:dagger-compiler:1.2.2"
+    compile "com.squareup.dagger:dagger:1.2.2"
+    compile 'com.squareup.okhttp:okhttp:2.1.0'
+    compile 'com.squareup.okio:okio:1.1.0'
     compile 'com.jakewharton:butterknife:5.1.2'
     compile 'com.jakewharton.timber:timber:2.4.1'
     compile 'com.crashlytics.android:crashlytics:1.1.13'
@@ -119,7 +106,5 @@ dependencies {
     compile files('libs/jericho-html-3.3.jar')
     compile files('libs/ormlite-android-4.42.jar')
     compile files('libs/ormlite-core-4.42.jar')
-
-
 
 }
