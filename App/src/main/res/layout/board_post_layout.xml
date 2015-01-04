@@ -7,6 +7,10 @@
     android:layout_height="match_parent"
     android:background="@color/background_colour_light">
 
+    <include
+        android:id="@+id/animated_logo_progress_bar"
+        layout="@layout/animated_logo"/>
+
     <com.drownedinsound.ui.widgets.AutoScrollListView
         android:id="@+id/board_post_comment_list"
         android:layout_width="match_parent"
@@ -15,17 +19,6 @@
         android:dividerHeight="0px"
         android:fastScrollEnabled="true"
         android:smoothScrollbar="true" />
-
-    <ProgressBar
-        android:id="@+id/board_post_progress_bar"
-        style="?android:attr/progressBarStyleInverse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:indeterminate="true"
-        android:indeterminateDrawable="@drawable/spinner"
-        android:visibility="invisible" >
-    </ProgressBar>
 
     <TextView
         android:id="@+id/board_post_connection_error_text_view"

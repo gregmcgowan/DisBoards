@@ -65,7 +65,7 @@ android {
         }
 
         beta {
-            minifyEnabled true
+            minifyEnabled false
             applicationIdSuffix '.beta'
             signingConfig signingConfigs.debug
             debuggable true
@@ -89,10 +89,11 @@ dependencies {
     compile 'com.android.support:support-v4:21.0.3'
     compile 'com.android.support:appcompat-v7:21.0.3'
 
-    compile 'com.melnykov:floatingactionbutton:1.0.6'
+
 
     apt "com.squareup.dagger:dagger-compiler:1.2.2"
     compile "com.squareup.dagger:dagger:1.2.2"
+
     compile 'com.squareup.okhttp:okhttp:2.1.0'
     compile 'com.squareup.okio:okio:1.1.0'
     compile 'com.jakewharton:butterknife:5.1.2'
@@ -100,11 +101,13 @@ dependencies {
     compile 'com.crashlytics.android:crashlytics:1.1.13'
     compile 'de.greenrobot:eventbus:2.2.1'
     compile 'com.commonsware.cwac:endless:1.2.3'
+    compile 'com.melnykov:floatingactionbutton:1.0.6'
 
     compile project(':Libraries:viewpager')
 
     compile files('libs/jericho-html-3.3.jar')
     compile files('libs/ormlite-android-4.42.jar')
     compile files('libs/ormlite-core-4.42.jar')
+    compile files('libs/androidsvg-1.2.0.jar')
 
 }

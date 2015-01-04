@@ -18,7 +18,9 @@ import com.drownedinsound.events.SetBoardPostFavouriteStatusResultEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.activity.BoardPostActivity;
 import com.drownedinsound.ui.view.ActiveTextView;
+import com.drownedinsound.ui.view.SvgAnimatePathView;
 import com.drownedinsound.ui.widgets.AutoScrollListView;
+import com.drownedinsound.utils.SimpleAnimatorListener;
 import com.drownedinsound.utils.UiUtils;
 import com.melnykov.fab.FloatingActionButton;
 
@@ -53,6 +55,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -94,8 +97,8 @@ public class BoardPostFragment extends DisBoardsFragment {
     private boolean animatingScrollToLastCommentView;
 
     protected
-    @InjectView(R.id.board_post_progress_bar)
-    ProgressBar progressBar;
+    @InjectView(R.id.animated_logo_progress_bar)
+    SvgAnimatePathView animatedLogo;
 
     protected
     @InjectView(R.id.board_post_connection_error_text_view)
@@ -116,6 +119,8 @@ public class BoardPostFragment extends DisBoardsFragment {
     protected
     @InjectView(R.id.floating_reply_button)
     FloatingActionButton floatingReplyButton;
+
+    private AtomicBoolean animatingTransiton = new AtomicBoolean(false);
 
     public static BoardPostFragment newInstance(String boardPostUrl,
             String boardPostID,
@@ -166,6 +171,8 @@ public class BoardPostFragment extends DisBoardsFragment {
                 displayScrollToHiddenCommentOption(false);
             }
         });
+
+        animatedLogo.setSvgResource(R.raw.logo);
         return rootView;
     }
 
@@ -239,29 +246,39 @@ public class BoardPostFragment extends DisBoardsFragment {
                 Log.d(TAG, "Show got to last comment option ="
                         + showGoToLastCommentOption);
                 if (showGoToLastCommentOption) {
-                    displayScrollToHiddenCommentOption(true);
+                    hideAnimatedLogoAndShowList(new OnListShownHandler() {
+                        @Override
+                        public void doOnListShownAction() {
+                            displayScrollToHiddenCommentOption(true);
+                        }
+                    });
+
                 } else {
                     floatingReplyButton.show(true);
+                    hideAnimatedLogoAndShowList();
                 }
             } else {
-                connectionErrorTextView.setVisibility(View.VISIBLE);
+                hideAnimatedLogoAndShowList(new OnListShownHandler() {
+                    @Override
+                    public void doOnListShownAction() {
+                        connectionErrorTextView.setVisibility(View.VISIBLE);
+                    }
+                });
             }
-            updateFavouriteMenuItemStatus();
-            setProgressBarAndFragmentVisibility(false);
         }
     }
 
     public void onEventMainThread(FailedToThisThisEvent event) {
-        setProgressBarAndFragmentVisibility(false);
+        hideAnimatedLogoAndShowList();
         Toast.makeText(getActivity(),
                 "Failed to this this. You could try again", Toast.LENGTH_SHORT)
                 .show();
     }
 
     public void onEventMainThread(FailedToPostCommentEvent event) {
-        setProgressBarAndFragmentVisibility(false);
+        hideAnimatedLogoAndShowList();
         Toast.makeText(getActivity(),
-                "Failed to post comment. You could try again",
+                "Failed to post comment. Please try again later",
                 Toast.LENGTH_SHORT).show();
     }
 
@@ -270,7 +287,7 @@ public class BoardPostFragment extends DisBoardsFragment {
             Log.d(TAG, "recieved  not logged in ");
         }
 
-        setProgressBarAndFragmentVisibility(false);
+        hideAnimatedLogoAndShowList();
         Toast.makeText(getActivity(),
                 "User is not logged in", Toast.LENGTH_SHORT)
                 .show();
@@ -278,7 +295,7 @@ public class BoardPostFragment extends DisBoardsFragment {
 
 
     public void onEventMainThread(BoardPostCommentSentEvent event) {
-        setProgressBarAndFragmentVisibility(true);
+        showAnimatedLogoAndHideList();
     }
 
     public void onEventMainThread(SetBoardPostFavouriteStatusResultEvent event) {
@@ -305,17 +322,81 @@ public class BoardPostFragment extends DisBoardsFragment {
                 Toast.LENGTH_SHORT).show();
     }
 
-    public void setProgressBarAndFragmentVisibility(boolean progressBarVisible) {
-        if (progressBar != null) {
-            int progressBarVisiblity = progressBarVisible ? View.VISIBLE
-                    : View.INVISIBLE;
-            int listVisibility = progressBarVisible ? View.INVISIBLE
-                    : View.VISIBLE;
-            progressBar.setVisibility(progressBarVisiblity);
-            commentsList.setVisibility(listVisibility);
-            if (progressBarVisible) {
-                moveToFirstOrLastCommentLayout.setVisibility(View.INVISIBLE);
-                floatingReplyButton.hide(false);
+    public void showAnimatedLogoAndHideList(){
+        if(!animatingTransiton.get()) {
+            animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    animatingTransiton.set(false);
+                }
+            });
+
+            if(commentsList.getVisibility() == View.VISIBLE) {
+                ObjectAnimator hideList = ObjectAnimator.ofFloat(commentsList, "alpha",1f,0f);
+                hideList.addListener(new SimpleAnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        commentsList.setVisibility(View.INVISIBLE);
+                        moveToFirstOrLastCommentLayout.setVisibility(View.INVISIBLE);
+                        animatedLogo.startAnimation();
+                    }
+                });
+                hideList.start();
+                floatingReplyButton.hide(true);
+            } else {
+                ObjectAnimator fadeInLogo = ObjectAnimator.ofFloat(animatedLogo,"alpha",0f,1f);
+                fadeInLogo.addListener(new SimpleAnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        animatedLogo.stopAnimationOnceFinished();
+                        animatingTransiton.set(false);
+                    }
+                });
+                fadeInLogo.start();
+            }
+            animatingTransiton.set(true);
+        }
+    }
+
+    public void hideAnimatedLogoAndShowList(){
+        hideAnimatedLogoAndShowList(null);
+    }
+
+    public void hideAnimatedLogoAndShowList(final OnListShownHandler onlistShownListener) {
+        if(!animatingTransiton.get()) {
+            if(animatedLogo.getVisibility() == View.VISIBLE) {
+                animatingTransiton.set(true);
+                animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        ObjectAnimator showList = ObjectAnimator.ofFloat(commentsList, "alpha", 0f, 1f);
+                        showList.addListener(new SimpleAnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+                                commentsList.setVisibility(View.VISIBLE);
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                if(onlistShownListener != null) {
+                                    onlistShownListener.doOnListShownAction();
+                                }
+                                animatingTransiton.set(false);
+                            }
+                        });
+                        showList.start();
+                    }
+                });
+                animatedLogo.stopAnimationOnceFinished();
+            } else {
+                commentsList.setVisibility(View.VISIBLE);
+                animatingTransiton.set(false);
+                if(onlistShownListener != null) {
+                    onlistShownListener.doOnListShownAction();
+                }
             }
         }
     }
@@ -330,7 +411,7 @@ public class BoardPostFragment extends DisBoardsFragment {
 
     private void fetchBoardPost() {
         if (isValid()) {
-            setProgressBarAndFragmentVisibility(true);
+            showAnimatedLogoAndHideList();
             if (!requestingPost) {
                 connectionErrorTextView.setVisibility(View.GONE);
                 disApiClient.getBoardPost(boardPostUrl,boardPostId,boardType);
@@ -882,7 +963,7 @@ public class BoardPostFragment extends DisBoardsFragment {
             BoardPostListAdapter adapter = adapterWeakReference.get();
             BoardPostFragment fragment = boardPostFragmentWeakReference.get();
             if (adapter != null && fragment != null) {
-                fragment.setProgressBarAndFragmentVisibility(true);
+                fragment.showAnimatedLogoAndHideList();
                 if(boardPostFragmentWeakReference.get() != null) {
                     boardPostFragmentWeakReference.get().getDisApiClient().
                             thisAComment(postUrl,postID,commentID,boardType);
@@ -1052,6 +1133,10 @@ public class BoardPostFragment extends DisBoardsFragment {
     interface CommentSectionClickHandler {
 
         public void doCommentClickAction(View parentView, int position);
+    }
+
+    interface OnListShownHandler {
+        public void doOnListShownAction();
     }
 
 }
