@@ -75,7 +75,6 @@ public class FavouritesListFragment extends DisBoardsFragment {
     private String postUrl;
 
     protected
-    @InjectView(R.id.board_list_progress_bar)
     ProgressBar progressBar;
 
     protected
