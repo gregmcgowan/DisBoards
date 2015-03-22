@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.adapter;
+package com.drownedinsound.ui.summarylist;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;

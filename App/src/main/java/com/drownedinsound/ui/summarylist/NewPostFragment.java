@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.fragments;
+package com.drownedinsound.ui.summarylist;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
@@ -7,7 +7,8 @@ import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.DraftBoardPost;
 import com.drownedinsound.events.SentNewPostEvent;
 import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
-import com.drownedinsound.ui.view.RobotoLightTextView;
+import com.drownedinsound.ui.base.BaseDialogFragment;
+import com.drownedinsound.ui.controls.RobotoLightTextView;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -25,7 +26,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 
-public class NewPostFragment extends DisBoardsDialogFragment {
+public class NewPostFragment extends BaseDialogFragment {
 
     private ImageButton newPostButton;
 

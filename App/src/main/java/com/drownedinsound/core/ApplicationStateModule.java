@@ -7,14 +7,14 @@ import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.handlers.LoginResponseHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
-import com.drownedinsound.ui.activity.LoginActivity;
-import com.drownedinsound.ui.activity.MainCommunityActivity;
-import com.drownedinsound.ui.activity.StartActivity;
-import com.drownedinsound.ui.fragments.BoardPostFragment;
-import com.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
-import com.drownedinsound.ui.fragments.FavouritesListFragment;
-import com.drownedinsound.ui.fragments.NewPostFragment;
-import com.drownedinsound.ui.fragments.PostReplyFragment;
+import com.drownedinsound.ui.start.LoginActivity;
+import com.drownedinsound.ui.summarylist.BoardPostSummaryListActivity;
+import com.drownedinsound.ui.start.StartActivity;
+import com.drownedinsound.ui.post.BoardPostFragment;
+import com.drownedinsound.ui.summarylist.BoardPostSummaryListFragment;
+import com.drownedinsound.ui.summarylist.FavouritesListFragment;
+import com.drownedinsound.ui.summarylist.NewPostFragment;
+import com.drownedinsound.ui.post.PostReplyFragment;
 import com.squareup.okhttp.OkHttpClient;
 
 import android.content.SharedPreferences;
@@ -39,7 +39,7 @@ import de.greenrobot.event.EventBus;
                 DatabaseService.class,
                 BoardPostFragment.class,
                 BoardPostSummaryListFragment.class,
-                MainCommunityActivity.class,
+                BoardPostSummaryListActivity.class,
                 LoginActivity.class,
                 StartActivity.class,
                 PostReplyFragment.class,

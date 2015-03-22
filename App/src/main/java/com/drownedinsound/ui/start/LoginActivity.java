@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.activity;
+package com.drownedinsound.ui.start;
 
 import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
@@ -7,6 +7,8 @@ import com.drownedinsound.data.network.CookieManager;
 import com.drownedinsound.events.LoginResponseEvent;
 import com.drownedinsound.events.LoginSucceededEvent;
 import com.drownedinsound.events.LurkEvent;
+import com.drownedinsound.ui.base.BaseActivity;
+import com.drownedinsound.ui.summarylist.BoardPostSummaryListActivity;
 import com.drownedinsound.utils.UiUtils;
 
 import android.content.Intent;
@@ -29,7 +31,7 @@ import javax.inject.Inject;
  * @author Greg
  */
 @UseDagger @UseEventBus
-public class LoginActivity extends DisBoardsActivity {
+public class LoginActivity extends BaseActivity {
 
     @Inject
     CookieManager cookieManager;
@@ -57,7 +59,7 @@ public class LoginActivity extends DisBoardsActivity {
 
     private void goToMainActivity() {
         Intent startMainActivityIntent = new Intent(this,
-                MainCommunityActivity.class);
+                BoardPostSummaryListActivity.class);
         startActivity(startMainActivityIntent);
         finish();
     }
@@ -130,7 +132,7 @@ public class LoginActivity extends DisBoardsActivity {
         if (loginSucceeded) {
             eventBus.post(new LoginSucceededEvent());
             Intent startMainActivityIntent = new Intent(this,
-                    MainCommunityActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    BoardPostSummaryListActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(startMainActivityIntent);
             finish();
         } else {

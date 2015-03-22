@@ -11,7 +11,7 @@
         android:id="@+id/animated_logo_progress_bar"
         layout="@layout/animated_logo"/>
 
-    <com.drownedinsound.ui.widgets.AutoScrollListView
+    <com.drownedinsound.ui.controls.AutoScrollListView
         android:id="@+id/board_post_comment_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

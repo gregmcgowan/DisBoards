@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.fragments;
+package com.drownedinsound.ui.summarylist;
 
 import com.commonsware.cwac.endless.EndlessAdapter;
 import com.drownedinsound.R;
@@ -14,11 +14,11 @@ import com.drownedinsound.events.SentNewPostEvent;
 import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
-import com.drownedinsound.ui.activity.BoardPostActivity;
-import com.drownedinsound.ui.adapter.BoardPostSummaryHolder;
-import com.drownedinsound.ui.adapter.BoardPostSummaryListAdapter;
-import com.drownedinsound.ui.view.SvgAnimatePathView;
-import com.drownedinsound.ui.widgets.AutoScrollListView;
+import com.drownedinsound.ui.base.BaseFragment;
+import com.drownedinsound.ui.post.BoardPostActivity;
+import com.drownedinsound.ui.post.BoardPostFragment;
+import com.drownedinsound.ui.controls.SvgAnimatePathView;
+import com.drownedinsound.ui.controls.AutoScrollListView;
 import com.drownedinsound.utils.NetworkUtils;
 import com.drownedinsound.utils.SimpleAnimatorListener;
 import com.drownedinsound.utils.UiUtils;
@@ -61,7 +61,7 @@ import butterknife.OnClick;
  */
 @UseEventBus
 @UseDagger
-public class BoardPostSummaryListFragment extends DisBoardsFragment {
+public class BoardPostSummaryListFragment extends BaseFragment {
 
     private static final String CURRENTLY_SELECTED_BOARD_POST = "currentlySelectedBoardPost";
 

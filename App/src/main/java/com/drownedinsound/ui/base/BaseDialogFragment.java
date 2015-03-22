@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.fragments;
+package com.drownedinsound.ui.base;
 
 import com.drownedinsound.core.DisBoardsApp;
 import com.drownedinsound.data.network.DisApiClient;
@@ -14,7 +14,7 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
-public class DisBoardsDialogFragment extends DialogFragment {
+public class BaseDialogFragment extends DialogFragment {
 
     @Inject
     protected EventBus eventBus;

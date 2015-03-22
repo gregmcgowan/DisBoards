@@ -1,8 +1,8 @@
-package com.drownedinsound.ui.fragments;
+package com.drownedinsound.ui.summarylist;
 
 
-import com.drownedinsound.ui.adapter.BoardPostSummaryHolder;
-import com.drownedinsound.ui.adapter.BoardPostSummaryListAdapter;
+import com.drownedinsound.ui.base.BaseFragment;
+import com.drownedinsound.ui.post.BoardPostFragment;
 import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.annotations.UseEventBus;
@@ -15,8 +15,8 @@ import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.events.RetrievedFavouritesEvent;
 import com.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
-import com.drownedinsound.ui.activity.BoardPostActivity;
-import com.drownedinsound.ui.widgets.AutoScrollListView;
+import com.drownedinsound.ui.post.BoardPostActivity;
+import com.drownedinsound.ui.controls.AutoScrollListView;
 import com.drownedinsound.utils.UiUtils;
 
 import android.app.FragmentTransaction;
@@ -45,7 +45,7 @@ import butterknife.InjectView;
  */
 @UseDagger
 @UseEventBus
-public class FavouritesListFragment extends DisBoardsFragment {
+public class FavouritesListFragment extends BaseFragment {
 
     private static final String CURRENTLY_SELECTED_BOARD_POST = "currentlySelectedBoardPost";
 

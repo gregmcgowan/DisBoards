@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.activity;
+package com.drownedinsound.ui.base;
 ;
 import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
@@ -21,7 +21,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by gregmcgowan on 19/10/2014.
  */
-public abstract class DisBoardsActivity extends ActionBarActivity {
+public abstract class BaseActivity extends ActionBarActivity {
 
     protected Toolbar toolbar;
 

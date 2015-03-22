@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.fragments;
+package com.drownedinsound.ui.base;
 
 import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.annotations.UseEventBus;
@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 import timber.log.Timber;
 
-public class DisBoardsFragment extends Fragment {
+public class BaseFragment extends Fragment {
 
     protected Handler fragmentHander;
 

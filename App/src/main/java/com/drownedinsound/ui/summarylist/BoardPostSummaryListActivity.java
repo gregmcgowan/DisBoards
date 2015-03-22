@@ -1,12 +1,12 @@
-package com.drownedinsound.ui.activity;
+package com.drownedinsound.ui.summarylist;
 
-import com.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
+import com.drownedinsound.ui.base.BaseActivity;
+import com.drownedinsound.ui.start.LoginActivity;
 import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.data.UserSessionManager;
-import com.drownedinsound.ui.adapter.BoardsFragmentAdapter;
-import com.drownedinsound.ui.fragments.SimpleDialogFragment;
+import com.drownedinsound.ui.base.SimpleDialogFragment;
 import com.drownedinsound.utils.UiUtils;
 import com.viewpagerindicator.PageIndicator;
 
@@ -32,11 +32,11 @@ import butterknife.OnClick;
  * @author Greg
  */
 @UseDagger
-public class MainCommunityActivity extends DisBoardsActivity {
+public class BoardPostSummaryListActivity extends BaseActivity {
 
     private static final String LOGOUT_DIALOG = "LOGOUT_DIALOG";
 
-    private BoardsFragmentAdapter mAdapter;
+    private BoardPostSummaryListFragmentAdapter mAdapter;
 
     @InjectView(R.id.boards_pager)
     ViewPager mPager;
@@ -52,7 +52,7 @@ public class MainCommunityActivity extends DisBoardsActivity {
 
         ButterKnife.inject(this);
 
-        mAdapter = new BoardsFragmentAdapter(getFragmentManager(),
+        mAdapter = new BoardPostSummaryListFragmentAdapter(getFragmentManager(),
                 DatabaseHelper.getInstance(getApplicationContext()));
 
         initialiseViewPager();

@@ -1,7 +1,8 @@
-package com.drownedinsound.ui.activity;
+package com.drownedinsound.ui.start;
 
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.network.UrlConstants;
+import com.drownedinsound.ui.post.BoardPostActivity;
 
 import android.app.Activity;
 import android.content.Intent;

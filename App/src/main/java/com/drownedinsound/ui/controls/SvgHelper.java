@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.drownedinsound.ui.view;
+package com.drownedinsound.ui.controls;
 
 import android.content.Context;
 import android.graphics.*;

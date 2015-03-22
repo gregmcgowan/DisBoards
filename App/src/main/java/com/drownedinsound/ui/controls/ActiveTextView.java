@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.view;
+package com.drownedinsound.ui.controls;
 /*
  * Copyright 2012 Laurence Dawson
  *

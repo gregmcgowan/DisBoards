@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.fragments;
+package com.drownedinsound.ui.base;
 
 
 import android.app.AlertDialog;

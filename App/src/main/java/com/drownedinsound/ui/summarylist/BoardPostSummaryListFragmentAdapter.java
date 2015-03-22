@@ -1,8 +1,8 @@
-package com.drownedinsound.ui.adapter;
+package com.drownedinsound.ui.summarylist;
 
 import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.data.model.Board;
-import com.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
+import com.drownedinsound.ui.base.FragmentPagerAdapter;
 
 
 import android.app.Fragment;
@@ -15,11 +15,11 @@ import java.util.ArrayList;
  *
  * @author Greg
  */
-public class BoardsFragmentAdapter extends FragmentPagerAdapter {
+public class BoardPostSummaryListFragmentAdapter extends FragmentPagerAdapter {
 
     private ArrayList<Board> boards;
 
-    public BoardsFragmentAdapter(FragmentManager fm, DatabaseHelper databaseHelper) {
+    public BoardPostSummaryListFragmentAdapter(FragmentManager fm, DatabaseHelper databaseHelper) {
         super(fm);
         boards = databaseHelper.getCachedBoards();
     }

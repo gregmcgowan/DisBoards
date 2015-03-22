@@ -1,12 +1,12 @@
-package com.drownedinsound.ui.fragments;
+package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.events.BoardPostCommentSentEvent;
+import com.drownedinsound.ui.base.BaseDialogFragment;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-public class PostReplyFragment extends DisBoardsDialogFragment {
+public class PostReplyFragment extends BaseDialogFragment {
 
     private TextView replyToTextView;
 

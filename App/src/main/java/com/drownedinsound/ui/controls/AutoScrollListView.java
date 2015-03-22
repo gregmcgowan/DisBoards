@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.drownedinsound.ui.widgets;
+package com.drownedinsound.ui.controls;
 
 import android.annotation.TargetApi;
 import android.content.Context;

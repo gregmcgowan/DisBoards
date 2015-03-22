@@ -1,14 +1,14 @@
-package com.drownedinsound.ui.activity;
+package com.drownedinsound.ui.summarylist;
 
 import com.drownedinsound.R;
-import com.drownedinsound.ui.fragments.FavouritesListFragment;
+import com.drownedinsound.ui.base.BaseActivity;
 
 import android.os.Bundle;
 
 /**
  * Created by gregmcgowan on 29/10/2013.
  */
-public class FavouritesActivity extends DisBoardsActivity {
+public class FavouritesActivity extends BaseActivity {
 
     private FavouritesListFragment favouritesListFragment;
 

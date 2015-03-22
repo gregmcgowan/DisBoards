@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.drownedinsound.ui.adapter;
+package com.drownedinsound.ui.base;
 
 import android.app.Fragment;
 import android.app.FragmentManager;

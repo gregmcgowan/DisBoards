@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.fragments;
+package com.drownedinsound.ui.post;
 
 
 import com.drownedinsound.R;
@@ -16,10 +16,10 @@ import com.drownedinsound.events.FailedToThisThisEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
 import com.drownedinsound.events.SetBoardPostFavouriteStatusResultEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
-import com.drownedinsound.ui.activity.BoardPostActivity;
-import com.drownedinsound.ui.view.ActiveTextView;
-import com.drownedinsound.ui.view.SvgAnimatePathView;
-import com.drownedinsound.ui.widgets.AutoScrollListView;
+import com.drownedinsound.ui.base.BaseFragment;
+import com.drownedinsound.ui.controls.ActiveTextView;
+import com.drownedinsound.ui.controls.SvgAnimatePathView;
+import com.drownedinsound.ui.controls.AutoScrollListView;
 import com.drownedinsound.utils.SimpleAnimatorListener;
 import com.drownedinsound.utils.UiUtils;
 import com.melnykov.fab.FloatingActionButton;
@@ -46,7 +46,6 @@ import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -69,7 +68,7 @@ import butterknife.OnClick;
  */
 @UseDagger
 @UseEventBus
-public class BoardPostFragment extends DisBoardsFragment {
+public class BoardPostFragment extends BaseFragment {
 
     private static final int SHOW_GO_TO_LAST_COMMENT_TIMEOUT = 5000;
 

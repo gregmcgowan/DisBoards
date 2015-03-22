@@ -1,9 +1,9 @@
-package com.drownedinsound.ui.activity;
+package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.BoardType;
-import com.drownedinsound.ui.fragments.BoardPostFragment;
+import com.drownedinsound.ui.base.BaseActivity;
 import com.drownedinsound.utils.UiUtils;
 
 
@@ -22,7 +22,7 @@ import butterknife.OnClick;
  *
  * @author Greg
  */
-public class BoardPostActivity extends DisBoardsActivity {
+public class BoardPostActivity extends BaseActivity {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
             + "BoardPostActivity";
