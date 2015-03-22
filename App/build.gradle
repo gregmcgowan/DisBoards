@@ -22,7 +22,7 @@ repositories {
 def versionMajor = 0
 def versionMinor = 5
 def versionPatch = 0
-def versionBuild = 12
+def versionBuild = 14
 
 android {
 
@@ -88,8 +88,6 @@ android {
 dependencies {
     compile 'com.android.support:support-v4:21.0.3'
     compile 'com.android.support:appcompat-v7:21.0.3'
-
-
 
     apt "com.squareup.dagger:dagger-compiler:1.2.2"
     compile "com.squareup.dagger:dagger:1.2.2"

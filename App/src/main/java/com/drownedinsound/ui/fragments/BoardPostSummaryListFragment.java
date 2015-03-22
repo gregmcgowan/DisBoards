@@ -17,11 +17,15 @@ import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.activity.BoardPostActivity;
 import com.drownedinsound.ui.adapter.BoardPostSummaryHolder;
 import com.drownedinsound.ui.adapter.BoardPostSummaryListAdapter;
+import com.drownedinsound.ui.view.SvgAnimatePathView;
 import com.drownedinsound.ui.widgets.AutoScrollListView;
 import com.drownedinsound.utils.NetworkUtils;
+import com.drownedinsound.utils.SimpleAnimatorListener;
 import com.drownedinsound.utils.UiUtils;
 import com.melnykov.fab.FloatingActionButton;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +46,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -67,8 +72,8 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
 
     private static final String REQUEST_ON_START = "REQUEST_ON_START";
 
-    @InjectView(R.id.board_list_progress_bar)
-    ProgressBar progressBar;
+    @InjectView(R.id.animated_logo_progress_bar)
+    SvgAnimatePathView animatedLogo;
 
     @InjectView(R.id.board_list_connection_error_text_view)
     TextView connectionErrorTextView;
@@ -109,6 +114,8 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
     private String postUrl;
 
     private int lastPageFetched;
+
+    private AtomicBoolean animatingTransiton = new AtomicBoolean(false);
 
     public BoardPostSummaryListFragment() {
     }
@@ -173,6 +180,8 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
             }
         });
         floatingAddButton.attachToListView(listView);
+
+        animatedLogo.setSvgResource(R.raw.logo);
 
         return rootView;
     }
@@ -262,8 +271,84 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
                 "NEW_POST_DIALOG");
     }
 
+    public void showAnimatedLogoAndHideList(){
+      //  if(!animatingTransiton.get()) {
+            animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    animatedLogo.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    animatingTransiton.set(false);
+                }
+            });
+
+            if(listView.getVisibility() == View.VISIBLE) {
+                ObjectAnimator hideList = ObjectAnimator.ofFloat(listView, "alpha",1f,0f);
+                hideList.addListener(new SimpleAnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        listView.setVisibility(View.INVISIBLE);
+                        animatedLogo.startAnimation();
+                    }
+                });
+                hideList.start();
+            } else {
+                ObjectAnimator fadeInLogo = ObjectAnimator.ofFloat(animatedLogo,"alpha",0f,1f);
+                fadeInLogo.addListener(new SimpleAnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        animatedLogo.startAnimation();
+                        animatingTransiton.set(false);
+                    }
+                });
+                fadeInLogo.start();
+            }
+            animatingTransiton.set(true);
+       // }
+    }
+
+    public void hideAnimatedLogoAndShowList(){
+//        if(!animatingTransiton.get()) {
+            if(animatedLogo.getVisibility() == View.VISIBLE) {
+                animatingTransiton.set(true);
+                animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        ObjectAnimator showList = ObjectAnimator.ofFloat(listView, "alpha", 0f, 1f);
+                        showList.addListener(new SimpleAnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+                                listView.setVisibility(View.VISIBLE);
+                                animatedLogo.setVisibility(View.VISIBLE);
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                animatingTransiton.set(false);
+                                animatedLogo.setVisibility(View.INVISIBLE);
+                            }
+                        });
+                        showList.start();
+                    }
+                });
+                animatedLogo.stopAnimationOnceFinished();
+            } else {
+                listView.setVisibility(View.VISIBLE);
+                animatingTransiton.set(false);
+            }
+    //    }
+    }
+
+
     public void onEventMainThread(FailedToPostNewThreadEvent event) {
-        this.setProgressBarVisiblity(false);
+        hideAnimatedLogoAndShowList();
         Toast.makeText(getActivity(), "Failed to create post",
                 Toast.LENGTH_SHORT).show();
     }
@@ -283,7 +368,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
                 requestBoardSummaryPage(1, false, true);
             } else {
                  adapter.notifyDataSetChanged();
-                 setProgressBarVisiblity(false);
+                hideAnimatedLogoAndShowList();
             }
         }
     }
@@ -291,17 +376,11 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
     public void requestBoardSummaryPage(int page, boolean forceUpdate, boolean showProgressDialog) {
         if (showProgressDialog) {
             connectionErrorTextView.setVisibility(View.GONE);
-            setProgressBarVisiblity(true);
+            showAnimatedLogoAndHideList();
         }
         getDisApiClient().getBoardPostSummaryList(page, board, forceUpdate, true);
     }
 
-    private void setProgressBarVisiblity(boolean visible) {
-        int progressBarVisiblity = visible ? View.VISIBLE : View.INVISIBLE;
-        int listVisibility = visible ? View.INVISIBLE : View.VISIBLE;
-        progressBar.setVisibility(progressBarVisiblity);
-        listView.setVisibility(listVisibility);
-    }
 
     public void onEventBackgroundThread(UpdateCachedBoardPostEvent event) {
         if (boardPostSummaries != null) {
@@ -357,7 +436,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
                     connectionErrorTextView.setVisibility(View.VISIBLE);
                     adapter.stopAppending();
                 }
-                setProgressBarVisiblity(false);
+                hideAnimatedLogoAndShowList();
                 if (!append) {
                     listView.requestPositionToScreen(0, true);
                 }
@@ -375,7 +454,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
     public void onEventMainThread(SentNewPostEvent event) {
         SentNewPostState state = event.getState();
         if (state.equals(SentNewPostState.SENT)) {
-            this.setProgressBarVisiblity(true);
+            showAnimatedLogoAndHideList();
         } else if (state.equals(SentNewPostState.CONFIRMED)) {
             //Refresh the current list
             requestBoardSummaryPage(1, true, false);
@@ -388,7 +467,7 @@ public class BoardPostSummaryListFragment extends DisBoardsFragment {
             Log.d(TAG, "recieved  not logged in ");
         }
 
-        setProgressBarVisiblity(false);
+        hideAnimatedLogoAndShowList();
         Toast.makeText(getActivity(),
                 "User is not logged in", Toast.LENGTH_SHORT)
                 .show();

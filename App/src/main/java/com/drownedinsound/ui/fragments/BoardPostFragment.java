@@ -254,8 +254,12 @@ public class BoardPostFragment extends DisBoardsFragment {
                     });
 
                 } else {
-                    floatingReplyButton.show(true);
-                    hideAnimatedLogoAndShowList();
+                    hideAnimatedLogoAndShowList(new OnListShownHandler() {
+                        @Override
+                        public void doOnListShownAction() {
+                            floatingReplyButton.show(true);
+                        }
+                    });
                 }
             } else {
                 hideAnimatedLogoAndShowList(new OnListShownHandler() {
@@ -323,8 +327,14 @@ public class BoardPostFragment extends DisBoardsFragment {
     }
 
     public void showAnimatedLogoAndHideList(){
-        if(!animatingTransiton.get()) {
+       // if(!animatingTransiton.get()) {
+            floatingReplyButton.hide(true);
             animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    animatedLogo.setVisibility(View.VISIBLE);
+                }
+
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     animatingTransiton.set(false);
@@ -342,21 +352,12 @@ public class BoardPostFragment extends DisBoardsFragment {
                     }
                 });
                 hideList.start();
-                floatingReplyButton.hide(true);
+
             } else {
-                ObjectAnimator fadeInLogo = ObjectAnimator.ofFloat(animatedLogo,"alpha",0f,1f);
-                fadeInLogo.addListener(new SimpleAnimatorListener() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        animatedLogo.stopAnimationOnceFinished();
-                        animatingTransiton.set(false);
-                    }
-                });
-                fadeInLogo.start();
+                animatingTransiton.set(true);
+                animatedLogo.startAnimation();
             }
-            animatingTransiton.set(true);
-        }
+        //}
     }
 
     public void hideAnimatedLogoAndShowList(){
@@ -364,9 +365,8 @@ public class BoardPostFragment extends DisBoardsFragment {
     }
 
     public void hideAnimatedLogoAndShowList(final OnListShownHandler onlistShownListener) {
-        if(!animatingTransiton.get()) {
+        //if(!animatingTransiton.get()) {
             if(animatedLogo.getVisibility() == View.VISIBLE) {
-                animatingTransiton.set(true);
                 animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
@@ -374,6 +374,7 @@ public class BoardPostFragment extends DisBoardsFragment {
                         showList.addListener(new SimpleAnimatorListener() {
                             @Override
                             public void onAnimationStart(Animator animation) {
+                                animatedLogo.setVisibility(View.VISIBLE);
                                 commentsList.setVisibility(View.VISIBLE);
 
                             }
@@ -384,6 +385,7 @@ public class BoardPostFragment extends DisBoardsFragment {
                                 if(onlistShownListener != null) {
                                     onlistShownListener.doOnListShownAction();
                                 }
+                                animatedLogo.setVisibility(View.INVISIBLE);
                                 animatingTransiton.set(false);
                             }
                         });
@@ -398,7 +400,7 @@ public class BoardPostFragment extends DisBoardsFragment {
                     onlistShownListener.doOnListShownAction();
                 }
             }
-        }
+      //  }
     }
 
     @Override

@@ -19,16 +19,10 @@
                 android:dividerHeight="0.5dip"/>
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <ProgressBar
-            android:id="@+id/board_list_progress_bar"
-            style="?android:attr/progressBarStyleInverse"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:indeterminateDrawable="@drawable/spinner"
-            android:indeterminate="true"
-            android:visibility="invisible">
-    </ProgressBar>
+    <include
+        android:id="@+id/animated_logo_progress_bar"
+        layout="@layout/animated_logo"/>
+
 
     <com.melnykov.fab.FloatingActionButton
             android:id="@+id/floating_add_button"

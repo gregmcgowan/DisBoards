@@ -27,6 +27,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.drownedinsound.R;
+import com.drownedinsound.utils.SimpleAnimatorListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -174,6 +175,14 @@ public class SvgAnimatePathView extends View {
             showHidePathAnimatorSet = new AnimatorSet();
 
             ObjectAnimator showPathAnimation =  ObjectAnimator.ofFloat(this, "phase", 0.0f, 1.0f);
+            showPathAnimation.addListener(new SimpleAnimatorListener(){
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    if(!animate.get()){
+                        showHidePathAnimatorSet.cancel();
+                    }
+                }
+            });
             showPathAnimation.setDuration(mDuration);
 
             ObjectAnimator hidePathAnimation = ObjectAnimator.ofFloat(this, "phase",1f,0);
@@ -183,7 +192,6 @@ public class SvgAnimatePathView extends View {
             showHidePathAnimatorSet.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
-                    setVisibility(VISIBLE);
                     if(animationListener != null) {
                         animationListener.onAnimationStart(animation);
                     }
