@@ -13,5 +13,4 @@ public abstract class DatabaseRunnable implements Runnable {
     }
 
 
-
 }

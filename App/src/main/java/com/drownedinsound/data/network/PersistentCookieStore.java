@@ -145,7 +145,7 @@ public class PersistentCookieStore implements CookieStore {
             String name = entry.getKey();
             HttpCookie cookie = entry.getValue();
             if (cookie.hasExpired()) {
-                Timber.i("Cookie "+name + " has expired");
+                Timber.i("Cookie " + name + " has expired");
                 // Clear cookies from local store
                 cookies.remove(name);
 

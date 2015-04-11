@@ -19,7 +19,7 @@
 
 <resources>
 
-    <style name="Theme.Dis_boards" parent="@style/Theme.AppCompat.Light" >
+    <style name="Theme.Dis_boards" parent="@style/Theme.AppCompat.Light">
         <!-- TODO find out what this does -->
         <!--<item name="actionBarItemBackground">@drawable/selectable_background_dis_boards_style</item>-->
         <!--<item name="android:actionBarItemBackground">@drawable/selectable_background_dis_boards_style</item>-->
@@ -32,8 +32,8 @@
         <item name="android:textColor">@color/font_colour_light</item>
         <item name="actionBarItemBackground">@drawable/selectable_background_dis_boards</item>
 
-    <!-- You can also set colorControlNormal, colorControlActivated
-         colorControlHighlight, and colorSwitchThumbNormal. -->
+        <!-- You can also set colorControlNormal, colorControlActivated
+             colorControlHighlight, and colorSwitchThumbNormal. -->
     </style>
 
     <style name="Theme.Dis_boards.toolbarButton">

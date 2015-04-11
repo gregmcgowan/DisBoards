@@ -11,7 +11,6 @@ import android.os.Handler;
 
 import java.lang.annotation.Annotation;
 
-
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
@@ -40,7 +39,7 @@ public class BaseFragment extends Fragment {
 
         fragmentHander = new Handler();
 
-        Timber.d("Get activity = "+ (getActivity()));
+        Timber.d("Get activity = " + (getActivity()));
 
         if (containsAnnotation(UseDagger.class) || containsAnnotation(UseEventBus.class)) {
             DisBoardsApp.getApplication(getActivity()).inject(this);
@@ -63,7 +62,7 @@ public class BaseFragment extends Fragment {
         return ((Object) this).getClass().getAnnotation(annotationType) != null;
     }
 
-    protected DisApiClient getDisApiClient(){
+    protected DisApiClient getDisApiClient() {
         return disApiClient;
     }
 

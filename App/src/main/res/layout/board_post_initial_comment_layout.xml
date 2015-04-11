@@ -1,114 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical" >
-
-    <View
-        android:id="@+id/board_post_list_top_margin"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/margin_medium"
-        android:background="@android:color/transparent" />
-
-    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginLeft="@dimen/margin_medium"
-        android:layout_marginRight="@dimen/margin_medium"
-        android:background="@drawable/comment_background_normal"
-        android:orientation="vertical" >
+        android:orientation="vertical">
+
+    <View
+            android:id="@+id/board_post_list_top_margin"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin_medium"
+            android:background="@android:color/transparent"/>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:background="@drawable/comment_background_normal"
+            android:orientation="vertical">
 
         <com.drownedinsound.ui.controls.RobotoLightTextView
-            android:id="@+id/board_post_initial_comment_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|left"
-            android:layout_margin="@dimen/margin_small"
-            android:paddingLeft="@dimen/comment_text_padding"
-            android:paddingRight="12dp"
-            android:paddingTop="@dimen/comment_text_padding"
-            android:paddingBottom="@dimen/comment_text_padding"
-            android:textColor="@color/darkest_grey"
-            android:textIsSelectable="true"
-            android:textSize="@dimen/text_medium"
-            android:textStyle="normal"
-            tools:text="Here is a title"/>
+                android:id="@+id/board_post_initial_comment_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|left"
+                android:layout_margin="@dimen/margin_small"
+                android:paddingLeft="@dimen/comment_text_padding"
+                android:paddingRight="12dp"
+                android:paddingTop="@dimen/comment_text_padding"
+                android:paddingBottom="@dimen/comment_text_padding"
+                android:textColor="@color/darkest_grey"
+                android:textIsSelectable="true"
+                android:textSize="@dimen/text_medium"
+                android:textStyle="normal"
+                tools:text="Here is a title"/>
 
-         <include layout="@layout/thicker_divider_grey" />
-         
+        <include layout="@layout/thicker_divider_grey"/>
+
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/board_post_initial_comment_author_subheading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:layout_alignParentLeft="true"
-                android:layout_margin="@dimen/margin_small"
-                android:paddingLeft="@dimen/comment_text_padding"
-                android:paddingRight="12dp"
-                android:paddingTop="@dimen/comment_text_padding"
-                android:paddingBottom="@dimen/comment_text_padding"
-                android:textColor="@color/highlighted_blue"
-                android:textSize="@dimen/text_really_micro"
-                tools:text="Test"/>
-
-         <TextView
-                android:id="@+id/board_post_initial_comment_date_time_subheading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:layout_margin="@dimen/margin_small"
-                android:paddingLeft="@dimen/comment_text_padding"
-                android:paddingRight="12dp"
-                android:paddingTop="@dimen/comment_text_padding"
-                android:paddingBottom="@dimen/comment_text_padding"
-                android:textColor="@color/darkest_grey"
-                android:textIsSelectable="true"
-                android:textSize="@dimen/text_really_micro"
-                tools:text="18:14 Januray 29th,2013"/>
+                    android:id="@+id/board_post_initial_comment_author_subheading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_alignParentLeft="true"
+                    android:layout_margin="@dimen/margin_small"
+                    android:paddingLeft="@dimen/comment_text_padding"
+                    android:paddingRight="12dp"
+                    android:paddingTop="@dimen/comment_text_padding"
+                    android:paddingBottom="@dimen/comment_text_padding"
+                    android:textColor="@color/highlighted_blue"
+                    android:textSize="@dimen/text_really_micro"
+                    tools:text="Test"/>
 
             <TextView
-                android:id="@+id/board_post_initial_comment_replies_subheading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="@dimen/margin_small"
-                android:paddingLeft="@dimen/comment_text_padding"
-                android:paddingRight="12dp"
-                android:paddingTop="@dimen/comment_text_padding"
-                android:paddingBottom="@dimen/comment_text_padding"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@id/board_post_initial_comment_date_time_subheading"
-                android:textColor="@color/darkest_grey"
-                android:textIsSelectable="true"
-                android:textSize="@dimen/text_really_micro"
-                tools:text="200 replies"  />
+                    android:id="@+id/board_post_initial_comment_date_time_subheading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/margin_small"
+                    android:paddingLeft="@dimen/comment_text_padding"
+                    android:paddingRight="12dp"
+                    android:paddingTop="@dimen/comment_text_padding"
+                    android:paddingBottom="@dimen/comment_text_padding"
+                    android:textColor="@color/darkest_grey"
+                    android:textIsSelectable="true"
+                    android:textSize="@dimen/text_really_micro"
+                    tools:text="18:14 Januray 29th,2013"/>
+
+            <TextView
+                    android:id="@+id/board_post_initial_comment_replies_subheading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/margin_small"
+                    android:paddingLeft="@dimen/comment_text_padding"
+                    android:paddingRight="12dp"
+                    android:paddingTop="@dimen/comment_text_padding"
+                    android:paddingBottom="@dimen/comment_text_padding"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@id/board_post_initial_comment_date_time_subheading"
+                    android:textColor="@color/darkest_grey"
+                    android:textIsSelectable="true"
+                    android:textSize="@dimen/text_really_micro"
+                    tools:text="200 replies"/>
         </RelativeLayout>
 
-        <include layout="@layout/dotted_divider_grey" /> 
-         
+        <include layout="@layout/dotted_divider_grey"/>
+
         <com.drownedinsound.ui.controls.ActiveTextView
-            android:id="@+id/board_post_initial_comment_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_small"
-            android:paddingLeft="@dimen/comment_text_padding"
-            android:paddingRight="12dp"
-            android:paddingTop="@dimen/comment_text_padding"
-            android:paddingBottom="@dimen/comment_text_padding"
-            android:autoLink="web"
-            android:textColor="@color/lighter_grey"
-            android:textIsSelectable="true"
-            android:textSize="@dimen/text_micro"
-            tools:text="Here is some text. That is the first comment in the thread"/>
+                android:id="@+id/board_post_initial_comment_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_small"
+                android:paddingLeft="@dimen/comment_text_padding"
+                android:paddingRight="12dp"
+                android:paddingTop="@dimen/comment_text_padding"
+                android:paddingBottom="@dimen/comment_text_padding"
+                android:autoLink="web"
+                android:textColor="@color/lighter_grey"
+                android:textIsSelectable="true"
+                android:textSize="@dimen/text_micro"
+                tools:text="Here is some text. That is the first comment in the thread"/>
 
 
     </LinearLayout>
@@ -117,6 +117,6 @@
             android:id="@+id/board_post_list_bottom_margin"
             android:layout_width="match_parent"
             android:layout_height="@dimen/margin_large"
-            android:background="@android:color/transparent" />
+            android:background="@android:color/transparent"/>
 
 </LinearLayout>

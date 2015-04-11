@@ -14,10 +14,12 @@ import com.squareup.okhttp.RequestBody;
 public class LoginRunnable extends BaseRunnable {
 
     private String username;
+
     private String password;
 
-    public LoginRunnable(OkHttpClient okHttpClient, LoginResponseHandler handler, String username, String password){
-        super(handler,okHttpClient);
+    public LoginRunnable(OkHttpClient okHttpClient, LoginResponseHandler handler, String username,
+            String password) {
+        super(handler, okHttpClient);
         this.username = username;
         this.password = password;
     }
@@ -32,6 +34,6 @@ public class LoginRunnable extends BaseRunnable {
         Request.Builder requestBuilder = new Request.Builder();
         Request request = requestBuilder.post(requestBody).url(UrlConstants.LOGIN_URL).build();
 
-       makeRequest(request);
+        makeRequest(request);
     }
 }

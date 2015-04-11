@@ -16,6 +16,9 @@
 
 package com.drownedinsound.ui.controls;
 
+import com.drownedinsound.R;
+import com.drownedinsound.utils.SimpleAnimatorListener;
+
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -25,9 +28,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
-
-import com.drownedinsound.R;
-import com.drownedinsound.utils.SimpleAnimatorListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,19 +39,27 @@ public class SvgAnimatePathView extends View {
     private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private final SvgHelper mSvg = new SvgHelper(mPaint);
+
     private int mSvgResource;
 
     private final Object mSvgLock = new Object();
+
     private List<SvgHelper.SvgPath> mPaths = new ArrayList<SvgHelper.SvgPath>(0);
+
     private Thread mLoader;
 
     private float mPhase;
+
     private float mFadeFactor;
+
     private int mDuration;
+
     private float mParallax = 1.0f;
 
     private AnimatorSet showHidePathAnimatorSet;
+
     private AtomicBoolean animate;
+
     private Animator.AnimatorListener animationListener;
 
     public SvgAnimatePathView(Context context, AttributeSet attrs) {
@@ -74,7 +82,9 @@ public class SvgAnimatePathView extends View {
                 mFadeFactor = a.getFloat(R.styleable.AnimatedSVG_fadeFactor, 10.0f);
             }
         } finally {
-            if (a != null) a.recycle();
+            if (a != null) {
+                a.recycle();
+            }
         }
     }
 
@@ -171,54 +181,54 @@ public class SvgAnimatePathView extends View {
     }
 
     public void startAnimation() {
-        if(showHidePathAnimatorSet == null) {
+        if (showHidePathAnimatorSet == null) {
             showHidePathAnimatorSet = new AnimatorSet();
 
-            ObjectAnimator showPathAnimation =  ObjectAnimator.ofFloat(this, "phase", 0.0f, 1.0f);
-            showPathAnimation.addListener(new SimpleAnimatorListener(){
+            ObjectAnimator showPathAnimation = ObjectAnimator.ofFloat(this, "phase", 0.0f, 1.0f);
+            showPathAnimation.addListener(new SimpleAnimatorListener() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    if(!animate.get()){
+                    if (!animate.get()) {
                         showHidePathAnimatorSet.cancel();
                     }
                 }
             });
             showPathAnimation.setDuration(mDuration);
 
-            ObjectAnimator hidePathAnimation = ObjectAnimator.ofFloat(this, "phase",1f,0);
+            ObjectAnimator hidePathAnimation = ObjectAnimator.ofFloat(this, "phase", 1f, 0);
             hidePathAnimation.setDuration(mDuration);
 
-            showHidePathAnimatorSet.playSequentially(showPathAnimation,hidePathAnimation);
+            showHidePathAnimatorSet.playSequentially(showPathAnimation, hidePathAnimation);
             showHidePathAnimatorSet.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
-                    if(animationListener != null) {
+                    if (animationListener != null) {
                         animationListener.onAnimationStart(animation);
                     }
                 }
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    if(animate.get()) {
+                    if (animate.get()) {
                         startAnimation();
                     }
-                    if(animationListener != null) {
+                    if (animationListener != null) {
                         animationListener.onAnimationEnd(animation);
                     }
                 }
 
                 @Override
                 public void onAnimationCancel(Animator animation) {
-                    if(animationListener != null) {
+                    if (animationListener != null) {
                         animationListener.onAnimationCancel(animation);
                     }
                 }
 
                 @Override
                 public void onAnimationRepeat(Animator animation) {
-                      if(animationListener != null) {
-                          animationListener.onAnimationRepeat(animation);
-                      }
+                    if (animationListener != null) {
+                        animationListener.onAnimationRepeat(animation);
+                    }
                 }
             });
         }
@@ -227,14 +237,14 @@ public class SvgAnimatePathView extends View {
     }
 
 
-    public void stopAnimation(){
-        if(showHidePathAnimatorSet != null) {
+    public void stopAnimation() {
+        if (showHidePathAnimatorSet != null) {
             showHidePathAnimatorSet.cancel();
         }
     }
 
-    public void stopAnimationOnceFinished(){
-        if(showHidePathAnimatorSet != null) {
+    public void stopAnimationOnceFinished() {
+        if (showHidePathAnimatorSet != null) {
             animate.set(false);
         }
     }

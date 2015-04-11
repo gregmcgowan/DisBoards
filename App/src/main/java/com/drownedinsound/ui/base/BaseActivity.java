@@ -1,5 +1,5 @@
 package com.drownedinsound.ui.base;
-;
+
 import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.annotations.UseEventBus;
@@ -8,7 +8,6 @@ import com.drownedinsound.data.network.DisApiClient;
 
 import android.app.FragmentManager;
 import android.os.Bundle;
-
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -17,6 +16,8 @@ import java.lang.annotation.Annotation;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+
+;
 
 /**
  * Created by gregmcgowan on 19/10/2014.
@@ -36,7 +37,7 @@ public abstract class BaseActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getLayoutResource() != 0) {
+        if (getLayoutResource() != 0) {
             setContentView(getLayoutResource());
         }
 

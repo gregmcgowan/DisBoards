@@ -1,22 +1,22 @@
 package com.drownedinsound.ui.summarylist;
 
 
-import com.drownedinsound.ui.base.BaseFragment;
-import com.drownedinsound.ui.post.BoardPostFragment;
 import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.database.DatabaseHelper;
-import com.drownedinsound.database.DatabaseService;
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.database.DatabaseHelper;
+import com.drownedinsound.database.DatabaseService;
 import com.drownedinsound.events.RetrievedFavouritesEvent;
 import com.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
-import com.drownedinsound.ui.post.BoardPostActivity;
+import com.drownedinsound.ui.base.BaseFragment;
 import com.drownedinsound.ui.controls.AutoScrollListView;
+import com.drownedinsound.ui.post.BoardPostActivity;
+import com.drownedinsound.ui.post.BoardPostFragment;
 import com.drownedinsound.utils.UiUtils;
 
 import android.app.FragmentTransaction;
@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -113,7 +112,7 @@ public class FavouritesListFragment extends BaseFragment {
             public void onItemClick(AdapterView<?> parent, View rowView, int position, long id) {
                 BoardPostSummaryHolder holder = (BoardPostSummaryHolder) rowView
                         .getTag();
-                UiUtils.setBackgroundDrawable(holder.postReadMarkerView,readDrawable);
+                UiUtils.setBackgroundDrawable(holder.postReadMarkerView, readDrawable);
 
                 showBoardPost(position);
             }

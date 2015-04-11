@@ -20,7 +20,7 @@ public class NewPostHandler extends OkHttpAsyncResponseHandler {
     private Board board;
 
 
-    public NewPostHandler(Context context,Board board) {
+    public NewPostHandler(Context context, Board board) {
         super(context);
         this.board = board;
     }

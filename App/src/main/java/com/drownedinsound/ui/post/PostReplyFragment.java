@@ -108,7 +108,7 @@ public class PostReplyFragment extends BaseDialogFragment {
         disApiClient.postComment(boardPostId,
                 replyToCommentID,
                 commentTitleEditView.getText().toString(),
-                commentContentEditView.getText().toString(),boardType);
+                commentContentEditView.getText().toString(), boardType);
 
         dismiss();
         eventBus.post(new BoardPostCommentSentEvent());

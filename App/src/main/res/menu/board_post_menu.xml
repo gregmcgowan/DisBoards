@@ -1,20 +1,20 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
 
     <item
-        android:id="@+id/menu_favourite"
-        android:title="Save as Favourite"
-        android:showAsAction="always" />
+            android:id="@+id/menu_favourite"
+            android:title="Save as Favourite"
+            android:showAsAction="always"/>
 
     <item
-        android:id="@+id/menu_post_refresh"
-        android:orderInCategory="1"
-        android:showAsAction="always"
-        android:title="@string/refresh_text"/>
+            android:id="@+id/menu_post_refresh"
+            android:orderInCategory="1"
+            android:showAsAction="always"
+            android:title="@string/refresh_text"/>
     <item
-        android:id="@+id/menu_post_reply"
-        android:orderInCategory="2"
-        android:showAsAction="always"
-        android:title="@string/reply_text"/>
+            android:id="@+id/menu_post_reply"
+            android:orderInCategory="2"
+            android:showAsAction="always"
+            android:title="@string/reply_text"/>
 
 </menu>

@@ -15,8 +15,11 @@ import com.squareup.okhttp.RequestBody;
 public class AddANewPostRunnable extends BaseRunnable {
 
     private Board board;
+
     private String title;
+
     private String content;
+
     private String authToken;
 
     public AddANewPostRunnable(

@@ -30,7 +30,8 @@ import javax.inject.Inject;
  *
  * @author Greg
  */
-@UseDagger @UseEventBus
+@UseDagger
+@UseEventBus
 public class LoginActivity extends BaseActivity {
 
     @Inject
@@ -114,7 +115,7 @@ public class LoginActivity extends BaseActivity {
     private void attemptLogin(String username, String password) {
         UiUtils.hideSoftKeyboard(this, loginButton.getApplicationWindowToken());
         setProgressVisibility(true);
-        disApiClient.loginUser(username,password);
+        disApiClient.loginUser(username, password);
     }
 
     private void setProgressVisibility(boolean visible) {

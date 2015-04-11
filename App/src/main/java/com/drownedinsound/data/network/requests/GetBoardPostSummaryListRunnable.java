@@ -6,7 +6,6 @@ import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 
-
 import timber.log.Timber;
 
 /**

@@ -79,15 +79,15 @@ public class RetrieveBoardSummaryListHandler extends
                 HttpResponseException exception = (HttpResponseException) throwable;
                 int statusCode = exception.getStatusCode();
                 Timber.d("Status code " + statusCode);
-                Timber.d( "Message " + exception.getMessage());
+                Timber.d("Message " + exception.getMessage());
             } else {
-                Timber.d("Something went really wrong throwable = "+throwable);
+                Timber.d("Something went really wrong throwable = " + throwable);
             }
         }
 
         if (isUpdateUI()) {
             List<BoardPost> cachedBoardPosts = databaseHelper.getBoardPosts(boardType);
-            if(cachedBoardPosts.size() > 0) {
+            if (cachedBoardPosts.size() > 0) {
                 eventBus.post(
                         new RetrievedBoardPostSummaryListEvent(cachedBoardPosts, boardType,
                                 true, append));

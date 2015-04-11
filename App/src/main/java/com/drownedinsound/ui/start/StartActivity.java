@@ -15,7 +15,8 @@ import android.os.Bundle;
 
 import javax.inject.Inject;
 
-@UseEventBus @UseDagger
+@UseEventBus
+@UseDagger
 public class StartActivity extends BaseActivity {
 
     @Inject
@@ -25,7 +26,7 @@ public class StartActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(BuildConfig.BUILD_TYPE.equals("beta")
+        if (BuildConfig.BUILD_TYPE.equals("beta")
                 || BuildConfig.BUILD_TYPE.equals("release")) {
             Crashlytics.start(this);
         }

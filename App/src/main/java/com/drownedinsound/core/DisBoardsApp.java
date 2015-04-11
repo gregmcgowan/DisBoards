@@ -32,7 +32,7 @@ public class DisBoardsApp extends Application {
 
     private void initialiseLogging() {
         Timber.tag(DisBoardsConstants.LOG_TAG_PREFIX);
-        if(BuildConfig.BUILD_TYPE.equals(BuildConfig.RELEASE_BUILD_TYPE)) {
+        if (BuildConfig.BUILD_TYPE.equals(BuildConfig.RELEASE_BUILD_TYPE)) {
             Timber.plant(new CrashlyticsTree());
         } else {
             Timber.plant(new Timber.DebugTree());

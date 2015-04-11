@@ -27,10 +27,10 @@ public class DeepLinkClickedActivity extends Activity {
         String path = data.getPath();
         String url = data.toString();
 
-        Timber.d("Path before "+ path);
-        path =  path.replace("/community/boards/","");
+        Timber.d("Path before " + path);
+        path = path.replace("/community/boards/", "");
 
-        Timber.d("Data Path  after "+ path);
+        Timber.d("Data Path  after " + path);
 
         if (path.contains("/")) {
             String[] boardAndPostID = path.split("/");
@@ -43,12 +43,11 @@ public class DeepLinkClickedActivity extends Activity {
             }
 
             BoardType boardType = UrlConstants.getBoardType(url);
-            Timber.d("Board "+board + " postID "+postId + " boardType "+boardType);
-              startActivity(BoardPostActivity.getIntent(this, url, postId, boardType));
+            Timber.d("Board " + board + " postID " + postId + " boardType " + boardType);
+            startActivity(BoardPostActivity.getIntent(this, url, postId, boardType));
         } else {
 
         }
-
 
         finish();
         //TODO

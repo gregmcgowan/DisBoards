@@ -38,6 +38,6 @@
         </RelativeLayout>
 
         <include
-            layout="@layout/toolbar_bottom_section" />
+                layout="@layout/toolbar_bottom_section"/>
     </LinearLayout>
 </android.support.v7.widget.Toolbar>

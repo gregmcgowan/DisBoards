@@ -79,8 +79,8 @@ public class UiUtils {
     }
 
 
-    public static void setBackgroundDrawable(View view, Drawable backgroundDrawble){
-        if(view != null) {
+    public static void setBackgroundDrawable(View view, Drawable backgroundDrawble) {
+        if (view != null) {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
                 view.setBackground(backgroundDrawble);
             } else {

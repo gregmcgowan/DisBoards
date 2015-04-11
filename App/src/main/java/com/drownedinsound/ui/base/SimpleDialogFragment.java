@@ -7,91 +7,92 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
-
 import android.text.TextUtils;
 
 /**
  * A simple dialog that will display a message and a positive and negative
  * button below it
- * 
+ *
  * @author gmcgowan
- * 
  */
 public class SimpleDialogFragment extends DialogFragment {
 
-	private static final String POSITIVE_BUTTON_KEY = "POSITIVE_BUTTON";
-	private static final String NEGATIVE_BUTTON_KEY = "NEGATIVE_BUTTON";
-	private static final String MESSAGE_KEY = "MESSAGE_KEY";
-	private static final String TITLE_KEY = "TITLE_KEY";
+    private static final String POSITIVE_BUTTON_KEY = "POSITIVE_BUTTON";
 
-	private OnClickListener onClickListener;
+    private static final String NEGATIVE_BUTTON_KEY = "NEGATIVE_BUTTON";
 
-	public OnClickListener getOnClickListener() {
-		return onClickListener;
-	}
+    private static final String MESSAGE_KEY = "MESSAGE_KEY";
 
-	public void setOnClickListener(OnClickListener onClickListener) {
-		this.onClickListener = onClickListener;
-	}
+    private static final String TITLE_KEY = "TITLE_KEY";
 
-	public static SimpleDialogFragment newInstance(
-			OnClickListener onClickListener, CharSequence title, CharSequence message,
-			CharSequence positiveButtonText, CharSequence negativeButtonText) {
-		SimpleDialogFragment simpleDialogFragment = new SimpleDialogFragment();
-		simpleDialogFragment.setOnClickListener(onClickListener);
+    private OnClickListener onClickListener;
 
-		Bundle argumentsBundle = new Bundle();
+    public OnClickListener getOnClickListener() {
+        return onClickListener;
+    }
 
-		argumentsBundle.putCharSequence(TITLE_KEY, title);
-		argumentsBundle.putCharSequence(MESSAGE_KEY, message);
-		argumentsBundle.putCharSequence(POSITIVE_BUTTON_KEY, positiveButtonText);
-		argumentsBundle.putCharSequence(NEGATIVE_BUTTON_KEY, negativeButtonText);
+    public void setOnClickListener(OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
+    }
 
-		simpleDialogFragment.setArguments(argumentsBundle);
+    public static SimpleDialogFragment newInstance(
+            OnClickListener onClickListener, CharSequence title, CharSequence message,
+            CharSequence positiveButtonText, CharSequence negativeButtonText) {
+        SimpleDialogFragment simpleDialogFragment = new SimpleDialogFragment();
+        simpleDialogFragment.setOnClickListener(onClickListener);
 
-		return simpleDialogFragment;
-	}
+        Bundle argumentsBundle = new Bundle();
 
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		OnClickListenerWrapper onClickListenerWrapper = new OnClickListenerWrapper();
+        argumentsBundle.putCharSequence(TITLE_KEY, title);
+        argumentsBundle.putCharSequence(MESSAGE_KEY, message);
+        argumentsBundle.putCharSequence(POSITIVE_BUTTON_KEY, positiveButtonText);
+        argumentsBundle.putCharSequence(NEGATIVE_BUTTON_KEY, negativeButtonText);
 
-		Bundle arguments = getArguments();
-		CharSequence title = arguments.getCharSequence(TITLE_KEY);
-		CharSequence message = arguments.getCharSequence(MESSAGE_KEY);
-		CharSequence positiveButtonText = arguments.getCharSequence(POSITIVE_BUTTON_KEY);
-		CharSequence negativeButtonText = arguments.getCharSequence(NEGATIVE_BUTTON_KEY);
+        simpleDialogFragment.setArguments(argumentsBundle);
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		if (!TextUtils.isEmpty(title)) {
-			builder.setTitle(title);
-		}
+        return simpleDialogFragment;
+    }
 
-		if (!TextUtils.isEmpty(message)) {
-			builder.setMessage(message);
-		}
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        OnClickListenerWrapper onClickListenerWrapper = new OnClickListenerWrapper();
 
-		if (!TextUtils.isEmpty(positiveButtonText)) {
-			builder.setPositiveButton(positiveButtonText,
-					onClickListenerWrapper);
-		}
+        Bundle arguments = getArguments();
+        CharSequence title = arguments.getCharSequence(TITLE_KEY);
+        CharSequence message = arguments.getCharSequence(MESSAGE_KEY);
+        CharSequence positiveButtonText = arguments.getCharSequence(POSITIVE_BUTTON_KEY);
+        CharSequence negativeButtonText = arguments.getCharSequence(NEGATIVE_BUTTON_KEY);
 
-		if (!TextUtils.isEmpty(negativeButtonText)) {
-			builder.setNegativeButton(negativeButtonText,
-					onClickListenerWrapper);
-		}
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        if (!TextUtils.isEmpty(title)) {
+            builder.setTitle(title);
+        }
 
-		return builder.create();
-	}
+        if (!TextUtils.isEmpty(message)) {
+            builder.setMessage(message);
+        }
 
-	private class OnClickListenerWrapper implements OnClickListener {
+        if (!TextUtils.isEmpty(positiveButtonText)) {
+            builder.setPositiveButton(positiveButtonText,
+                    onClickListenerWrapper);
+        }
 
-		@Override
-		public void onClick(DialogInterface dialog, int which) {
-			if (getOnClickListener() != null) {
-				getOnClickListener().onClick(dialog, which);
-			}
-		}
+        if (!TextUtils.isEmpty(negativeButtonText)) {
+            builder.setNegativeButton(negativeButtonText,
+                    onClickListenerWrapper);
+        }
 
-	}
+        return builder.create();
+    }
+
+    private class OnClickListenerWrapper implements OnClickListener {
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            if (getOnClickListener() != null) {
+                getOnClickListener().onClick(dialog, which);
+            }
+        }
+
+    }
 }

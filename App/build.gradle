@@ -44,7 +44,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
-    signingConfigs{
+    signingConfigs {
         debug {
             storeFile file("../Keys/debug.keystore")
         }

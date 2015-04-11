@@ -47,25 +47,29 @@ import android.view.ViewGroup;
  * lists:
  *
  * {@sample development/samples/Support4Demos/src/com/example/android/supportv4/app/FragmentPagerSupport.java
- *      complete}
+ * complete}
  *
  * <p>The <code>R.layout.fragment_pager</code> resource of the top-level fragment is:
  *
  * {@sample development/samples/Support4Demos/res/layout/fragment_pager.xml
- *      complete}
+ * complete}
  *
  * <p>The <code>R.layout.fragment_pager_list</code> resource containing each
  * individual fragment's layout is:
  *
  * {@sample development/samples/Support4Demos/res/layout/fragment_pager_list.xml
- *      complete}
+ * complete}
  */
 public abstract class FragmentPagerAdapter extends PagerAdapter {
+
     private static final String TAG = "FragmentPagerAdapter";
+
     private static final boolean DEBUG = false;
 
     private final FragmentManager mFragmentManager;
+
     private FragmentTransaction mCurTransaction = null;
+
     private Fragment mCurrentPrimaryItem = null;
 
     public FragmentPagerAdapter(FragmentManager fm) {
@@ -93,11 +97,15 @@ public abstract class FragmentPagerAdapter extends PagerAdapter {
         String name = makeFragmentName(container.getId(), itemId);
         Fragment fragment = mFragmentManager.findFragmentByTag(name);
         if (fragment != null) {
-            if (DEBUG) Log.v(TAG, "Attaching item #" + itemId + ": f=" + fragment);
+            if (DEBUG) {
+                Log.v(TAG, "Attaching item #" + itemId + ": f=" + fragment);
+            }
             mCurTransaction.attach(fragment);
         } else {
             fragment = getItem(position);
-            if (DEBUG) Log.v(TAG, "Adding item #" + itemId + ": f=" + fragment);
+            if (DEBUG) {
+                Log.v(TAG, "Adding item #" + itemId + ": f=" + fragment);
+            }
             mCurTransaction.add(container.getId(), fragment,
                     makeFragmentName(container.getId(), itemId));
         }
@@ -114,14 +122,16 @@ public abstract class FragmentPagerAdapter extends PagerAdapter {
         if (mCurTransaction == null) {
             mCurTransaction = mFragmentManager.beginTransaction();
         }
-        if (DEBUG) Log.v(TAG, "Detaching item #" + getItemId(position) + ": f=" + object
-                + " v=" + ((Fragment)object).getView());
-        mCurTransaction.detach((Fragment)object);
+        if (DEBUG) {
+            Log.v(TAG, "Detaching item #" + getItemId(position) + ": f=" + object
+                    + " v=" + ((Fragment) object).getView());
+        }
+        mCurTransaction.detach((Fragment) object);
     }
 
     @Override
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        Fragment fragment = (Fragment)object;
+        Fragment fragment = (Fragment) object;
         if (fragment != mCurrentPrimaryItem) {
             if (mCurrentPrimaryItem != null) {
                 mCurrentPrimaryItem.setMenuVisibility(false);
@@ -146,7 +156,7 @@ public abstract class FragmentPagerAdapter extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return ((Fragment)object).getView() == view;
+        return ((Fragment) object).getView() == view;
     }
 
     @Override

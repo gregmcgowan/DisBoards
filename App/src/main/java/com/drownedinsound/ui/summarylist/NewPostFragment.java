@@ -2,9 +2,9 @@ package com.drownedinsound.ui.summarylist;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.DraftBoardPost;
+import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.events.SentNewPostEvent;
 import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.drownedinsound.ui.base.BaseDialogFragment;
@@ -151,7 +151,7 @@ public class NewPostFragment extends BaseDialogFragment {
         String title = postTitleEditText.getText().toString();
         if (!TextUtils.isEmpty(title)) {
             //TODO make sure the text is not a ridiculous length
-            disApiClient.addNewPost(board,title,content);
+            disApiClient.addNewPost(board, title, content);
             eventBus.post(new SentNewPostEvent(SentNewPostState.SENT));
             dismiss();
         } else {

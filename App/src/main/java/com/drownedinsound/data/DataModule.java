@@ -2,22 +2,22 @@ package com.drownedinsound.data;
 
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.handlers.LoginResponseHandler;
-import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
-import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.NewPostHandler;
 import com.drownedinsound.data.network.handlers.PostACommentHandler;
+import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
+import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
 import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.database.DatabaseService;
 import com.drownedinsound.qualifiers.ForDatabase;
 import com.drownedinsound.qualifiers.ForNetworkRequests;
-import com.drownedinsound.ui.start.LoginActivity;
-import com.drownedinsound.ui.summarylist.BoardPostSummaryListActivity;
-import com.drownedinsound.ui.start.StartActivity;
 import com.drownedinsound.ui.post.BoardPostFragment;
+import com.drownedinsound.ui.post.PostReplyFragment;
+import com.drownedinsound.ui.start.LoginActivity;
+import com.drownedinsound.ui.start.StartActivity;
+import com.drownedinsound.ui.summarylist.BoardPostSummaryListActivity;
 import com.drownedinsound.ui.summarylist.BoardPostSummaryListFragment;
 import com.drownedinsound.ui.summarylist.NewPostFragment;
-import com.drownedinsound.ui.post.PostReplyFragment;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -75,14 +75,18 @@ public class DataModule {
     }
 
 
-    @Provides @Singleton @ForNetworkRequests
+    @Provides
+    @Singleton
+    @ForNetworkRequests
     public ExecutorService provideMultiThreadExecutor() {
         final int numberCores = Runtime.getRuntime().availableProcessors();
         return Executors.newFixedThreadPool(numberCores * 2 + 1);
     }
 
-    @Provides @Singleton @ForDatabase
-    public ExecutorService provideDbExecutorService(){
+    @Provides
+    @Singleton
+    @ForDatabase
+    public ExecutorService provideDbExecutorService() {
         return Executors.newSingleThreadExecutor();
     }
 
@@ -96,8 +100,8 @@ public class DataModule {
     private OkHttpClient createOkHttpClient(Application app) {
         OkHttpClient client = new OkHttpClient();
         client.setConnectTimeout(10, TimeUnit.SECONDS);
-        client.setReadTimeout(5,TimeUnit.SECONDS);
-        client.setConnectTimeout(5,TimeUnit.SECONDS);
+        client.setReadTimeout(5, TimeUnit.SECONDS);
+        client.setConnectTimeout(5, TimeUnit.SECONDS);
         // Install an HTTP cache in the application cache directory.
         try {
             File cacheDir = new File(app.getCacheDir(), "http");

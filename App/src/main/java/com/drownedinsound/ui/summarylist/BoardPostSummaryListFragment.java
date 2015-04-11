@@ -15,10 +15,10 @@ import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseFragment;
+import com.drownedinsound.ui.controls.AutoScrollListView;
+import com.drownedinsound.ui.controls.SvgAnimatePathView;
 import com.drownedinsound.ui.post.BoardPostActivity;
 import com.drownedinsound.ui.post.BoardPostFragment;
-import com.drownedinsound.ui.controls.SvgAnimatePathView;
-import com.drownedinsound.ui.controls.AutoScrollListView;
 import com.drownedinsound.utils.NetworkUtils;
 import com.drownedinsound.utils.SimpleAnimatorListener;
 import com.drownedinsound.utils.UiUtils;
@@ -174,7 +174,7 @@ public class BoardPostSummaryListFragment extends BaseFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BoardPostSummaryHolder holder = (BoardPostSummaryHolder) view
                         .getTag();
-                UiUtils.setBackgroundDrawable(holder.postReadMarkerView,readDrawable);
+                UiUtils.setBackgroundDrawable(holder.postReadMarkerView, readDrawable);
 
                 showBoardPost(position);
             }
@@ -271,79 +271,79 @@ public class BoardPostSummaryListFragment extends BaseFragment {
                 "NEW_POST_DIALOG");
     }
 
-    public void showAnimatedLogoAndHideList(){
-      //  if(!animatingTransiton.get()) {
-            animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    super.onAnimationStart(animation);
-                    animatedLogo.setVisibility(View.VISIBLE);
-                }
+    public void showAnimatedLogoAndHideList() {
+        //  if(!animatingTransiton.get()) {
+        animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                animatedLogo.setVisibility(View.VISIBLE);
+            }
 
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                animatingTransiton.set(false);
+            }
+        });
+
+        if (listView.getVisibility() == View.VISIBLE) {
+            ObjectAnimator hideList = ObjectAnimator.ofFloat(listView, "alpha", 1f, 0f);
+            hideList.addListener(new SimpleAnimatorListener() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
+                    listView.setVisibility(View.INVISIBLE);
+                    animatedLogo.startAnimation();
+                }
+            });
+            hideList.start();
+        } else {
+            ObjectAnimator fadeInLogo = ObjectAnimator.ofFloat(animatedLogo, "alpha", 0f, 1f);
+            fadeInLogo.addListener(new SimpleAnimatorListener() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    animatedLogo.startAnimation();
                     animatingTransiton.set(false);
                 }
             });
-
-            if(listView.getVisibility() == View.VISIBLE) {
-                ObjectAnimator hideList = ObjectAnimator.ofFloat(listView, "alpha",1f,0f);
-                hideList.addListener(new SimpleAnimatorListener() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        listView.setVisibility(View.INVISIBLE);
-                        animatedLogo.startAnimation();
-                    }
-                });
-                hideList.start();
-            } else {
-                ObjectAnimator fadeInLogo = ObjectAnimator.ofFloat(animatedLogo,"alpha",0f,1f);
-                fadeInLogo.addListener(new SimpleAnimatorListener() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        animatedLogo.startAnimation();
-                        animatingTransiton.set(false);
-                    }
-                });
-                fadeInLogo.start();
-            }
-            animatingTransiton.set(true);
-       // }
+            fadeInLogo.start();
+        }
+        animatingTransiton.set(true);
+        // }
     }
 
-    public void hideAnimatedLogoAndShowList(){
+    public void hideAnimatedLogoAndShowList() {
 //        if(!animatingTransiton.get()) {
-            if(animatedLogo.getVisibility() == View.VISIBLE) {
-                animatingTransiton.set(true);
-                animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        ObjectAnimator showList = ObjectAnimator.ofFloat(listView, "alpha", 0f, 1f);
-                        showList.addListener(new SimpleAnimatorListener() {
-                            @Override
-                            public void onAnimationStart(Animator animation) {
-                                listView.setVisibility(View.VISIBLE);
-                                animatedLogo.setVisibility(View.VISIBLE);
+        if (animatedLogo.getVisibility() == View.VISIBLE) {
+            animatingTransiton.set(true);
+            animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    ObjectAnimator showList = ObjectAnimator.ofFloat(listView, "alpha", 0f, 1f);
+                    showList.addListener(new SimpleAnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            listView.setVisibility(View.VISIBLE);
+                            animatedLogo.setVisibility(View.VISIBLE);
 
-                            }
+                        }
 
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-                                animatingTransiton.set(false);
-                                animatedLogo.setVisibility(View.INVISIBLE);
-                            }
-                        });
-                        showList.start();
-                    }
-                });
-                animatedLogo.stopAnimationOnceFinished();
-            } else {
-                listView.setVisibility(View.VISIBLE);
-                animatingTransiton.set(false);
-            }
-    //    }
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            animatingTransiton.set(false);
+                            animatedLogo.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                    showList.start();
+                }
+            });
+            animatedLogo.stopAnimationOnceFinished();
+        } else {
+            listView.setVisibility(View.VISIBLE);
+            animatingTransiton.set(false);
+        }
+        //    }
     }
 
 
@@ -367,7 +367,7 @@ public class BoardPostSummaryListFragment extends BaseFragment {
             if (!summariesLoaded()) {
                 requestBoardSummaryPage(1, false, true);
             } else {
-                 adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
                 hideAnimatedLogoAndShowList();
             }
         }

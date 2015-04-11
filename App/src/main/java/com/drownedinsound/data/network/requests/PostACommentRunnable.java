@@ -8,7 +8,6 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 
-
 import android.text.TextUtils;
 
 /**
@@ -17,9 +16,13 @@ import android.text.TextUtils;
 public class PostACommentRunnable extends BaseRunnable {
 
     private String boardPostId;
+
     private String commentId;
+
     private String title;
+
     private String content;
+
     private String authToken;
 
     public PostACommentRunnable(
@@ -28,11 +31,11 @@ public class PostACommentRunnable extends BaseRunnable {
             String commentId, String title, String content, String authToken) {
         super(responseHandler, okHttpClient);
 
-        if(TextUtils.isEmpty(authToken)){
+        if (TextUtils.isEmpty(authToken)) {
             throw new IllegalArgumentException("Auth token cannot be null");
         }
 
-        if(TextUtils.isEmpty(boardPostId)){
+        if (TextUtils.isEmpty(boardPostId)) {
             throw new IllegalArgumentException("BoardPostId cannot be null");
         }
 

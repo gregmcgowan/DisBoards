@@ -20,8 +20,8 @@
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <include
-        android:id="@+id/animated_logo_progress_bar"
-        layout="@layout/animated_logo"/>
+            android:id="@+id/animated_logo_progress_bar"
+            layout="@layout/animated_logo"/>
 
 
     <com.melnykov.fab.FloatingActionButton

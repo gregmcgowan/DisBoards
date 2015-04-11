@@ -3,8 +3,8 @@ package com.drownedinsound.data.parser.streaming;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.utils.DateUtils;
 
 import net.htmlparser.jericho.Attributes;
@@ -176,16 +176,15 @@ public class BoardPostSummaryListParser extends StreamingParser {
                             }
                         }
                     } else if (HtmlConstants.META.equals(tagName)) {
-                            String metaString = tag.toString();
-                            if (metaString.contains(HtmlConstants.AUTHENTICITY_TOKEN_NAME)) {
-                                Attributes attributes = tag.parseAttributes();
-                                if (attributes != null) {
-                                    String authToken = attributes.getValue("content");
-                                    userSessionManager.setAuthenticityToken(authToken);
-                                }
+                        String metaString = tag.toString();
+                        if (metaString.contains(HtmlConstants.AUTHENTICITY_TOKEN_NAME)) {
+                            Attributes attributes = tag.parseAttributes();
+                            if (attributes != null) {
+                                String authToken = attributes.getValue("content");
+                                userSessionManager.setAuthenticityToken(authToken);
                             }
+                        }
                     }
-
 
                     if (tag instanceof EndTag) {
                         clearBuffer();
@@ -311,10 +310,10 @@ public class BoardPostSummaryListParser extends StreamingParser {
                 int indexOfLastForwardSlash = href.lastIndexOf("/");
                 if (indexOfLastForwardSlash != -1) {
                     postId = href.substring(indexOfLastForwardSlash + 1);
-                    if( postId.contains("#last")){
-                        postId = postId.replace("#last","");
-                    } else  if(postId.contains("#")) {
-                        postId = postId.replace("#","");
+                    if (postId.contains("#last")) {
+                        postId = postId.replace("#last", "");
+                    } else if (postId.contains("#")) {
+                        postId = postId.replace("#", "");
                     }
                     currentBoardPost.setId(postId);
                 }

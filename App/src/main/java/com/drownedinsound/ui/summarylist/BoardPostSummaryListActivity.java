@@ -1,12 +1,12 @@
 package com.drownedinsound.ui.summarylist;
 
-import com.drownedinsound.ui.base.BaseActivity;
-import com.drownedinsound.ui.start.LoginActivity;
 import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
-import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.data.UserSessionManager;
+import com.drownedinsound.database.DatabaseHelper;
+import com.drownedinsound.ui.base.BaseActivity;
 import com.drownedinsound.ui.base.SimpleDialogFragment;
+import com.drownedinsound.ui.start.LoginActivity;
 import com.drownedinsound.utils.UiUtils;
 import com.viewpagerindicator.PageIndicator;
 
@@ -99,7 +99,7 @@ public class BoardPostSummaryListActivity extends BaseActivity {
             private void checkIfPageNeedsUpdating(int position) {
                 BoardPostSummaryListFragment boardPostSummaryListFragment
                         = getListFragment(position);
-                if(boardPostSummaryListFragment != null) {
+                if (boardPostSummaryListFragment != null) {
                     boardPostSummaryListFragment.loadListIfNotAlready();
                 }
             }
@@ -123,26 +123,26 @@ public class BoardPostSummaryListActivity extends BaseActivity {
     }
 
     @OnClick(R.id.profile_button)
-    public void profileButtonPressed(){
-        if(userSessionManager.isUserLoggedIn()) {
+    public void profileButtonPressed() {
+        if (userSessionManager.isUserLoggedIn()) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             SimpleDialogFragment existingLogoutDialog =
                     (SimpleDialogFragment) fragmentManager.findFragmentByTag(LOGOUT_DIALOG);
-            if(existingLogoutDialog != null) {
+            if (existingLogoutDialog != null) {
                 fragmentTransaction.remove(existingLogoutDialog);
             }
 
             SimpleDialogFragment logoutDialog =
                     SimpleDialogFragment.newInstance(new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if(which == DialogInterface.BUTTON_POSITIVE) {
-                        doLogoutAction();
-                    }
-                }
-            },"","Do you want to logout?","Yes","No");
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (which == DialogInterface.BUTTON_POSITIVE) {
+                                doLogoutAction();
+                            }
+                        }
+                    }, "", "Do you want to logout?", "Yes", "No");
 
-            logoutDialog.show(fragmentTransaction,LOGOUT_DIALOG);
+            logoutDialog.show(fragmentTransaction, LOGOUT_DIALOG);
 
         } else {
             Intent startLoginActivity = new Intent(this,
@@ -161,7 +161,6 @@ public class BoardPostSummaryListActivity extends BaseActivity {
         Intent displayFavouritesIntent = new Intent(this, FavouritesActivity.class);
         startActivity(displayFavouritesIntent);
     }
-
 
 
 }

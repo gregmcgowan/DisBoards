@@ -17,14 +17,14 @@ public abstract class BaseRunnable implements Runnable {
 
     private WeakReference<OkHttpClient> httpClientWeakReference;
 
-    public BaseRunnable(OkHttpAsyncResponseHandler responseHandler, OkHttpClient okHttpClient){
+    public BaseRunnable(OkHttpAsyncResponseHandler responseHandler, OkHttpClient okHttpClient) {
         this.okHttpAsyncResponseHandler = responseHandler;
         this.httpClientWeakReference = new WeakReference<OkHttpClient>(okHttpClient);
     }
 
-    protected void makeRequest(Request request){
-        if(httpClientWeakReference != null) {
-            if( httpClientWeakReference.get() != null){
+    protected void makeRequest(Request request) {
+        if (httpClientWeakReference != null) {
+            if (httpClientWeakReference.get() != null) {
                 httpClientWeakReference.get().newCall(request).enqueue(okHttpAsyncResponseHandler);
             }
         }

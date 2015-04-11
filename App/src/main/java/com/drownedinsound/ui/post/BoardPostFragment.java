@@ -5,11 +5,11 @@ import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.database.DatabaseService;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardPostComment;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.network.UrlConstants;
+import com.drownedinsound.database.DatabaseService;
 import com.drownedinsound.events.BoardPostCommentSentEvent;
 import com.drownedinsound.events.FailedToPostCommentEvent;
 import com.drownedinsound.events.FailedToThisThisEvent;
@@ -18,8 +18,8 @@ import com.drownedinsound.events.SetBoardPostFavouriteStatusResultEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseFragment;
 import com.drownedinsound.ui.controls.ActiveTextView;
-import com.drownedinsound.ui.controls.SvgAnimatePathView;
 import com.drownedinsound.ui.controls.AutoScrollListView;
+import com.drownedinsound.ui.controls.SvgAnimatePathView;
 import com.drownedinsound.utils.SimpleAnimatorListener;
 import com.drownedinsound.utils.UiUtils;
 import com.melnykov.fab.FloatingActionButton;
@@ -31,7 +31,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
-
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -163,13 +162,14 @@ public class BoardPostFragment extends BaseFragment {
                     }
 
                 });
-        floatingReplyButton.attachToListView(commentsList, new FloatingActionButton.FabOnScrollListener(){
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                super.onScrollStateChanged(view, scrollState);
-                displayScrollToHiddenCommentOption(false);
-            }
-        });
+        floatingReplyButton
+                .attachToListView(commentsList, new FloatingActionButton.FabOnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(AbsListView view, int scrollState) {
+                        super.onScrollStateChanged(view, scrollState);
+                        displayScrollToHiddenCommentOption(false);
+                    }
+                });
 
         animatedLogo.setSvgResource(R.raw.logo);
         return rootView;
@@ -325,81 +325,81 @@ public class BoardPostFragment extends BaseFragment {
                 Toast.LENGTH_SHORT).show();
     }
 
-    public void showAnimatedLogoAndHideList(){
-       // if(!animatingTransiton.get()) {
-            floatingReplyButton.hide(true);
-            animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    animatedLogo.setVisibility(View.VISIBLE);
-                }
+    public void showAnimatedLogoAndHideList() {
+        // if(!animatingTransiton.get()) {
+        floatingReplyButton.hide(true);
+        animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                animatedLogo.setVisibility(View.VISIBLE);
+            }
 
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                animatingTransiton.set(false);
+            }
+        });
+
+        if (commentsList.getVisibility() == View.VISIBLE) {
+            ObjectAnimator hideList = ObjectAnimator.ofFloat(commentsList, "alpha", 1f, 0f);
+            hideList.addListener(new SimpleAnimatorListener() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    animatingTransiton.set(false);
+                    commentsList.setVisibility(View.INVISIBLE);
+                    moveToFirstOrLastCommentLayout.setVisibility(View.INVISIBLE);
+                    animatedLogo.startAnimation();
                 }
             });
+            hideList.start();
 
-            if(commentsList.getVisibility() == View.VISIBLE) {
-                ObjectAnimator hideList = ObjectAnimator.ofFloat(commentsList, "alpha",1f,0f);
-                hideList.addListener(new SimpleAnimatorListener() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        commentsList.setVisibility(View.INVISIBLE);
-                        moveToFirstOrLastCommentLayout.setVisibility(View.INVISIBLE);
-                        animatedLogo.startAnimation();
-                    }
-                });
-                hideList.start();
-
-            } else {
-                animatingTransiton.set(true);
-                animatedLogo.startAnimation();
-            }
+        } else {
+            animatingTransiton.set(true);
+            animatedLogo.startAnimation();
+        }
         //}
     }
 
-    public void hideAnimatedLogoAndShowList(){
+    public void hideAnimatedLogoAndShowList() {
         hideAnimatedLogoAndShowList(null);
     }
 
     public void hideAnimatedLogoAndShowList(final OnListShownHandler onlistShownListener) {
         //if(!animatingTransiton.get()) {
-            if(animatedLogo.getVisibility() == View.VISIBLE) {
-                animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        ObjectAnimator showList = ObjectAnimator.ofFloat(commentsList, "alpha", 0f, 1f);
-                        showList.addListener(new SimpleAnimatorListener() {
-                            @Override
-                            public void onAnimationStart(Animator animation) {
-                                animatedLogo.setVisibility(View.VISIBLE);
-                                commentsList.setVisibility(View.VISIBLE);
+        if (animatedLogo.getVisibility() == View.VISIBLE) {
+            animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    ObjectAnimator showList = ObjectAnimator.ofFloat(commentsList, "alpha", 0f, 1f);
+                    showList.addListener(new SimpleAnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            animatedLogo.setVisibility(View.VISIBLE);
+                            commentsList.setVisibility(View.VISIBLE);
 
-                            }
+                        }
 
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-                                if(onlistShownListener != null) {
-                                    onlistShownListener.doOnListShownAction();
-                                }
-                                animatedLogo.setVisibility(View.INVISIBLE);
-                                animatingTransiton.set(false);
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            if (onlistShownListener != null) {
+                                onlistShownListener.doOnListShownAction();
                             }
-                        });
-                        showList.start();
-                    }
-                });
-                animatedLogo.stopAnimationOnceFinished();
-            } else {
-                commentsList.setVisibility(View.VISIBLE);
-                animatingTransiton.set(false);
-                if(onlistShownListener != null) {
-                    onlistShownListener.doOnListShownAction();
+                            animatedLogo.setVisibility(View.INVISIBLE);
+                            animatingTransiton.set(false);
+                        }
+                    });
+                    showList.start();
                 }
+            });
+            animatedLogo.stopAnimationOnceFinished();
+        } else {
+            commentsList.setVisibility(View.VISIBLE);
+            animatingTransiton.set(false);
+            if (onlistShownListener != null) {
+                onlistShownListener.doOnListShownAction();
             }
-      //  }
+        }
+        //  }
     }
 
     @Override
@@ -415,7 +415,7 @@ public class BoardPostFragment extends BaseFragment {
             showAnimatedLogoAndHideList();
             if (!requestingPost) {
                 connectionErrorTextView.setVisibility(View.GONE);
-                disApiClient.getBoardPost(boardPostUrl,boardPostId,boardType);
+                disApiClient.getBoardPost(boardPostUrl, boardPostId, boardType);
                 requestingPost = true;
             }
         }
@@ -591,7 +591,7 @@ public class BoardPostFragment extends BaseFragment {
             //TODO remove comment if there is one
             Log.d(TAG, "PostID = " + postId);
             BoardType boardType = UrlConstants.getBoardType(url);
-            startActivity(BoardPostActivity.getIntent(getActivity(),url,postId,boardType));
+            startActivity(BoardPostActivity.getIntent(getActivity(), url, postId, boardType));
         }
 
 
@@ -965,9 +965,9 @@ public class BoardPostFragment extends BaseFragment {
             BoardPostFragment fragment = boardPostFragmentWeakReference.get();
             if (adapter != null && fragment != null) {
                 fragment.showAnimatedLogoAndHideList();
-                if(boardPostFragmentWeakReference.get() != null) {
+                if (boardPostFragmentWeakReference.get() != null) {
                     boardPostFragmentWeakReference.get().getDisApiClient().
-                            thisAComment(postUrl,postID,commentID,boardType);
+                            thisAComment(postUrl, postID, commentID, boardType);
                 }
             }
         }
@@ -1137,6 +1137,7 @@ public class BoardPostFragment extends BaseFragment {
     }
 
     interface OnListShownHandler {
+
         public void doOnListShownAction();
     }
 

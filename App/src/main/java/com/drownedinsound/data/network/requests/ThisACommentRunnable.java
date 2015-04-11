@@ -1,11 +1,9 @@
 package com.drownedinsound.data.network.requests;
 
-import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.network.handlers.OkHttpAsyncResponseHandler;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
-
 
 import timber.log.Timber;
 
@@ -15,12 +13,13 @@ import timber.log.Timber;
 public class ThisACommentRunnable extends BaseRunnable {
 
     private String boardPostUrl;
+
     private String commentId;
 
     public ThisACommentRunnable(String postUrl, String commentId,
             OkHttpAsyncResponseHandler responseHandler,
-            OkHttpClient okHttpClient){
-        super(responseHandler,okHttpClient);
+            OkHttpClient okHttpClient) {
+        super(responseHandler, okHttpClient);
         this.boardPostUrl = postUrl;
         this.commentId = commentId;
     }
@@ -28,9 +27,9 @@ public class ThisACommentRunnable extends BaseRunnable {
     @Override
     public void run() {
         String fullUrl = boardPostUrl + "/" + commentId + "/this";
-        Timber.d( "Going to this with  =" + fullUrl);
+        Timber.d("Going to this with  =" + fullUrl);
 
-        Headers.Builder headerBuilder =  getMandatoryDefaultHeaders();
+        Headers.Builder headerBuilder = getMandatoryDefaultHeaders();
         Request.Builder requestBuilder = new Request.Builder();
         Request request = requestBuilder.get().url(fullUrl)
                 .headers(headerBuilder.build()).build();

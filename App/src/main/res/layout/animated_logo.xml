@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.drownedinsound.ui.controls.SvgAnimatePathView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/state"
-    android:layout_centerInParent="true"
-    android:layout_width="85dp"
-    android:layout_height="85dp"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/state"
+        android:layout_centerInParent="true"
+        android:layout_width="85dp"
+        android:layout_height="85dp"
 
-    android:visibility="gone"
+        android:visibility="gone"
 
-    app:phase="1.0"
-    app:duration="2000"
-    app:fadeFactor="10.0"
-    app:svgStrokeWidth="2.0"
-    app:svgStrokeColor="#000000" />
+        app:phase="1.0"
+        app:duration="2000"
+        app:fadeFactor="10.0"
+        app:svgStrokeWidth="2.0"
+        app:svgStrokeColor="#000000"/>

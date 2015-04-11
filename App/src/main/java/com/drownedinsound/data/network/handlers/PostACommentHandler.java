@@ -1,8 +1,8 @@
 package com.drownedinsound.data.network.handlers;
 
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.events.FailedToPostCommentEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
 import com.drownedinsound.events.UpdateCachedBoardPostEvent;
@@ -32,7 +32,7 @@ public class PostACommentHandler extends OkHttpAsyncResponseHandler {
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
         BoardPost boardPost = null;
         if (inputStream != null) {
-            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,inputStream,
+            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager, inputStream,
                     postID, boardType);
             boardPost = boardPostParser.parse();
             if (boardPost != null) {

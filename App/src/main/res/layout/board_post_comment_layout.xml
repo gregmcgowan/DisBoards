@@ -1,183 +1,182 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/margin_large">
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/margin_large">
 
     <LinearLayout
-        android:id="@+id/board_post_comment_comment_section"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/margin_medium"
-        android:layout_marginRight="@dimen/margin_medium"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:id="@+id/board_post_comment_whitespace_section"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal" />
-
-        <LinearLayout
-            android:id="@+id/board_post_comment_content_section"
+            android:id="@+id/board_post_comment_comment_section"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/comment_background_transition"
-            android:orientation="vertical" >
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:orientation="horizontal">
+
+        <LinearLayout
+                android:id="@+id/board_post_comment_whitespace_section"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"/>
+
+        <LinearLayout
+                android:id="@+id/board_post_comment_content_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/comment_background_transition"
+                android:orientation="vertical">
 
             <TextView
-                android:id="@+id/board_post_comment_content_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/margin_small"
-                android:layout_marginLeft="@dimen/margin_small"
-                android:layout_marginRight="@dimen/margin_small"
-                android:layout_marginTop="@dimen/margin_small"
-                android:paddingLeft="@dimen/comment_text_padding"
-                android:paddingRight="12dp"
-                android:paddingTop="@dimen/comment_text_padding"
-                android:paddingBottom="@dimen/comment_text_padding"
-                android:text="Here is a test title for the post"
-                android:textColor="@color/font_colour_light"
-                android:textSize="@dimen/text_micro"
-                android:textStyle="bold" />
+                    android:id="@+id/board_post_comment_content_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:layout_marginLeft="@dimen/margin_small"
+                    android:layout_marginRight="@dimen/margin_small"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:paddingLeft="@dimen/comment_text_padding"
+                    android:paddingRight="12dp"
+                    android:paddingTop="@dimen/comment_text_padding"
+                    android:paddingBottom="@dimen/comment_text_padding"
+                    android:text="Here is a test title for the post"
+                    android:textColor="@color/font_colour_light"
+                    android:textSize="@dimen/text_micro"
+                    android:textStyle="bold"/>
 
-            <include layout="@layout/thicker_divider_grey" />
+            <include layout="@layout/thicker_divider_grey"/>
 
             <com.drownedinsound.ui.controls.ActiveTextView
-                android:id="@+id/board_post_comment_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/margin_small"
-                android:layout_marginLeft="@dimen/margin_small"
-                android:layout_marginRight="@dimen/margin_small"
-                android:layout_marginTop="@dimen/margin_small"
-                android:autoLink="web"
-                android:paddingLeft="@dimen/comment_text_padding"
-                android:paddingRight="12dp"
-                android:paddingTop="@dimen/comment_text_padding"
-                android:paddingBottom="@dimen/comment_text_padding"
-                android:text="Here is a test comment. A very interesting post"
-                android:textColor="@color/font_colour_light"
-                android:textSize="@dimen/text_micro" />
+                    android:id="@+id/board_post_comment_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:layout_marginLeft="@dimen/margin_small"
+                    android:layout_marginRight="@dimen/margin_small"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:autoLink="web"
+                    android:paddingLeft="@dimen/comment_text_padding"
+                    android:paddingRight="12dp"
+                    android:paddingTop="@dimen/comment_text_padding"
+                    android:paddingBottom="@dimen/comment_text_padding"
+                    android:text="Here is a test comment. A very interesting post"
+                    android:textColor="@color/font_colour_light"
+                    android:textSize="@dimen/text_micro"/>
 
-            <include layout="@layout/dotted_divider_grey" />
+            <include layout="@layout/dotted_divider_grey"/>
 
             <RelativeLayout
-                android:id="@+id/board_post_comment_info_section"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/margin_small"
-                android:layout_marginLeft="@dimen/margin_small"
-                android:layout_marginRight="@dimen/margin_small"
-                android:layout_marginTop="@dimen/margin_small">
+                    android:id="@+id/board_post_comment_info_section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:layout_marginLeft="@dimen/margin_small"
+                    android:layout_marginRight="@dimen/margin_small"
+                    android:layout_marginTop="@dimen/margin_small">
 
                 <RelativeLayout
-                    android:id="@+id/board_post_comment_author_section"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:layout_alignParentRight="true">
+                        android:id="@+id/board_post_comment_author_section"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_alignParentRight="true">
 
                     <TextView
-                        android:id="@+id/board_post_comment_date_time_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerInParent="true"
-                        android:paddingLeft="@dimen/comment_text_padding"
-                        android:paddingRight="12dp"
-                        android:paddingTop="@dimen/comment_text_padding"
-                        android:paddingBottom="@dimen/comment_text_padding"
-                        android:text="19 August 1970"
-                        android:textColor="@color/font_colour_light"
-                        android:textSize="@dimen/text_really_micro"
-                        android:gravity="center_vertical"/>
+                            android:id="@+id/board_post_comment_date_time_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerInParent="true"
+                            android:paddingLeft="@dimen/comment_text_padding"
+                            android:paddingRight="12dp"
+                            android:paddingTop="@dimen/comment_text_padding"
+                            android:paddingBottom="@dimen/comment_text_padding"
+                            android:text="19 August 1970"
+                            android:textColor="@color/font_colour_light"
+                            android:textSize="@dimen/text_really_micro"
+                            android:gravity="center_vertical"/>
 
                     <TextView
-                        android:id="@+id/board_post_comment_author_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_toLeftOf="@id/board_post_comment_date_time_text_view"
-                        android:layout_centerInParent="true"
-                        android:paddingLeft="@dimen/comment_text_padding"
-                        android:paddingRight="12dp"
-                        android:paddingTop="@dimen/comment_text_padding"
-                        android:paddingBottom="@dimen/comment_text_padding"
-                        android:text="Author user name"
-                        android:textColor="@color/highlighted_blue"
-                        android:textSize="@dimen/text_really_micro"
-                        android:gravity="center_vertical"/>
+                            android:id="@+id/board_post_comment_author_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toLeftOf="@id/board_post_comment_date_time_text_view"
+                            android:layout_centerInParent="true"
+                            android:paddingLeft="@dimen/comment_text_padding"
+                            android:paddingRight="12dp"
+                            android:paddingTop="@dimen/comment_text_padding"
+                            android:paddingBottom="@dimen/comment_text_padding"
+                            android:text="Author user name"
+                            android:textColor="@color/highlighted_blue"
+                            android:textSize="@dimen/text_really_micro"
+                            android:gravity="center_vertical"/>
                 </RelativeLayout>
             </RelativeLayout>
-                <!-- <include layout="@layout/dotted_divider_grey"/> -->
+            <!-- <include layout="@layout/dotted_divider_grey"/> -->
             <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/margin_small"
-                android:layout_marginLeft="@dimen/margin_small"
-                android:layout_marginRight="@dimen/margin_small">
-                <TextView
-                    android:id="@+id/board_post_comment_this_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:gravity="center|right"
-                    android:paddingLeft="@dimen/comment_text_padding"
-                    android:paddingBottom="12dp"
-                    android:paddingRight="@dimen/comment_text_padding"
-                    android:text="User, User, A  User, A User, A User, A User, A User, A User, A user all this&apos;d this"
-                    android:textColor="@color/font_colour_light"
-                    android:textSize="@dimen/text_really_micro" />
-                </RelativeLayout>
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:layout_marginLeft="@dimen/margin_small"
+                    android:layout_marginRight="@dimen/margin_small">
+                <TextView
+                        android:id="@+id/board_post_comment_this_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:gravity="center|right"
+                        android:paddingLeft="@dimen/comment_text_padding"
+                        android:paddingBottom="12dp"
+                        android:paddingRight="@dimen/comment_text_padding"
+                        android:text="User, User, A  User, A User, A User, A User, A User, A User, A user all this&apos;d this"
+                        android:textColor="@color/font_colour_light"
+                        android:textSize="@dimen/text_really_micro"/>
+            </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
 
     <RelativeLayout
-        android:id="@+id/board_post_comment_action_section"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="visible" >
+            android:id="@+id/board_post_comment_action_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="visible">
 
         <TextView
-            android:id="@+id/board_post_comment_reply"
-            android:layout_width="@dimen/comment_button_width"
-            android:layout_height="@dimen/comment_button_height"
-            android:layout_alignParentRight="true"
-            android:layout_centerInParent="true"
-            android:layout_marginBottom="@dimen/margin_medium"
-            android:layout_marginLeft="@dimen/margin_medium"
-            android:layout_marginRight="@dimen/margin_medium"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:background="@color/very_dark_grey"
-            android:gravity="center"
-            android:padding="@dimen/comment_text_padding"
-            android:text="@string/reply_text"
-            android:textColor="@color/darkest_grey"
-            android:textSize="@dimen/text_micro"
-            android:textStyle="bold" />
+                android:id="@+id/board_post_comment_reply"
+                android:layout_width="@dimen/comment_button_width"
+                android:layout_height="@dimen/comment_button_height"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_marginBottom="@dimen/margin_medium"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:background="@color/very_dark_grey"
+                android:gravity="center"
+                android:padding="@dimen/comment_text_padding"
+                android:text="@string/reply_text"
+                android:textColor="@color/darkest_grey"
+                android:textSize="@dimen/text_micro"
+                android:textStyle="bold"/>
 
         <TextView
-            android:layout_centerInParent="true"
-            android:id="@+id/board_post_comment_this"
-            android:layout_width="@dimen/comment_button_width"
-            android:layout_height="@dimen/comment_button_height"
-            android:layout_marginBottom="@dimen/margin_medium"
-            android:layout_marginLeft="@dimen/margin_medium"
-            android:layout_marginRight="@dimen/margin_medium"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:layout_toLeftOf="@id/board_post_comment_reply"
-            android:background="@color/very_dark_grey"
-            android:gravity="center"
-            android:padding="@dimen/comment_text_padding"
-            android:text="@string/this_text"
-            android:textColor="@color/darkest_grey"
-            android:textSize="@dimen/text_micro"
-            android:textStyle="bold" />
+                android:layout_centerInParent="true"
+                android:id="@+id/board_post_comment_this"
+                android:layout_width="@dimen/comment_button_width"
+                android:layout_height="@dimen/comment_button_height"
+                android:layout_marginBottom="@dimen/margin_medium"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:layout_toLeftOf="@id/board_post_comment_reply"
+                android:background="@color/very_dark_grey"
+                android:gravity="center"
+                android:padding="@dimen/comment_text_padding"
+                android:text="@string/this_text"
+                android:textColor="@color/darkest_grey"
+                android:textSize="@dimen/text_micro"
+                android:textStyle="bold"/>
     </RelativeLayout>
-
 
 
 </LinearLayout>

@@ -1,9 +1,8 @@
 package com.drownedinsound.ui.summarylist;
 
-import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.data.model.Board;
+import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.ui.base.FragmentPagerAdapter;
-
 
 import android.app.Fragment;
 import android.app.FragmentManager;

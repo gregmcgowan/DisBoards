@@ -13,7 +13,6 @@ import com.squareup.okhttp.Response;
 import org.apache.http.client.HttpResponseException;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,7 +40,7 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
         BoardPost boardPost = null;
         if (inputStream != null) {
-            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,inputStream,
+            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager, inputStream,
                     boardPostId, boardPostType);
             boardPost = boardPostParser.parse();
             BoardPost exisitingBoardPost = databaseHelper.getBoardPost(boardPost.getId());
@@ -68,10 +67,10 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
             if (throwable instanceof HttpResponseException) {
                 HttpResponseException exception = (HttpResponseException) throwable;
                 int statusCode = exception.getStatusCode();
-                Timber.d( "Status code " + statusCode);
-                Timber.d( "Message " + exception.getMessage());
+                Timber.d("Status code " + statusCode);
+                Timber.d("Message " + exception.getMessage());
             } else {
-                Timber.d( "Something went really wrong throwable = "+throwable);
+                Timber.d("Something went really wrong throwable = " + throwable);
             }
         }
 

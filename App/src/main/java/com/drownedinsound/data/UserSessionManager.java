@@ -2,8 +2,6 @@ package com.drownedinsound.data;
 
 import com.drownedinsound.data.network.CookieManager;
 
-import android.content.SharedPreferences;
-
 import timber.log.Timber;
 
 /**
@@ -24,7 +22,7 @@ public class UserSessionManager {
     }
 
     public void setAuthenticityToken(String authenticityToken) {
-        Timber.d("Setting auth token to "+authenticityToken);
+        Timber.d("Setting auth token to " + authenticityToken);
         this.authenticityToken = authenticityToken;
     }
 

@@ -118,22 +118,22 @@ public class BoardPostSummaryListAdapter extends ArrayAdapter<BoardPost> {
             holder.lastUpdatedTextView.setText(lastUpdatedText);
             holder.stickyTextView.setVisibility(stickyVisible);
             if (markAsRead) {
-                UiUtils.setBackgroundDrawable(holder.postReadMarkerView,readDrawable);
+                UiUtils.setBackgroundDrawable(holder.postReadMarkerView, readDrawable);
             } else {
-                UiUtils.setBackgroundDrawable(holder.postReadMarkerView,unreadDrawable);
+                UiUtils.setBackgroundDrawable(holder.postReadMarkerView, unreadDrawable);
             }
 
             if (position % 2 == 0) {
                 whiteBackgroundSelector = context
-                            .getResources().getDrawable(
-                                    R.drawable.board_list_row_selector);
-                UiUtils.setBackgroundDrawable(boardPostSummaryRowView,whiteBackgroundSelector);
+                        .getResources().getDrawable(
+                                R.drawable.board_list_row_selector);
+                UiUtils.setBackgroundDrawable(boardPostSummaryRowView, whiteBackgroundSelector);
             } else {
                 alternateColorSelector = context
-                            .getResources()
-                            .getDrawable(
-                                    R.drawable.alternate_board_list_row_selector);
-                UiUtils.setBackgroundDrawable(boardPostSummaryRowView,alternateColorSelector);
+                        .getResources()
+                        .getDrawable(
+                                R.drawable.alternate_board_list_row_selector);
+                UiUtils.setBackgroundDrawable(boardPostSummaryRowView, alternateColorSelector);
             }
 
         }

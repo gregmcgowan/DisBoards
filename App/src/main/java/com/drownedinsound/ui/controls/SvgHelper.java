@@ -16,20 +16,30 @@
 
 package com.drownedinsound.ui.controls;
 
-import android.content.Context;
-import android.graphics.*;
-import android.util.Log;
 import com.caverock.androidsvg.PreserveAspectRatio;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PathMeasure;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Region;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SvgHelper {
+
     private static final String LOG_TAG = "SVG";
 
     private final List<SvgPath> mPaths = new ArrayList<SvgPath>();
+
     private final Paint mSourcePaint;
 
     private SVG mSvg;
@@ -39,7 +49,9 @@ public class SvgHelper {
     }
 
     public void load(Context context, int svgResource) {
-        if (mSvg != null) return;
+        if (mSvg != null) {
+            return;
+        }
         try {
             mSvg = SVG.getFromResource(context, svgResource);
             mSvg.setDocumentPreserveAspectRatio(PreserveAspectRatio.UNSCALED);
@@ -49,16 +61,23 @@ public class SvgHelper {
     }
 
     public static class SvgPath {
+
         private static final Region sRegion = new Region();
+
         private static final Region sMaxClip = new Region(
                 Integer.MIN_VALUE, Integer.MIN_VALUE,
                 Integer.MAX_VALUE, Integer.MAX_VALUE);
 
         final Path path;
+
         final Path renderPath = new Path();
+
         final Paint paint;
+
         final float length;
+
         final Rect bounds;
+
         final PathMeasure measure;
 
         SvgPath(Path path, Paint paint) {

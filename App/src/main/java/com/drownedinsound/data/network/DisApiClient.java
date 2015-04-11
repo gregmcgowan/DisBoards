@@ -12,12 +12,12 @@ import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
 import com.drownedinsound.data.network.requests.AddANewPostRunnable;
-import com.drownedinsound.data.network.requests.PostACommentRunnable;
-import com.drownedinsound.data.network.requests.ThisACommentRunnable;
-import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.data.network.requests.GetBoardPostRunnable;
 import com.drownedinsound.data.network.requests.GetBoardPostSummaryListRunnable;
 import com.drownedinsound.data.network.requests.LoginRunnable;
+import com.drownedinsound.data.network.requests.PostACommentRunnable;
+import com.drownedinsound.data.network.requests.ThisACommentRunnable;
+import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.database.DatabaseRunnable;
 import com.drownedinsound.events.RequestCompletedEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
@@ -25,16 +25,11 @@ import com.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.drownedinsound.qualifiers.ForDatabase;
 import com.drownedinsound.qualifiers.ForNetworkRequests;
 import com.drownedinsound.utils.NetworkUtils;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
 
 import android.app.Application;
 import android.content.Context;
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -69,8 +64,10 @@ public class DisApiClient {
     private CopyOnWriteArrayList<String> inProgressRequests;
 
     @Inject
-    public DisApiClient(Application applicationContext, OkHttpClient httpClient, DatabaseHelper databaseHelper,
-            UserSessionManager userSessionManager, EventBus eventBus, @ForNetworkRequests ExecutorService networkExecutorService,
+    public DisApiClient(Application applicationContext, OkHttpClient httpClient,
+            DatabaseHelper databaseHelper,
+            UserSessionManager userSessionManager, EventBus eventBus,
+            @ForNetworkRequests ExecutorService networkExecutorService,
             @ForDatabase ExecutorService dbExecutorService) {
 
         this.applicationContext = applicationContext;
@@ -118,7 +115,8 @@ public class DisApiClient {
 
     }
 
-    public void getBoardPostSummaryList(int pageNumber,final Board board, boolean forceUpdate, boolean updateUI) {
+    public void getBoardPostSummaryList(int pageNumber, final Board board, boolean forceUpdate,
+            boolean updateUI) {
         String boardListName = board
                 .getBoardType().name();
         final boolean requestIsInProgress = inProgressRequests.contains(boardListName);
@@ -182,15 +180,20 @@ public class DisApiClient {
         return recentlyFetched;
     }
 
-    public void thisAComment(String boardPostUrl, String boardPostId, String commentId, BoardType boardType) {
-        ThisACommentHandler thisACommentHandler = new ThisACommentHandler(applicationContext, boardPostId, boardType);
-        networkRequestExecutorService.execute(new ThisACommentRunnable(boardPostUrl,commentId,thisACommentHandler,httpClient));
+    public void thisAComment(String boardPostUrl, String boardPostId, String commentId,
+            BoardType boardType) {
+        ThisACommentHandler thisACommentHandler = new ThisACommentHandler(applicationContext,
+                boardPostId, boardType);
+        networkRequestExecutorService.execute(
+                new ThisACommentRunnable(boardPostUrl, commentId, thisACommentHandler, httpClient));
     }
 
     public void addNewPost(Board board, String title, String content) {
-        NewPostHandler newPostHandler = new NewPostHandler(applicationContext,board);
+        NewPostHandler newPostHandler = new NewPostHandler(applicationContext, board);
         String authToken = userSessionManager.getAuthenticityToken();
-        networkRequestExecutorService.execute(new AddANewPostRunnable(newPostHandler,httpClient,board,title,content,authToken));
+        networkRequestExecutorService.execute(
+                new AddANewPostRunnable(newPostHandler, httpClient, board, title, content,
+                        authToken));
     }
 
     public void postComment(String boardPostId, String commentId, String title, String content,

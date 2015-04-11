@@ -6,7 +6,6 @@ import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.ui.base.BaseActivity;
 import com.drownedinsound.utils.UiUtils;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -77,7 +76,6 @@ public class BoardPostActivity extends BaseActivity {
     }
 
 
-
     @Override
     protected int getLayoutResource() {
         return R.layout.board_post_container;
@@ -93,7 +91,7 @@ public class BoardPostActivity extends BaseActivity {
 
     @OnClick(R.id.refresh_board_posts_button)
     public void refreshButtonAction() {
-        if(boardPostFragment != null) {
+        if (boardPostFragment != null) {
             boardPostFragment.doRefreshAction();
         }
     }

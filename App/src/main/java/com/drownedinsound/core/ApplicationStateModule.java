@@ -1,20 +1,20 @@
 package com.drownedinsound.core;
 
-import com.drownedinsound.database.DatabaseService;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.network.CookieManager;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.handlers.LoginResponseHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
-import com.drownedinsound.ui.start.LoginActivity;
-import com.drownedinsound.ui.summarylist.BoardPostSummaryListActivity;
-import com.drownedinsound.ui.start.StartActivity;
+import com.drownedinsound.database.DatabaseService;
 import com.drownedinsound.ui.post.BoardPostFragment;
+import com.drownedinsound.ui.post.PostReplyFragment;
+import com.drownedinsound.ui.start.LoginActivity;
+import com.drownedinsound.ui.start.StartActivity;
+import com.drownedinsound.ui.summarylist.BoardPostSummaryListActivity;
 import com.drownedinsound.ui.summarylist.BoardPostSummaryListFragment;
 import com.drownedinsound.ui.summarylist.FavouritesListFragment;
 import com.drownedinsound.ui.summarylist.NewPostFragment;
-import com.drownedinsound.ui.post.PostReplyFragment;
 import com.squareup.okhttp.OkHttpClient;
 
 import android.content.SharedPreferences;
