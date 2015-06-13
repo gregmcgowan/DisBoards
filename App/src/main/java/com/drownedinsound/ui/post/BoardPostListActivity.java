@@ -8,13 +8,13 @@ import com.drownedinsound.ui.base.BaseActivity;
 import com.drownedinsound.ui.base.SimpleDialogFragment;
 import com.drownedinsound.ui.start.LoginActivity;
 import com.drownedinsound.utils.UiUtils;
-import com.viewpagerindicator.PageIndicator;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 
@@ -41,7 +41,8 @@ public class BoardPostListActivity extends BaseActivity {
     @InjectView(R.id.boards_pager)
     ViewPager mPager;
 
-    PageIndicator mIndicator;
+    @InjectView(R.id.board_tabs)
+    TabLayout tabLayout;
 
     @Inject
     UserSessionManager userSessionManager;
@@ -67,10 +68,10 @@ public class BoardPostListActivity extends BaseActivity {
         mPager.setAdapter(mAdapter);
         mPager.getCurrentItem();
 
-        mIndicator = (PageIndicator) findViewById(R.id.boards_pager_indicator);
-        mIndicator.setViewPager(mPager);
+        tabLayout.setupWithViewPager(mPager);
+        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
 
-        mIndicator.setOnPageChangeListener(new OnPageChangeListener() {
+        mPager.addOnPageChangeListener(new OnPageChangeListener() {
 
             public void onPageScrollStateChanged(int state) {
                 if (state == ViewPager.SCROLL_STATE_DRAGGING) {

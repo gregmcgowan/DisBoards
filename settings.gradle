@@ -1,1 +1,1 @@
-include ':App',':Libraries:viewpager'
+include ':App'

@@ -12,16 +12,10 @@
             android:id="@+id/toolbar"
             layout="@layout/main_toolbar_layout"/>
 
-
-    <com.viewpagerindicator.TitlePageIndicator
-            android:id="@+id/boards_pager_indicator"
-            android:padding="10dip"
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-            android:textColor="@color/lighter_grey"
-            app:selectedColor="@color/darkest_grey"
-            />
-
+    <android.support.design.widget.TabLayout
+            android:id="@+id/board_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     <android.support.v4.view.ViewPager
             android:id="@+id/boards_pager"
