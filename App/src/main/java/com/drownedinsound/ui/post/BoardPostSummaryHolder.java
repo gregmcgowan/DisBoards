@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.summarylist;
+package com.drownedinsound.ui.post;
 
 import android.view.View;
 import android.widget.TextView;

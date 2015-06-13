@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.summarylist;
+package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
@@ -32,11 +32,11 @@ import butterknife.OnClick;
  * @author Greg
  */
 @UseDagger
-public class BoardPostSummaryListActivity extends BaseActivity {
+public class BoardPostListActivity extends BaseActivity {
 
     private static final String LOGOUT_DIALOG = "LOGOUT_DIALOG";
 
-    private BoardPostSummaryListFragmentAdapter mAdapter;
+    private BoardPostListFragmentAdapter mAdapter;
 
     @InjectView(R.id.boards_pager)
     ViewPager mPager;
@@ -52,7 +52,7 @@ public class BoardPostSummaryListActivity extends BaseActivity {
 
         ButterKnife.inject(this);
 
-        mAdapter = new BoardPostSummaryListFragmentAdapter(getFragmentManager(),
+        mAdapter = new BoardPostListFragmentAdapter(getFragmentManager(),
                 DatabaseHelper.getInstance(getApplicationContext()));
 
         initialiseViewPager();
@@ -97,10 +97,10 @@ public class BoardPostSummaryListActivity extends BaseActivity {
             }
 
             private void checkIfPageNeedsUpdating(int position) {
-                BoardPostSummaryListFragment boardPostSummaryListFragment
+                BoardPostListFragment boardPostListFragment
                         = getListFragment(position);
-                if (boardPostSummaryListFragment != null) {
-                    boardPostSummaryListFragment.loadListIfNotAlready();
+                if (boardPostListFragment != null) {
+                    boardPostListFragment.loadListIfNotAlready();
                 }
             }
 
@@ -108,18 +108,18 @@ public class BoardPostSummaryListActivity extends BaseActivity {
         });
     }
 
-    private BoardPostSummaryListFragment getListFragment(int position) {
-        BoardPostSummaryListFragment boardPostSummaryListFragment = null;
+    private BoardPostListFragment getListFragment(int position) {
+        BoardPostListFragment boardPostListFragment = null;
         String fragmentName = UiUtils.makeFragmentPagerAdapterTagName(
                 R.id.boards_pager, position);
         Fragment fragment = getFragmentManager()
                 .findFragmentByTag(fragmentName);
-        if (fragment instanceof BoardPostSummaryListFragment) {
-            boardPostSummaryListFragment
-                    = (BoardPostSummaryListFragment) fragment;
+        if (fragment instanceof BoardPostListFragment) {
+            boardPostListFragment
+                    = (BoardPostListFragment) fragment;
 
         }
-        return boardPostSummaryListFragment;
+        return boardPostListFragment;
     }
 
     @OnClick(R.id.profile_button)

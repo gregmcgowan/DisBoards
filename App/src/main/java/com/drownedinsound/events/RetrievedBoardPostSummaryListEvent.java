@@ -15,13 +15,16 @@ public class RetrievedBoardPostSummaryListEvent {
 
     private boolean append;
 
+    private int uiID;
+
     public RetrievedBoardPostSummaryListEvent(
             List<BoardPost> boardPostSummaryList, BoardType boardType, boolean isCached,
-            boolean append) {
+            boolean append,  int uiID) {
         setBoardPostSummaryList(boardPostSummaryList);
         setBoardType(boardType);
         setCached(isCached);
         setAppend(append);
+        setUiID(uiID);
     }
 
     public List<BoardPost> getBoardPostSummaryList() {
@@ -57,4 +60,11 @@ public class RetrievedBoardPostSummaryListEvent {
         this.append = append;
     }
 
+    public int getUiID() {
+        return uiID;
+    }
+
+    public void setUiID(int uiID) {
+        this.uiID = uiID;
+    }
 }

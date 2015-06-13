@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.summarylist;
+package com.drownedinsound.ui.post;
 
 
 import com.drownedinsound.R;
@@ -15,8 +15,6 @@ import com.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseFragment;
 import com.drownedinsound.ui.controls.AutoScrollListView;
-import com.drownedinsound.ui.post.BoardPostActivity;
-import com.drownedinsound.ui.post.BoardPostFragment;
 import com.drownedinsound.utils.UiUtils;
 
 import android.app.FragmentTransaction;
@@ -59,7 +57,7 @@ public class FavouritesListFragment extends BaseFragment {
 
     private ArrayList<BoardPost> favouriteBoardPosts = new ArrayList<BoardPost>();
 
-    private BoardPostSummaryListAdapter adapter;
+    private BoardPostListAdapter adapter;
 
     private boolean isRequesting;
 
@@ -104,8 +102,7 @@ public class FavouritesListFragment extends BaseFragment {
         unreadDrawable = getActivity().getResources().getDrawable(
                 R.drawable.filled_blue_circle);
 
-        adapter = new BoardPostSummaryListAdapter(getActivity(),
-                R.layout.board_list_row, favouriteBoardPosts);
+        adapter = new BoardPostListAdapter(getActivity());
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

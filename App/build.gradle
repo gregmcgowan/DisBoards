@@ -92,7 +92,7 @@ dependencies {
     apt "com.squareup.dagger:dagger-compiler:1.2.2"
     compile "com.squareup.dagger:dagger:1.2.2"
 
-    compile 'com.squareup.okhttp:okhttp:2.1.0'
+    compile 'com.squareup.okhttp:okhttp:2.3.0'
     compile 'com.squareup.okio:okio:1.1.0'
     compile 'com.jakewharton:butterknife:5.1.2'
     compile 'com.jakewharton.timber:timber:2.4.1'
@@ -101,6 +101,8 @@ dependencies {
     compile 'com.commonsware.cwac:endless:1.2.3'
     compile 'com.melnykov:floatingactionbutton:1.0.6'
 
+    compile 'com.facebook.stetho:stetho-okhttp:1.1.1'
+    compile 'com.facebook.stetho:stetho:1.1.1'
     compile project(':Libraries:viewpager')
 
     compile files('libs/jericho-html-3.3.jar')

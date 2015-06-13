@@ -3,6 +3,7 @@ package com.drownedinsound.core;
 import com.drownedinsound.BuildConfig;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.utils.CrashlyticsTree;
+import com.facebook.stetho.Stetho;
 
 import android.app.Application;
 import android.content.Context;
@@ -28,6 +29,19 @@ public class DisBoardsApp extends Application {
         super.onCreate();
         buildObjectGraphAndInject();
         initialiseLogging();
+        initialiseDebuggingSettings();
+    }
+
+    private void initialiseDebuggingSettings() {
+        if(BuildConfig.DEBUG) {
+            Stetho.initialize(
+                    Stetho.newInitializerBuilder(this)
+                            .enableDumpapp(
+                    Stetho.defaultDumperPluginsProvider(this))
+                    .enableWebKitInspector(
+                            Stetho.defaultInspectorModulesProvider(this))
+                    .build());
+        }
     }
 
     private void initialiseLogging() {

@@ -1,5 +1,6 @@
 package com.drownedinsound.data.network;
 
+import com.drownedinsound.core.DisBoardsApp;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.model.Board;
@@ -12,12 +13,12 @@ import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
 import com.drownedinsound.data.network.requests.AddANewPostRunnable;
-import com.drownedinsound.data.network.requests.GetBoardPostRunnable;
-import com.drownedinsound.data.network.requests.GetBoardPostSummaryListRunnable;
-import com.drownedinsound.data.network.requests.LoginRunnable;
 import com.drownedinsound.data.network.requests.PostACommentRunnable;
 import com.drownedinsound.data.network.requests.ThisACommentRunnable;
 import com.drownedinsound.database.DatabaseHelper;
+import com.drownedinsound.data.network.requests.GetBoardPostRunnable;
+import com.drownedinsound.data.network.requests.GetBoardPostSummaryListRunnable;
+import com.drownedinsound.data.network.requests.LoginRunnable;
 import com.drownedinsound.database.DatabaseRunnable;
 import com.drownedinsound.events.RequestCompletedEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
@@ -25,17 +26,23 @@ import com.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.drownedinsound.qualifiers.ForDatabase;
 import com.drownedinsound.qualifiers.ForNetworkRequests;
 import com.drownedinsound.utils.NetworkUtils;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 
 import android.app.Application;
 import android.content.Context;
 import android.text.format.DateUtils;
+import android.util.Log;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import de.greenrobot.event.EventBus;
 import timber.log.Timber;
@@ -45,6 +52,7 @@ import timber.log.Timber;
  *
  * @author Greg
  */
+@Singleton
 public class DisApiClient {
 
     private Context applicationContext;
@@ -115,8 +123,8 @@ public class DisApiClient {
 
     }
 
-    public void getBoardPostSummaryList(int pageNumber, final Board board, boolean forceUpdate,
-            boolean updateUI) {
+    public void getBoardPostSummaryList(final int calledID, int pageNumber, final Board board,
+            boolean forceUpdate, boolean updateUI) {
         String boardListName = board
                 .getBoardType().name();
         final boolean requestIsInProgress = inProgressRequests.contains(boardListName);
@@ -125,6 +133,8 @@ public class DisApiClient {
         final boolean networkConnectionAvailable = NetworkUtils.isConnected(applicationContext);
 
         if (!requestIsInProgress) {
+            Timber.d("networkConnectionAvailable " + networkConnectionAvailable
+                    + " forceUpdate " + forceUpdate + " requestedRecently " + requestedRecently);
             if (networkConnectionAvailable
                     && (forceUpdate || !requestedRecently)) {
                 String boardUrl = board.getUrl();
@@ -133,9 +143,13 @@ public class DisApiClient {
                 }
 
                 RetrieveBoardSummaryListHandler retrieveBoardSummaryListHandler =
-                        new RetrieveBoardSummaryListHandler(applicationContext,
+                        new RetrieveBoardSummaryListHandler(calledID,
                                 board.getBoardType(),
                                 updateUI, append);
+
+                DisBoardsApp.getApplication(applicationContext)
+                        .inject(retrieveBoardSummaryListHandler);
+
                 networkRequestExecutorService.execute(
                         new GetBoardPostSummaryListRunnable(retrieveBoardSummaryListHandler,
                                 httpClient, boardUrl));
@@ -149,7 +163,7 @@ public class DisApiClient {
                         eventBus.post(
                                 new RetrievedBoardPostSummaryListEvent(cachedBoardPosts,
                                         board.getBoardType(),
-                                        !networkConnectionAvailable, append));
+                                        !networkConnectionAvailable, append, calledID));
                     }
                 });
             }
@@ -162,17 +176,15 @@ public class DisApiClient {
         BoardType type = cachedBoard.getBoardType();
         Board board = databaseHelper.getBoard(type);
         long lastFetchedTime = board.getLastFetchedTime();
-        long oneMinuteAgo = System.currentTimeMillis()
-                - (DateUtils.MINUTE_IN_MILLIS);
+        long fiveMinutesAgo = System.currentTimeMillis()
+                - (DateUtils.MINUTE_IN_MILLIS * 5);
 
-        boolean recentlyFetched = lastFetchedTime > oneMinuteAgo;
+        boolean recentlyFetched = lastFetchedTime > fiveMinutesAgo;
 
         if (DisBoardsConstants.DEBUG) {
-            Timber.d(" last fetched time =  "
-                    + lastFetchedTime
-                    + " one  minute ago =  "
-                    + oneMinuteAgo
-                    + " so it has been "
+            Timber.d("type " + type + " fetched " + (((System.currentTimeMillis() - lastFetchedTime)
+                    / 1000))
+                    + " seconds ago "
                     + (recentlyFetched ? "recently fetched"
                     : "not recently fetched"));
         }

@@ -31,7 +31,12 @@ public abstract class OkHttpAsyncResponseHandler implements Callback {
     @Inject
     EventBus eventBus;
 
+    private int uiID;
     private boolean updateUI;
+
+    public OkHttpAsyncResponseHandler(){
+
+    }
 
     public OkHttpAsyncResponseHandler(Context context) {
         if (context != null) {
@@ -58,6 +63,14 @@ public abstract class OkHttpAsyncResponseHandler implements Callback {
                 handleFailure(response.request(), e);
             }
         }
+    }
+
+    public int getUiID() {
+        return uiID;
+    }
+
+    protected void setUiID(int uiID) {
+        this.uiID = uiID;
     }
 
     public boolean isUpdateUI() {

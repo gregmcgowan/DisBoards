@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.summarylist;
+package com.drownedinsound.ui.post;
 
 import com.commonsware.cwac.endless.EndlessAdapter;
 import com.drownedinsound.R;
@@ -9,17 +9,13 @@ import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.events.FailedToPostNewThreadEvent;
-import com.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.drownedinsound.events.SentNewPostEvent;
 import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
-import com.drownedinsound.ui.base.BaseFragment;
-import com.drownedinsound.ui.controls.AutoScrollListView;
+import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.controls.SvgAnimatePathView;
-import com.drownedinsound.ui.post.BoardPostActivity;
-import com.drownedinsound.ui.post.BoardPostFragment;
-import com.drownedinsound.utils.NetworkUtils;
+import com.drownedinsound.ui.controls.AutoScrollListView;
 import com.drownedinsound.utils.SimpleAnimatorListener;
 import com.drownedinsound.utils.UiUtils;
 import com.melnykov.fab.FloatingActionButton;
@@ -32,6 +28,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,13 +41,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 /**
  * A fragment that will represent a different section of the community board
@@ -61,7 +59,8 @@ import butterknife.OnClick;
  */
 @UseEventBus
 @UseDagger
-public class BoardPostSummaryListFragment extends BaseFragment {
+public class BoardPostListFragment
+        extends BaseControllerFragment<BoardPostListController> implements BoardPostListUi {
 
     private static final String CURRENTLY_SELECTED_BOARD_POST = "currentlySelectedBoardPost";
 
@@ -69,8 +68,6 @@ public class BoardPostSummaryListFragment extends BaseFragment {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
             + "BoardListFragment";
-
-    private static final String REQUEST_ON_START = "REQUEST_ON_START";
 
     @InjectView(R.id.animated_logo_progress_bar)
     SvgAnimatePathView animatedLogo;
@@ -87,17 +84,16 @@ public class BoardPostSummaryListFragment extends BaseFragment {
     @InjectView(R.id.swipeToRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
 
+    @Inject
+    BoardPostListController boardPostListController;
+
     private Drawable readDrawable;
 
     private Drawable unreadDrawable;
 
     private String boardUrl;
 
-    private ArrayList<BoardPost> boardPostSummaries = new ArrayList<BoardPost>();
-
     private BoardPostSummaryListEndlessAdapter adapter;
-
-    private boolean requestOnStart;
 
     private Board board;
 
@@ -115,19 +111,14 @@ public class BoardPostSummaryListFragment extends BaseFragment {
 
     private int lastPageFetched;
 
-    private AtomicBoolean animatingTransiton = new AtomicBoolean(false);
-
-    public BoardPostSummaryListFragment() {
+    public BoardPostListFragment() {
     }
 
-    public static BoardPostSummaryListFragment newInstance(Board board,
-            boolean requestDataOnStart) {
-        BoardPostSummaryListFragment boardListFragment = new BoardPostSummaryListFragment();
+    public static BoardPostListFragment newInstance(Board board) {
+        BoardPostListFragment boardListFragment = new BoardPostListFragment();
 
         Bundle arguments = new Bundle();
         arguments.putParcelable(DisBoardsConstants.BOARD, board);
-        arguments.putBoolean(REQUEST_ON_START, requestDataOnStart);
-
         boardListFragment.setArguments(arguments);
         return boardListFragment;
     }
@@ -142,8 +133,6 @@ public class BoardPostSummaryListFragment extends BaseFragment {
             boardUrl = board.getUrl();
             boardType = board.getBoardType();
         }
-
-        this.requestOnStart = getArguments().getBoolean(REQUEST_ON_START);
     }
 
     @Override
@@ -166,8 +155,7 @@ public class BoardPostSummaryListFragment extends BaseFragment {
                 R.drawable.filled_blue_circle);
 
         adapter = new BoardPostSummaryListEndlessAdapter(
-                new BoardPostSummaryListAdapter(getActivity(),
-                        R.layout.board_list_row, boardPostSummaries));
+                new BoardPostListAdapter(getActivity()));
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -190,12 +178,8 @@ public class BoardPostSummaryListFragment extends BaseFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (requestOnStart && !summariesLoaded()) {
-            requestBoardSummaryPage(1, false, true);
-        }
 
         // Check to see if we have a frame in which to embed the details
-
         int currentOrientation = getResources().getConfiguration().orientation;
         dualPaneMode = UiUtils.isDualPaneMode(getActivity());
 
@@ -217,7 +201,7 @@ public class BoardPostSummaryListFragment extends BaseFragment {
                     .getParcelable(DisBoardsConstants.BOARD);
         }
 
-        if (dualPaneMode && summariesLoaded() && currentlySelectedPost != -1) {
+        if (dualPaneMode && currentlySelectedPost != -1) {
             // listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             showBoardPost(currentlySelectedPost);
         }
@@ -247,20 +231,6 @@ public class BoardPostSummaryListFragment extends BaseFragment {
         outState.putParcelable(DisBoardsConstants.BOARD, board);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        int errorTextVisibility = showNetworkConnectionErrorText() ? View.VISIBLE
-                : View.GONE;
-        connectionErrorTextView.setVisibility(errorTextVisibility);
-    }
-
-    private boolean showNetworkConnectionErrorText() {
-        boolean haveNetworkConnection = NetworkUtils
-                .isConnected(getActivity());
-        return !haveNetworkConnection && boardPostSummaries.size() == 0;
-    }
 
     @OnClick(R.id.floating_add_button)
     public void doNewPostAction() {
@@ -272,20 +242,14 @@ public class BoardPostSummaryListFragment extends BaseFragment {
     }
 
     public void showAnimatedLogoAndHideList() {
-        //  if(!animatingTransiton.get()) {
         animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
                 super.onAnimationStart(animation);
                 animatedLogo.setVisibility(View.VISIBLE);
             }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                animatingTransiton.set(false);
-            }
         });
-
+        listView.setVisibility(View.INVISIBLE);
         if (listView.getVisibility() == View.VISIBLE) {
             ObjectAnimator hideList = ObjectAnimator.ofFloat(listView, "alpha", 1f, 0f);
             hideList.addListener(new SimpleAnimatorListener() {
@@ -303,19 +267,16 @@ public class BoardPostSummaryListFragment extends BaseFragment {
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
                     animatedLogo.startAnimation();
-                    animatingTransiton.set(false);
                 }
             });
             fadeInLogo.start();
         }
-        animatingTransiton.set(true);
-        // }
+        animatedLogo.startAnimation();
     }
 
     public void hideAnimatedLogoAndShowList() {
-//        if(!animatingTransiton.get()) {
         if (animatedLogo.getVisibility() == View.VISIBLE) {
-            animatingTransiton.set(true);
+            Timber.d("Animated logo is visible");
             animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -330,20 +291,21 @@ public class BoardPostSummaryListFragment extends BaseFragment {
 
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            animatingTransiton.set(false);
-                            animatedLogo.setVisibility(View.INVISIBLE);
+                            animatedLogo.setVisibility(View.GONE);
+                            listView.setVisibility(View.VISIBLE);
                         }
                     });
                     showList.start();
                 }
+
+
             });
             animatedLogo.stopAnimationOnceFinished();
         } else {
+            Timber.d("Animated logo is not visible");
             listView.setVisibility(View.VISIBLE);
-            animatingTransiton.set(false);
+            animatedLogo.stopAnimationOnceFinished();
         }
-        //    }
     }
 
 
@@ -354,102 +316,37 @@ public class BoardPostSummaryListFragment extends BaseFragment {
     }
 
     public void doRefreshAction() {
-        requestBoardSummaryPage(1, true, false);
-    }
-
-    private boolean summariesLoaded() {
-        return boardPostSummaries != null && boardPostSummaries.size() > 0;
+        requestBoardSummaryPage(1, false, true);
     }
 
     public void loadListIfNotAlready() {
-        if (isValid()) {
-            connectionErrorTextView.setVisibility(View.GONE);
-            if (!summariesLoaded()) {
-                requestBoardSummaryPage(1, false, true);
-            } else {
-                adapter.notifyDataSetChanged();
-                hideAnimatedLogoAndShowList();
-            }
-        }
+        requestBoardSummaryPage(1, true, false);
     }
 
-    public void requestBoardSummaryPage(int page, boolean forceUpdate, boolean showProgressDialog) {
-        if (showProgressDialog) {
-            connectionErrorTextView.setVisibility(View.GONE);
-            showAnimatedLogoAndHideList();
-        }
-        getDisApiClient().getBoardPostSummaryList(page, board, forceUpdate, true);
+    public void requestBoardSummaryPage(int page, boolean showLoadingProgress,
+            boolean forceUpdate) {
+        boardPostListController
+                .requestBoardSummaryPage(this, board, page, showLoadingProgress, forceUpdate, true);
     }
-
 
     public void onEventBackgroundThread(UpdateCachedBoardPostEvent event) {
-        if (boardPostSummaries != null) {
-            BoardPost boardPostToUpdate = event.getBoardPost();
-            if (boardPostToUpdate != null) {
-                String postId = boardPostToUpdate.getId();
-                for (BoardPost boardPost : boardPostSummaries) {
-                    if (postId != null && postId.equals(boardPost.getId())) {
-                        boardPost.setLastViewedTime(boardPostToUpdate
-                                .getLastViewedTime());
-                        Log.d(TAG, "Setting post " + postId + " to "
-                                + boardPostToUpdate.getLastViewedTime());
-                    }
-                }
-            }
-        }
+        //TODO
+//        if (boardPostSummaries != null) {
+//            BoardPost boardPostToUpdate = event.getBoardPost();
+//            if (boardPostToUpdate != null) {
+//                String postId = boardPostToUpdate.getId();
+//                for (BoardPost boardPost : boardPostSummaries) {
+//                    if (postId != null && postId.equals(boardPost.getId())) {
+//                        boardPost.setLastViewedTime(boardPostToUpdate
+//                                .getLastViewedTime());
+//                        Log.d(TAG, "Setting post " + postId + " to "
+//                                + boardPostToUpdate.getLastViewedTime());
+//                    }
+//                }
+//            }
+//        }
     }
 
-    public void onEventMainThread(RetrievedBoardPostSummaryListEvent event) {
-        BoardType eventBoardType = event.getBoardType();
-        currentlySelectedPost = -1;
-        if (eventBoardType != null && eventBoardType.equals(boardType)) {
-            if (isValid()) {
-                Log.d(TAG, "Event for board type " + eventBoardType
-                        + " current board Type " + boardType);
-                List<BoardPost> summaries = event.getBoardPostSummaryList();
-                boolean append = event.isAppend();
-                if (summaries != null && summaries.size() > 0) {
-                    if (!append) {
-                        boardPostSummaries.clear();
-                        lastPageFetched = 1;
-                    } else {
-                        lastPageFetched++;
-                        // TODO may need to optimize this
-                        for (BoardPost boardPost : summaries) {
-                            if (boardPostSummaries.contains(boardPost)) {
-                                boardPostSummaries.remove(boardPost);
-                            }
-                        }
-                    }
-                    boardPostSummaries.addAll(summaries);
-                    adapter.onDataReady();
-                }
-
-                Log.d(TAG, "Updated UI for " + eventBoardType);
-                if (event.isCached()) {
-                    displayIsCachedPopup();
-                }
-                if (summariesLoaded()) {
-                    connectionErrorTextView.setVisibility(View.GONE);
-                    adapter.restartAppending();
-                } else {
-                    connectionErrorTextView.setVisibility(View.VISIBLE);
-                    adapter.stopAppending();
-                }
-                hideAnimatedLogoAndShowList();
-                if (!append) {
-                    listView.requestPositionToScreen(0, true);
-                }
-            } else {
-                Log.d(TAG, "Board type " + boardType
-                        + " was not attached to a activity");
-            }
-
-        } else {
-            Log.d(TAG, "Event for wrong board type");
-        }
-        swipeRefreshLayout.setRefreshing(false);
-    }
 
     public void onEventMainThread(SentNewPostEvent event) {
         SentNewPostState state = event.getState();
@@ -457,9 +354,8 @@ public class BoardPostSummaryListFragment extends BaseFragment {
             showAnimatedLogoAndHideList();
         } else if (state.equals(SentNewPostState.CONFIRMED)) {
             //Refresh the current list
-            requestBoardSummaryPage(1, true, false);
+            requestBoardSummaryPage(1, true, true);
         }
-
     }
 
     public void onEventMainThread(UserIsNotLoggedInEvent event) {
@@ -474,14 +370,9 @@ public class BoardPostSummaryListFragment extends BaseFragment {
     }
 
 
-    private void displayIsCachedPopup() {
-        Toast.makeText(getActivity(), "This is an cached version",
-                Toast.LENGTH_SHORT).show();
-    }
-
     private void showBoardPost(int position) {
         currentlySelectedPost = position;
-        BoardPost boardPostSummary = boardPostSummaries.get(position);
+        BoardPost boardPostSummary = adapter.getBoardPost(position);
         if (boardPostSummary != null) {
             postId = boardPostSummary.getId();
             postUrl = boardUrl + "/" + postId;
@@ -494,7 +385,7 @@ public class BoardPostSummaryListFragment extends BaseFragment {
                     boardPostFragment = BoardPostFragment
                             .newInstance(postUrl, postId, true, boardType);
                     // Execute a transaction, replacing any existing fragment
-                    // with this one inside the frame.
+                    // with this one inside the frame.x§
                     FragmentTransaction ft = getFragmentManager()
                             .beginTransaction();
                     ft.replace(R.id.board_post_details, boardPostFragment);
@@ -509,10 +400,70 @@ public class BoardPostSummaryListFragment extends BaseFragment {
         }
     }
 
+    @Override
+    public Board getBoardList() {
+        return board;
+    }
+
+    @Override
+    public void setBoardPosts(List<BoardPost> boardPosts) {
+        requestToHideLoadingView();
+        currentlySelectedPost = -1;
+        adapter.setBoardPosts(boardPosts);
+
+        swipeRefreshLayout.setRefreshing(false);
+
+        adapter.restartAppending();
+        listView.requestPositionToScreen(0, true);
+    }
+
+    @Override
+    public void appendBoardPosts(List<BoardPost> boardPosts) {
+        currentlySelectedPost = -1;
+        lastPageFetched++;
+        adapter.appendBoardPosts(boardPosts);
+        adapter.restartAppending();
+    }
+
+    @Override
+    public void showLoadingProgress(boolean show) {
+        connectionErrorTextView.setVisibility(View.GONE);
+        Timber.d("showLoadingProgress " + show);
+        if (show) {
+            requestToShowLoadingView();
+            adapter.stopAppending();
+        } else {
+            adapter.restartAppending();
+            requestToHideLoadingView();
+        }
+    }
+
+    @Override
+    public void showErrorView() {
+        Timber.d("Show Error View");
+        requestToHideLoadingView();
+        connectionErrorTextView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected BoardPostListController getController() {
+        return boardPostListController;
+    }
+
+    @Override
+    public void hideLoadingView() {
+        hideAnimatedLogoAndShowList();
+    }
+
+    @Override
+    public void showLoadingView(IBinder hideSoftKeyboardToken) {
+        showAnimatedLogoAndHideList();
+    }
+
     private class BoardPostSummaryListEndlessAdapter extends EndlessAdapter {
 
         public BoardPostSummaryListEndlessAdapter(ListAdapter wrapped) {
-            super(wrapped);
+            super(wrapped, false);
             super.setRunInBackground(false);
         }
 
@@ -543,6 +494,24 @@ public class BoardPostSummaryListFragment extends BaseFragment {
                     .findViewById(R.id.board_list_row_progress_bar);
             progressBar.setVisibility(View.VISIBLE);
             return pendingRow;
+        }
+
+        public void setBoardPosts(List<BoardPost> summaries) {
+            ((BoardPostListAdapter) getWrappedAdapter()).setBoardPosts(summaries);
+        }
+
+        public void appendBoardPosts(List<BoardPost> summaries) {
+            ((BoardPostListAdapter) getWrappedAdapter()).appendSummaries(summaries);
+            onDataReady();
+        }
+
+        public int getNumberOfPosts() {
+            return ((BoardPostListAdapter) getWrappedAdapter()).getNumberOfPosts();
+        }
+
+        public BoardPost getBoardPost(int position) {
+            return (BoardPost) ((BoardPostListAdapter) getWrappedAdapter())
+                    .getItem(position);
         }
 
     }

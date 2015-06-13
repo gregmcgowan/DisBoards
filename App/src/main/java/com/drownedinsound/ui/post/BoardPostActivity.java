@@ -96,12 +96,6 @@ public class BoardPostActivity extends BaseActivity {
         }
     }
 
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
     public void refreshMenu() {
         this.supportInvalidateOptionsMenu();
     }

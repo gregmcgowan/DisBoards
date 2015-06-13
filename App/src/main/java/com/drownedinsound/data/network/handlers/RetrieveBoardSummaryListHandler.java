@@ -1,6 +1,5 @@
 package com.drownedinsound.data.network.handlers;
 
-import com.drownedinsound.core.DisBoardsApp;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
@@ -12,9 +11,6 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.apache.http.client.HttpResponseException;
-
-import android.content.Context;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,12 +29,12 @@ public class RetrieveBoardSummaryListHandler extends
 
     private boolean append;
 
-    public RetrieveBoardSummaryListHandler(Context context,
+    public RetrieveBoardSummaryListHandler(
+            int uiID,
             BoardType boardType,
             boolean updateUI,
             boolean append) {
-        super(context);
-        DisBoardsApp.getApplication(context).inject(this);
+        setUiID(uiID);
         this.boardType = boardType;
         this.append = append;
         setUpdateUI(updateUI);
@@ -48,7 +44,7 @@ public class RetrieveBoardSummaryListHandler extends
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
         List<BoardPost> boardPostSummaries = new ArrayList<BoardPost>();
         if (DisBoardsConstants.DEBUG) {
-            Log.d(TAG, "Got response");
+            Timber.d("Got response");
         }
         if (inputStream != null) {
             BoardPostSummaryListParser parser = new BoardPostSummaryListParser(
@@ -67,7 +63,7 @@ public class RetrieveBoardSummaryListHandler extends
         if (isUpdateUI()) {
             eventBus.post(
                     new RetrievedBoardPostSummaryListEvent(boardPostSummaries,
-                            boardType, false, append));
+                            boardType, false, append,getUiID()));
         }
         eventBus.post(new RequestCompletedEvent(boardType.name()));
     }
@@ -90,11 +86,11 @@ public class RetrieveBoardSummaryListHandler extends
             if (cachedBoardPosts.size() > 0) {
                 eventBus.post(
                         new RetrievedBoardPostSummaryListEvent(cachedBoardPosts, boardType,
-                                true, append));
+                                true, append, getUiID()));
             } else {
                 eventBus.post(
-                        new RetrievedBoardPostSummaryListEvent(null, boardType,
-                                false, append));
+                        new RetrievedBoardPostSummaryListEvent(cachedBoardPosts, boardType,
+                                false, append, getUiID()));
             }
 
         }

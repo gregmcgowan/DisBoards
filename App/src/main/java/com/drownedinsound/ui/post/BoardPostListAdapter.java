@@ -1,30 +1,29 @@
-package com.drownedinsound.ui.summarylist;
+package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
-import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.BoardPost;
+import com.drownedinsound.utils.CollectionUtils;
 import com.drownedinsound.utils.UiUtils;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by gregmcgowan on 23/10/2013.
  */
-public class BoardPostSummaryListAdapter extends ArrayAdapter<BoardPost> {
+public class BoardPostListAdapter extends BaseAdapter {
 
-    private List<BoardPost> summaries;
+    private List<BoardPost> boardPosts;
 
-    private WeakReference<Context> contextWeakReference;
+    private Context context;
 
     private Drawable whiteBackgroundSelector;
 
@@ -34,16 +33,14 @@ public class BoardPostSummaryListAdapter extends ArrayAdapter<BoardPost> {
 
     private Drawable unreadDrawable;
 
-    public BoardPostSummaryListAdapter(Context context,
-            int textViewResourceId, List<BoardPost> boardPostSummaries) {
-        super(context, textViewResourceId, boardPostSummaries);
-        this.contextWeakReference = new WeakReference<Context>(context);
-        this.summaries = boardPostSummaries;
+    public BoardPostListAdapter(Context context) {
+        this.context = context;
+        this.boardPosts = new ArrayList<>();
         this.readDrawable = context.getResources().getDrawable(
                 R.drawable.white_circle_blue_outline);
         this.unreadDrawable = context.getResources().getDrawable(
                 R.drawable.filled_blue_circle);
-        this.whiteBackgroundSelector = getContext().getResources().getDrawable(
+        this.whiteBackgroundSelector = context.getResources().getDrawable(
                 R.drawable.board_list_row_selector);
         this.alternateColorSelector = context.getResources()
                 .getDrawable(R.drawable.alternate_board_list_row_selector);
@@ -51,26 +48,41 @@ public class BoardPostSummaryListAdapter extends ArrayAdapter<BoardPost> {
 
     @Override
     public int getCount() {
-        return summaries.size();
+        return boardPosts.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return boardPosts.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    public void setBoardPosts(List<BoardPost> newPosts) {
+        if (!CollectionUtils.equals(newPosts, boardPosts)) {
+            boardPosts = newPosts;
+            notifyDataSetChanged();
+        }
+    }
+
+    public void appendSummaries(List<BoardPost> boardPosts) {
+        this.boardPosts.addAll(boardPosts);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View boardPostSummaryRowView = convertView;
-        BoardPost summary = getItem(position);
+        BoardPost summary = (BoardPost)getItem(position);
         BoardPostSummaryHolder holder = null;
-        Context context = contextWeakReference.get();
-        if (context == null) {
-            Log.w(DisBoardsConstants.LOG_TAG_PREFIX,
-                    "Null context in board post summary list adapter");
-            return null;
-        }
         if (boardPostSummaryRowView == null) {
             if (context != null) {
                 LayoutInflater vi = (LayoutInflater) context
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 boardPostSummaryRowView = vi.inflate(R.layout.board_list_row,
-                        null);
+                        parent,false);
                 holder = new BoardPostSummaryHolder();
                 holder.titleTextView = (TextView) boardPostSummaryRowView
                         .findViewById(R.id.board_post_list_row_title);
@@ -139,4 +151,9 @@ public class BoardPostSummaryListAdapter extends ArrayAdapter<BoardPost> {
         }
         return boardPostSummaryRowView;
     }
+
+    public int getNumberOfPosts(){
+        return boardPosts.size();
+    }
+
 }

@@ -9,7 +9,7 @@ public class DisBoardsConstants {
 
     public static final int NETWORK_REQUEST_TIMEOUT_MS = 30000;
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String LOG_TAG_PREFIX = "Dis";
 

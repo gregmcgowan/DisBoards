@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.summarylist;
+package com.drownedinsound.ui.post;
 
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.database.DatabaseHelper;
@@ -14,11 +14,11 @@ import java.util.ArrayList;
  *
  * @author Greg
  */
-public class BoardPostSummaryListFragmentAdapter extends FragmentPagerAdapter {
+public class BoardPostListFragmentAdapter extends FragmentPagerAdapter {
 
     private ArrayList<Board> boards;
 
-    public BoardPostSummaryListFragmentAdapter(FragmentManager fm, DatabaseHelper databaseHelper) {
+    public BoardPostListFragmentAdapter(FragmentManager fm, DatabaseHelper databaseHelper) {
         super(fm);
         boards = databaseHelper.getCachedBoards();
     }
@@ -26,8 +26,7 @@ public class BoardPostSummaryListFragmentAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int item) {
         Board boardInfo = boards.get(item);
-        boolean firstPage = item == 0;
-        return BoardPostSummaryListFragment.newInstance(boardInfo, firstPage);
+        return BoardPostListFragment.newInstance(boardInfo);
     }
 
     @Override
