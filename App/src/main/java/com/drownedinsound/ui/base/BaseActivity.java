@@ -9,6 +9,7 @@ import com.drownedinsound.data.network.DisApiClient;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import java.lang.annotation.Annotation;
@@ -22,7 +23,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by gregmcgowan on 19/10/2014.
  */
-public abstract class BaseActivity extends ActionBarActivity {
+public abstract class BaseActivity extends AppCompatActivity implements Ui {
 
     protected Toolbar toolbar;
 

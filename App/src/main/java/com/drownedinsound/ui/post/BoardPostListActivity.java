@@ -5,6 +5,7 @@ import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.ui.base.BaseActivity;
+import com.drownedinsound.ui.base.BaseControllerActivity;
 import com.drownedinsound.ui.base.SimpleDialogFragment;
 import com.drownedinsound.ui.start.LoginActivity;
 import com.drownedinsound.utils.UiUtils;
@@ -32,7 +33,7 @@ import butterknife.OnClick;
  * @author Greg
  */
 @UseDagger
-public class BoardPostListActivity extends BaseActivity {
+public class BoardPostListActivity extends BaseControllerActivity<BoardPostListController> {
 
     private static final String LOGOUT_DIALOG = "LOGOUT_DIALOG";
 
@@ -46,6 +47,9 @@ public class BoardPostListActivity extends BaseActivity {
 
     @Inject
     UserSessionManager userSessionManager;
+
+    @Inject
+    BoardPostListController boardPostListController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,19 +78,7 @@ public class BoardPostListActivity extends BaseActivity {
         mPager.addOnPageChangeListener(new OnPageChangeListener() {
 
             public void onPageScrollStateChanged(int state) {
-                if (state == ViewPager.SCROLL_STATE_DRAGGING) {
-                    int currentPage = mPager.getCurrentItem();
-                    int maxPages = mAdapter.getCount();
-                    int pageToLeft = currentPage - 1;
-                    int pageToRight = currentPage + 1;
 
-                    if (pageToLeft > -1) {
-                        checkIfPageNeedsUpdating(pageToLeft);
-                    }
-                    if (pageToRight < maxPages) {
-                        checkIfPageNeedsUpdating(pageToRight);
-                    }
-                }
             }
 
             public void onPageScrolled(int arg0, float arg1, int arg2) {
@@ -163,5 +155,8 @@ public class BoardPostListActivity extends BaseActivity {
         startActivity(displayFavouritesIntent);
     }
 
-
+    @Override
+    protected BoardPostListController getController() {
+        return boardPostListController;
+    }
 }

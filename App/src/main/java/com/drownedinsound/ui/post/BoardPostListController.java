@@ -1,6 +1,7 @@
 package com.drownedinsound.ui.post;
 
 import android.content.Intent;
+import android.os.Debug;
 
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
@@ -44,7 +45,7 @@ public class BoardPostListController extends BaseUIController {
 
     @Override
     public void onPause() {
-        eventBus.unregister(this);
+
     }
 
     @Override
@@ -54,10 +55,11 @@ public class BoardPostListController extends BaseUIController {
 
     @Override
     public void onUiAttached(Ui ui) {
-        if(!eventBus.isRegistered(this)) {
-            eventBus.register(this);
+        if(ui instanceof BoardPostListActivity) {
+            if(!eventBus.isRegistered(this)) {
+                eventBus.register(this);
+            }
         }
-
 
         if(ui instanceof BoardPostListUi) {
             BoardPostListUi boardPostListUi = (BoardPostListUi) ui;
@@ -77,7 +79,9 @@ public class BoardPostListController extends BaseUIController {
 
     @Override
     public void onUiDetached(Ui ui) {
-
+        if(ui instanceof BoardPostListActivity) {
+            eventBus.unregister(this);
+        }
     }
 
     public void onEventMainThread(RetrievedBoardPostSummaryListEvent event) {

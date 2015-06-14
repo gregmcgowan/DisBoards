@@ -1,8 +1,9 @@
 package com.drownedinsound.ui.base;
+
 /**
- * Created by gregmcgowan on 22/03/15.
+ * Created by gregmcgowan on 14/06/15.
  */
-public abstract class BaseControllerFragment<C extends BaseUIController> extends BaseFragment {
+public abstract class BaseControllerActivity<C extends BaseUIController>  extends BaseActivity {
 
     protected abstract C getController();
 
@@ -25,8 +26,5 @@ public abstract class BaseControllerFragment<C extends BaseUIController> extends
         super.onDestroy();
         getController().onDestroy();
     }
-
-
-
 
 }
