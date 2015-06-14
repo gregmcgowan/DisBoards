@@ -300,7 +300,12 @@ public class BoardPostListFragment
 
 
             });
-            animatedLogo.stopAnimationOnceFinished();
+            if(animatedLogo.animationInProgress()) {
+                animatedLogo.stopAnimationOnceFinished();
+            } else {
+                animatedLogo.setVisibility(View.GONE);
+            }
+
         } else {
             Timber.d("Animated logo is not visible");
             listView.setVisibility(View.VISIBLE);

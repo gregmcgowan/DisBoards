@@ -206,7 +206,7 @@ public class SvgAnimatePathView extends View {
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    Timber.d("Continue Animation "+animate.get());
+                   // Timber.d("Continue Animation "+animate.get());
                     if(animate.get()) {
                         startAnimation();
                     }
@@ -242,11 +242,15 @@ public class SvgAnimatePathView extends View {
     }
 
     public void stopAnimationOnceFinished(){
-        if(showHidePathAnimatorSet != null) {
+        if(animationInProgress()) {
             animate.set(false);
         } else {
             Timber.d("showHidePathAnimatorSet is null");
         }
+    }
+
+    public boolean animationInProgress() {
+        return showHidePathAnimatorSet != null && showHidePathAnimatorSet.isRunning();
     }
 }
 
