@@ -8,6 +8,7 @@ import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.network.handlers.LoginResponseHandler;
 import com.drownedinsound.data.network.handlers.NewPostHandler;
+import com.drownedinsound.data.network.handlers.OkHttpAsyncResponseHandler;
 import com.drownedinsound.data.network.handlers.PostACommentHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
@@ -26,17 +27,20 @@ import com.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.drownedinsound.qualifiers.ForDatabase;
 import com.drownedinsound.qualifiers.ForNetworkRequests;
 import com.drownedinsound.utils.NetworkUtils;
+import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
 import android.app.Application;
 import android.content.Context;
 import android.text.format.DateUtils;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -55,6 +59,24 @@ import timber.log.Timber;
 @Singleton
 public class DisApiClient {
 
+    public enum RequestMethod {
+        GET(false),
+        POST(true),
+        PUT(true),
+        DELETE(false);
+
+        public final boolean hasRequestBody;
+
+        private RequestMethod(boolean hasRequestBody) {
+            this.hasRequestBody = hasRequestBody;
+        }
+    }
+
+
+    public enum REQUEST_TYPE  {
+        GET_LIST
+    }
+
     private Context applicationContext;
 
     private OkHttpClient httpClient;
@@ -69,7 +91,7 @@ public class DisApiClient {
 
     private ExecutorService dbExecutorService;
 
-    private CopyOnWriteArrayList<String> inProgressRequests;
+    private CopyOnWriteArrayList<Object> inProgressRequests;
 
     @Inject
     public DisApiClient(Application applicationContext, OkHttpClient httpClient,
@@ -123,16 +145,12 @@ public class DisApiClient {
 
     }
 
-    public void getBoardPostSummaryList(final int calledID, int pageNumber, final Board board,
+    public void getBoardPostSummaryList(Object tag, final int callerUiId, int pageNumber, final Board board,
             boolean forceUpdate, boolean updateUI) {
-        String boardListName = board
-                .getBoardType().name();
-        final boolean requestIsInProgress = inProgressRequests.contains(boardListName);
         final boolean append = pageNumber > 1;
         final boolean requestedRecently = recentlyFetched(board);
         final boolean networkConnectionAvailable = NetworkUtils.isConnected(applicationContext);
 
-        if (!requestIsInProgress) {
             Timber.d("networkConnectionAvailable " + networkConnectionAvailable
                     + " forceUpdate " + forceUpdate + " requestedRecently " + requestedRecently);
             if (networkConnectionAvailable
@@ -143,17 +161,16 @@ public class DisApiClient {
                 }
 
                 RetrieveBoardSummaryListHandler retrieveBoardSummaryListHandler =
-                        new RetrieveBoardSummaryListHandler(calledID,
+                        new RetrieveBoardSummaryListHandler(callerUiId,
                                 board.getBoardType(),
                                 updateUI, append);
 
                 DisBoardsApp.getApplication(applicationContext)
                         .inject(retrieveBoardSummaryListHandler);
 
-                networkRequestExecutorService.execute(
-                        new GetBoardPostSummaryListRunnable(retrieveBoardSummaryListHandler,
-                                httpClient, boardUrl));
-                inProgressRequests.add(boardListName);
+                makeRequest(RequestMethod.GET ,tag, boardUrl, retrieveBoardSummaryListHandler);
+
+                inProgressRequests.add(tag);
             } else {
                 dbExecutorService.execute(new DatabaseRunnable(databaseHelper) {
                     @Override
@@ -163,13 +180,14 @@ public class DisApiClient {
                         eventBus.post(
                                 new RetrievedBoardPostSummaryListEvent(cachedBoardPosts,
                                         board.getBoardType(),
-                                        !networkConnectionAvailable, append, calledID));
+                                        !networkConnectionAvailable, append, callerUiId));
                     }
                 });
             }
-        } else {
-            Timber.d("Request for " + boardListName + " is already in progress ");
-        }
+    }
+
+    public boolean requestInProgress(Object tag) {
+        return inProgressRequests.contains(tag);
     }
 
     private boolean recentlyFetched(Board cachedBoard) {
@@ -177,7 +195,7 @@ public class DisApiClient {
         Board board = databaseHelper.getBoard(type);
         long lastFetchedTime = board.getLastFetchedTime();
         long fiveMinutesAgo = System.currentTimeMillis()
-                - (DateUtils.MINUTE_IN_MILLIS * 5);
+                - (DateUtils.MINUTE_IN_MILLIS * 1);
 
         boolean recentlyFetched = lastFetchedTime > fiveMinutesAgo;
 
@@ -220,12 +238,74 @@ public class DisApiClient {
     }
 
     public void onEvent(RequestCompletedEvent requestCompletedEvent) {
-        String idenfifer = requestCompletedEvent.getIdentifier();
+        Object idenfifer = requestCompletedEvent.getIdentifier();
         Timber.d("Completed request for " + idenfifer);
         if (inProgressRequests != null && inProgressRequests.contains(idenfifer)) {
             inProgressRequests.remove(idenfifer);
         }
     }
 
+    private void makeRequest(RequestMethod requestMethod, Object tag, String url, OkHttpAsyncResponseHandler
+            okHttpAsyncResponseHandler) {
+         makeRequest(requestMethod,tag,url,null,okHttpAsyncResponseHandler);
+    }
+
+    private void makeRequest(RequestMethod requestMethod, final Object tag, String url, RequestBody requestBody,
+            final OkHttpAsyncResponseHandler okHttpAsyncResponseHandler){
+
+        Headers.Builder headerBuilder = getMandatoryDefaultHeaders();
+        Request.Builder builder = new Request.Builder().
+                headers(headerBuilder.build());
+
+        if (requestMethod.equals(RequestMethod.GET)) {
+             makeRequest(builder.get(),tag,url,okHttpAsyncResponseHandler);
+        }
+
+        if (requestMethod.equals(RequestMethod.POST)) {
+             makeRequest(builder.post(requestBody),tag,url,okHttpAsyncResponseHandler);
+        }
+
+        if (requestMethod.equals(RequestMethod.PUT)) {
+             makeRequest(builder.put(requestBody),tag,url,okHttpAsyncResponseHandler);
+        }
+
+        if (requestMethod.equals(RequestMethod.DELETE)) {
+             makeRequest(builder.delete(),tag,url,okHttpAsyncResponseHandler);
+        }
+
+    }
+
+    private void makeRequest(Request.Builder requestBuilder, final Object tag, String url,
+                    final OkHttpAsyncResponseHandler okHttpAsyncResponseHandler) {
+
+        Request request = requestBuilder.url(url).build();
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                inProgressRequests.remove(tag);
+                okHttpAsyncResponseHandler.onFailure(request,e);
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                inProgressRequests.remove(tag);
+                Timber.d("Response on "+Thread.currentThread().getName());
+                okHttpAsyncResponseHandler.onResponse(response);
+            }
+        });
+    }
+
+    protected Headers.Builder getMandatoryDefaultHeaders() {
+        Headers.Builder headerBuilder = new Headers.Builder();
+        headerBuilder.add("Cache-Control", "max-age=0");
+        headerBuilder.add("User-Agent",
+                "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11");
+        headerBuilder
+                .add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+        headerBuilder.add("Accept-Encoding", "gzip,deflate,sdch");
+        headerBuilder.add("Accept-Language", "en-US,en;q=0.8,en-GB;q=0.6");
+        headerBuilder.add("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.3");
+        return headerBuilder;
+    }
 }
 

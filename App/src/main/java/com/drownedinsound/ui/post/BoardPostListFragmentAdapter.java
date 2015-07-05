@@ -40,4 +40,8 @@ public class BoardPostListFragmentAdapter extends FragmentPagerAdapter {
         return boardInfo.getDisplayName();
     }
 
+    public Board getBoard(int position) {
+        return boards.get(position);
+    }
+
 }

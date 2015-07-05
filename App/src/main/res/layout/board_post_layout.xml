@@ -29,17 +29,14 @@
             android:textSize="@dimen/text_medium"
             android:visibility="gone"/>
 
-    <com.melnykov.fab.FloatingActionButton
+    <android.support.design.widget.FloatingActionButton
             android:id="@+id/floating_reply_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:layout_margin="16dp"
-            android:src="@drawable/ic_reply_white_24dp"
-            fab:fab_colorNormal="@color/highlighted_colour"
-            fab:fab_colorPressed="@color/pressed_dis_boards"
-            fab:fab_colorRipple="@color/highlighted_colour"/>
+            android:src="@drawable/ic_reply_white_24dp"/>
 
     <RelativeLayout
             android:id="@+id/board_post_move_to_first_or_last_comment_layout"

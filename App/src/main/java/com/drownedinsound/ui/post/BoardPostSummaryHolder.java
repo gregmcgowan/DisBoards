@@ -1,12 +1,21 @@
 package com.drownedinsound.ui.post;
 
+import com.drownedinsound.data.model.BoardPost;
+
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
 /**
  * Created by gregmcgowan on 23/10/2013.
  */
-public class BoardPostSummaryHolder {
+public class BoardPostSummaryHolder extends RecyclerView.ViewHolder {
+
+    public BoardPostSummaryHolder(View itemView) {
+        super(itemView);
+    }
+
+    public View backgroundView;
 
     public View postReadMarkerView;
 
@@ -19,5 +28,7 @@ public class BoardPostSummaryHolder {
     public TextView numberOfRepliesTextView;
 
     public TextView lastUpdatedTextView;
+
+    public BoardPost boardPost;
 
 }

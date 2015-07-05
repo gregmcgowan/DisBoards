@@ -49,8 +49,6 @@ public class BaseFragment extends Fragment implements Ui {
         loadingViewHandler = new LoadingViewHandler(new WeakReference<>(this));
         fragmentHander = new Handler();
 
-        Timber.d("Get activity = "+ (getActivity()));
-
         if (containsAnnotation(UseDagger.class) || containsAnnotation(UseEventBus.class)) {
             DisBoardsApp.getApplication(getActivity()).inject(this);
         }
@@ -79,11 +77,14 @@ public class BaseFragment extends Fragment implements Ui {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Timber.d("BaseFragment onDestroy");
         if (containsAnnotation(UseEventBus.class)) {
             if (eventBus != null) {
                 eventBus.unregister(this);
             }
         }
+        loadingViewHandler.removeMessages(MESSAGE_SHOW_LOADING_VIEW);
+        loadingViewHandler.removeMessages(MESSAGE_HIDE_LOADING_VIEW);
     }
 
 
@@ -126,7 +127,7 @@ public class BaseFragment extends Fragment implements Ui {
         return this.hashCode();
     }
 
-    private class LoadingViewHandler extends Handler {
+    private static class LoadingViewHandler extends Handler {
 
         private WeakReference<BaseFragment> baseFragmentWeakReference;
 
@@ -143,7 +144,7 @@ public class BaseFragment extends Fragment implements Ui {
                         Timber.d("Going to show loading view");
                         baseFragment.showLoadingView(baseFragment.getCloseSoftKeyboardToken());
                     } else {
-                        Timber.d("Going to hide loading view");
+                        Timber.d("Going to hide loading view has messages to view "+ hasMessages(MESSAGE_SHOW_LOADING_VIEW));
                         removeMessages(MESSAGE_SHOW_LOADING_VIEW);
                         baseFragment.hideLoadingView();
                     }

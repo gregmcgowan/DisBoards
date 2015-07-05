@@ -1,40 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:fab="http://schemas.android.com/apk/res-auto"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/board_list_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
     <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipeToRefreshLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <com.drownedinsound.ui.controls.AutoScrollListView
+        <android.support.v7.widget.RecyclerView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/board_post_summary_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:divider="@color/heading_background"
-                android:dividerHeight="0.5dip"/>
+                android:dividerHeight="0.5dip"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <include
             android:id="@+id/animated_logo_progress_bar"
             layout="@layout/animated_logo"/>
 
-
-    <com.melnykov.fab.FloatingActionButton
-            android:id="@+id/floating_add_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_add_white"
-            fab:fab_colorNormal="@color/highlighted_colour"
-            fab:fab_colorPressed="@color/pressed_dis_boards"
-            fab:fab_colorRipple="@color/highlighted_colour"/>
 
     <TextView
             android:id="@+id/board_list_connection_error_text_view"

@@ -18,7 +18,7 @@ import com.drownedinsound.ui.controls.SvgAnimatePathView;
 import com.drownedinsound.ui.controls.AutoScrollListView;
 import com.drownedinsound.utils.SimpleAnimatorListener;
 import com.drownedinsound.utils.UiUtils;
-import com.melnykov.fab.FloatingActionButton;
+
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -29,7 +29,10 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +50,6 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 import timber.log.Timber;
 
 /**
@@ -60,7 +62,8 @@ import timber.log.Timber;
 @UseEventBus
 @UseDagger
 public class BoardPostListFragment
-        extends BaseControllerFragment<BoardPostListController> implements BoardPostListUi {
+        extends BaseControllerFragment<BoardPostListController> implements BoardPostListUi,
+        BoardPostListAdapter.BoardPostListListener {
 
     private static final String CURRENTLY_SELECTED_BOARD_POST = "currentlySelectedBoardPost";
 
@@ -76,10 +79,7 @@ public class BoardPostListFragment
     TextView connectionErrorTextView;
 
     @InjectView(R.id.board_post_summary_list)
-    AutoScrollListView listView;
-
-    @InjectView(R.id.floating_add_button)
-    FloatingActionButton floatingAddButton;
+    RecyclerView listView;
 
     @InjectView(R.id.swipeToRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -93,7 +93,7 @@ public class BoardPostListFragment
 
     private String boardUrl;
 
-    private BoardPostSummaryListEndlessAdapter adapter;
+    private BoardPostListAdapter adapter;
 
     private Board board;
 
@@ -136,11 +136,20 @@ public class BoardPostListFragment
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if(animatedLogo != null) {
+            animatedLogo.stopAnimation();
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.board_list_layout, container, false);
 
         ButterKnife.inject(this, rootView);
+
         swipeRefreshLayout.setColorSchemeResources(R.color.highlighted_blue);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -154,20 +163,12 @@ public class BoardPostListFragment
         unreadDrawable = getActivity().getResources().getDrawable(
                 R.drawable.filled_blue_circle);
 
-        adapter = new BoardPostSummaryListEndlessAdapter(
-                new BoardPostListAdapter(getActivity()));
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                BoardPostSummaryHolder holder = (BoardPostSummaryHolder) view
-                        .getTag();
-                UiUtils.setBackgroundDrawable(holder.postReadMarkerView, readDrawable);
 
-                showBoardPost(position);
-            }
-        });
-        floatingAddButton.attachToListView(listView);
+        adapter = new BoardPostListAdapter(getActivity());
+        adapter.setBoardPostListListner(this);
+
+        listView.setLayoutManager(new LinearLayoutManager(listView.getContext()));
+        listView.setAdapter(adapter);
 
         animatedLogo.setSvgResource(R.raw.logo);
 
@@ -202,8 +203,8 @@ public class BoardPostListFragment
         }
 
         if (dualPaneMode && currentlySelectedPost != -1) {
-            // listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-            showBoardPost(currentlySelectedPost);
+            BoardPost boardPost = (BoardPost) adapter.getItem(currentlySelectedPost);
+            boardPostSelected(currentlySelectedPost,boardPost);
         }
 
         // TODO This does not work at the moment. SavedInstanceState always
@@ -216,7 +217,7 @@ public class BoardPostListFragment
             viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_ID, postId);
             startActivity(viewPostIntent);
         }
-
+        animatedLogo.tag = board.getDisplayName();
     }
 
     @Override
@@ -232,51 +233,24 @@ public class BoardPostListFragment
     }
 
 
-    @OnClick(R.id.floating_add_button)
-    public void doNewPostAction() {
-        Bundle newPostDetails = new Bundle();
-        newPostDetails.putParcelable(DisBoardsConstants.BOARD, board);
-
-        NewPostFragment.newInstance(newPostDetails).show(getFragmentManager(),
-                "NEW_POST_DIALOG");
-    }
-
     public void showAnimatedLogoAndHideList() {
-        animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                super.onAnimationStart(animation);
-                animatedLogo.setVisibility(View.VISIBLE);
-            }
-        });
-        listView.setVisibility(View.INVISIBLE);
+        Timber.d("Board "+board.getDisplayName() + " showAnimatedLogoAndHideList ");
         if (listView.getVisibility() == View.VISIBLE) {
-            ObjectAnimator hideList = ObjectAnimator.ofFloat(listView, "alpha", 1f, 0f);
-            hideList.addListener(new SimpleAnimatorListener() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    listView.setVisibility(View.INVISIBLE);
+                    listView.setVisibility(View.GONE);
+                    animatedLogo.setVisibility(View.VISIBLE);
+                    Timber.d("Board "+board.getDisplayName() + " start animation");
                     animatedLogo.startAnimation();
-                }
-            });
-            hideList.start();
         } else {
-            ObjectAnimator fadeInLogo = ObjectAnimator.ofFloat(animatedLogo, "alpha", 0f, 1f);
-            fadeInLogo.addListener(new SimpleAnimatorListener() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    animatedLogo.startAnimation();
-                }
-            });
-            fadeInLogo.start();
+            if(!animatedLogo.animationInProgress()) {
+                Timber.d("Board "+board.getDisplayName() + " start animation");
+                animatedLogo.startAnimation();
+            }
         }
-        animatedLogo.startAnimation();
     }
 
     public void hideAnimatedLogoAndShowList() {
+        Timber.d("Board "+ board.getDisplayName() + "hide logo and show list");
         if (animatedLogo.getVisibility() == View.VISIBLE) {
-            Timber.d("Animated logo is visible");
             animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -285,12 +259,17 @@ public class BoardPostListFragment
                         @Override
                         public void onAnimationStart(Animator animation) {
                             listView.setVisibility(View.VISIBLE);
-                            animatedLogo.setVisibility(View.VISIBLE);
 
                         }
 
                         @Override
                         public void onAnimationEnd(Animator animation) {
+                            animatedLogo.setVisibility(View.GONE);
+                            listView.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
                             animatedLogo.setVisibility(View.GONE);
                             listView.setVisibility(View.VISIBLE);
                         }
@@ -300,17 +279,12 @@ public class BoardPostListFragment
 
 
             });
-            if(animatedLogo.animationInProgress()) {
-                animatedLogo.stopAnimationOnceFinished();
-            } else {
-                animatedLogo.setVisibility(View.GONE);
-            }
-
-        } else {
-            Timber.d("Animated logo is not visible");
-            listView.setVisibility(View.VISIBLE);
             animatedLogo.stopAnimationOnceFinished();
+        } else {
+            animatedLogo.stopAnimationOnceFinished();
+            listView.setVisibility(View.VISIBLE);
         }
+
     }
 
 
@@ -375,11 +349,11 @@ public class BoardPostListFragment
     }
 
 
-    private void showBoardPost(int position) {
+    @Override
+    public void boardPostSelected(int position, BoardPost boardPost) {
         currentlySelectedPost = position;
-        BoardPost boardPostSummary = adapter.getBoardPost(position);
-        if (boardPostSummary != null) {
-            postId = boardPostSummary.getId();
+        if (boardPost != null) {
+            postId = boardPost.getId();
             postUrl = boardUrl + "/" + postId;
 
             if (dualPaneMode) {
@@ -418,27 +392,27 @@ public class BoardPostListFragment
 
         swipeRefreshLayout.setRefreshing(false);
 
-        adapter.restartAppending();
-        listView.requestPositionToScreen(0, true);
+        //adapter.restartAppending();
+        //listView.requestPositionToScreen(0, true);
     }
 
     @Override
     public void appendBoardPosts(List<BoardPost> boardPosts) {
         currentlySelectedPost = -1;
         lastPageFetched++;
-        adapter.appendBoardPosts(boardPosts);
-        adapter.restartAppending();
+        //adapter.appendBoardPosts(boardPosts);
+        //adapter.restartAppending();
     }
 
     @Override
     public void showLoadingProgress(boolean show) {
-        connectionErrorTextView.setVisibility(View.GONE);
-        Timber.d("showLoadingProgress " + show);
+        //connectionErrorTextView.setVisibility(View.GONE);
+        Timber.d("Board " + board.getDisplayName() + " showLoadingProgress " + show);
         if (show) {
             requestToShowLoadingView();
-            adapter.stopAppending();
+           // adapter.stopAppending();
         } else {
-            adapter.restartAppending();
+            //adapter.restartAppending();
             requestToHideLoadingView();
         }
     }
@@ -447,7 +421,7 @@ public class BoardPostListFragment
     public void showErrorView() {
         Timber.d("Show Error View");
         requestToHideLoadingView();
-        connectionErrorTextView.setVisibility(View.VISIBLE);
+        //connectionErrorTextView.setVisibility(View.VISIBLE);
     }
 
     @Override

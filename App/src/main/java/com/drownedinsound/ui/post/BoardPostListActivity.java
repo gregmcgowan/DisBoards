@@ -2,7 +2,9 @@ package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
+import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.UserSessionManager;
+import com.drownedinsound.data.model.Board;
 import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.ui.base.BaseActivity;
 import com.drownedinsound.ui.base.BaseControllerActivity;
@@ -15,6 +17,7 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -24,6 +27,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 /**
  * This allows the user to move between the different message boards that are
@@ -48,8 +52,13 @@ public class BoardPostListActivity extends BaseControllerActivity<BoardPostListC
     @Inject
     UserSessionManager userSessionManager;
 
+    @InjectView(R.id.floating_add_button)
+    FloatingActionButton floatingAddButton;
+
     @Inject
     BoardPostListController boardPostListController;
+
+    Board board;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +84,8 @@ public class BoardPostListActivity extends BaseControllerActivity<BoardPostListC
         tabLayout.setupWithViewPager(mPager);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
 
+        board = mAdapter.getBoard(0);
+
         mPager.addOnPageChangeListener(new OnPageChangeListener() {
 
             public void onPageScrollStateChanged(int state) {
@@ -86,7 +97,9 @@ public class BoardPostListActivity extends BaseControllerActivity<BoardPostListC
             }
 
             public void onPageSelected(int position) {
-                checkIfPageNeedsUpdating(position);
+                Timber.d("Page selected");
+                board = mAdapter.getBoard(position);
+                //checkIfPageNeedsUpdating(position);
             }
 
             private void checkIfPageNeedsUpdating(int position) {
@@ -155,6 +168,14 @@ public class BoardPostListActivity extends BaseControllerActivity<BoardPostListC
         startActivity(displayFavouritesIntent);
     }
 
+    @OnClick(R.id.floating_add_button)
+    public void doNewPostAction() {
+        Bundle newPostDetails = new Bundle();
+        newPostDetails.putParcelable(DisBoardsConstants.BOARD, board);
+
+        NewPostFragment.newInstance(newPostDetails).show(getFragmentManager(),
+                "NEW_POST_DIALOG");
+    }
     @Override
     protected BoardPostListController getController() {
         return boardPostListController;

@@ -57,6 +57,8 @@ public class SvgAnimatePathView extends View {
     private AtomicBoolean animate;
     private Animator.AnimatorListener animationListener;
 
+    public String tag;
+
     public SvgAnimatePathView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
@@ -173,11 +175,11 @@ public class SvgAnimatePathView extends View {
         this.animationListener = animationListener;
     }
 
-    public void startAnimation() {
+    public synchronized void startAnimation() {
         if(showHidePathAnimatorSet == null) {
             showHidePathAnimatorSet = new AnimatorSet();
 
-            ObjectAnimator showPathAnimation =  ObjectAnimator.ofFloat(this, "phase", 0.0f, 1.0f);
+            final ObjectAnimator showPathAnimation =  ObjectAnimator.ofFloat(this, "phase", 0.0f, 1.0f);
             showPathAnimation.addListener(new SimpleAnimatorListener(){
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -199,54 +201,56 @@ public class SvgAnimatePathView extends View {
             showHidePathAnimatorSet.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
-                    if(animationListener != null) {
+                    if (animationListener != null) {
                         animationListener.onAnimationStart(animation);
                     }
                 }
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                   // Timber.d("Continue Animation "+animate.get());
-                    if(animate.get()) {
-                        startAnimation();
+                    Timber.d("Continue Animation "+animate.get()+ " "+ tag);
+                    if (animate.get()) {
+                        showHidePathAnimatorSet.start();
                     }
-                    if(animationListener != null) {
+                    if (animationListener != null) {
                         animationListener.onAnimationEnd(animation);
                     }
                 }
 
                 @Override
                 public void onAnimationCancel(Animator animation) {
-                    if(animationListener != null) {
+                    if (animationListener != null) {
                         animationListener.onAnimationCancel(animation);
                     }
                 }
 
                 @Override
                 public void onAnimationRepeat(Animator animation) {
-                      if(animationListener != null) {
-                          animationListener.onAnimationRepeat(animation);
-                      }
+                    if (animationListener != null) {
+                        animationListener.onAnimationRepeat(animation);
+                    }
                 }
             });
+            animate.set(true);
         }
-        animate.set(true);
-        showHidePathAnimatorSet.start();
+
+        if (animate.get()) {
+            Timber.d("Staring animation "+tag);
+            showHidePathAnimatorSet.start();
+        }
     }
 
 
     public void stopAnimation(){
         if(showHidePathAnimatorSet != null) {
-            showHidePathAnimatorSet.cancel();
+            animate.set(false);
+            showHidePathAnimatorSet.end();
         }
     }
 
-    public void stopAnimationOnceFinished(){
-        if(animationInProgress()) {
-            animate.set(false);
-        } else {
-            Timber.d("showHidePathAnimatorSet is null");
-        }
+    public synchronized void stopAnimationOnceFinished(){
+        animate.set(false);
+        Timber.d("Stop animation "+tag);
     }
 
     public boolean animationInProgress() {

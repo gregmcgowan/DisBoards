@@ -5,13 +5,13 @@ package com.drownedinsound.events;
  */
 public class RequestCompletedEvent {
 
-    private String identifier;
+    private Object tag;
 
-    public RequestCompletedEvent(String identifier) {
-        this.identifier = identifier;
+    public RequestCompletedEvent(Object tag) {
+        this.tag = tag;
     }
 
-    public String getIdentifier() {
-        return identifier;
+    public Object getIdentifier() {
+        return tag;
     }
 }

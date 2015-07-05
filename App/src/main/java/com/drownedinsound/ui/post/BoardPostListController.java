@@ -1,7 +1,6 @@
 package com.drownedinsound.ui.post;
 
 import android.content.Intent;
-import android.os.Debug;
 
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
@@ -63,18 +62,25 @@ public class BoardPostListController extends BaseUIController {
 
         if(ui instanceof BoardPostListUi) {
             BoardPostListUi boardPostListUi = (BoardPostListUi) ui;
+            Timber.d("Attached UI for "+boardPostListUi.getBoardList().getDisplayName() + " id "+  getId(boardPostListUi));
             requestBoardSummaryPage(boardPostListUi,
                     boardPostListUi.getBoardList(),1,true,false,true);
         }
     }
 
-    public void requestBoardSummaryPage(BoardPostListUi boardPostListUi,Board board, int page,boolean showLoadingProgress, boolean forceUpdate, boolean updateUI) {
-        if(showLoadingProgress && page == 1) {
-          boardPostListUi.showLoadingProgress(true);
+    public void requestBoardSummaryPage(BoardPostListUi boardPostListUi,Board board, int page ,
+            boolean showLoadingProgress, boolean forceUpdate, boolean updateUI) {
+        String tag = board.getDisplayName() + "GET_LIST";
+        if(!disApiClient.requestInProgress(tag)) {
+            if(showLoadingProgress && page == 1) {
+                boardPostListUi.showLoadingProgress(true);
+            }
+            int uiId = getId(boardPostListUi);
+            Timber.d("Going to update id "+ uiId + " for board "+board.getDisplayName());
+            disApiClient.getBoardPostSummaryList(tag, uiId, page, board, forceUpdate, updateUI);
+        } else {
+            Timber.d("Request for "+board.getDisplayName() + " already in progress");
         }
-        int id = getId(boardPostListUi);
-        Timber.d("Going to update id "+id);
-        disApiClient.getBoardPostSummaryList(id, page, board, forceUpdate, updateUI);
     }
 
     @Override
@@ -82,14 +88,18 @@ public class BoardPostListController extends BaseUIController {
         if(ui instanceof BoardPostListActivity) {
             eventBus.unregister(this);
         }
+        if(ui instanceof BoardPostListUi) {
+            Timber.d("BoardPostListUi detached "+ ((BoardPostListUi)ui).getBoardList().getDisplayName());
+            ((BoardPostListUi)ui).showLoadingProgress(false);
+        }
     }
 
     public void onEventMainThread(RetrievedBoardPostSummaryListEvent event) {
-       int callingID = event.getUiID();
+       int callingID = event.getUiId();
 
        BoardPostListUi boardPostListUi = (BoardPostListUi) findUi(callingID);
        if(boardPostListUi != null) {
-           Timber.d("Updated UI for " + event.getBoardType() + " if "+ callingID);
+           Timber.d("Updated UI for " + event.getBoardType() + " with id "+ callingID);
            List<BoardPost> boardPosts = event.getBoardPostSummaryList();
            if(boardPosts.size() > 0 ) {
                if(!event.isAppend()) {
@@ -100,6 +110,8 @@ public class BoardPostListController extends BaseUIController {
            } else {
               boardPostListUi.showErrorView();
            }
+       } else {
+           Timber.d("Could not find ui for "+event.getBoardType());
        }
     }
 }

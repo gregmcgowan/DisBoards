@@ -22,6 +22,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -75,12 +77,12 @@ public class FavouritesListFragment extends BaseFragment {
     ProgressBar progressBar;
 
     protected
-    @InjectView(R.id.board_list_connection_error_text_view)
+    //@InjectView(R.id.board_list_connection_error_text_view)
     TextView connectionErrorTextView;
 
     protected
     @InjectView(R.id.board_post_summary_list)
-    AutoScrollListView listView;
+    RecyclerView boardPostList;
 
     public FavouritesListFragment() {
     }
@@ -102,18 +104,20 @@ public class FavouritesListFragment extends BaseFragment {
         unreadDrawable = getActivity().getResources().getDrawable(
                 R.drawable.filled_blue_circle);
 
-        adapter = new BoardPostListAdapter(getActivity());
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View rowView, int position, long id) {
-                BoardPostSummaryHolder holder = (BoardPostSummaryHolder) rowView
-                        .getTag();
-                UiUtils.setBackgroundDrawable(holder.postReadMarkerView, readDrawable);
 
-                showBoardPost(position);
-            }
-        });
+        adapter = new BoardPostListAdapter(getActivity());
+        boardPostList.setLayoutManager(new LinearLayoutManager(boardPostList.getContext()));
+        boardPostList.setAdapter(adapter);
+//        boardPostList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View rowView, int position, long id) {
+//                BoardPostSummaryHolder holder = (BoardPostSummaryHolder) rowView
+//                        .getTag();
+//                UiUtils.setBackgroundDrawable(holder.postReadMarkerView, readDrawable);
+//
+//                showBoardPost(position);
+//            }
+//        });
         if (!favouritesLoaded()) {
             getFavourites();
         }
@@ -205,7 +209,7 @@ public class FavouritesListFragment extends BaseFragment {
         int progressBarVisiblity = visible ? View.VISIBLE : View.INVISIBLE;
         int listVisibility = visible ? View.INVISIBLE : View.VISIBLE;
         progressBar.setVisibility(progressBarVisiblity);
-        listView.setVisibility(listVisibility);
+        boardPostList.setVisibility(listVisibility);
     }
 
     public void onEventMainThread(RetrievedFavouritesEvent event) {
@@ -216,7 +220,7 @@ public class FavouritesListFragment extends BaseFragment {
             connectionErrorTextView.setVisibility(View.VISIBLE);
 
         }
-        listView.postDelayed(new Runnable() {
+        boardPostList.postDelayed(new Runnable() {
             @Override
             public void run() {
                 setProgressBarVisiblity(false);
