@@ -20,8 +20,7 @@ import java.io.InputStream;
 
 public class LoginResponseHandler extends OkHttpAsyncResponseHandler {
 
-    public LoginResponseHandler(Context context) {
-        super(context);
+    public LoginResponseHandler() {
     }
 
     @Override

@@ -18,8 +18,6 @@ import com.drownedinsound.data.network.requests.PostACommentRunnable;
 import com.drownedinsound.data.network.requests.ThisACommentRunnable;
 import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.data.network.requests.GetBoardPostRunnable;
-import com.drownedinsound.data.network.requests.GetBoardPostSummaryListRunnable;
-import com.drownedinsound.data.network.requests.LoginRunnable;
 import com.drownedinsound.database.DatabaseRunnable;
 import com.drownedinsound.events.RequestCompletedEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
@@ -38,7 +36,6 @@ import com.squareup.okhttp.Response;
 import android.app.Application;
 import android.content.Context;
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
@@ -113,9 +110,17 @@ public class DisApiClient {
     }
 
     public void loginUser(final String username, final String password) {
-        networkRequestExecutorService.execute(
-                new LoginRunnable(httpClient, new LoginResponseHandler(applicationContext),
-                        username, password));
+        RequestBody requestBody = new FormEncodingBuilder().add("user_session[username]", username)
+                .add("user_session[password]", password)
+                .add("user_session[remember_me]", "1")
+                .add("return_to", UrlConstants.SOCIAL_URL)
+                .add("commit", "Go!*").build();
+        Request.Builder requestBuilder = new Request.Builder();
+
+        LoginResponseHandler loginResponseHandler = new LoginResponseHandler();
+        DisBoardsApp.getApplication(applicationContext).inject(loginResponseHandler);
+
+        makeRequest(RequestMethod.POST,"LOGIN",UrlConstants.LOGIN_URL,requestBody,loginResponseHandler);
     }
 
     public void getBoardPost(String boardPostUrl, final String boardPostId, BoardType boardType) {
@@ -257,22 +262,15 @@ public class DisApiClient {
         Request.Builder builder = new Request.Builder().
                 headers(headerBuilder.build());
 
-        if (requestMethod.equals(RequestMethod.GET)) {
+        if (RequestMethod.GET.equals(requestMethod)) {
              makeRequest(builder.get(),tag,url,okHttpAsyncResponseHandler);
-        }
-
-        if (requestMethod.equals(RequestMethod.POST)) {
+        } else if (RequestMethod.POST.equals(requestMethod)) {
              makeRequest(builder.post(requestBody),tag,url,okHttpAsyncResponseHandler);
-        }
-
-        if (requestMethod.equals(RequestMethod.PUT)) {
+        } else if (RequestMethod.PUT.equals(requestMethod)) {
              makeRequest(builder.put(requestBody),tag,url,okHttpAsyncResponseHandler);
+        }  else if (RequestMethod.DELETE.equals(requestMethod)) {
+            makeRequest(builder.delete(),tag,url,okHttpAsyncResponseHandler);
         }
-
-        if (requestMethod.equals(RequestMethod.DELETE)) {
-             makeRequest(builder.delete(),tag,url,okHttpAsyncResponseHandler);
-        }
-
     }
 
     private void makeRequest(Request.Builder requestBuilder, final Object tag, String url,
