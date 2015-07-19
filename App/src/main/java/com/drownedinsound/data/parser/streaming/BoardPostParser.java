@@ -33,7 +33,7 @@ public class BoardPostParser extends StreamingParser {
 
     private static final String EDITORIAL_CLASS = "editorial";
 
-    private static final boolean DEBUG_PARSER = true;
+    private static final boolean DEBUG_PARSER = false;
 
     private static final String COMMENT_CLASS = "comment";
 

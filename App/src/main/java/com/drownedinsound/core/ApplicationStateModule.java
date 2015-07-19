@@ -12,9 +12,9 @@ import com.drownedinsound.ui.post.PostReplyFragment;
 import com.drownedinsound.ui.start.LoginActivity;
 import com.drownedinsound.ui.start.StartActivity;
 import com.drownedinsound.ui.post.BoardPostListActivity;
-import com.drownedinsound.ui.post.BoardPostListFragment;
-import com.drownedinsound.ui.post.FavouritesListFragment;
-import com.drownedinsound.ui.post.NewPostFragment;
+import com.drownedinsound.ui.postList.BoardPostListFragment;
+import com.drownedinsound.ui.favourites.FavouritesListFragment;
+import com.drownedinsound.ui.postList.NewPostFragment;
 import com.squareup.okhttp.OkHttpClient;
 
 import android.content.SharedPreferences;

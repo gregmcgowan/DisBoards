@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.post;
+package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.database.DatabaseHelper;

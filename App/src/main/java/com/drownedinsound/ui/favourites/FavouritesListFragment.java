@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.post;
+package com.drownedinsound.ui.favourites;
 
 
 import com.drownedinsound.R;
@@ -14,7 +14,9 @@ import com.drownedinsound.events.RetrievedFavouritesEvent;
 import com.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseFragment;
-import com.drownedinsound.ui.controls.AutoScrollListView;
+import com.drownedinsound.ui.post.BoardPostActivity;
+import com.drownedinsound.ui.post.BoardPostFragment;
+import com.drownedinsound.ui.postList.BoardPostListAdapter;
 import com.drownedinsound.utils.UiUtils;
 
 import android.app.FragmentTransaction;
@@ -29,7 +31,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;

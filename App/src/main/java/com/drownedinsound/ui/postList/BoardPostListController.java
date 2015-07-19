@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.post;
+package com.drownedinsound.ui.postList;
 
 import android.content.Intent;
 
@@ -9,6 +9,7 @@ import com.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.drownedinsound.qualifiers.ForDatabase;
 import com.drownedinsound.ui.base.BaseUIController;
 import com.drownedinsound.ui.base.Ui;
+import com.drownedinsound.ui.post.BoardPostListActivity;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;

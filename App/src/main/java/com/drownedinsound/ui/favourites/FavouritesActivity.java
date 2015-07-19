@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.post;
+package com.drownedinsound.ui.favourites;
 
 import com.drownedinsound.R;
 import com.drownedinsound.ui.base.BaseActivity;
