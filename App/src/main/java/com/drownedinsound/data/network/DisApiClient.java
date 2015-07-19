@@ -15,10 +15,8 @@ import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
 import com.drownedinsound.data.network.requests.AddANewPostRunnable;
 import com.drownedinsound.data.network.requests.PostACommentRunnable;
-import com.drownedinsound.data.network.requests.ThisACommentRunnable;
 import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.database.DatabaseRunnable;
-import com.drownedinsound.events.RequestCompletedEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
 import com.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.drownedinsound.qualifiers.ForDatabase;
@@ -104,8 +102,6 @@ public class DisApiClient {
         this.networkRequestExecutorService = networkExecutorService;
         this.dbExecutorService = dbExecutorService;
         this.inProgressRequests = new CopyOnWriteArrayList<>();
-
-        eventBus.register(this);
     }
 
     public void loginUser(final String username, final String password) {
@@ -193,10 +189,6 @@ public class DisApiClient {
             }
     }
 
-    public boolean requestInProgress(Object tag) {
-        return inProgressRequests.contains(tag);
-    }
-
     private boolean recentlyFetched(Board cachedBoard) {
         BoardType type = cachedBoard.getBoardType();
         Board board = databaseHelper.getBoard(type);
@@ -221,9 +213,14 @@ public class DisApiClient {
             BoardType boardType) {
         ThisACommentHandler thisACommentHandler = new ThisACommentHandler(applicationContext,
                 boardPostId, boardType);
-        networkRequestExecutorService.execute(
-                new ThisACommentRunnable(boardPostUrl, commentId, thisACommentHandler, httpClient));
+
+        String fullUrl = boardPostUrl + "/" + commentId + "/this";
+        Timber.d("Going to this with  =" + fullUrl);
+
+        String tag = "THIS" +boardPostId;
+        makeRequest(RequestMethod.GET, tag, fullUrl,thisACommentHandler);
     }
+
 
     public void addNewPost(Board board, String title, String content) {
         NewPostHandler newPostHandler = new NewPostHandler(applicationContext, board);
@@ -242,14 +239,6 @@ public class DisApiClient {
         networkRequestExecutorService.execute(
                 new PostACommentRunnable(postACommentHandler, httpClient, boardPostId, commentId,
                         title, content, authToken));
-    }
-
-    public void onEvent(RequestCompletedEvent requestCompletedEvent) {
-        Object idenfifer = requestCompletedEvent.getIdentifier();
-        Timber.d("Completed request for " + idenfifer);
-        if (inProgressRequests != null && inProgressRequests.contains(idenfifer)) {
-            inProgressRequests.remove(idenfifer);
-        }
     }
 
     private void makeRequest(RequestMethod requestMethod, Object tag, String url, OkHttpAsyncResponseHandler
@@ -295,6 +284,10 @@ public class DisApiClient {
                 okHttpAsyncResponseHandler.onResponse(response);
             }
         });
+    }
+
+    public boolean requestInProgress(Object tag) {
+        return inProgressRequests.contains(tag);
     }
 
     protected Headers.Builder getMandatoryDefaultHeaders() {
