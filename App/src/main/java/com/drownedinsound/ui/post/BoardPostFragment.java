@@ -22,7 +22,6 @@ import com.drownedinsound.ui.controls.AutoScrollListView;
 import com.drownedinsound.ui.controls.SvgAnimatePathView;
 import com.drownedinsound.utils.SimpleAnimatorListener;
 import com.drownedinsound.utils.UiUtils;
-import com.melnykov.fab.FloatingActionButton;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -31,6 +30,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -162,14 +162,14 @@ public class BoardPostFragment extends BaseFragment {
                     }
 
                 });
-        floatingReplyButton
-                .attachToListView(commentsList, new FloatingActionButton.FabOnScrollListener() {
-                    @Override
-                    public void onScrollStateChanged(AbsListView view, int scrollState) {
-                        super.onScrollStateChanged(view, scrollState);
-                        displayScrollToHiddenCommentOption(false);
-                    }
-                });
+//        floatingReplyButton
+//                .attachToListView(commentsList, new FloatingActionButton.FabOnScrollListener() {
+//                    @Override
+//                    public void onScrollStateChanged(AbsListView view, int scrollState) {
+//                        super.onScrollStateChanged(view, scrollState);
+//                        displayScrollToHiddenCommentOption(false);
+//                    }
+//                });
 
         animatedLogo.setSvgResource(R.raw.logo);
         return rootView;
@@ -179,6 +179,15 @@ public class BoardPostFragment extends BaseFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initialise(savedInstanceState);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if(animatedLogo != null) {
+            animatedLogo.stopAnimation();
+        }
     }
 
     private void initialise(Bundle savedInstanceState) {
@@ -256,7 +265,7 @@ public class BoardPostFragment extends BaseFragment {
                     hideAnimatedLogoAndShowList(new OnListShownHandler() {
                         @Override
                         public void doOnListShownAction() {
-                            floatingReplyButton.show(true);
+                            //floatingReplyButton.show(true);
                         }
                     });
                 }
@@ -327,7 +336,7 @@ public class BoardPostFragment extends BaseFragment {
 
     public void showAnimatedLogoAndHideList() {
         // if(!animatingTransiton.get()) {
-        floatingReplyButton.hide(true);
+       // floatingReplyButton.hide(true);
         animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {

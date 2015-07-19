@@ -249,11 +249,13 @@ public class BoardPostListFragment
     }
 
     public void hideAnimatedLogoAndShowList() {
-        Timber.d("Board "+ board.getDisplayName() + "hide logo and show list");
+        Timber.d("Board "+ board.getDisplayName() + " hide logo and show list");
         if (animatedLogo.getVisibility() == View.VISIBLE) {
+            Timber.d("Board "+ board.getDisplayName() + " fade out animated logo");
             animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
+                    Timber.d("Board "+ board.getDisplayName() + " Animation end");
                     ObjectAnimator showList = ObjectAnimator.ofFloat(listView, "alpha", 0f, 1f);
                     showList.addListener(new SimpleAnimatorListener() {
                         @Override
@@ -282,6 +284,7 @@ public class BoardPostListFragment
             animatedLogo.stopAnimationOnceFinished();
         } else {
             animatedLogo.stopAnimationOnceFinished();
+            animatedLogo.setVisibility(View.GONE);
             listView.setVisibility(View.VISIBLE);
         }
 
