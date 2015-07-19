@@ -18,6 +18,7 @@ import com.drownedinsound.ui.post.BoardPostFragment;
 import com.drownedinsound.ui.post.BoardPostListFragment;
 import com.drownedinsound.ui.post.NewPostFragment;
 import com.drownedinsound.ui.post.PostReplyFragment;
+import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -98,10 +99,11 @@ public class DataModule {
 
     private OkHttpClient createOkHttpClient(Application app) {
         OkHttpClient client = new OkHttpClient();
-        //client.networkInterceptors().add(new StethoInterceptor());
+        client.networkInterceptors().add(new StethoInterceptor());
         client.setConnectTimeout(10, TimeUnit.SECONDS);
         client.setReadTimeout(5, TimeUnit.SECONDS);
         client.setConnectTimeout(5, TimeUnit.SECONDS);
+
         // Install an HTTP cache in the application cache directory.
 
         File cacheDir = new File(app.getCacheDir(), "http");
