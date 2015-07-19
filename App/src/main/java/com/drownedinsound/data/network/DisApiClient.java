@@ -17,7 +17,6 @@ import com.drownedinsound.data.network.requests.AddANewPostRunnable;
 import com.drownedinsound.data.network.requests.PostACommentRunnable;
 import com.drownedinsound.data.network.requests.ThisACommentRunnable;
 import com.drownedinsound.database.DatabaseHelper;
-import com.drownedinsound.data.network.requests.GetBoardPostRunnable;
 import com.drownedinsound.database.DatabaseRunnable;
 import com.drownedinsound.events.RequestCompletedEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
@@ -115,7 +114,6 @@ public class DisApiClient {
                 .add("user_session[remember_me]", "1")
                 .add("return_to", UrlConstants.SOCIAL_URL)
                 .add("commit", "Go!*").build();
-        Request.Builder requestBuilder = new Request.Builder();
 
         LoginResponseHandler loginResponseHandler = new LoginResponseHandler();
         DisBoardsApp.getApplication(applicationContext).inject(loginResponseHandler);
@@ -123,16 +121,22 @@ public class DisApiClient {
         makeRequest(RequestMethod.POST,"LOGIN",UrlConstants.LOGIN_URL,requestBody,loginResponseHandler);
     }
 
+    private void inject(Object object){
+        DisBoardsApp.getApplication(applicationContext).inject(object);
+    }
+
     public void getBoardPost(String boardPostUrl, final String boardPostId, BoardType boardType) {
         if (NetworkUtils.isConnected(applicationContext)) {
-            boolean requestIsInProgress = inProgressRequests.contains(boardPostId);
+            String tag = "GET_BOARD_POST_" + boardPostId;
+
+            boolean requestIsInProgress = inProgressRequests.contains(tag);
             if (!requestIsInProgress) {
                 RetrieveBoardPostHandler retrieveBoardPostHandler = new
-                        RetrieveBoardPostHandler(applicationContext, boardPostId, boardType, true);
-                networkRequestExecutorService.execute(
-                        new GetBoardPostRunnable(retrieveBoardPostHandler, httpClient,
-                                boardPostUrl));
-                inProgressRequests.add(boardPostId);
+                        RetrieveBoardPostHandler (boardPostId, boardType, true);
+                inject(retrieveBoardPostHandler);
+
+                makeRequest(RequestMethod.GET,tag,boardPostUrl,retrieveBoardPostHandler);
+
             } else {
                 Timber.d("Board post " + boardPostId + " has already been requested");
             }
@@ -170,12 +174,10 @@ public class DisApiClient {
                                 board.getBoardType(),
                                 updateUI, append);
 
-                DisBoardsApp.getApplication(applicationContext)
-                        .inject(retrieveBoardSummaryListHandler);
+                inject(retrieveBoardSummaryListHandler);
 
                 makeRequest(RequestMethod.GET ,tag, boardUrl, retrieveBoardSummaryListHandler);
 
-                inProgressRequests.add(tag);
             } else {
                 dbExecutorService.execute(new DatabaseRunnable(databaseHelper) {
                     @Override
@@ -275,6 +277,8 @@ public class DisApiClient {
 
     private void makeRequest(Request.Builder requestBuilder, final Object tag, String url,
                     final OkHttpAsyncResponseHandler okHttpAsyncResponseHandler) {
+
+        inProgressRequests.add(tag);
 
         Request request = requestBuilder.url(url).build();
         httpClient.newCall(request).enqueue(new Callback() {

@@ -28,9 +28,8 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
 
     private BoardType boardPostType;
 
-    public RetrieveBoardPostHandler(Context context, String boardPostId, BoardType boardType,
+    public RetrieveBoardPostHandler(String boardPostId, BoardType boardType,
             boolean updateUI) {
-        super(context);
         this.boardPostId = boardPostId;
         this.boardPostType = boardType;
         setUpdateUI(updateUI);
@@ -50,9 +49,7 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
                 boardPost.setFavourited(exisitingBoardPost.isFavourited());
             }
             boardPost.setNumberOfTimesRead(numberOfTimesRead);
-            if (boardPost != null) {
-                databaseHelper.setBoardPost(boardPost);
-            }
+            databaseHelper.setBoardPost(boardPost);
         }
         if (isUpdateUI()) {
             eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true));

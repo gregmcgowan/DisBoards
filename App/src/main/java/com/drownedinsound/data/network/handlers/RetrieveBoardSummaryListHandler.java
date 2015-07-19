@@ -92,9 +92,7 @@ public class RetrieveBoardSummaryListHandler extends
                         new RetrievedBoardPostSummaryListEvent(cachedBoardPosts, boardType,
                                 false, append, getUiID()));
             }
-
         }
-        eventBus.post(new RequestCompletedEvent(boardType.name()));
     }
 
 }
