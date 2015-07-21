@@ -8,6 +8,7 @@ import com.drownedinsound.events.LoginResponseEvent;
 import com.drownedinsound.events.LoginSucceededEvent;
 import com.drownedinsound.events.LurkEvent;
 import com.drownedinsound.ui.base.BaseActivity;
+import com.drownedinsound.ui.postList.BoardPostListParentActivity;
 import com.drownedinsound.utils.UiUtils;
 
 import android.content.Intent;
@@ -59,7 +60,7 @@ public class LoginActivity extends BaseActivity {
 
     private void goToMainActivity() {
         Intent startMainActivityIntent = new Intent(this,
-                BoardPostListActivity.class);
+                BoardPostListParentActivity.class);
         startActivity(startMainActivityIntent);
         finish();
     }
@@ -132,7 +133,7 @@ public class LoginActivity extends BaseActivity {
         if (loginSucceeded) {
             eventBus.post(new LoginSucceededEvent());
             Intent startMainActivityIntent = new Intent(this,
-                    BoardPostListActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    BoardPostListParentActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(startMainActivityIntent);
             finish();
         } else {
