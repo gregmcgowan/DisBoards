@@ -8,7 +8,6 @@ import com.drownedinsound.events.LoginResponseEvent;
 import com.drownedinsound.events.LoginSucceededEvent;
 import com.drownedinsound.events.LurkEvent;
 import com.drownedinsound.ui.base.BaseActivity;
-import com.drownedinsound.ui.post.BoardPostListActivity;
 import com.drownedinsound.utils.UiUtils;
 
 import android.content.Intent;

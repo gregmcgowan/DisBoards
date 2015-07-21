@@ -9,9 +9,9 @@ import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.database.DatabaseService;
 import com.drownedinsound.ui.post.BoardPostFragment;
 import com.drownedinsound.ui.post.PostReplyFragment;
+import com.drownedinsound.ui.postList.BoardPostListParentActivity;
 import com.drownedinsound.ui.start.LoginActivity;
 import com.drownedinsound.ui.start.StartActivity;
-import com.drownedinsound.ui.post.BoardPostListActivity;
 import com.drownedinsound.ui.postList.BoardPostListFragment;
 import com.drownedinsound.ui.favourites.FavouritesListFragment;
 import com.drownedinsound.ui.postList.NewPostFragment;
@@ -39,7 +39,7 @@ import de.greenrobot.event.EventBus;
                 DatabaseService.class,
                 BoardPostFragment.class,
                 BoardPostListFragment.class,
-                BoardPostListActivity.class,
+                BoardPostListParentActivity.class,
                 LoginActivity.class,
                 StartActivity.class,
                 PostReplyFragment.class,

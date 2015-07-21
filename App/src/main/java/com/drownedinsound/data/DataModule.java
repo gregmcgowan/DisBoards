@@ -11,8 +11,8 @@ import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.database.DatabaseService;
 import com.drownedinsound.qualifiers.ForDatabase;
 import com.drownedinsound.qualifiers.ForNetworkRequests;
+import com.drownedinsound.ui.postList.BoardPostListParentActivity;
 import com.drownedinsound.ui.start.LoginActivity;
-import com.drownedinsound.ui.post.BoardPostListActivity;
 import com.drownedinsound.ui.start.StartActivity;
 import com.drownedinsound.ui.post.BoardPostFragment;
 import com.drownedinsound.ui.postList.BoardPostListFragment;
@@ -49,7 +49,7 @@ import static android.content.Context.MODE_PRIVATE;
                 DatabaseService.class,
                 StartActivity.class,
                 LoginActivity.class,
-                BoardPostListActivity.class,
+                BoardPostListParentActivity.class,
                 BoardPostFragment.class,
                 BoardPostListFragment.class,
                 PostReplyFragment.class,

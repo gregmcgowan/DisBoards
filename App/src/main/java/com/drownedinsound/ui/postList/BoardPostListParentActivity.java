@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.post;
+package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
 import com.drownedinsound.annotations.UseDagger;
@@ -41,7 +41,7 @@ import timber.log.Timber;
  * @author Greg
  */
 @UseDagger
-public class BoardPostListActivity extends BaseControllerActivity<BoardPostListController> {
+public class BoardPostListParentActivity extends BaseControllerActivity<BoardPostListController> implements  BoardPostListParentUi {
 
     private static final String LOGOUT_DIALOG = "LOGOUT_DIALOG";
 
@@ -103,7 +103,7 @@ public class BoardPostListActivity extends BaseControllerActivity<BoardPostListC
             public void onPageSelected(int position) {
                 Timber.d("Page selected");
                 board = mAdapter.getBoard(position);
-                //checkIfPageNeedsUpdating(position);
+                boardPostListController.handlePageSelected(position);
             }
 
             private void checkIfPageNeedsUpdating(int position) {
@@ -183,5 +183,10 @@ public class BoardPostListActivity extends BaseControllerActivity<BoardPostListC
     @Override
     protected BoardPostListController getController() {
         return boardPostListController;
+    }
+
+    @Override
+    public boolean boardPostListShown(BoardPostListUi boardPostListUi) {
+        return mPager.getCurrentItem() == boardPostListUi.getPageIndex();
     }
 }

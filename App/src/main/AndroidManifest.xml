@@ -15,7 +15,7 @@
         <service android:name=".database.DatabaseService"/>
 
         <activity android:name=".ui.start.LoginActivity" android:label=""/>
-        <activity android:name=".ui.post.BoardPostListActivity" android:label=""/>
+        <activity android:name=".ui.postList.BoardPostListParentActivity" android:label=""/>
         <activity android:name=".ui.post.BoardPostActivity" android:label=""/>
         <activity android:name=".ui.favourites.FavouritesActivity" android:label="Favourite Posts"
                   android:icon="@null"/>

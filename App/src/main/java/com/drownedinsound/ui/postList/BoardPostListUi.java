@@ -16,5 +16,6 @@ public interface BoardPostListUi extends Ui {
      void appendBoardPosts(List<BoardPost> boardPosts);
      void showLoadingProgress(boolean show);
      void showErrorView();
+     int  getPageIndex();
 
 }

@@ -1,11 +1,10 @@
 package com.drownedinsound.ui.base;
 
-import android.app.Activity;
 import android.content.Intent;
+
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import timber.log.Timber;
 
 /**
  * Created by gregmcgowan on 22/03/15.
@@ -25,17 +24,7 @@ public abstract class BaseUIController {
 
     public synchronized final void detachUi(Ui ui) {
         onUiDetached(ui);
-
         mUis.remove(ui);
-
-        if (ui instanceof Activity) {
-            Activity activity = (Activity) ui;
-            if (activity.isFinishing()) {
-                Timber.d("Activity is finishing");
-            } else {
-                Timber.d("Activity is not finishing");
-            }
-        }
     }
 
     protected int getId(Ui ui) {
@@ -51,15 +40,18 @@ public abstract class BaseUIController {
         return null;
     }
 
-    protected Activity getActivityUI() {
+    protected Set<Ui> getUis(){
+        return Collections.unmodifiableSet(mUis);
+    }
+
+    protected <T extends  Ui> T findUi(Class<T> uiClss) {
         for (Ui ui : mUis) {
-            if (ui instanceof Activity) {
-                return (Activity) ui;
+            if(uiClss.isInstance(ui)) {
+                return (T) ui;
             }
         }
         return null;
     }
-
 
     public abstract void init(Intent intent);
 

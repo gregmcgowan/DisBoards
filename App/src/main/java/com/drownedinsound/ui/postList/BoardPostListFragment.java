@@ -427,6 +427,11 @@ public class BoardPostListFragment
     }
 
     @Override
+    public int getPageIndex() {
+        return board.getPageIndex();
+    }
+
+    @Override
     protected BoardPostListController getController() {
         return boardPostListController;
     }

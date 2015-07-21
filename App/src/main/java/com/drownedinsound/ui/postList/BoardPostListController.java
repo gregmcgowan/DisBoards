@@ -9,9 +9,9 @@ import com.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.drownedinsound.qualifiers.ForDatabase;
 import com.drownedinsound.ui.base.BaseUIController;
 import com.drownedinsound.ui.base.Ui;
-import com.drownedinsound.ui.post.BoardPostListActivity;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
@@ -55,7 +55,7 @@ public class BoardPostListController extends BaseUIController {
 
     @Override
     public void onUiAttached(Ui ui) {
-        if(ui instanceof BoardPostListActivity) {
+        if(ui instanceof BoardPostListParentUi) {
             if(!eventBus.isRegistered(this)) {
                 eventBus.register(this);
             }
@@ -63,10 +63,44 @@ public class BoardPostListController extends BaseUIController {
 
         if(ui instanceof BoardPostListUi) {
             BoardPostListUi boardPostListUi = (BoardPostListUi) ui;
-            Timber.d("Attached UI for "+boardPostListUi.getBoardList().getDisplayName() + " id "+  getId(boardPostListUi));
-            requestBoardSummaryPage(boardPostListUi,
-                    boardPostListUi.getBoardList(),1,true,false,true);
+            if(boardPostCurrentShow(boardPostListUi)) {
+                Timber.d("Attached and shown UI for "+boardPostListUi.getBoardList().getDisplayName()
+                        + " id "+  getId(boardPostListUi));
+                requestBoardSummaryPage(boardPostListUi,
+                        boardPostListUi.getBoardList(),1,true,false,true);
+            }
         }
+    }
+
+    private boolean boardPostCurrentShow(BoardPostListUi boardPostListUi) {
+        BoardPostListParentUi boardPostListParentUi = findUi(BoardPostListParentUi.class);
+        if(boardPostListParentUi != null) {
+            return boardPostListParentUi.boardPostListShown(boardPostListUi);
+        }
+        return  false;
+    }
+
+    public void handlePageSelected(int position) {
+        BoardPostListUi boardPostList = findListAt(position);
+        if(boardPostList != null) {
+            requestBoardSummaryPage(boardPostList,
+                    boardPostList.getBoardList(),1,true,false,true);
+        }
+    }
+
+    private BoardPostListUi findListAt(int positon) {
+        Set<Ui> uis = getUis();
+        for(Ui ui:uis) {
+            if(ui instanceof BoardPostListUi) {
+                BoardPostListUi boardPostListUi
+                        = (BoardPostListUi) ui;
+                if(boardPostListUi.getPageIndex()
+                        == positon){
+                    return boardPostListUi;
+                }
+            }
+        }
+        return null;
     }
 
     public void requestBoardSummaryPage(BoardPostListUi boardPostListUi,Board board, int page ,
@@ -86,7 +120,7 @@ public class BoardPostListController extends BaseUIController {
 
     @Override
     public void onUiDetached(Ui ui) {
-        if(ui instanceof BoardPostListActivity) {
+        if(ui instanceof BoardPostListParentUi) {
             eventBus.unregister(this);
         }
         if(ui instanceof BoardPostListUi) {
@@ -115,4 +149,6 @@ public class BoardPostListController extends BaseUIController {
            Timber.d("Could not find ui for "+event.getBoardType());
        }
     }
+
+
 }
