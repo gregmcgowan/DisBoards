@@ -8,6 +8,7 @@ import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.events.LoginSucceededEvent;
 import com.drownedinsound.events.LurkEvent;
 import com.drownedinsound.ui.base.BaseActivity;
+import com.drownedinsound.ui.postList.BoardPostListParentActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -47,7 +48,7 @@ public class StartActivity extends BaseActivity {
 
     private void goToMainActivity() {
         Intent startMainActivityIntent = new Intent(this,
-                BoardPostListActivity.class);
+                BoardPostListParentActivity.class);
         startActivity(startMainActivityIntent);
         finish();
     }
