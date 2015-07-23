@@ -9,10 +9,6 @@ import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.ui.base.BaseControllerActivity;
 import com.drownedinsound.ui.base.SimpleDialogFragment;
 import com.drownedinsound.ui.favourites.FavouritesActivity;
-import com.drownedinsound.ui.postList.BoardPostListController;
-import com.drownedinsound.ui.postList.BoardPostListFragment;
-import com.drownedinsound.ui.postList.BoardPostListFragmentAdapter;
-import com.drownedinsound.ui.postList.NewPostFragment;
 import com.drownedinsound.ui.start.LoginActivity;
 import com.drownedinsound.utils.UiUtils;
 
@@ -96,40 +92,28 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
 
             }
 
-            public void onPageScrolled(int arg0, float arg1, int arg2) {
+            public void onPageScrolled(int state, float positionOffset, int positionPixels) {
+                if (state == ViewPager.SCROLL_STATE_DRAGGING) {
+                    int currentPage = mPager.getCurrentItem();
+                    int maxPages = mAdapter.getCount();
+                    int pageToLeft = currentPage - 1;
+                    int pageToRight = currentPage + 1;
 
-            }
-
-            public void onPageSelected(int position) {
-                Timber.d("Page selected");
-                board = mAdapter.getBoard(position);
-                boardPostListController.handlePageSelected(position);
-            }
-
-            private void checkIfPageNeedsUpdating(int position) {
-                BoardPostListFragment boardPostListFragment
-                        = getListFragment(position);
-                if (boardPostListFragment != null) {
-                    boardPostListFragment.loadListIfNotAlready();
+                    if (pageToLeft > -1) {
+                        boardPostListController.loadListAt(pageToLeft);
+                    }
+                    if (pageToRight < maxPages) {
+                        boardPostListController.loadListAt(pageToRight);
+                    }
                 }
             }
 
+            public void onPageSelected(int position) {
+                board = mAdapter.getBoard(position);
+                boardPostListController.loadListAt(position);
+            }
 
         });
-    }
-
-    private BoardPostListFragment getListFragment(int position) {
-        BoardPostListFragment boardPostListFragment = null;
-        String fragmentName = UiUtils.makeFragmentPagerAdapterTagName(
-                R.id.boards_pager, position);
-        Fragment fragment = getFragmentManager()
-                .findFragmentByTag(fragmentName);
-        if (fragment instanceof BoardPostListFragment) {
-            boardPostListFragment
-                    = (BoardPostListFragment) fragment;
-
-        }
-        return boardPostListFragment;
     }
 
     @OnClick(R.id.profile_button)

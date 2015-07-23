@@ -80,7 +80,7 @@ public class BoardPostListController extends BaseUIController {
         return  false;
     }
 
-    public void handlePageSelected(int position) {
+    public void loadListAt(int position) {
         BoardPostListUi boardPostList = findListAt(position);
         if(boardPostList != null) {
             requestBoardSummaryPage(boardPostList,
