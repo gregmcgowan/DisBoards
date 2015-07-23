@@ -53,6 +53,8 @@ import timber.log.Timber;
 @Singleton
 public class DisApiClient {
 
+    private static final long MAX_BOARD_POST_LIST_AGE_MINUTES = 5;
+
     public enum RequestMethod {
         GET(false),
         POST(true),
@@ -194,7 +196,7 @@ public class DisApiClient {
         Board board = databaseHelper.getBoard(type);
         long lastFetchedTime = board.getLastFetchedTime();
         long fiveMinutesAgo = System.currentTimeMillis()
-                - (DateUtils.MINUTE_IN_MILLIS * 1);
+                - (DateUtils.MINUTE_IN_MILLIS * MAX_BOARD_POST_LIST_AGE_MINUTES);
 
         boolean recentlyFetched = lastFetchedTime > fiveMinutesAgo;
 
