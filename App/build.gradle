@@ -86,7 +86,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:22.1.1'
+    compile 'com.android.support:support-v4:22.2.0'
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:design:22.2.0'
     compile 'com.android.support:recyclerview-v7:22.2.0'
@@ -102,10 +102,8 @@ dependencies {
     compile 'de.greenrobot:eventbus:2.2.1'
     compile 'com.commonsware.cwac:endless:1.2.3'
 
-
     compile 'com.facebook.stetho:stetho-okhttp:1.1.1'
     compile 'com.facebook.stetho:stetho:1.1.1'
-
 
     compile files('libs/jericho-html-3.3.jar')
     compile files('libs/ormlite-android-4.42.jar')
