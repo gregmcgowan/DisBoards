@@ -189,6 +189,8 @@ public class SvgAnimatePathView extends View {
 //
                     if(!animate.get() && animationListener != null) {
                         animationListener.onAnimationEnd(animation);
+                        animationListener = null;
+                        showHidePathAnimatorSet = null;
                     }
                 }
             });
@@ -214,6 +216,8 @@ public class SvgAnimatePathView extends View {
                     } else {
                         if (animationListener != null) {
                             animationListener.onAnimationEnd(animation);
+                            animationListener = null;
+                            showHidePathAnimatorSet = null;
                         }
                     }
                 }
