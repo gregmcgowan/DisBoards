@@ -13,8 +13,6 @@ import com.drownedinsound.data.network.handlers.PostACommentHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
-import com.drownedinsound.data.network.requests.AddANewPostRunnable;
-import com.drownedinsound.data.network.requests.PostACommentRunnable;
 import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.database.DatabaseRunnable;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
@@ -32,6 +30,7 @@ import com.squareup.okhttp.Response;
 
 import android.app.Application;
 import android.content.Context;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import java.io.IOException;
@@ -70,7 +69,8 @@ public class DisApiClient {
 
 
     public enum REQUEST_TYPE  {
-        GET_LIST
+        GET_LIST,
+        NEW_POST
     }
 
     private Context applicationContext;
@@ -83,8 +83,6 @@ public class DisApiClient {
 
     private EventBus eventBus;
 
-    private ExecutorService networkRequestExecutorService;
-
     private ExecutorService dbExecutorService;
 
     private CopyOnWriteArrayList<Object> inProgressRequests;
@@ -93,7 +91,6 @@ public class DisApiClient {
     public DisApiClient(Application applicationContext, OkHttpClient httpClient,
             DatabaseHelper databaseHelper,
             UserSessionManager userSessionManager, EventBus eventBus,
-            @ForNetworkRequests ExecutorService networkExecutorService,
             @ForDatabase ExecutorService dbExecutorService) {
 
         this.applicationContext = applicationContext;
@@ -101,7 +98,6 @@ public class DisApiClient {
         this.databaseHelper = databaseHelper;
         this.userSessionManager = userSessionManager;
         this.eventBus = eventBus;
-        this.networkRequestExecutorService = networkExecutorService;
         this.dbExecutorService = dbExecutorService;
         this.inProgressRequests = new CopyOnWriteArrayList<>();
     }
@@ -114,9 +110,10 @@ public class DisApiClient {
                 .add("commit", "Go!*").build();
 
         LoginResponseHandler loginResponseHandler = new LoginResponseHandler();
-        DisBoardsApp.getApplication(applicationContext).inject(loginResponseHandler);
+        inject(loginResponseHandler);
 
-        makeRequest(RequestMethod.POST,"LOGIN",UrlConstants.LOGIN_URL,requestBody,loginResponseHandler);
+        makeRequest(RequestMethod.POST, "LOGIN", UrlConstants.LOGIN_URL, requestBody,
+                null, loginResponseHandler);
     }
 
     private void inject(Object object){
@@ -133,7 +130,7 @@ public class DisApiClient {
                         RetrieveBoardPostHandler (boardPostId, boardType, true);
                 inject(retrieveBoardPostHandler);
 
-                makeRequest(RequestMethod.GET,tag,boardPostUrl,retrieveBoardPostHandler);
+                makeRequest(RequestMethod.GET, tag, boardPostUrl, retrieveBoardPostHandler);
 
             } else {
                 Timber.d("Board post " + boardPostId + " has already been requested");
@@ -174,7 +171,7 @@ public class DisApiClient {
 
                 inject(retrieveBoardSummaryListHandler);
 
-                makeRequest(RequestMethod.GET ,tag, boardUrl, retrieveBoardSummaryListHandler);
+                makeRequest(RequestMethod.GET, tag, boardUrl, retrieveBoardSummaryListHandler);
 
             } else {
                 dbExecutorService.execute(new DatabaseRunnable(databaseHelper) {
@@ -213,61 +210,101 @@ public class DisApiClient {
 
     public void thisAComment(String boardPostUrl, String boardPostId, String commentId,
             BoardType boardType) {
-        ThisACommentHandler thisACommentHandler = new ThisACommentHandler(applicationContext,
-                boardPostId, boardType);
+        ThisACommentHandler thisACommentHandler = new ThisACommentHandler(boardPostId, boardType);
+        inject(thisACommentHandler);
 
         String fullUrl = boardPostUrl + "/" + commentId + "/this";
         Timber.d("Going to this with  =" + fullUrl);
 
         String tag = "THIS" +boardPostId;
-        makeRequest(RequestMethod.GET, tag, fullUrl,thisACommentHandler);
+        makeRequest(RequestMethod.GET, tag, fullUrl, thisACommentHandler);
     }
 
 
     public void addNewPost(Board board, String title, String content) {
-        NewPostHandler newPostHandler = new NewPostHandler(applicationContext, board);
         String authToken = userSessionManager.getAuthenticityToken();
-        networkRequestExecutorService.execute(
-                new AddANewPostRunnable(newPostHandler, httpClient, board, title, content,
-                        authToken));
+
+        Headers.Builder extraHeaders = getMandatoryDefaultHeaders();
+        extraHeaders.add("Referer", board.getUrl());
+        RequestBody requestBody = new FormEncodingBuilder().add("section_id", String.valueOf(board
+                .getSectionId()))
+                .add("topic[title]", title)
+                .add("topic[content_raw]", content)
+                .add("topic[sticky]", "0")
+                .add("authenticity_token", authToken).build();
+
+        NewPostHandler newPostHandler = new NewPostHandler(board);
+        inject(newPostHandler);
+
+        makeRequest(RequestMethod.POST, REQUEST_TYPE.NEW_POST,
+                UrlConstants.NEW_POST_URL, requestBody, extraHeaders, newPostHandler);
     }
 
     public void postComment(String boardPostId, String commentId, String title, String content,
             BoardType boardType) {
         String authToken = userSessionManager.getAuthenticityToken();
 
-        PostACommentHandler postACommentHandler = new PostACommentHandler(applicationContext,
-                boardPostId, boardType);
-        networkRequestExecutorService.execute(
-                new PostACommentRunnable(postACommentHandler, httpClient, boardPostId, commentId,
-                        title, content, authToken));
+        if (TextUtils.isEmpty(authToken)) {
+            throw new IllegalArgumentException("Auth token cannot be null");
+        }
+
+        if (TextUtils.isEmpty(boardPostId)) {
+            throw new IllegalArgumentException("BoardPostId cannot be null");
+        }
+
+        PostACommentHandler postACommentHandler = new PostACommentHandler(boardPostId, boardType);
+        inject(postACommentHandler);
+
+        if (commentId == null) {
+            commentId = "";
+        }
+
+        RequestBody requestBody = new FormEncodingBuilder()
+                .add("comment[commentable_id]", boardPostId)
+                .add("comment[title]", title)
+                .add("comment[commentable_type]", "Topic")
+                .add("comment[content_raw]", content)
+                .add("parent_id", commentId)
+                .add("authenticity_token", authToken)
+                .add("commit", "Post reply").build();
+
+        String tag = boardPostId + "COMMENT" + commentId;
+
+        makeRequest(RequestMethod.POST,tag,UrlConstants.COMMENTS_URL,requestBody,null,postACommentHandler);
     }
 
-    private void makeRequest(RequestMethod requestMethod, Object tag, String url, OkHttpAsyncResponseHandler
-            okHttpAsyncResponseHandler) {
-         makeRequest(requestMethod,tag,url,null,okHttpAsyncResponseHandler);
+    private void makeRequest(RequestMethod requestMethod, Object tag, String url,
+            OkHttpAsyncResponseHandler
+                    okHttpAsyncResponseHandler) {
+         makeRequest(requestMethod, tag, url, null, null, okHttpAsyncResponseHandler);
     }
 
-    private void makeRequest(RequestMethod requestMethod, final Object tag, String url, RequestBody requestBody,
+
+    private void makeRequest(RequestMethod requestMethod, final Object tag, String url,
+            RequestBody requestBody,
+            Headers.Builder extraHeaders,
             final OkHttpAsyncResponseHandler okHttpAsyncResponseHandler){
 
         Headers.Builder headerBuilder = getMandatoryDefaultHeaders();
+        if(extraHeaders == null) {
+            extraHeaders = new Headers.Builder();
+        }
         Request.Builder builder = new Request.Builder().
-                headers(headerBuilder.build());
+                headers(headerBuilder.build()).headers(extraHeaders.build());
 
         if (RequestMethod.GET.equals(requestMethod)) {
-             makeRequest(builder.get(),tag,url,okHttpAsyncResponseHandler);
+             performRequest(builder.get(), tag, url, okHttpAsyncResponseHandler);
         } else if (RequestMethod.POST.equals(requestMethod)) {
-             makeRequest(builder.post(requestBody),tag,url,okHttpAsyncResponseHandler);
+             performRequest(builder.post(requestBody), tag, url, okHttpAsyncResponseHandler);
         } else if (RequestMethod.PUT.equals(requestMethod)) {
-             makeRequest(builder.put(requestBody),tag,url,okHttpAsyncResponseHandler);
+             performRequest(builder.put(requestBody), tag, url, okHttpAsyncResponseHandler);
         }  else if (RequestMethod.DELETE.equals(requestMethod)) {
-            makeRequest(builder.delete(),tag,url,okHttpAsyncResponseHandler);
+            performRequest(builder.delete(), tag, url, okHttpAsyncResponseHandler);
         }
     }
 
-    private void makeRequest(Request.Builder requestBuilder, final Object tag, String url,
-                    final OkHttpAsyncResponseHandler okHttpAsyncResponseHandler) {
+    private void performRequest(Request.Builder requestBuilder, final Object tag, String url,
+            final OkHttpAsyncResponseHandler okHttpAsyncResponseHandler) {
 
         inProgressRequests.add(tag);
 

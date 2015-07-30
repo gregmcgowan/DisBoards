@@ -38,11 +38,6 @@ public abstract class OkHttpAsyncResponseHandler implements Callback {
 
     }
 
-    public OkHttpAsyncResponseHandler(Context context) {
-        if (context != null) {
-            DisBoardsApp.getApplication(context).inject(this);
-        }
-    }
 
     @Override
     public void onFailure(Request request, IOException e) {
@@ -61,6 +56,8 @@ public abstract class OkHttpAsyncResponseHandler implements Callback {
                 handleFailure(response.request(), ioe);
             } catch (IllegalStateException e) {
                 handleFailure(response.request(), e);
+            } finally {
+                //response.body().close();
             }
         }
     }

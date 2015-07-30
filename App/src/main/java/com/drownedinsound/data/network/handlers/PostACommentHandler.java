@@ -21,8 +21,7 @@ public class PostACommentHandler extends OkHttpAsyncResponseHandler {
     private BoardType boardType;
 
 
-    public PostACommentHandler(Context context, String boardPostId, BoardType boardType) {
-        super(context);
+    public PostACommentHandler(String boardPostId, BoardType boardType) {
         this.postID = boardPostId;
         this.boardType = boardType;
         setUpdateUI(true);
