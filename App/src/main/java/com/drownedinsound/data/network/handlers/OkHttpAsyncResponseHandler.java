@@ -16,6 +16,7 @@ import java.util.zip.GZIPInputStream;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import timber.log.Timber;
 
 /**
  * Created by gregmcgowan on 20/07/2014.
@@ -32,6 +33,7 @@ public abstract class OkHttpAsyncResponseHandler implements Callback {
     EventBus eventBus;
 
     private int uiID;
+
     private boolean updateUI;
 
     public OkHttpAsyncResponseHandler(){
@@ -51,7 +53,14 @@ public abstract class OkHttpAsyncResponseHandler implements Callback {
             handleFailure(response.request(), new IOException("Response Code " + responseCode));
         } else {
             try {
-                handleSuccess(response, new GZIPInputStream(response.body().byteStream()));
+                String encodingHeader = response.header("Content-Encoding");
+                boolean gzipped = encodingHeader != null && encodingHeader.contains("gzip");
+                if(gzipped) {
+                    handleSuccess(response, new GZIPInputStream(response.body().byteStream()));
+                } else {
+                    handleSuccess(response, response.body().byteStream());
+                }
+
             } catch (IOException ioe) {
                 handleFailure(response.request(), ioe);
             } catch (IllegalStateException e) {
