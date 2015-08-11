@@ -37,4 +37,6 @@ public class HtmlConstants {
     public static final String META = "meta";
 
     public static final String AUTHENTICITY_TOKEN_NAME = "csrf-token";
+
+    public static final String STICKY = "Sticky";
 }

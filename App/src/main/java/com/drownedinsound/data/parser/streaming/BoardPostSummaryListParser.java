@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import timber.log.Timber;
+
 public class BoardPostSummaryListParser extends StreamingParser {
 
     private static final int POST_URL_ANCHOR_INDEX = 1;
@@ -50,6 +52,8 @@ public class BoardPostSummaryListParser extends StreamingParser {
     private int tableRowCell;
 
     private int spanNumber;
+
+    private String spanClass;
 
     private int anchorNumber;
 
@@ -171,8 +175,10 @@ public class BoardPostSummaryListParser extends StreamingParser {
                         }
                     } else if (tagName.endsWith(HtmlConstants.SPAN)) {
                         if (inBoardPostTable) {
-                            if (tag instanceof EndTag) {
-                                parseSpanSegment(segment);
+                            if(tag instanceof  StartTag) {
+                                parseStartSpanSegment(segment);
+                            } if (tag instanceof EndTag) {
+                                parseEndSpanSegment(segment);
                             }
                         }
                     } else if (HtmlConstants.META.equals(tagName)) {
@@ -212,33 +218,25 @@ public class BoardPostSummaryListParser extends StreamingParser {
         return boardPosts;
     }
 
-    private void parseSpanSegment(Segment segment) {
+    private void parseStartSpanSegment(Segment segment) {
         spanNumber++;
         String spanString = segment.toString();
-        HashMap<String, String> parameters = createAttributeMapFromStartTag(spanString);
         if (spanNumber == 1) {
-            String spanClass = parameters.get(HtmlConstants.CLASS);
-            if (STICKY_CLASS.equals(spanClass)) {
-                currentBoardPost.setSticky(true);
-            }
-            if (parameters != null) {
-//                long timeStamp = parseDate();
-//                if (timeStamp != -1) {
-//                    if (tableRowCell == DESCRIPTION_TABLE_ROW_INDEX
-//                        && !currentBoardPost.isSticky()) {
-//                        //TODO not sure if we actually need this
-//                       // currentBoardPost.setCreatedTime(timeStamp);
-//                    }
-////                    if (tableRowCell == LAST_POST_TABLE_ROW_INDEX) {
-////                        currentBoardPost.setLastUpdatedTime(timeStamp);
-////                    }
-//                }
-            }
-        } else if (tableRowCell == DESCRIPTION_TABLE_ROW_INDEX
-                && spanNumber == 2 && currentBoardPost.isSticky()) {
-            //TODO not sure if we actually need this
-            //long timeStamp = parseDate();
-            //currentBoardPost.setCreatedTime(timeStamp);
+            HashMap<String, String> parameters = createAttributeMapFromStartTag(spanString);
+            spanClass = parameters.get(HtmlConstants.CLASS);
+
+        }
+    }
+
+    private void parseEndSpanSegment(Segment segment) {
+        if (DEBUG_PARSER) {
+            Timber.d("SpanNumber [" + spanNumber + "] content [" + buffer.toString().trim()
+                    + "] class " + spanClass);
+        }
+        
+        if (spanNumber == 1 && STICKY_CLASS.equals(spanClass)) {
+            currentBoardPost
+                    .setSticky(HtmlConstants.STICKY.equalsIgnoreCase(buffer.toString().trim()));
         }
     }
 
