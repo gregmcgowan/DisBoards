@@ -38,7 +38,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
@@ -139,7 +138,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         ButterKnife.inject(this, rootView);
 
         adapter = new BoardPostListAdapter(getActivity());
-        ;
+
         commentsList.setAdapter(adapter);
         moveToFirstOrLastCommentLayout
                 .setOnClickListener(new OnClickListener() {
@@ -200,17 +199,13 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
             boardType = (BoardType) savedInstanceState
                     .getSerializable(DisBoardsConstants.BOARD_TYPE);
             if (boardPost != null) {
-                updateComments(boardPost.getComments());
+                adapter.setComments(new ArrayList<>(boardPost.getComments()));
             }
         }
 
         if (boardPostUrl == null) {
             Log.d(TAG, "Board post url is null");
         }
-    }
-
-    private void updateComments(Collection<BoardPostComment> comments) {
-        adapter.setComments(new ArrayList<>(comments));
     }
 
     @Override
@@ -245,10 +240,10 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     @Override
     public void showBoardPost(BoardPost boardPost, int commentIDToShow) {
-        connectionErrorTextView.setVisibility(View.GONE);
         this.boardPost = boardPost;
+        connectionErrorTextView.setVisibility(View.GONE);
         adapter.setBoardPost(boardPost);
-        updateComments(boardPost.getComments());
+        adapter.setComments(new ArrayList<>(boardPost.getComments()));
     }
 
     @Override
@@ -403,17 +398,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     public void showCachedPopup() {
 
     }
-
-    //    private void fetchBoardPost() {
-//        if (isValid()) {
-//            showAnimatedLogoAndHideList();
-//            if (!requestingPost) {
-//                connectionErrorTextView.setVisibility(View.GONE);
-//                disApiClient.getBoardPost(boardPostUrl, boardPostId, boardType);
-//                requestingPost = true;
-//            }
-//        }
-//    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
