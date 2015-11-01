@@ -19,7 +19,7 @@ bin
 gen
 *.apk
 build
-.idea/
+.idea
 .gradle
 Libraries/*/build
 .DS_Store
