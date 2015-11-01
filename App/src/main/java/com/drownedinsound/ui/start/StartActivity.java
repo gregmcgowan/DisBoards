@@ -3,8 +3,6 @@ package com.drownedinsound.ui.start;
 import com.crashlytics.android.Crashlytics;
 import com.drownedinsound.BuildConfig;
 import com.drownedinsound.data.UserSessionManager;
-import com.drownedinsound.events.LoginSucceededEvent;
-import com.drownedinsound.events.LurkEvent;
 import com.drownedinsound.ui.base.BaseActivity;
 import com.drownedinsound.ui.postList.BoardPostListParentActivity;
 
@@ -47,15 +45,6 @@ public class StartActivity extends BaseActivity {
         Intent startMainActivityIntent = new Intent(this,
                 BoardPostListParentActivity.class);
         startActivity(startMainActivityIntent);
-        finish();
-    }
-
-    public void onEventMainThread(LoginSucceededEvent event) {
-        goToMainActivity();
-    }
-
-    public void onEventMainThread(LurkEvent event) {
-        goToMainActivity();
     }
 
     @Override

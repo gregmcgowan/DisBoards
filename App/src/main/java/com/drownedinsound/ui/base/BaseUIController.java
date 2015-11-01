@@ -53,13 +53,23 @@ public abstract class BaseUIController {
         return null;
     }
 
-    public abstract void init(Intent intent);
+    public void init(Intent intent) {
 
-    public abstract void onPause();
+    }
 
-    public abstract void onDestroy();
+    public void onPause() {
 
-    public abstract void onUiAttached(Ui ui);
+    }
 
-    public abstract void onUiDetached(Ui ui);
+    public void onDestroy() {
+
+    }
+
+    public void onUiAttached(Ui ui) {
+
+    }
+
+    public void onUiDetached(Ui ui) {
+
+    }
 }

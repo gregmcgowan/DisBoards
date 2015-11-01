@@ -1,9 +1,7 @@
 package com.drownedinsound.ui.start;
 
 import com.drownedinsound.R;
-import com.drownedinsound.data.network.CookieManager;
-import com.drownedinsound.events.LoginResponseEvent;
-import com.drownedinsound.ui.base.BaseActivity;
+import com.drownedinsound.ui.base.BaseControllerActivity;
 import com.drownedinsound.ui.postList.BoardPostListParentActivity;
 import com.drownedinsound.utils.UiUtils;
 
@@ -11,13 +9,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import javax.inject.Inject;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * Allows the user to login to their drowned in sound account. If the login
@@ -27,25 +28,30 @@ import javax.inject.Inject;
  * @author Greg
  */
 
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends BaseControllerActivity<LoginController> implements LoginUi {
 
     @Inject
-    CookieManager cookieManager;
+    LoginController loginController;
 
-    private Button loginButton;
+    @InjectView(R.id.login_button)
+    Button loginButton;
 
-    private Button lurkButton;
+    @InjectView(R.id.lurk_button)
+    Button lurkButton;
 
-    private EditText usernameField;
+    @InjectView(R.id.login_activity_username_field)
+    EditText usernameField;
 
-    private EditText passwordField;
+    @InjectView(R.id.login_password_field)
+    EditText passwordField;
 
-    private ProgressBar progressBar;
+    @InjectView(R.id.login_progress_bar)
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setListeners();
+        ButterKnife.inject(this);
     }
 
     @Override
@@ -53,40 +59,44 @@ public class LoginActivity extends BaseActivity {
         return R.layout.login_activity;
     }
 
-    private void goToMainActivity() {
+    @Override
+    protected LoginController getController() {
+        return loginController;
+    }
+
+    @Override
+    public void showLoadingProgress(boolean visible) {
+        int progressBarVisibility = visible ? View.VISIBLE : View.INVISIBLE;
+        int otherFieldsVisibility = visible ? View.INVISIBLE : View.VISIBLE;
+        progressBar.setVisibility(progressBarVisibility);
+        usernameField.setVisibility(otherFieldsVisibility);
+        passwordField.setVisibility(otherFieldsVisibility);
+        loginButton.setVisibility(otherFieldsVisibility);
+        lurkButton.setVisibility(otherFieldsVisibility);
+    }
+
+    @Override
+    public void handleLoginSuccess() {
         Intent startMainActivityIntent = new Intent(this,
-                BoardPostListParentActivity.class);
+                BoardPostListParentActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(startMainActivityIntent);
         finish();
     }
 
-    private void setListeners() {
-        lurkButton = (Button) findViewById(R.id.lurk_button);
-        loginButton = (Button) findViewById(R.id.login_button);
-        if (loginButton != null) {
-            loginButton.setOnClickListener(new OnClickListener() {
-                public void onClick(View v) {
-                    doLoginAction();
-                }
-            });
-        }
-        lurkButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doLurkAction();
-            }
-        });
-        usernameField = (EditText) findViewById(R.id.login_activity_username_field);
-        passwordField = (EditText) findViewById(R.id.login_password_field);
-        progressBar = (ProgressBar) findViewById(R.id.login_progress_bar);
+    @Override
+    public void handleLoginFailure() {
+        Toast.makeText(this, "Login failed", Toast.LENGTH_LONG).show();
+        usernameField.setText("");
+        passwordField.setText("");
+        usernameField.requestFocus();
     }
 
+    @OnClick(R.id.lurk_button)
     protected void doLurkAction() {
-        cookieManager.clearCookies();
-        //eventBus.post(new LurkEvent());
-        goToMainActivity();
+        loginController.doLurkAction(this);
     }
 
+    @OnClick(R.id.login_button)
     protected void doLoginAction() {
         String username = usernameField.getText().toString();
         String password = passwordField.getText().toString();
@@ -109,40 +119,6 @@ public class LoginActivity extends BaseActivity {
 
     private void attemptLogin(String username, String password) {
         UiUtils.hideSoftKeyboard(this, loginButton.getApplicationWindowToken());
-        setProgressVisibility(true);
-        disApiClient.loginUser(username, password);
+        loginController.doLoginAction(this, username, password);
     }
-
-    private void setProgressVisibility(boolean visible) {
-        int progressBarVisibility = visible ? View.VISIBLE : View.INVISIBLE;
-        int otherFieldsVisibility = visible ? View.INVISIBLE : View.VISIBLE;
-        progressBar.setVisibility(progressBarVisibility);
-        usernameField.setVisibility(otherFieldsVisibility);
-        passwordField.setVisibility(otherFieldsVisibility);
-        loginButton.setVisibility(otherFieldsVisibility);
-        lurkButton.setVisibility(otherFieldsVisibility);
-    }
-
-    public void onEventMainThread(LoginResponseEvent event) {
-        boolean loginSucceeded = event.isSuccess();
-        if (loginSucceeded) {
-            //eventBus.post(new LoginSucceededEvent());
-            Intent startMainActivityIntent = new Intent(this,
-                    BoardPostListParentActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(startMainActivityIntent);
-            finish();
-        } else {
-            setProgressVisibility(false);
-            handleLoginFailed();
-        }
-    }
-
-
-    private void handleLoginFailed() {
-        Toast.makeText(this, "Login failed", Toast.LENGTH_LONG).show();
-        usernameField.setText("");
-        passwordField.setText("");
-        usernameField.requestFocus();
-    }
-
 }

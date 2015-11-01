@@ -101,14 +101,14 @@ public class DisApiClient {
         this.inProgressRequests = new CopyOnWriteArrayList<>();
     }
 
-    public void loginUser(final String username, final String password) {
+    public void loginUser(final String username, final String password, int loginUiId) {
         RequestBody requestBody = new FormEncodingBuilder().add("user_session[username]", username)
                 .add("user_session[password]", password)
                 .add("user_session[remember_me]", "1")
                 .add("return_to", UrlConstants.SOCIAL_URL)
                 .add("commit", "Go!*").build();
 
-        LoginResponseHandler loginResponseHandler = new LoginResponseHandler();
+        LoginResponseHandler loginResponseHandler = new LoginResponseHandler(loginUiId);
         inject(loginResponseHandler);
 
         makeRequest(RequestMethod.POST, "LOGIN", UrlConstants.LOGIN_URL, requestBody,

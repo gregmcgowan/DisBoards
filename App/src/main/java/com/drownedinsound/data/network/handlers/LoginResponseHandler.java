@@ -19,7 +19,8 @@ import java.io.InputStream;
 
 public class LoginResponseHandler extends OkHttpAsyncResponseHandler {
 
-    public LoginResponseHandler() {
+    public LoginResponseHandler(int uiId) {
+        setUiID(uiId);
     }
 
     @Override
@@ -33,9 +34,9 @@ public class LoginResponseHandler extends OkHttpAsyncResponseHandler {
                 getAuthToken(response.body().byteStream());
             }
 
-            eventBus.post(new LoginResponseEvent(logInSuccess));
+            eventBus.post(new LoginResponseEvent(logInSuccess, getUiID()));
         } catch (IOException ioe) {
-            eventBus.post(new LoginResponseEvent(false));
+            eventBus.post(new LoginResponseEvent(false, getUiID()));
         }
     }
 
@@ -61,7 +62,7 @@ public class LoginResponseHandler extends OkHttpAsyncResponseHandler {
 
     @Override
     public void handleFailure(Request request, Throwable throwable) {
-        eventBus.post(new LoginResponseEvent(false));
+        eventBus.post(new LoginResponseEvent(false, getUiID()));
     }
 
     @Override
