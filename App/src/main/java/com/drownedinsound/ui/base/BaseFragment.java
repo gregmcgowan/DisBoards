@@ -1,7 +1,5 @@
 package com.drownedinsound.ui.base;
 
-import com.drownedinsound.annotations.UseDagger;
-import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.core.DisBoardsApp;
 import com.drownedinsound.data.network.DisApiClient;
 
@@ -21,7 +19,9 @@ import timber.log.Timber;
 public class BaseFragment extends Fragment implements Ui {
 
     private static final long WAIT_TIME_FOR_LOADING_VIEW = 500;
+
     private static final int MESSAGE_SHOW_LOADING_VIEW = 1;
+
     private static final int MESSAGE_HIDE_LOADING_VIEW = 2;
 
     protected static final int FADE_IN_OUT_LOADING_VIEW_ANIMATION_DURATION_MS = 500;
@@ -49,13 +49,7 @@ public class BaseFragment extends Fragment implements Ui {
         loadingViewHandler = new LoadingViewHandler(new WeakReference<>(this));
         fragmentHander = new Handler();
 
-        if (containsAnnotation(UseDagger.class) || containsAnnotation(UseEventBus.class)) {
-            DisBoardsApp.getApplication(getActivity()).inject(this);
-        }
-
-        if (containsAnnotation(UseEventBus.class)) {
-            eventBus.register(this);
-        }
+        DisBoardsApp.getApplication(getActivity()).inject(this);
 
     }
 
@@ -70,7 +64,7 @@ public class BaseFragment extends Fragment implements Ui {
         return ((Object) this).getClass().getAnnotation(annotationType) != null;
     }
 
-    protected DisApiClient getDisApiClient(){
+    protected DisApiClient getDisApiClient() {
         return disApiClient;
     }
 
@@ -78,11 +72,6 @@ public class BaseFragment extends Fragment implements Ui {
     public void onDestroy() {
         super.onDestroy();
         Timber.d("BaseFragment onDestroy");
-        if (containsAnnotation(UseEventBus.class)) {
-            if (eventBus != null) {
-                eventBus.unregister(this);
-            }
-        }
         loadingViewHandler.removeMessages(MESSAGE_SHOW_LOADING_VIEW);
         loadingViewHandler.removeMessages(MESSAGE_HIDE_LOADING_VIEW);
     }
@@ -115,8 +104,6 @@ public class BaseFragment extends Fragment implements Ui {
     /**
      * This can be overridden by subclasses to provide a token to ensure the
      * softkeyboard is closed
-     *
-     * @return
      */
     protected IBinder getCloseSoftKeyboardToken() {
         return null;
@@ -144,7 +131,8 @@ public class BaseFragment extends Fragment implements Ui {
                         Timber.d("Going to show loading view");
                         baseFragment.showLoadingView(baseFragment.getCloseSoftKeyboardToken());
                     } else {
-                        Timber.d("Going to hide loading view has messages to view "+ hasMessages(MESSAGE_SHOW_LOADING_VIEW));
+                        Timber.d("Going to hide loading view has messages to view " + hasMessages(
+                                MESSAGE_SHOW_LOADING_VIEW));
                         removeMessages(MESSAGE_SHOW_LOADING_VIEW);
                         baseFragment.hideLoadingView();
                     }

@@ -4,15 +4,12 @@ import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
-import com.drownedinsound.events.RequestCompletedEvent;
+import com.drownedinsound.events.FailedToGetBoardPostEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
-import com.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.apache.http.client.HttpResponseException;
-
-import android.content.Context;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,9 +26,10 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
     private BoardType boardPostType;
 
     public RetrieveBoardPostHandler(String boardPostId, BoardType boardType,
-            boolean updateUI) {
+            boolean updateUI, int uiID) {
         this.boardPostId = boardPostId;
         this.boardPostType = boardType;
+        setUiID(uiID);
         setUpdateUI(updateUI);
     }
 
@@ -42,7 +40,7 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
             BoardPostParser boardPostParser = new BoardPostParser(userSessionManager, inputStream,
                     boardPostId, boardPostType);
             boardPost = boardPostParser.parse();
-            BoardPost exisitingBoardPost = databaseHelper.getBoardPost(boardPost.getId());
+            BoardPost exisitingBoardPost = databaseHelper.getBoardPost(boardPostId);
             int numberOfTimesRead = 0;
             if (exisitingBoardPost != null) {
                 numberOfTimesRead = exisitingBoardPost.getNumberOfTimesRead() + 1;
@@ -52,10 +50,8 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
             databaseHelper.setBoardPost(boardPost);
         }
         if (isUpdateUI()) {
-            eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true));
+            eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true, getUiID()));
         }
-        eventBus.post(new UpdateCachedBoardPostEvent(boardPost));
-        eventBus.post(new RequestCompletedEvent(boardPostId));
     }
 
     @Override
@@ -70,10 +66,11 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
                 Timber.d("Something went really wrong throwable = " + throwable);
             }
         }
-
-        if (isUpdateUI()) {
-            eventBus.post(new RetrievedBoardPostEvent(null, false, true));
+        BoardPost exisitingBoardPost = databaseHelper.getBoardPost(boardPostId);
+        if (isUpdateUI() && exisitingBoardPost != null) {
+            eventBus.post(new RetrievedBoardPostEvent(exisitingBoardPost, true, true, getUiID()));
+        } else {
+            eventBus.post(new FailedToGetBoardPostEvent(getUiID()));
         }
-        eventBus.post(new RequestCompletedEvent(boardPostId));
     }
 }

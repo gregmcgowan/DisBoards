@@ -2,8 +2,6 @@ package com.drownedinsound.ui.post;
 
 
 import com.drownedinsound.R;
-import com.drownedinsound.annotations.UseDagger;
-import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardPostComment;
@@ -13,11 +11,9 @@ import com.drownedinsound.database.DatabaseService;
 import com.drownedinsound.events.BoardPostCommentSentEvent;
 import com.drownedinsound.events.FailedToPostCommentEvent;
 import com.drownedinsound.events.FailedToThisThisEvent;
-import com.drownedinsound.events.RetrievedBoardPostEvent;
 import com.drownedinsound.events.SetBoardPostFavouriteStatusResultEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
-import com.drownedinsound.ui.base.BaseFragment;
-import com.drownedinsound.ui.controls.ActiveTextView;
+import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.controls.AutoScrollListView;
 import com.drownedinsound.ui.controls.SvgAnimatePathView;
 import com.drownedinsound.utils.SimpleAnimatorListener;
@@ -25,13 +21,10 @@ import com.drownedinsound.utils.UiUtils;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.app.FragmentManager;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,20 +33,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.widget.AbsListView;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -65,9 +53,8 @@ import butterknife.OnClick;
  *
  * @author Greg
  */
-@UseDagger
-@UseEventBus
-public class BoardPostFragment extends BaseFragment {
+public class BoardPostFragment extends BaseControllerFragment<BoardPostController>
+        implements BoardPostUI {
 
     private static final int SHOW_GO_TO_LAST_COMMENT_TIMEOUT = 5000;
 
@@ -78,11 +65,8 @@ public class BoardPostFragment extends BaseFragment {
 
     private BoardPost boardPost;
 
-    private List<BoardPostComment> boardPostComments = new ArrayList<>();
-
     private BoardPostListAdapter adapter;
 
-    private boolean requestingPost;
 
     private String boardPostUrl;
 
@@ -118,6 +102,11 @@ public class BoardPostFragment extends BaseFragment {
     @InjectView(R.id.floating_reply_button)
     FloatingActionButton floatingReplyButton;
 
+    protected
+    @Inject
+    BoardPostController boardPostController;
+
+
     private AtomicBoolean animatingTransiton = new AtomicBoolean(false);
 
     public static BoardPostFragment newInstance(String boardPostUrl,
@@ -149,9 +138,8 @@ public class BoardPostFragment extends BaseFragment {
         View rootView = inflater.inflate(R.layout.board_post_layout, container, false);
         ButterKnife.inject(this, rootView);
 
-        adapter = new BoardPostListAdapter(getActivity(),
-                R.layout.board_post_comment_layout, boardPostComments,
-                new WeakReference<>(this));
+        adapter = new BoardPostListAdapter(getActivity());
+        ;
         commentsList.setAdapter(adapter);
         moveToFirstOrLastCommentLayout
                 .setOnClickListener(new OnClickListener() {
@@ -185,7 +173,7 @@ public class BoardPostFragment extends BaseFragment {
     public void onPause() {
         super.onPause();
 
-        if(animatedLogo != null) {
+        if (animatedLogo != null) {
             animatedLogo.stopAnimation();
         }
     }
@@ -205,8 +193,6 @@ public class BoardPostFragment extends BaseFragment {
                     .getString(DisBoardsConstants.BOARD_POST_URL);
             boardPostId = savedInstanceState
                     .getString(DisBoardsConstants.BOARD_POST_ID);
-            requestingPost = savedInstanceState
-                    .getBoolean(DisBoardsConstants.REQUESTING_POST);
             boardPost = savedInstanceState
                     .getParcelable(DisBoardsConstants.BOARD_POST_KEY);
             inDualPaneMode = savedInstanceState
@@ -224,9 +210,55 @@ public class BoardPostFragment extends BaseFragment {
     }
 
     private void updateComments(Collection<BoardPostComment> comments) {
-        boardPostComments.clear();
-        boardPostComments.addAll(comments);
-        adapter.notifyDataSetChanged();
+        adapter.setComments(new ArrayList<>(comments));
+    }
+
+    @Override
+    protected BoardPostController getController() {
+        return boardPostController;
+    }
+
+    @Override
+    public void showLoadingProgress(boolean show) {
+        if (show) {
+            requestToShowLoadingView();
+        } else {
+            requestToHideLoadingView();
+        }
+    }
+
+    @Override
+    public void hideLoadingView() {
+        hideAnimatedLogoAndShowList(new OnListShownHandler() {
+            @Override
+            public void doOnListShownAction() {
+                //TODO animate
+                //floatingReplyButton.setVisibility();
+            }
+        });
+    }
+
+    @Override
+    public void showLoadingView(IBinder hideSoftKeyboardToken) {
+        showAnimatedLogoAndHideList();
+    }
+
+    @Override
+    public void showBoardPost(BoardPost boardPost, int commentIDToShow) {
+        connectionErrorTextView.setVisibility(View.GONE);
+        this.boardPost = boardPost;
+        adapter.setBoardPost(boardPost);
+        updateComments(boardPost.getComments());
+    }
+
+    @Override
+    public void showErrorView() {
+        hideAnimatedLogoAndShowList(new OnListShownHandler() {
+            @Override
+            public void doOnListShownAction() {
+                connectionErrorTextView.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     public String getBoardPostId() {
@@ -237,48 +269,6 @@ public class BoardPostFragment extends BaseFragment {
         return boardPostId;
     }
 
-    public void onEventMainThread(RetrievedBoardPostEvent event) {
-        this.requestingPost = false;
-        if (isValid()) {
-            BoardPost boardPost = event.getBoardPost();
-            if (shouldShowBoardPost(boardPost)) {
-                this.boardPost = boardPost;
-                boolean showGoToLastCommentOption = event
-                        .isDisplayGotToLatestCommentOption()
-                        && showGoToLastCommentOption();
-                updateComments(boardPost.getComments());
-                if (event.isCached()) {
-                    displayIsCachedPopup();
-                }
-                connectionErrorTextView.setVisibility(View.GONE);
-                Log.d(TAG, "Show got to last comment option ="
-                        + showGoToLastCommentOption);
-                if (showGoToLastCommentOption) {
-                    hideAnimatedLogoAndShowList(new OnListShownHandler() {
-                        @Override
-                        public void doOnListShownAction() {
-                            displayScrollToHiddenCommentOption(true);
-                        }
-                    });
-
-                } else {
-                    hideAnimatedLogoAndShowList(new OnListShownHandler() {
-                        @Override
-                        public void doOnListShownAction() {
-                            //floatingReplyButton.show(true);
-                        }
-                    });
-                }
-            } else {
-                hideAnimatedLogoAndShowList(new OnListShownHandler() {
-                    @Override
-                    public void doOnListShownAction() {
-                        connectionErrorTextView.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
-        }
-    }
 
     public void onEventMainThread(FailedToThisThisEvent event) {
         hideAnimatedLogoAndShowList();
@@ -320,14 +310,6 @@ public class BoardPostFragment extends BaseFragment {
         }
     }
 
-    private boolean shouldShowBoardPost(BoardPost boardPost) {
-        boolean shouldDisplayBoardPost = false;
-        if (boardPost != null) {
-            Collection<BoardPostComment> comments = boardPost.getComments();
-            shouldDisplayBoardPost = comments.size() > 0;
-        }
-        return shouldDisplayBoardPost;
-    }
 
     private void displayIsCachedPopup() {
         Toast.makeText(getActivity(), "This is an cached version",
@@ -336,7 +318,7 @@ public class BoardPostFragment extends BaseFragment {
 
     public void showAnimatedLogoAndHideList() {
         // if(!animatingTransiton.get()) {
-       // floatingReplyButton.hide(true);
+        // floatingReplyButton.hide(true);
         animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -414,26 +396,28 @@ public class BoardPostFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (boardPost == null) {
-            fetchBoardPost();
-        }
+        boardPostController.loadBoardPost(this, boardPostUrl, boardPostId, boardType);
     }
 
-    private void fetchBoardPost() {
-        if (isValid()) {
-            showAnimatedLogoAndHideList();
-            if (!requestingPost) {
-                connectionErrorTextView.setVisibility(View.GONE);
-                disApiClient.getBoardPost(boardPostUrl, boardPostId, boardType);
-                requestingPost = true;
-            }
-        }
+    @Override
+    public void showCachedPopup() {
+
     }
+
+    //    private void fetchBoardPost() {
+//        if (isValid()) {
+//            showAnimatedLogoAndHideList();
+//            if (!requestingPost) {
+//                connectionErrorTextView.setVisibility(View.GONE);
+//                disApiClient.getBoardPost(boardPostUrl, boardPostId, boardType);
+//                requestingPost = true;
+//            }
+//        }
+//    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(DisBoardsConstants.REQUESTING_POST, requestingPost);
         outState.putParcelable(DisBoardsConstants.BOARD_POST_KEY, boardPost);
         outState.putString(DisBoardsConstants.BOARD_POST_ID, boardPostId);
         outState.putString(DisBoardsConstants.BOARD_POST_URL, boardPostUrl);
@@ -498,28 +482,17 @@ public class BoardPostFragment extends BaseFragment {
     }
 
     public void doRefreshAction() {
-        fetchBoardPost();
         Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Refresh  post");
     }
 
-    public boolean showGoToLastCommentOption() {
-        return boardPost != null && boardPost.getNumberOfTimesRead() > 1;
-    }
 
     public void scrollToLatestComment() {
         String latestCommentId = boardPost.getLatestCommentId();
         if (!TextUtils.isEmpty(latestCommentId)) {
-            int index = 0;
-            for (BoardPostComment comment : boardPostComments) {
-                if (latestCommentId.equals(comment.getId())) {
-                    break;
-                }
-                index++;
-            }
+            int index = adapter.getIndexOfCommentId(latestCommentId);
             if (index > 0) {
-                boardPostComments.get(index).setDoHighlightedAnimation(true);
+                adapter.getItem(index).setDoHighlightedAnimation(true);
                 commentsList.requestPositionToScreen(index, true);
-
             }
         }
 
@@ -606,548 +579,5 @@ public class BoardPostFragment extends BaseFragment {
 
     }
 
-    private class BoardPostListAdapter extends ArrayAdapter<BoardPostComment> {
-
-        private static final int HIGHLIGHTED_COMMENT_ANIMATION_LENGTH = 2000;
-
-        private List<BoardPostComment> comments;
-
-        private WeakReference<BoardPostFragment> boardPostFragmentWeakReference;
-
-        public BoardPostListAdapter(Context context, int textViewResourceId,
-                List<BoardPostComment> boardPostSummaries,
-                WeakReference<BoardPostFragment> boardPostFragmentWeakReference) {
-            super(context, textViewResourceId);
-            this.comments = boardPostSummaries;
-            this.boardPostFragmentWeakReference = boardPostFragmentWeakReference;
-        }
-
-        @Override
-        public BoardPostComment getItem(int position) {
-            return comments.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return super.getItemId(position);
-        }
-
-        @Override
-        public int getCount() {
-            return comments.size();
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            BoardPostComment comment = comments.get(position);
-            View boardPostSummaryRowView = convertView;
-
-            boolean isFirstComment = position == 0;
-            BoardPostCommentHolder boardPostCommentHolder = null;
-            BoardPostInitialCommentHolder boardPostInitialHolder = null;
-
-            LayoutInflater inflater = (LayoutInflater) getActivity()
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            if (boardPostSummaryRowView == null) {
-                if (!isFirstComment) {
-                    boardPostSummaryRowView = inflater.inflate(
-                            R.layout.board_post_comment_layout, null);
-                    boardPostCommentHolder = inflateBoardPostCommentHolder(
-                            boardPostSummaryRowView, position);
-                } else {
-                    boardPostSummaryRowView = inflater.inflate(
-                            R.layout.board_post_initial_comment_layout, null);
-                    boardPostInitialHolder = inflateBoardPostInitialCommentHolder(
-                            boardPostSummaryRowView);
-                }
-
-            } else {
-                if (isFirstComment) {
-                    if (boardPostSummaryRowView.getTag() instanceof BoardPostCommentHolder) {
-                        boardPostSummaryRowView = inflater.inflate(
-                                R.layout.board_post_initial_comment_layout,
-                                null);
-                        boardPostInitialHolder = inflateBoardPostInitialCommentHolder(
-                                boardPostSummaryRowView);
-                    } else {
-                        boardPostInitialHolder
-                                = (BoardPostInitialCommentHolder) boardPostSummaryRowView
-                                .getTag();
-                    }
-                } else {
-                    if (boardPostSummaryRowView.getTag() instanceof BoardPostInitialCommentHolder) {
-                        boardPostSummaryRowView = inflater.inflate(
-                                R.layout.board_post_comment_layout, null);
-                        boardPostCommentHolder = inflateBoardPostCommentHolder(
-                                boardPostSummaryRowView, position);
-                    } else {
-                        boardPostCommentHolder = (BoardPostCommentHolder) boardPostSummaryRowView
-                                .getTag();
-                    }
-                }
-            }
-
-            if (comment != null) {
-                String title = comment.getTitle();
-                String author = comment.getAuthorUsername();
-                String replyTo = comment.getReplyToUsername();
-                if (!TextUtils.isEmpty(replyTo)) {
-                    author = author + "\n" + "@ " + replyTo;
-                }
-                String content = comment.getContent();
-                if (content == null) {
-                    content = "";
-                }
-                if (!TextUtils.isEmpty(content)) {
-                    content = Html.fromHtml(content).toString();
-                    int lastLineFeed = content.lastIndexOf("\n");
-                    if (lastLineFeed != -1 && (lastLineFeed == content.length() - 1)) {
-                        content = content.substring(0, content.length() - 2);
-                    }
-                }
-
-                String dateAndTime = comment.getDateAndTimeOfComment();
-
-                if (!isFirstComment) {
-                    boardPostCommentHolder.commentAuthorTextView
-                            .setText(author);
-                    boardPostCommentHolder.commentTitleTextView.setText(title);
-
-                    boardPostCommentHolder.commentContentTextView.setText(content);
-
-                    String usersWhoThised = comment.getUsersWhoHaveThissed();
-                    if (!TextUtils.isEmpty(usersWhoThised)) {
-                        boardPostCommentHolder.commentThisSectionTextView
-                                .setText(usersWhoThised);
-                        boardPostCommentHolder.commentThisSectionTextView
-                                .setVisibility(View.VISIBLE);
-                    } else {
-                        boardPostCommentHolder.commentThisSectionTextView
-                                .setVisibility(View.GONE);
-                    }
-
-                    if (TextUtils.isEmpty(dateAndTime)) {
-                        dateAndTime = "Unknown";
-                    }
-                    boardPostCommentHolder.commentDateTimeTextView
-                            .setText(dateAndTime);
-
-                    int level = comment.getCommentLevel();
-                    boardPostCommentHolder.whitespaceLayout.removeAllViews();
-
-                    int commentLevelIndentPx = UiUtils.convertDpToPixels(
-                            getContext().getResources(), 4);
-                    for (int i = 0; i < level; i++) {
-                        View spacer = new View(getContext());
-                        spacer.setLayoutParams(new android.widget.LinearLayout.LayoutParams(
-                                commentLevelIndentPx, LayoutParams.MATCH_PARENT));
-                        boardPostCommentHolder.whitespaceLayout.addView(spacer,
-                                i);
-                    }
-                    LinearLayout commentLayout = (LinearLayout) boardPostSummaryRowView
-                            .findViewById(R.id.board_post_comment_comment_section);
-                    // Set ActionVisibility
-                    //boardPostSummaryRowView.setOnClickListener(null);
-
-                    boardPostSummaryRowView
-                            .setOnClickListener(new CommentSectionClickListener(
-                                    position,
-                                    new AllCommentClickListener(
-                                            new WeakReference<RelativeLayout>(
-                                                    boardPostCommentHolder.actionRelativeLayout),
-                                            new WeakReference<View>(commentLayout),
-                                            new WeakReference<BoardPostListAdapter>(
-                                                    adapter))));
-
-                    boardPostCommentHolder.replyTextView
-                            .setOnClickListener(new CommentSectionClickListener(
-                                    position,
-                                    new ReplyToCommentListener(
-                                            new WeakReference<BoardPostListAdapter>(
-                                                    adapter),
-                                            new WeakReference<FragmentManager>(
-                                                    getActivity()
-                                                            .getFragmentManager()))));
-                    boardPostCommentHolder.thisTextView
-                            .setOnClickListener(new CommentSectionClickListener(
-                                    position,
-                                    new ThisACommentListener(
-                                            boardPostUrl,
-                                            boardType,
-                                            boardPostId,
-                                            new WeakReference<BoardPostListAdapter>(
-                                                    this),
-                                            boardPostFragmentWeakReference)));
-
-                    boolean actionSectionVisible = comment
-                            .isActionSectionVisible();
-                    if (actionSectionVisible) {
-                        boardPostCommentHolder.actionRelativeLayout
-                                .setVisibility(View.VISIBLE);
-                    } else {
-                        boardPostCommentHolder.actionRelativeLayout
-                                .setVisibility(View.GONE);
-                    }
-
-                    if (comment.isDoHighlightedAnimation()) {
-                        final TransitionDrawable transitionDrawable
-                                = (TransitionDrawable) boardPostCommentHolder.commentSection
-                                .getBackground();
-                        transitionDrawable
-                                .startTransition(HIGHLIGHTED_COMMENT_ANIMATION_LENGTH / 2);
-                        boardPostCommentHolder.commentSection.postDelayed(
-                                new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        transitionDrawable
-                                                .reverseTransition(
-                                                        HIGHLIGHTED_COMMENT_ANIMATION_LENGTH / 2);
-
-                                    }
-
-                                }, HIGHLIGHTED_COMMENT_ANIMATION_LENGTH / 2);
-                        comment.setDoHighlightedAnimation(false);
-                    }
-                    boardPostCommentHolder.commentContentTextView
-                            .setLinkClickedListener(new ActiveTextView.OnLinkClickedListener() {
-                                @Override
-                                public void onClick(String url) {
-                                    handleLinkClicked(url);
-                                }
-                            });
-                } else {
-                    dateAndTime = boardPost.getDateOfPost();
-                    String numberOfReplies = boardPost.getNumberOfReplies()
-                            + " replies";
-                    boardPostInitialHolder.commentAuthorTextView
-                            .setText(author);
-                    boardPostInitialHolder.commentTitleTextView.setText(title);
-                    boardPostInitialHolder.commentContentTextView.setText(content);
-                    boardPostInitialHolder.commentDateTimeTextView
-                            .setText(dateAndTime);
-                    boardPostInitialHolder.noOfCommentsTextView
-                            .setText(numberOfReplies);
-                    boardPostInitialHolder.commentContentTextView
-                            .setLinkClickedListener(new ActiveTextView.OnLinkClickedListener() {
-                                @Override
-                                public void onClick(String url) {
-                                    handleLinkClicked(url);
-                                }
-                            });
-                }
-
-
-            }
-            return boardPostSummaryRowView;
-        }
-
-    }
-
-    private BoardPostCommentHolder inflateBoardPostCommentHolder(View rowView,
-            int listPosition) {
-
-        BoardPostCommentHolder boardPostCommentHolder = new BoardPostCommentHolder();
-        boardPostCommentHolder.commentTitleTextView = (TextView) rowView
-                .findViewById(R.id.board_post_comment_content_title);
-        boardPostCommentHolder.commentContentTextView = (ActiveTextView) rowView
-                .findViewById(R.id.board_post_comment_content);
-        boardPostCommentHolder.commentAuthorTextView = (TextView) rowView
-                .findViewById(R.id.board_post_comment_author_text_view);
-        boardPostCommentHolder.commentDateTimeTextView = (TextView) rowView
-                .findViewById(R.id.board_post_comment_date_time_text_view);
-        boardPostCommentHolder.commentThisSectionTextView = (TextView) rowView
-                .findViewById(R.id.board_post_comment_this_view);
-        boardPostCommentHolder.whitespaceLayout = (LinearLayout) rowView
-                .findViewById(R.id.board_post_comment_whitespace_section);
-        boardPostCommentHolder.actionRelativeLayout = (RelativeLayout) rowView
-                .findViewById(R.id.board_post_comment_action_section);
-        boardPostCommentHolder.replyTextView = (TextView) rowView
-                .findViewById(R.id.board_post_comment_reply);
-        boardPostCommentHolder.thisTextView = (TextView) rowView
-                .findViewById(R.id.board_post_comment_this);
-        boardPostCommentHolder.commentSection = (LinearLayout) rowView
-                .findViewById(R.id.board_post_comment_content_section);
-        LinearLayout commentLayout = (LinearLayout) rowView
-                .findViewById(R.id.board_post_comment_comment_section);
-        rowView.setTag(boardPostCommentHolder);
-        rowView.setOnClickListener(null);
-        rowView.setOnClickListener(new CommentSectionClickListener(
-                listPosition, new AllCommentClickListener(
-                new WeakReference<RelativeLayout>(
-                        boardPostCommentHolder.actionRelativeLayout),
-                new WeakReference<View>(commentLayout),
-                new WeakReference<BoardPostListAdapter>(adapter))));
-        return boardPostCommentHolder;
-    }
-
-    private BoardPostInitialCommentHolder inflateBoardPostInitialCommentHolder(
-            View rowView) {
-
-        BoardPostInitialCommentHolder boardPostInitialHolder = new BoardPostInitialCommentHolder();
-
-        boardPostInitialHolder.commentTitleTextView = (TextView) rowView
-                .findViewById(R.id.board_post_initial_comment_title);
-        boardPostInitialHolder.commentAuthorTextView = (TextView) rowView
-                .findViewById(R.id.board_post_initial_comment_author_subheading);
-        boardPostInitialHolder.commentContentTextView = (ActiveTextView) rowView
-                .findViewById(R.id.board_post_initial_comment_text);
-        boardPostInitialHolder.commentDateTimeTextView = (TextView) rowView
-                .findViewById(R.id.board_post_initial_comment_date_time_subheading);
-        boardPostInitialHolder.noOfCommentsTextView = (TextView) rowView
-                .findViewById(R.id.board_post_initial_comment_replies_subheading);
-        rowView.setTag(boardPostInitialHolder);
-        return boardPostInitialHolder;
-    }
-
-    private class BoardPostCommentHolder {
-
-        private TextView commentTitleTextView;
-
-        private ActiveTextView commentContentTextView;
-
-        private TextView commentAuthorTextView;
-
-        private TextView commentDateTimeTextView;
-
-        private TextView commentThisSectionTextView;
-
-        private LinearLayout whitespaceLayout;
-
-        private RelativeLayout actionRelativeLayout;
-
-        private TextView thisTextView;
-
-        private TextView replyTextView;
-
-        private LinearLayout commentSection;
-    }
-
-    private class BoardPostInitialCommentHolder {
-
-        private TextView commentTitleTextView;
-
-        private ActiveTextView commentContentTextView;
-
-        private TextView commentAuthorTextView;
-
-        private TextView commentDateTimeTextView;
-
-        private TextView noOfCommentsTextView;
-
-    }
-
-    public static class ThisACommentListener implements
-            CommentSectionClickHandler {
-
-        private WeakReference<BoardPostListAdapter> adapterWeakReference;
-
-        private WeakReference<BoardPostFragment> boardPostFragmentWeakReference;
-
-        private String postUrl;
-
-        private BoardType boardType;
-
-        private String postID;
-
-        public ThisACommentListener(String postUrl, BoardType boardType,
-                String postID,
-                WeakReference<BoardPostListAdapter> adapterWeakReference,
-                WeakReference<BoardPostFragment> fragment) {
-            this.adapterWeakReference = adapterWeakReference;
-            this.boardPostFragmentWeakReference = fragment;
-            this.postUrl = postUrl;
-            this.postID = postID;
-            this.boardType = boardType;
-        }
-
-        @Override
-        public void doCommentClickAction(View parentView, int position) {
-            BoardPostComment comment = null;
-            BoardPostListAdapter boardPostListAdapter = adapterWeakReference
-                    .get();
-            if (boardPostListAdapter != null) {
-                comment = boardPostListAdapter.getItem(position);
-            }
-            String commentID = comment.getId();
-            BoardPostListAdapter adapter = adapterWeakReference.get();
-            BoardPostFragment fragment = boardPostFragmentWeakReference.get();
-            if (adapter != null && fragment != null) {
-                fragment.showAnimatedLogoAndHideList();
-                if (boardPostFragmentWeakReference.get() != null) {
-                    boardPostFragmentWeakReference.get().getDisApiClient().
-                            thisAComment(postUrl, postID, commentID, boardType);
-                }
-            }
-        }
-
-    }
-
-    public static class ReplyToCommentListener implements
-            CommentSectionClickHandler {
-
-        private WeakReference<BoardPostListAdapter> adapterWeakReference;
-
-        private WeakReference<FragmentManager> fragmentManagerReference;
-
-        public ReplyToCommentListener(
-                WeakReference<BoardPostListAdapter> adapterWeakReference,
-                WeakReference<FragmentManager> fragmentManager) {
-            this.adapterWeakReference = adapterWeakReference;
-            this.fragmentManagerReference = fragmentManager;
-        }
-
-        @Override
-        public void doCommentClickAction(View parentView, int position) {
-            BoardPostComment comment = null;
-            BoardPostListAdapter boardPostListAdapter = adapterWeakReference
-                    .get();
-            if (boardPostListAdapter != null) {
-                comment = boardPostListAdapter.getItem(position);
-            }
-
-            if (comment != null) {
-                String replyToAuthor = comment.getAuthorUsername();
-                if (TextUtils.isEmpty(replyToAuthor)) {
-                    BoardPostComment initalPost = boardPostListAdapter
-                            .getItem(0);
-                    replyToAuthor = initalPost.getAuthorUsername();
-                }
-                String replyToId = comment.getId();
-
-                Bundle replyDetails = new Bundle();
-                replyDetails.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
-                        replyToAuthor);
-                replyDetails.putString(DisBoardsConstants.BOARD_COMMENT_ID,
-                        replyToId);
-                replyDetails.putString(DisBoardsConstants.BOARD_POST_ID,
-                        comment.getBoardPost().getId());
-                replyDetails.putSerializable(DisBoardsConstants.BOARD_TYPE,
-                        comment.getBoardPost().getBoardType());
-        /*
-                 * String replyText = comment.getTitle(); if
-		 * (TextUtils.isEmpty(replyText)) { replyText =
-		 * comment.getContent(); }
-		 * replyDetails.putString(DisBoardsConstants.REPLY_TO_TEXT,
-		 * replyText);
-		 */
-                // TextUtils.ellipsize(text, p, avail, where)
-
-                PostReplyFragment.newInstance(replyDetails)
-                        .show(fragmentManagerReference.get(),
-                                "REPLY_FRAGMENT_DIALOG");
-
-            } else {
-
-            }
-        }
-
-    }
-
-    public static class AllCommentClickListener implements
-            CommentSectionClickHandler {
-
-        private WeakReference<RelativeLayout> actionLayoutWeakReference;
-
-        private WeakReference<View> parentLayoutWeakReference;
-
-        private WeakReference<BoardPostListAdapter> adapterWeakReference;
-
-        public AllCommentClickListener(
-                WeakReference<RelativeLayout> actionLayout,
-                WeakReference<View> parentLayoutWeakReference,
-                WeakReference<BoardPostListAdapter> adapterWeakReference) {
-            this.actionLayoutWeakReference = actionLayout;
-            this.parentLayoutWeakReference = parentLayoutWeakReference;
-            this.adapterWeakReference = adapterWeakReference;
-        }
-
-        @Override
-        public void doCommentClickAction(View parentView, int position) {
-            RelativeLayout actionLayout = actionLayoutWeakReference.get();
-            if (actionLayout != null) {
-                boolean initallyVisible = actionLayout.getVisibility() == View.VISIBLE;
-                animateActionLayout(actionLayout, position, !initallyVisible);
-            }
-        }
-
-        private void animateActionLayout(final RelativeLayout actionLayout,
-                int position, final boolean setVisible) {
-            BoardPostComment comment = null;
-            BoardPostListAdapter boardPostListAdapter = adapterWeakReference
-                    .get();
-            if (boardPostListAdapter != null) {
-                comment = boardPostListAdapter.getItem(position);
-            }
-
-            if (comment != null) {
-                comment.setActionSectionVisible(setVisible);
-            }
-
-            float[] offset = setVisible ? new float[]{0, 0.5f, 1}
-                    : new float[]{1, 0.5f, 0};
-
-            actionLayout.setVisibility(View.VISIBLE);
-            // parentLayoutWeakReference.get().bringToFront();
-            //parentLayoutWeakReference.get().requestLayout();
-            ObjectAnimator removeObjectAnimator = ObjectAnimator.ofFloat(
-                    actionLayout, "scaleY", offset);
-            removeObjectAnimator.setDuration(500);
-            removeObjectAnimator.setInterpolator(new AccelerateInterpolator());
-            removeObjectAnimator.addListener(new Animator.AnimatorListener() {
-
-                public void onAnimationStart(Animator animation) {
-                }
-
-                public void onAnimationEnd(Animator animation) {
-                    if (setVisible) {
-                        actionLayout.setVisibility(View.VISIBLE);
-                    } else {
-                        actionLayout.setVisibility(View.GONE);
-                    }
-
-                }
-
-                public void onAnimationCancel(Animator animation) {
-                }
-
-                public void onAnimationRepeat(Animator animation) {
-                }
-
-            });
-            removeObjectAnimator.start();
-        }
-    }
-
-    private static class CommentSectionClickListener implements OnClickListener {
-
-        private int listPosition;
-
-        private CommentSectionClickHandler commentClickHandler;
-
-        CommentSectionClickListener(int listPosition,
-                CommentSectionClickHandler commentClickHandler) {
-            this.listPosition = listPosition;
-            this.commentClickHandler = commentClickHandler;
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (commentClickHandler != null) {
-                commentClickHandler.doCommentClickAction(v, listPosition);
-            }
-        }
-
-    }
-
-    interface CommentSectionClickHandler {
-
-        public void doCommentClickAction(View parentView, int position);
-    }
-
-    interface OnListShownHandler {
-
-        public void doOnListShownAction();
-    }
 
 }

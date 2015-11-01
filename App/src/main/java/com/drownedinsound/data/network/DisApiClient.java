@@ -120,14 +120,14 @@ public class DisApiClient {
         DisBoardsApp.getApplication(applicationContext).inject(object);
     }
 
-    public void getBoardPost(String boardPostUrl, final String boardPostId, BoardType boardType) {
+    public void getBoardPost(String boardPostUrl, final String boardPostId, BoardType boardType, final int callerUiId) {
         if (NetworkUtils.isConnected(applicationContext)) {
             String tag = "GET_BOARD_POST_" + boardPostId;
 
             boolean requestIsInProgress = inProgressRequests.contains(tag);
             if (!requestIsInProgress) {
                 RetrieveBoardPostHandler retrieveBoardPostHandler = new
-                        RetrieveBoardPostHandler (boardPostId, boardType, true);
+                        RetrieveBoardPostHandler (boardPostId, boardType, true,callerUiId);
                 inject(retrieveBoardPostHandler);
 
                 makeRequest(RequestMethod.GET, tag, boardPostUrl, retrieveBoardPostHandler);
@@ -142,7 +142,7 @@ public class DisApiClient {
                 public void run() {
                     BoardPost cachedPost = dbHelper.getBoardPost(boardPostId);
                     eventBus.post(
-                            new RetrievedBoardPostEvent(cachedPost, true, true));
+                            new RetrievedBoardPostEvent(cachedPost, true, true, callerUiId));
                 }
             });
         }
@@ -297,7 +297,7 @@ public class DisApiClient {
         } else if (RequestMethod.PUT.equals(requestMethod)) {
              performRequest(builder.put(requestBody), tag, url, okHttpAsyncResponseHandler);
         }  else if (RequestMethod.DELETE.equals(requestMethod)) {
-            performRequest(builder.delete(), tag, url, okHttpAsyncResponseHandler);
+             performRequest(builder.delete(), tag, url, okHttpAsyncResponseHandler);
         }
     }
 
@@ -317,7 +317,6 @@ public class DisApiClient {
             @Override
             public void onResponse(Response response) throws IOException {
                 inProgressRequests.remove(tag);
-                Timber.d("Response on "+Thread.currentThread().getName());
                 okHttpAsyncResponseHandler.onResponse(response);
             }
         });
@@ -327,9 +326,6 @@ public class DisApiClient {
         return inProgressRequests.contains(tag);
     }
 
-    protected Headers.Builder addMandatoryHeaders(){
-        return addMandatoryHeaders(null);
-    }
 
     protected Headers.Builder addMandatoryHeaders(Headers.Builder headers) {
         if(headers == null) {

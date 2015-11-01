@@ -129,6 +129,7 @@ public class BoardPostListController extends BaseUIController {
         }
     }
 
+    @SuppressWarnings("unused")
     public void onEventMainThread(RetrievedBoardPostSummaryListEvent event) {
        int callingID = event.getUiId();
 

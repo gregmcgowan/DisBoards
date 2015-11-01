@@ -12,11 +12,14 @@ public class RetrievedBoardPostEvent {
 
     private boolean displayGotToLatestCommentOption;
 
+    private int uiId;
+
     public RetrievedBoardPostEvent(BoardPost boardPost, boolean isCached,
-            boolean showGotToLastCommentOption) {
+            boolean showGotToLastCommentOption, int uiId) {
         setBoardPost(boardPost);
         setCached(isCached);
         setDisplayGotToLatestCommentOption(showGotToLastCommentOption);
+        setUiId(uiId);
     }
 
     public BoardPost getBoardPost() {
@@ -50,5 +53,14 @@ public class RetrievedBoardPostEvent {
     public void setDisplayGotToLatestCommentOption(
             boolean displayGotToLatestCommentOption) {
         this.displayGotToLatestCommentOption = displayGotToLatestCommentOption;
+    }
+
+
+    public int getUiId() {
+        return uiId;
+    }
+
+    public void setUiId(int uiId) {
+        this.uiId = uiId;
     }
 }

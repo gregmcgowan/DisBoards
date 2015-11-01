@@ -233,7 +233,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
             Timber.d("SpanNumber [" + spanNumber + "] content [" + buffer.toString().trim()
                     + "] class " + spanClass);
         }
-        
+
         if (spanNumber == 1 && STICKY_CLASS.equals(spanClass)) {
             currentBoardPost
                     .setSticky(HtmlConstants.STICKY.equalsIgnoreCase(buffer.toString().trim()));

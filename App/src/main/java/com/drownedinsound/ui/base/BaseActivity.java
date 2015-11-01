@@ -1,22 +1,13 @@
 package com.drownedinsound.ui.base;
 
 import com.drownedinsound.R;
-import com.drownedinsound.annotations.UseDagger;
-import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.core.DisBoardsApp;
 import com.drownedinsound.data.network.DisApiClient;
 
 import android.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-
-import java.lang.annotation.Annotation;
-
-import javax.inject.Inject;
-
-import de.greenrobot.event.EventBus;
 
 ;
 
@@ -28,9 +19,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Ui {
     protected Toolbar toolbar;
 
     protected FragmentManager fragmentManager;
-
-    @Inject
-    protected EventBus eventBus;
 
 
     protected DisApiClient disApiClient;
@@ -49,35 +37,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Ui {
 
         fragmentManager = getFragmentManager();
 
-        if (containsAnnotation(UseDagger.class)
-                || containsAnnotation(UseEventBus.class)) {
-            DisBoardsApp.getApplication(this).inject(this);
-        }
-
-        if (containsAnnotation(UseEventBus.class)) {
-            eventBus.register(this);
-        }
-
-        disApiClient = DisBoardsApp.getApplication(this).getDisApiClient();
+        DisBoardsApp.getApplication(this).inject(this);
     }
 
     protected abstract int getLayoutResource();
 
-    private boolean containsAnnotation(Class<? extends Annotation> annotationType) {
-        return ((Object) this).getClass().getAnnotation(annotationType) != null;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (containsAnnotation(UseEventBus.class)) {
-            if (eventBus != null) {
-                eventBus.unregister(this);
-            }
-        }
-
-//        if(disApiClient != null) {
-//            disApiClient.onDestroy();
-//        }
-    }
 }

@@ -19,7 +19,7 @@ public class RetrievedBoardPostSummaryListEvent {
 
     public RetrievedBoardPostSummaryListEvent(
             List<BoardPost> boardPostSummaryList, BoardType boardType, boolean isCached,
-            boolean append,  int uiId) {
+            boolean append, int uiId) {
         setBoardPostSummaryList(boardPostSummaryList);
         setBoardType(boardType);
         setCached(isCached);

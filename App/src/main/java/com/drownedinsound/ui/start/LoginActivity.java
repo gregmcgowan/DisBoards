@@ -1,12 +1,8 @@
 package com.drownedinsound.ui.start;
 
 import com.drownedinsound.R;
-import com.drownedinsound.annotations.UseDagger;
-import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.data.network.CookieManager;
 import com.drownedinsound.events.LoginResponseEvent;
-import com.drownedinsound.events.LoginSucceededEvent;
-import com.drownedinsound.events.LurkEvent;
 import com.drownedinsound.ui.base.BaseActivity;
 import com.drownedinsound.ui.postList.BoardPostListParentActivity;
 import com.drownedinsound.utils.UiUtils;
@@ -30,8 +26,7 @@ import javax.inject.Inject;
  *
  * @author Greg
  */
-@UseDagger
-@UseEventBus
+
 public class LoginActivity extends BaseActivity {
 
     @Inject
@@ -88,7 +83,7 @@ public class LoginActivity extends BaseActivity {
 
     protected void doLurkAction() {
         cookieManager.clearCookies();
-        eventBus.post(new LurkEvent());
+        //eventBus.post(new LurkEvent());
         goToMainActivity();
     }
 
@@ -131,7 +126,7 @@ public class LoginActivity extends BaseActivity {
     public void onEventMainThread(LoginResponseEvent event) {
         boolean loginSucceeded = event.isSuccess();
         if (loginSucceeded) {
-            eventBus.post(new LoginSucceededEvent());
+            //eventBus.post(new LoginSucceededEvent());
             Intent startMainActivityIntent = new Intent(this,
                     BoardPostListParentActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(startMainActivityIntent);

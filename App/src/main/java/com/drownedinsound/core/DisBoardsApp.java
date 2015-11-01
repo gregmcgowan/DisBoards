@@ -33,14 +33,14 @@ public class DisBoardsApp extends Application {
     }
 
     private void initialiseDebuggingSettings() {
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Stetho.initialize(
                     Stetho.newInitializerBuilder(this)
                             .enableDumpapp(
-                    Stetho.defaultDumperPluginsProvider(this))
-                    .enableWebKitInspector(
-                            Stetho.defaultInspectorModulesProvider(this))
-                    .build());
+                                    Stetho.defaultDumperPluginsProvider(this))
+                            .enableWebKitInspector(
+                                    Stetho.defaultInspectorModulesProvider(this))
+                            .build());
         }
     }
 

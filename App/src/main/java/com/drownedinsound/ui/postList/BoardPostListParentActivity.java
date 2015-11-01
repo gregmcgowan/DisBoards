@@ -1,7 +1,6 @@
 package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
-import com.drownedinsound.annotations.UseDagger;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.model.Board;
@@ -10,9 +9,7 @@ import com.drownedinsound.ui.base.BaseControllerActivity;
 import com.drownedinsound.ui.base.SimpleDialogFragment;
 import com.drownedinsound.ui.favourites.FavouritesActivity;
 import com.drownedinsound.ui.start.LoginActivity;
-import com.drownedinsound.utils.UiUtils;
 
-import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,7 +24,6 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import timber.log.Timber;
 
 /**
  * This allows the user to move between the different message boards that are
@@ -36,7 +32,6 @@ import timber.log.Timber;
  *
  * @author Greg
  */
-@UseDagger
 public class BoardPostListParentActivity extends BaseControllerActivity<BoardPostListController> implements  BoardPostListParentUi {
 
     private static final String LOGOUT_DIALOG = "LOGOUT_DIALOG";

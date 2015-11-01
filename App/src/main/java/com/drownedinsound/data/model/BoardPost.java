@@ -307,6 +307,10 @@ public class BoardPost implements Parcelable {
         this.isFavourited = isFavourited;
     }
 
+    public boolean showGoToLastCommentOption() {
+        return getNumberOfTimesRead() > 1;
+    }
+
     public void writeToParcel(Parcel parcel, int flag) {
         parcel.writeString(id);
         parcel.writeString(title);

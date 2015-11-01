@@ -2,22 +2,23 @@ package com.drownedinsound.data;
 
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.handlers.LoginResponseHandler;
-import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
-import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.NewPostHandler;
 import com.drownedinsound.data.network.handlers.PostACommentHandler;
+import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
+import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
 import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.database.DatabaseService;
 import com.drownedinsound.qualifiers.ForDatabase;
 import com.drownedinsound.qualifiers.ForNetworkRequests;
+import com.drownedinsound.ui.post.BoardPostActivity;
+import com.drownedinsound.ui.post.BoardPostFragment;
+import com.drownedinsound.ui.post.PostReplyFragment;
+import com.drownedinsound.ui.postList.BoardPostListFragment;
 import com.drownedinsound.ui.postList.BoardPostListParentActivity;
+import com.drownedinsound.ui.postList.NewPostFragment;
 import com.drownedinsound.ui.start.LoginActivity;
 import com.drownedinsound.ui.start.StartActivity;
-import com.drownedinsound.ui.post.BoardPostFragment;
-import com.drownedinsound.ui.postList.BoardPostListFragment;
-import com.drownedinsound.ui.postList.NewPostFragment;
-import com.drownedinsound.ui.post.PostReplyFragment;
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
@@ -50,6 +51,7 @@ import static android.content.Context.MODE_PRIVATE;
                 StartActivity.class,
                 LoginActivity.class,
                 BoardPostListParentActivity.class,
+                BoardPostActivity.class,
                 BoardPostFragment.class,
                 BoardPostListFragment.class,
                 PostReplyFragment.class,
@@ -105,7 +107,6 @@ public class DataModule {
         client.setConnectTimeout(5, TimeUnit.SECONDS);
 
         // Install an HTTP cache in the application cache directory.
-
         File cacheDir = new File(app.getCacheDir(), "http");
         Cache cache = new Cache(cacheDir, DISK_CACHE_SIZE);
         client.setCache(cache);
@@ -113,16 +114,4 @@ public class DataModule {
         return client;
     }
 
-    //
-//    @Provides @Singleton
-//    Picasso providePicasso(Application app, OkHttpClient client) {
-//        return new Picasso.Builder(app)
-//                .downloader(new OkHttpDownloader(client))
-//                .listener(new Picasso.Listener() {
-//                    @Override public void onImageLoadFailed(Picasso picasso, Uri uri, Exception e) {
-//                       // Debug.log("Image load failed for "+uri);
-//                    }
-//                })
-//                .build();
-//    }
 }

@@ -2,8 +2,6 @@ package com.drownedinsound.ui.favourites;
 
 
 import com.drownedinsound.R;
-import com.drownedinsound.annotations.UseDagger;
-import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
@@ -11,7 +9,6 @@ import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.database.DatabaseHelper;
 import com.drownedinsound.database.DatabaseService;
 import com.drownedinsound.events.RetrievedFavouritesEvent;
-import com.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseFragment;
 import com.drownedinsound.ui.post.BoardPostActivity;
@@ -39,12 +36,11 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import timber.log.Timber;
 
 /**
  * Created by gregmcgowan on 29/10/2013.
  */
-@UseDagger
-@UseEventBus
 public class FavouritesListFragment extends BaseFragment {
 
     private static final String CURRENTLY_SELECTED_BOARD_POST = "currentlySelectedBoardPost";
@@ -229,22 +225,6 @@ public class FavouritesListFragment extends BaseFragment {
         }, 1500);
     }
 
-    public void onEventBackgroundThread(UpdateCachedBoardPostEvent event) {
-        if (favouriteBoardPosts != null) {
-            BoardPost boardPostToUpdate = event.getBoardPost();
-            if (boardPostToUpdate != null) {
-                String postId = boardPostToUpdate.getId();
-                for (BoardPost boardPost : favouriteBoardPosts) {
-                    if (postId != null && postId.equals(boardPost.getId())) {
-                        boardPost.setLastViewedTime(boardPostToUpdate
-                                .getLastViewedTime());
-                        Log.d(TAG, "Setting post " + postId + " to "
-                                + boardPostToUpdate.getLastViewedTime());
-                    }
-                }
-            }
-        }
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -263,7 +243,7 @@ public class FavouritesListFragment extends BaseFragment {
 
     public void onEventMainThread(UserIsNotLoggedInEvent event) {
         if (DisBoardsConstants.DEBUG) {
-            Log.d(TAG, "recieved  not logged in ");
+            Timber.d("recieved  not logged in ");
         }
 
         setProgressBarVisiblity(false);

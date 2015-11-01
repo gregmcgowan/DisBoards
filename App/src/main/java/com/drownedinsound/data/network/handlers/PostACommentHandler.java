@@ -5,11 +5,8 @@ import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.events.FailedToPostCommentEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
-import com.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-
-import android.content.Context;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,10 +36,9 @@ public class PostACommentHandler extends OkHttpAsyncResponseHandler {
             }
         }
         if (isUpdateUI()) {
-            eventBus.post(
-                    new RetrievedBoardPostEvent(boardPost, false, false));
+//            eventBus.post(
+//                    new RetrievedBoardPostEvent(boardPost, false, false));
         }
-        eventBus.post(new UpdateCachedBoardPostEvent(boardPost));
     }
 
     @Override

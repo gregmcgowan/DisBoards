@@ -40,13 +40,13 @@ public abstract class BaseUIController {
         return null;
     }
 
-    protected Set<Ui> getUis(){
+    protected Set<Ui> getUis() {
         return Collections.unmodifiableSet(mUis);
     }
 
-    protected <T extends  Ui> T findUi(Class<T> uiClss) {
+    protected <T extends Ui> T findUi(Class<T> uiClss) {
         for (Ui ui : mUis) {
-            if(uiClss.isInstance(ui)) {
+            if (uiClss.isInstance(ui)) {
                 return (T) ui;
             }
         }

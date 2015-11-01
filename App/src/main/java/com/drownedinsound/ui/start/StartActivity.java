@@ -2,8 +2,6 @@ package com.drownedinsound.ui.start;
 
 import com.crashlytics.android.Crashlytics;
 import com.drownedinsound.BuildConfig;
-import com.drownedinsound.annotations.UseDagger;
-import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.events.LoginSucceededEvent;
 import com.drownedinsound.events.LurkEvent;
@@ -15,8 +13,7 @@ import android.os.Bundle;
 
 import javax.inject.Inject;
 
-@UseEventBus
-@UseDagger
+
 public class StartActivity extends BaseActivity {
 
     @Inject

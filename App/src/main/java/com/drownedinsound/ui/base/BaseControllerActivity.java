@@ -3,7 +3,7 @@ package com.drownedinsound.ui.base;
 /**
  * Created by gregmcgowan on 14/06/15.
  */
-public abstract class BaseControllerActivity<C extends BaseUIController>  extends BaseActivity {
+public abstract class BaseControllerActivity<C extends BaseUIController> extends BaseActivity {
 
     protected abstract C getController();
 

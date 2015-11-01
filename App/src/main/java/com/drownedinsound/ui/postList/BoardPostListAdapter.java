@@ -167,7 +167,7 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
         return boardPosts.size();
     }
 
-    public static interface BoardPostListListener {
+    public  interface BoardPostListListener {
         void boardPostSelected(int position, BoardPost boardPost);
     }
 

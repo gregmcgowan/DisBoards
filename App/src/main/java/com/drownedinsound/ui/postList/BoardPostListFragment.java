@@ -2,8 +2,6 @@ package com.drownedinsound.ui.postList;
 
 import com.commonsware.cwac.endless.EndlessAdapter;
 import com.drownedinsound.R;
-import com.drownedinsound.annotations.UseDagger;
-import com.drownedinsound.annotations.UseEventBus;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
@@ -11,7 +9,6 @@ import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.events.FailedToPostNewThreadEvent;
 import com.drownedinsound.events.SentNewPostEvent;
 import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
-import com.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.controls.SvgAnimatePathView;
@@ -58,8 +55,6 @@ import timber.log.Timber;
  *
  * @author Greg
  */
-@UseEventBus
-@UseDagger
 public class BoardPostListFragment
         extends BaseControllerFragment<BoardPostListController> implements BoardPostListUi,
         BoardPostListAdapter.BoardPostListListener {
@@ -309,25 +304,6 @@ public class BoardPostListFragment
         boardPostListController
                 .requestBoardSummaryPage(this, board, page, showLoadingProgress, forceUpdate, true);
     }
-
-    public void onEventBackgroundThread(UpdateCachedBoardPostEvent event) {
-        //TODO
-//        if (boardPostSummaries != null) {
-//            BoardPost boardPostToUpdate = event.getBoardPost();
-//            if (boardPostToUpdate != null) {
-//                String postId = boardPostToUpdate.getId();
-//                for (BoardPost boardPost : boardPostSummaries) {
-//                    if (postId != null && postId.equals(boardPost.getId())) {
-//                        boardPost.setLastViewedTime(boardPostToUpdate
-//                                .getLastViewedTime());
-//                        Log.d(TAG, "Setting post " + postId + " to "
-//                                + boardPostToUpdate.getLastViewedTime());
-//                    }
-//                }
-//            }
-//        }
-    }
-
 
     public void onEventMainThread(SentNewPostEvent event) {
         SentNewPostState state = event.getState();

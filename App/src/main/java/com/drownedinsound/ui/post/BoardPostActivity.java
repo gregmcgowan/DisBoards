@@ -3,13 +3,15 @@ package com.drownedinsound.ui.post;
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.BoardType;
-import com.drownedinsound.ui.base.BaseActivity;
+import com.drownedinsound.ui.base.BaseControllerActivity;
 import com.drownedinsound.utils.UiUtils;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -21,12 +23,16 @@ import butterknife.OnClick;
  *
  * @author Greg
  */
-public class BoardPostActivity extends BaseActivity {
+public class BoardPostActivity extends BaseControllerActivity<BoardPostController>
+        implements BoardPostParentUi {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
             + "BoardPostActivity";
 
     private BoardPostFragment boardPostFragment;
+
+    @Inject
+    protected BoardPostController boardPostController;
 
     public static Intent getIntent(Context context, String postUrl, String postID,
             BoardType boardType) {
@@ -75,6 +81,11 @@ public class BoardPostActivity extends BaseActivity {
 
     }
 
+
+    @Override
+    protected BoardPostController getController() {
+        return boardPostController;
+    }
 
     @Override
     protected int getLayoutResource() {
