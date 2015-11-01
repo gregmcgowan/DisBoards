@@ -11,11 +11,16 @@ import java.util.List;
  */
 public interface BoardPostListUi extends Ui {
 
-     Board getBoardList();
-     void setBoardPosts(List<BoardPost> boardPosts);
-     void appendBoardPosts(List<BoardPost> boardPosts);
-     void showLoadingProgress(boolean show);
-     void showErrorView();
-     int  getPageIndex();
+    Board getBoardList();
+
+    void setBoardPosts(List<BoardPost> boardPosts);
+
+    void appendBoardPosts(List<BoardPost> boardPosts);
+
+    void showLoadingProgress(boolean show);
+
+    void showErrorView();
+
+    int getPageIndex();
 
 }
