@@ -1,19 +1,14 @@
 package com.drownedinsound.ui.base;
 
 import com.drownedinsound.core.DisBoardsApp;
-import com.drownedinsound.data.network.DisApiClient;
 
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 
-import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
 
-import javax.inject.Inject;
-
-import de.greenrobot.event.EventBus;
 import timber.log.Timber;
 
 public class BaseFragment extends Fragment implements Ui {
@@ -27,11 +22,6 @@ public class BaseFragment extends Fragment implements Ui {
     protected static final int FADE_IN_OUT_LOADING_VIEW_ANIMATION_DURATION_MS = 500;
 
     protected Handler fragmentHander;
-
-    @Inject
-    protected EventBus eventBus;
-
-    protected DisApiClient disApiClient;
 
     protected Handler loadingViewHandler;
 
@@ -51,21 +41,6 @@ public class BaseFragment extends Fragment implements Ui {
 
         DisBoardsApp.getApplication(getActivity()).inject(this);
 
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        disApiClient = DisBoardsApp.getApplication(getActivity()).getDisApiClient();
-    }
-
-    private boolean containsAnnotation(Class<? extends Annotation> annotationType) {
-        return ((Object) this).getClass().getAnnotation(annotationType) != null;
-    }
-
-    protected DisApiClient getDisApiClient() {
-        return disApiClient;
     }
 
     @Override
@@ -109,10 +84,6 @@ public class BaseFragment extends Fragment implements Ui {
         return null;
     }
 
-
-    protected int getUIIdentifier() {
-        return this.hashCode();
-    }
 
     private static class LoadingViewHandler extends Handler {
 
