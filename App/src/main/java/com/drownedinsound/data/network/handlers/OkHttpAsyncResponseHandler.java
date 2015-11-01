@@ -1,13 +1,10 @@
 package com.drownedinsound.data.network.handlers;
 
-import com.drownedinsound.core.DisBoardsApp;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.database.DatabaseHelper;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-
-import android.content.Context;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +13,6 @@ import java.util.zip.GZIPInputStream;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
-import timber.log.Timber;
 
 /**
  * Created by gregmcgowan on 20/07/2014.
@@ -36,7 +32,7 @@ public abstract class OkHttpAsyncResponseHandler implements Callback {
 
     private boolean updateUI;
 
-    public OkHttpAsyncResponseHandler(){
+    public OkHttpAsyncResponseHandler() {
 
     }
 
@@ -55,7 +51,7 @@ public abstract class OkHttpAsyncResponseHandler implements Callback {
             try {
                 String encodingHeader = response.header("Content-Encoding");
                 boolean gzipped = encodingHeader != null && encodingHeader.contains("gzip");
-                if(gzipped) {
+                if (gzipped) {
                     handleSuccess(response, new GZIPInputStream(response.body().byteStream()));
                 } else {
                     handleSuccess(response, response.body().byteStream());

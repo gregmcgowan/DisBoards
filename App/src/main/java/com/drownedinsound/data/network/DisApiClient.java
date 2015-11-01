@@ -18,7 +18,6 @@ import com.drownedinsound.database.DatabaseRunnable;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
 import com.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.drownedinsound.qualifiers.ForDatabase;
-import com.drownedinsound.qualifiers.ForNetworkRequests;
 import com.drownedinsound.utils.NetworkUtils;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -68,7 +67,7 @@ public class DisApiClient {
     }
 
 
-    public enum REQUEST_TYPE  {
+    public enum REQUEST_TYPE {
         GET_LIST,
         NEW_POST
     }
@@ -116,18 +115,19 @@ public class DisApiClient {
                 null, loginResponseHandler);
     }
 
-    private void inject(Object object){
+    private void inject(Object object) {
         DisBoardsApp.getApplication(applicationContext).inject(object);
     }
 
-    public void getBoardPost(String boardPostUrl, final String boardPostId, BoardType boardType, final int callerUiId) {
+    public void getBoardPost(String boardPostUrl, final String boardPostId, BoardType boardType,
+            final int callerUiId) {
         if (NetworkUtils.isConnected(applicationContext)) {
             String tag = "GET_BOARD_POST_" + boardPostId;
 
             boolean requestIsInProgress = inProgressRequests.contains(tag);
             if (!requestIsInProgress) {
                 RetrieveBoardPostHandler retrieveBoardPostHandler = new
-                        RetrieveBoardPostHandler (boardPostId, boardType, true,callerUiId);
+                        RetrieveBoardPostHandler(boardPostId, boardType, true, callerUiId);
                 inject(retrieveBoardPostHandler);
 
                 makeRequest(RequestMethod.GET, tag, boardPostUrl, retrieveBoardPostHandler);
@@ -149,43 +149,44 @@ public class DisApiClient {
 
     }
 
-    public void getBoardPostSummaryList(Object tag, final int callerUiId, int pageNumber, final Board board,
+    public void getBoardPostSummaryList(Object tag, final int callerUiId, int pageNumber,
+            final Board board,
             boolean forceUpdate, boolean updateUI) {
         final boolean append = pageNumber > 1;
         final boolean requestedRecently = recentlyFetched(board);
         final boolean networkConnectionAvailable = NetworkUtils.isConnected(applicationContext);
 
-            Timber.d("networkConnectionAvailable " + networkConnectionAvailable
-                    + " forceUpdate " + forceUpdate + " requestedRecently " + requestedRecently);
-            if (networkConnectionAvailable
-                    && (forceUpdate || !requestedRecently)) {
-                String boardUrl = board.getUrl();
-                if (append) {
-                    boardUrl += "/page/" + pageNumber;
-                }
-
-                RetrieveBoardSummaryListHandler retrieveBoardSummaryListHandler =
-                        new RetrieveBoardSummaryListHandler(callerUiId,
-                                board.getBoardType(),
-                                updateUI, append);
-
-                inject(retrieveBoardSummaryListHandler);
-
-                makeRequest(RequestMethod.GET, tag, boardUrl, retrieveBoardSummaryListHandler);
-
-            } else {
-                dbExecutorService.execute(new DatabaseRunnable(databaseHelper) {
-                    @Override
-                    public void run() {
-                        List<BoardPost> cachedBoardPosts = dbHelper.getBoardPosts(board
-                                .getBoardType());
-                        eventBus.post(
-                                new RetrievedBoardPostSummaryListEvent(cachedBoardPosts,
-                                        board.getBoardType(),
-                                        !networkConnectionAvailable, append, callerUiId));
-                    }
-                });
+        Timber.d("networkConnectionAvailable " + networkConnectionAvailable
+                + " forceUpdate " + forceUpdate + " requestedRecently " + requestedRecently);
+        if (networkConnectionAvailable
+                && (forceUpdate || !requestedRecently)) {
+            String boardUrl = board.getUrl();
+            if (append) {
+                boardUrl += "/page/" + pageNumber;
             }
+
+            RetrieveBoardSummaryListHandler retrieveBoardSummaryListHandler =
+                    new RetrieveBoardSummaryListHandler(callerUiId,
+                            board.getBoardType(),
+                            updateUI, append);
+
+            inject(retrieveBoardSummaryListHandler);
+
+            makeRequest(RequestMethod.GET, tag, boardUrl, retrieveBoardSummaryListHandler);
+
+        } else {
+            dbExecutorService.execute(new DatabaseRunnable(databaseHelper) {
+                @Override
+                public void run() {
+                    List<BoardPost> cachedBoardPosts = dbHelper.getBoardPosts(board
+                            .getBoardType());
+                    eventBus.post(
+                            new RetrievedBoardPostSummaryListEvent(cachedBoardPosts,
+                                    board.getBoardType(),
+                                    !networkConnectionAvailable, append, callerUiId));
+                }
+            });
+        }
     }
 
     private boolean recentlyFetched(Board cachedBoard) {
@@ -216,7 +217,7 @@ public class DisApiClient {
         String fullUrl = boardPostUrl + "/" + commentId + "/this";
         Timber.d("Going to this with  =" + fullUrl);
 
-        String tag = "THIS" +boardPostId;
+        String tag = "THIS" + boardPostId;
         makeRequest(RequestMethod.GET, tag, fullUrl, thisACommentHandler);
     }
 
@@ -270,20 +271,21 @@ public class DisApiClient {
 
         String tag = boardPostId + "COMMENT" + commentId;
 
-        makeRequest(RequestMethod.POST,tag,UrlConstants.COMMENTS_URL,requestBody,null,postACommentHandler);
+        makeRequest(RequestMethod.POST, tag, UrlConstants.COMMENTS_URL, requestBody, null,
+                postACommentHandler);
     }
 
     private void makeRequest(RequestMethod requestMethod, Object tag, String url,
             OkHttpAsyncResponseHandler
                     okHttpAsyncResponseHandler) {
-         makeRequest(requestMethod, tag, url, null, null, okHttpAsyncResponseHandler);
+        makeRequest(requestMethod, tag, url, null, null, okHttpAsyncResponseHandler);
     }
 
 
     private void makeRequest(RequestMethod requestMethod, final Object tag, String url,
             RequestBody requestBody,
             Headers.Builder extraHeaders,
-            final OkHttpAsyncResponseHandler okHttpAsyncResponseHandler){
+            final OkHttpAsyncResponseHandler okHttpAsyncResponseHandler) {
 
         Headers.Builder headerBuilder = addMandatoryHeaders(extraHeaders);
 
@@ -291,13 +293,13 @@ public class DisApiClient {
                 headers(headerBuilder.build());
 
         if (RequestMethod.GET.equals(requestMethod)) {
-             performRequest(builder.get(), tag, url, okHttpAsyncResponseHandler);
+            performRequest(builder.get(), tag, url, okHttpAsyncResponseHandler);
         } else if (RequestMethod.POST.equals(requestMethod)) {
-             performRequest(builder.post(requestBody), tag, url, okHttpAsyncResponseHandler);
+            performRequest(builder.post(requestBody), tag, url, okHttpAsyncResponseHandler);
         } else if (RequestMethod.PUT.equals(requestMethod)) {
-             performRequest(builder.put(requestBody), tag, url, okHttpAsyncResponseHandler);
-        }  else if (RequestMethod.DELETE.equals(requestMethod)) {
-             performRequest(builder.delete(), tag, url, okHttpAsyncResponseHandler);
+            performRequest(builder.put(requestBody), tag, url, okHttpAsyncResponseHandler);
+        } else if (RequestMethod.DELETE.equals(requestMethod)) {
+            performRequest(builder.delete(), tag, url, okHttpAsyncResponseHandler);
         }
     }
 
@@ -311,7 +313,7 @@ public class DisApiClient {
             @Override
             public void onFailure(Request request, IOException e) {
                 inProgressRequests.remove(tag);
-                okHttpAsyncResponseHandler.onFailure(request,e);
+                okHttpAsyncResponseHandler.onFailure(request, e);
             }
 
             @Override
@@ -328,7 +330,7 @@ public class DisApiClient {
 
 
     protected Headers.Builder addMandatoryHeaders(Headers.Builder headers) {
-        if(headers == null) {
+        if (headers == null) {
             headers = new Headers.Builder();
         }
 

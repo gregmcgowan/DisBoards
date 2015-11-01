@@ -8,7 +8,6 @@ import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;

@@ -63,7 +63,7 @@ public class RetrieveBoardSummaryListHandler extends
         if (isUpdateUI()) {
             eventBus.post(
                     new RetrievedBoardPostSummaryListEvent(boardPostSummaries,
-                            boardType, false, append,getUiID()));
+                            boardType, false, append, getUiID()));
         }
         eventBus.post(new RequestCompletedEvent(boardType.name()));
     }

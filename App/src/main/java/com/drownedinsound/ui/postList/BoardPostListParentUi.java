@@ -7,6 +7,6 @@ import com.drownedinsound.ui.base.Ui;
  */
 public interface BoardPostListParentUi extends Ui {
 
-     boolean boardPostListShown(BoardPostListUi boardPostListUi);
+    boolean boardPostListShown(BoardPostListUi boardPostListUi);
 
 }

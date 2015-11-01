@@ -12,7 +12,6 @@ import net.htmlparser.jericho.Segment;
 import net.htmlparser.jericho.StreamedSource;
 import net.htmlparser.jericho.Tag;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;

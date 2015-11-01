@@ -95,7 +95,7 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
 
     @Override
     public void onBindViewHolder(final BoardPostSummaryHolder holder, final int position) {
-        final BoardPost boardPost = (BoardPost)getItem(position);
+        final BoardPost boardPost = (BoardPost) getItem(position);
         if (boardPost != null) {
             String title = boardPost.getTitle();
             String authorusername = "by " + boardPost.getAuthorUsername();
@@ -144,14 +144,13 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
                 @Override
                 public void onClick(View v) {
                     UiUtils.setBackgroundDrawable(holder.postReadMarkerView, readDrawable);
-                    if(boardPostListListner != null) {
-                        boardPostListListner.boardPostSelected(position,boardPost);
+                    if (boardPostListListner != null) {
+                        boardPostListListner.boardPostSelected(position, boardPost);
                     }
                 }
             });
         }
     }
-
 
 
     @Override
@@ -163,11 +162,12 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
         return boardPosts.get(position);
     }
 
-    public int getNumberOfPosts(){
+    public int getNumberOfPosts() {
         return boardPosts.size();
     }
 
-    public  interface BoardPostListListener {
+    public interface BoardPostListListener {
+
         void boardPostSelected(int position, BoardPost boardPost);
     }
 

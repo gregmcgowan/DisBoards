@@ -175,9 +175,10 @@ public class BoardPostSummaryListParser extends StreamingParser {
                         }
                     } else if (tagName.endsWith(HtmlConstants.SPAN)) {
                         if (inBoardPostTable) {
-                            if(tag instanceof  StartTag) {
+                            if (tag instanceof StartTag) {
                                 parseStartSpanSegment(segment);
-                            } if (tag instanceof EndTag) {
+                            }
+                            if (tag instanceof EndTag) {
                                 parseEndSpanSegment(segment);
                             }
                         }

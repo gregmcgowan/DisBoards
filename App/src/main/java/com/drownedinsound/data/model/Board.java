@@ -40,7 +40,8 @@ public class Board implements Parcelable {
 
     }
 
-    public Board(BoardType boardType, String displayName, String url, int sectionId, int pageIndex) {
+    public Board(BoardType boardType, String displayName, String url, int sectionId,
+            int pageIndex) {
         this.boardType = boardType;
         this.displayName = displayName;
         this.url = url;

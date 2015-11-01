@@ -32,7 +32,8 @@ import butterknife.OnClick;
  *
  * @author Greg
  */
-public class BoardPostListParentActivity extends BaseControllerActivity<BoardPostListController> implements  BoardPostListParentUi {
+public class BoardPostListParentActivity extends BaseControllerActivity<BoardPostListController>
+        implements BoardPostListParentUi {
 
     private static final String LOGOUT_DIALOG = "LOGOUT_DIALOG";
 
@@ -159,6 +160,7 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
         NewPostFragment.newInstance(newPostDetails).show(getFragmentManager(),
                 "NEW_POST_DIALOG");
     }
+
     @Override
     protected BoardPostListController getController() {
         return boardPostListController;

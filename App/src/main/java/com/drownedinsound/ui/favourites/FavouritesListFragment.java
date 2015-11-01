@@ -23,7 +23,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -75,7 +74,7 @@ public class FavouritesListFragment extends BaseFragment {
 
     protected
     //@InjectView(R.id.board_list_connection_error_text_view)
-    TextView connectionErrorTextView;
+            TextView connectionErrorTextView;
 
     protected
     @InjectView(R.id.board_post_summary_list)
@@ -100,7 +99,6 @@ public class FavouritesListFragment extends BaseFragment {
                 R.drawable.white_circle_blue_outline);
         unreadDrawable = getActivity().getResources().getDrawable(
                 R.drawable.filled_blue_circle);
-
 
         adapter = new BoardPostListAdapter(getActivity());
         boardPostList.setLayoutManager(new LinearLayoutManager(boardPostList.getContext()));

@@ -4,7 +4,6 @@ import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.events.FailedToThisThisEvent;
-import com.drownedinsound.events.RetrievedBoardPostEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;

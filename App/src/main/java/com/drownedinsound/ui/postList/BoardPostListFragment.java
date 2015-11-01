@@ -17,7 +17,6 @@ import com.drownedinsound.ui.post.BoardPostFragment;
 import com.drownedinsound.utils.SimpleAnimatorListener;
 import com.drownedinsound.utils.UiUtils;
 
-
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.FragmentTransaction;
@@ -132,7 +131,7 @@ public class BoardPostListFragment
     @Override
     public void onPause() {
         super.onPause();
-        if(animatedLogo != null) {
+        if (animatedLogo != null) {
             animatedLogo.stopAnimation();
         }
     }
@@ -156,7 +155,6 @@ public class BoardPostListFragment
                 R.drawable.white_circle_blue_outline);
         unreadDrawable = getActivity().getResources().getDrawable(
                 R.drawable.filled_blue_circle);
-
 
         adapter = new BoardPostListAdapter(getActivity());
         adapter.setBoardPostListListner(this);
@@ -198,7 +196,7 @@ public class BoardPostListFragment
 
         if (dualPaneMode && currentlySelectedPost != -1) {
             BoardPost boardPost = (BoardPost) adapter.getItem(currentlySelectedPost);
-            boardPostSelected(currentlySelectedPost,boardPost);
+            boardPostSelected(currentlySelectedPost, boardPost);
         }
 
         // TODO This does not work at the moment. SavedInstanceState always
@@ -228,28 +226,28 @@ public class BoardPostListFragment
 
 
     public void showAnimatedLogoAndHideList() {
-        Timber.d("Board "+board.getDisplayName() + " showAnimatedLogoAndHideList ");
+        Timber.d("Board " + board.getDisplayName() + " showAnimatedLogoAndHideList ");
         if (listView.getVisibility() == View.VISIBLE) {
-                    listView.setVisibility(View.GONE);
-                    animatedLogo.setVisibility(View.VISIBLE);
-                    Timber.d("Board "+board.getDisplayName() + " start animation");
-                    animatedLogo.startAnimation();
+            listView.setVisibility(View.GONE);
+            animatedLogo.setVisibility(View.VISIBLE);
+            Timber.d("Board " + board.getDisplayName() + " start animation");
+            animatedLogo.startAnimation();
         } else {
-            if(!animatedLogo.animationInProgress()) {
-                Timber.d("Board "+board.getDisplayName() + " start animation");
+            if (!animatedLogo.animationInProgress()) {
+                Timber.d("Board " + board.getDisplayName() + " start animation");
                 animatedLogo.startAnimation();
             }
         }
     }
 
     public void hideAnimatedLogoAndShowList() {
-        Timber.d("Board "+ board.getDisplayName() + " hide logo and show list");
+        Timber.d("Board " + board.getDisplayName() + " hide logo and show list");
         if (animatedLogo.getVisibility() == View.VISIBLE) {
-            Timber.d("Board "+ board.getDisplayName() + " fade out animated logo");
+            Timber.d("Board " + board.getDisplayName() + " fade out animated logo");
             animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    Timber.d("Board "+ board.getDisplayName() + " Animation end");
+                    Timber.d("Board " + board.getDisplayName() + " Animation end");
                     ObjectAnimator showList = ObjectAnimator.ofFloat(listView, "alpha", 0f, 1f);
                     showList.addListener(new SimpleAnimatorListener() {
                         @Override
@@ -388,7 +386,7 @@ public class BoardPostListFragment
         Timber.d("Board " + board.getDisplayName() + " showLoadingProgress " + show);
         if (show) {
             requestToShowLoadingView();
-           // adapter.stopAppending();
+            // adapter.stopAppending();
         } else {
             //adapter.restartAppending();
             requestToHideLoadingView();
