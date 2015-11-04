@@ -187,18 +187,13 @@ public class BoardPostListAdapter extends BaseAdapter {
                 }
                 LinearLayout commentLayout = (LinearLayout) boardPostSummaryRowView
                         .findViewById(R.id.board_post_comment_comment_section);
-                // Set ActionVisibility
-                //boardPostSummaryRowView.setOnClickListener(null);
 
-//                boardPostSummaryRowView
-//                        .setOnClickListener(new CommentSectionClickListener(
-//                                position,
-//                                new AllCommentClickListener(
-//                                        new WeakReference<RelativeLayout>(
-//                                                boardPostCommentHolder.actionRelativeLayout),
-//                                        new WeakReference<View>(commentLayout),
-//                                        new WeakReference<BoardPostListAdapter>(
-//                                                adapter))));
+                boardPostSummaryRowView
+                        .setOnClickListener(
+                                new AllCommentClickListener(
+                                        boardPostCommentHolder.actionRelativeLayout,
+                                        commentLayout,
+                                        comment));
 //
 //                boardPostCommentHolder.replyTextView
 //                        .setOnClickListener(new CommentSectionClickListener(

@@ -10,8 +10,7 @@ import javax.inject.Inject;
 /**
  * Created by gregmcgowan on 13/08/15.
  */
-public class ThisACommentListener implements
-        CommentSectionClickHandler {
+public class ThisACommentListener {
 
     private String postUrl;
 
@@ -29,7 +28,6 @@ public class ThisACommentListener implements
         this.boardType = boardType;
     }
 
-    @Override
     public void doCommentClickAction(View parentView, BoardPostComment boardPostComment,
             int position) {
         String commentID = boardPostComment.getId();

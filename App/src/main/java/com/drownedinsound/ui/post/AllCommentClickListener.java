@@ -8,49 +8,31 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.RelativeLayout;
 
-import java.lang.ref.WeakReference;
 
 /**
  * Created by gregmcgowan on 13/08/15.
  */
-public class AllCommentClickListener {
+public class AllCommentClickListener  implements View.OnClickListener{
 
-    private WeakReference<RelativeLayout> actionLayoutWeakReference;
+    private RelativeLayout actionLayout;
 
-    private WeakReference<View> parentLayoutWeakReference;
+    private View parentLayout;
 
-    private WeakReference<BoardPostListAdapter> adapterWeakReference;
+    private BoardPostComment boardPostComment;
+
 
     public AllCommentClickListener(
-            WeakReference<RelativeLayout> actionLayout,
-            WeakReference<View> parentLayoutWeakReference,
-            WeakReference<BoardPostListAdapter> adapterWeakReference) {
-        this.actionLayoutWeakReference = actionLayout;
-        this.parentLayoutWeakReference = parentLayoutWeakReference;
-        this.adapterWeakReference = adapterWeakReference;
+            RelativeLayout actionLayout,
+            View parentLayout,
+            BoardPostComment boardPostComment) {
+        this.actionLayout = actionLayout;
+        this.parentLayout = parentLayout;
+        this.boardPostComment = boardPostComment;
     }
 
-
-    public void doCommentClickAction(View parentView, int position) {
-        RelativeLayout actionLayout = actionLayoutWeakReference.get();
-        if (actionLayout != null) {
-            boolean initallyVisible = actionLayout.getVisibility() == View.VISIBLE;
-            animateActionLayout(actionLayout, position, !initallyVisible);
-        }
-    }
-
-    private void animateActionLayout(final RelativeLayout actionLayout,
-            int position, final boolean setVisible) {
-        BoardPostComment comment = null;
-        BoardPostListAdapter boardPostListAdapter = adapterWeakReference
-                .get();
-        if (boardPostListAdapter != null) {
-            comment = boardPostListAdapter.getItem(position);
-        }
-
-        if (comment != null) {
-            comment.setActionSectionVisible(setVisible);
-        }
+    @Override
+    public void onClick(View v) {
+        final boolean setVisible = actionLayout.getVisibility() != View.VISIBLE;
 
         float[] offset = setVisible ? new float[]{0, 0.5f, 1}
                 : new float[]{1, 0.5f, 0};
@@ -73,6 +55,7 @@ public class AllCommentClickListener {
                 } else {
                     actionLayout.setVisibility(View.GONE);
                 }
+                boardPostComment.setActionSectionVisible(setVisible);
 
             }
 
@@ -84,5 +67,12 @@ public class AllCommentClickListener {
 
         });
         removeObjectAnimator.start();
+    }
+
+
+    private void animateActionLayout(final RelativeLayout actionLayout, final boolean setVisible) {
+
+
+
     }
 }
