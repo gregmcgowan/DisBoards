@@ -210,8 +210,8 @@ public class DisApiClient {
     }
 
     public void thisAComment(String boardPostUrl, String boardPostId, String commentId,
-            BoardType boardType) {
-        ThisACommentHandler thisACommentHandler = new ThisACommentHandler(boardPostId, boardType);
+            BoardType boardType, int callingId) {
+        ThisACommentHandler thisACommentHandler = new ThisACommentHandler(callingId, boardPostId, boardType);
         inject(thisACommentHandler);
 
         String fullUrl = boardPostUrl + "/" + commentId + "/this";

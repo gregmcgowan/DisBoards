@@ -134,7 +134,12 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         ButterKnife.inject(this, rootView);
 
         adapter = new BoardPostListAdapter(getActivity());
-
+        adapter.setThisACommentActionListener(new ThisACommentActionListener() {
+            @Override
+            public void doThisACommentAction(BoardPostComment boardPostComment) {
+                thisAComment(boardPostComment);
+            }
+        });
         commentsList.setAdapter(adapter);
         moveToFirstOrLastCommentLayout
                 .setOnClickListener(new OnClickListener() {
@@ -156,6 +161,11 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
         animatedLogo.setSvgResource(R.raw.logo);
         return rootView;
+    }
+
+    private void thisAComment(BoardPostComment boardPostComment) {
+        String commentID = boardPostComment.getId();
+        boardPostController.thisAComment(this,boardPostUrl,boardType,boardPostId,commentID);
     }
 
     @Override

@@ -74,7 +74,8 @@ public class BoardPostController extends BaseUIController {
     public void thisAComment(BoardPostUI boardPostUI, String postUrl, BoardType boardType,
             String postID, String commentID) {
         boardPostUI.showLoadingProgress(true);
-        disApiClient.thisAComment(postUrl, postID, commentID, boardType);
+        int id = getId(boardPostUI);
+        disApiClient.thisAComment(postUrl, postID, commentID, boardType,id  );
     }
 
     public void loadBoardPost(BoardPostUI boardPostUI, String boardPostUrl, String boardPostId,

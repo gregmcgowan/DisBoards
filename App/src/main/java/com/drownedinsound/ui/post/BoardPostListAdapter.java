@@ -38,6 +38,8 @@ public class BoardPostListAdapter extends BaseAdapter {
 
     private Context context;
 
+    private ThisACommentActionListener thisACommentActionListener;
+
     public BoardPostListAdapter(Context context) {
         this.context = context;
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -78,6 +80,11 @@ public class BoardPostListAdapter extends BaseAdapter {
             index++;
         }
         return index;
+    }
+
+    public void setThisACommentActionListener(
+            ThisACommentActionListener thisACommentActionListener) {
+        this.thisACommentActionListener = thisACommentActionListener;
     }
 
     @Override
@@ -194,7 +201,9 @@ public class BoardPostListAdapter extends BaseAdapter {
                                         boardPostCommentHolder.actionRelativeLayout,
                                         commentLayout,
                                         comment));
-//
+                boardPostCommentHolder.thisTextView.setOnClickListener(
+                        new ThisACommentClickListener(comment,thisACommentActionListener));
+//              board
 //                boardPostCommentHolder.replyTextView
 //                        .setOnClickListener(new CommentSectionClickListener(
 //                                position,
@@ -204,16 +213,6 @@ public class BoardPostListAdapter extends BaseAdapter {
 //                                        new WeakReference<FragmentManager>(
 //                                                getActivity()
 //                                                        .getFragmentManager()))));
-//                boardPostCommentHolder.thisTextView
-//                        .setOnClickListener(new CommentSectionClickListener(
-//                                position,
-//                                new ThisACommentListener(
-//                                        boardPostUrl,
-//                                        boardType,
-//                                        boardPostId,
-//                                        new WeakReference<BoardPostListAdapter>(
-//                                                this),
-//                                        boardPostFragmentWeakReference)));
 
                 boolean actionSectionVisible = comment
                         .isActionSectionVisible();
