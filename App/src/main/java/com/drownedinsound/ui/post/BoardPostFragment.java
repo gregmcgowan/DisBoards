@@ -38,7 +38,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
@@ -64,7 +63,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     private BoardPost boardPost;
 
-    private BoardPostListAdapter adapter;
+    private BoardPostAdapter adapter;
 
     private String boardPostUrl;
 
@@ -133,7 +132,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         View rootView = inflater.inflate(R.layout.board_post_layout, container, false);
         ButterKnife.inject(this, rootView);
 
-        adapter = new BoardPostListAdapter(getActivity());
+        adapter = new BoardPostAdapter(getActivity());
         adapter.setThisACommentActionListener(new ThisACommentActionListener() {
             @Override
             public void doThisACommentAction(BoardPostComment boardPostComment) {

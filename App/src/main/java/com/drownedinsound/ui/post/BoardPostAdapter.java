@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Created by gregmcgowan on 13/08/15.
  */
-public class BoardPostListAdapter extends BaseAdapter {
+public class BoardPostAdapter extends BaseAdapter {
 
     private static final int HIGHLIGHTED_COMMENT_ANIMATION_LENGTH = 2000;
 
@@ -40,7 +40,7 @@ public class BoardPostListAdapter extends BaseAdapter {
 
     private ThisACommentActionListener thisACommentActionListener;
 
-    public BoardPostListAdapter(Context context) {
+    public BoardPostAdapter(Context context) {
         this.context = context;
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.comments = new ArrayList<>();
