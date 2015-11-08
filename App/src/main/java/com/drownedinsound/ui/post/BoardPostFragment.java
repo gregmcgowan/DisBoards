@@ -66,7 +66,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     private BoardPostListAdapter adapter;
 
-
     private String boardPostUrl;
 
     private String boardPostId;
@@ -104,9 +103,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     protected
     @Inject
     BoardPostController boardPostController;
-
-
-    private AtomicBoolean animatingTransiton = new AtomicBoolean(false);
 
     public static BoardPostFragment newInstance(String boardPostUrl,
             String boardPostID,
@@ -312,37 +308,26 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     }
 
     public void showAnimatedLogoAndHideList() {
-        // if(!animatingTransiton.get()) {
-        // floatingReplyButton.hide(true);
-        animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                animatedLogo.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                animatingTransiton.set(false);
-            }
-        });
-
         if (commentsList.getVisibility() == View.VISIBLE) {
-            ObjectAnimator hideList = ObjectAnimator.ofFloat(commentsList, "alpha", 1f, 0f);
-            hideList.addListener(new SimpleAnimatorListener() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    commentsList.setVisibility(View.INVISIBLE);
-                    moveToFirstOrLastCommentLayout.setVisibility(View.INVISIBLE);
-                    animatedLogo.startAnimation();
-                }
-            });
-            hideList.start();
+            commentsList.setVisibility(View.GONE);
+            animatedLogo.setVisibility(View.VISIBLE);
+            animatedLogo.startAnimation();
+//            ObjectAnimator hideList = ObjectAnimator.ofFloat(commentsList, "alpha", 1f, 0f);
+//            hideList.addListener(new SimpleAnimatorListener() {
+//                @Override
+//                public void onAnimationEnd(Animator animation) {
+//                    commentsList.setVisibility(View.INVISIBLE);
+//                    moveToFirstOrLastCommentLayout.setVisibility(View.INVISIBLE);
+//                    animatedLogo.startAnimation();
+//                }
+//            });
+//            hideList.start();
 
         } else {
-            animatingTransiton.set(true);
-            animatedLogo.startAnimation();
+            if (!animatedLogo.animationInProgress()) {
+                animatedLogo.startAnimation();
+            }
         }
-        //}
     }
 
     public void hideAnimatedLogoAndShowList() {
@@ -350,7 +335,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     }
 
     public void hideAnimatedLogoAndShowList(final OnListShownHandler onlistShownListener) {
-        //if(!animatingTransiton.get()) {
         if (animatedLogo.getVisibility() == View.VISIBLE) {
             animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
                 @Override
@@ -359,19 +343,22 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
                     showList.addListener(new SimpleAnimatorListener() {
                         @Override
                         public void onAnimationStart(Animator animation) {
-                            animatedLogo.setVisibility(View.VISIBLE);
                             commentsList.setVisibility(View.VISIBLE);
 
                         }
 
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
+                            animatedLogo.setVisibility(View.GONE);
                             if (onlistShownListener != null) {
                                 onlistShownListener.doOnListShownAction();
                             }
-                            animatedLogo.setVisibility(View.INVISIBLE);
-                            animatingTransiton.set(false);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            animatedLogo.setVisibility(View.GONE);
+                            commentsList.setVisibility(View.VISIBLE);
                         }
                     });
                     showList.start();
@@ -379,8 +366,9 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
             });
             animatedLogo.stopAnimationOnceFinished();
         } else {
+            animatedLogo.stopAnimationOnceFinished();
+            animatedLogo.setVisibility(View.GONE);
             commentsList.setVisibility(View.VISIBLE);
-            animatingTransiton.set(false);
             if (onlistShownListener != null) {
                 onlistShownListener.doOnListShownAction();
             }
