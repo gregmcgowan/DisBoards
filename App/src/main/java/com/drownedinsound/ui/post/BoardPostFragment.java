@@ -459,7 +459,9 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         replyDetails.putString(DisBoardsConstants.BOARD_POST_ID,
                 boardPost.getId());
         replyDetails.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
-        PostReplyFragment.newInstance(replyDetails).show(getFragmentManager(),
+
+        PostReplyFragment.newInstance(replyToAuthor,null,boardPostId,boardType)
+                .show(getFragmentManager(),
                 "REPLY-DIALOG");
     }
 

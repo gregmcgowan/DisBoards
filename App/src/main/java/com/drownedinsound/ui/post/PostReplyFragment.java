@@ -34,9 +34,19 @@ public class PostReplyFragment extends BaseDialogFragment {
 
     private String replyToCommentID;
 
-    public static PostReplyFragment newInstance(Bundle passedInData) {
+    public static PostReplyFragment newInstance(String replyToAuthor,
+            String replyToCommentId, String postId, BoardType boardType) {
         PostReplyFragment postReplyFragment = new PostReplyFragment();
-        postReplyFragment.setArguments(passedInData);
+        Bundle argumentsBundle = new Bundle();
+        argumentsBundle.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
+                replyToAuthor);
+        argumentsBundle.putString(DisBoardsConstants.BOARD_COMMENT_ID,
+                replyToCommentId);
+        argumentsBundle.putString(DisBoardsConstants.BOARD_POST_ID,
+                postId);
+        argumentsBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
+                boardType);
+        postReplyFragment.setArguments(argumentsBundle);
         return postReplyFragment;
     }
 
