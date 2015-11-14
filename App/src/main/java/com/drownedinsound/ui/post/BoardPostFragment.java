@@ -14,6 +14,7 @@ import com.drownedinsound.events.FailedToThisThisEvent;
 import com.drownedinsound.events.SetBoardPostFavouriteStatusResultEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseControllerFragment;
+import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 import com.drownedinsound.ui.controls.AutoScrollListView;
 import com.drownedinsound.ui.controls.SvgAnimatePathView;
 import com.drownedinsound.utils.SimpleAnimatorListener;
@@ -76,8 +77,8 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     private boolean animatingScrollToLastCommentView;
 
     protected
-    @InjectView(R.id.animated_logo_progress_bar)
-    SvgAnimatePathView animatedLogo;
+    @InjectView(R.id.loading_layout)
+    DisBoardsLoadingLayout loadingLayout;
 
     protected
     @InjectView(R.id.board_post_connection_error_text_view)
@@ -132,6 +133,8 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         View rootView = inflater.inflate(R.layout.board_post_layout, container, false);
         ButterKnife.inject(this, rootView);
 
+        loadingLayout.setContentView(commentsList);
+
         adapter = new BoardPostAdapter(getActivity());
         adapter.setThisACommentActionListener(new ThisACommentActionListener() {
             @Override
@@ -158,7 +161,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 //                    }
 //                });
 
-        animatedLogo.setSvgResource(R.raw.logo);
         return rootView;
     }
 
@@ -177,8 +179,8 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     public void onPause() {
         super.onPause();
 
-        if (animatedLogo != null) {
-            animatedLogo.stopAnimation();
+        if (loadingLayout != null) {
+            loadingLayout.stopAnimation();
         }
     }
 
@@ -229,18 +231,12 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     @Override
     public void hideLoadingView() {
-        hideAnimatedLogoAndShowList(new OnListShownHandler() {
-            @Override
-            public void doOnListShownAction() {
-                //TODO animate
-                //floatingReplyButton.setVisibility();
-            }
-        });
+        loadingLayout.hideAnimatedViewAndShowContent();
     }
 
     @Override
     public void showLoadingView(IBinder hideSoftKeyboardToken) {
-        showAnimatedLogoAndHideList();
+        loadingLayout.showAnimatedViewAndHideContent();
     }
 
     @Override
@@ -253,12 +249,14 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     @Override
     public void showErrorView() {
-        hideAnimatedLogoAndShowList(new OnListShownHandler() {
+        loadingLayout.setContentShownListener(new DisBoardsLoadingLayout.ContentShownListener() {
             @Override
-            public void doOnListShownAction() {
+            public void onContentShown() {
+                loadingLayout.setContentShownListener(null);
                 connectionErrorTextView.setVisibility(View.VISIBLE);
             }
         });
+        loadingLayout.hideAnimatedViewAndShowContent();
     }
 
     public String getBoardPostId() {
@@ -271,14 +269,12 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
 
     public void onEventMainThread(FailedToThisThisEvent event) {
-        hideAnimatedLogoAndShowList();
         Toast.makeText(getActivity(),
                 "Failed to this this. You could try again", Toast.LENGTH_SHORT)
                 .show();
     }
 
     public void onEventMainThread(FailedToPostCommentEvent event) {
-        hideAnimatedLogoAndShowList();
         Toast.makeText(getActivity(),
                 "Failed to post comment. Please try again later",
                 Toast.LENGTH_SHORT).show();
@@ -289,7 +285,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
             Log.d(TAG, "recieved  not logged in ");
         }
 
-        hideAnimatedLogoAndShowList();
         Toast.makeText(getActivity(),
                 "User is not logged in", Toast.LENGTH_SHORT)
                 .show();
@@ -297,7 +292,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
 
     public void onEventMainThread(BoardPostCommentSentEvent event) {
-        showAnimatedLogoAndHideList();
     }
 
     public void onEventMainThread(SetBoardPostFavouriteStatusResultEvent event) {
@@ -316,74 +310,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
                 Toast.LENGTH_SHORT).show();
     }
 
-    public void showAnimatedLogoAndHideList() {
-        if (commentsList.getVisibility() == View.VISIBLE) {
-            commentsList.setVisibility(View.GONE);
-            animatedLogo.setVisibility(View.VISIBLE);
-            animatedLogo.startAnimation();
-//            ObjectAnimator hideList = ObjectAnimator.ofFloat(commentsList, "alpha", 1f, 0f);
-//            hideList.addListener(new SimpleAnimatorListener() {
-//                @Override
-//                public void onAnimationEnd(Animator animation) {
-//                    commentsList.setVisibility(View.INVISIBLE);
-//                    moveToFirstOrLastCommentLayout.setVisibility(View.INVISIBLE);
-//                    animatedLogo.startAnimation();
-//                }
-//            });
-//            hideList.start();
-
-        } else {
-            if (!animatedLogo.animationInProgress()) {
-                animatedLogo.startAnimation();
-            }
-        }
-    }
-
-    public void hideAnimatedLogoAndShowList() {
-        hideAnimatedLogoAndShowList(null);
-    }
-
-    public void hideAnimatedLogoAndShowList(final OnListShownHandler onlistShownListener) {
-        if (animatedLogo.getVisibility() == View.VISIBLE) {
-            animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    ObjectAnimator showList = ObjectAnimator.ofFloat(commentsList, "alpha", 0f, 1f);
-                    showList.addListener(new SimpleAnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-                            commentsList.setVisibility(View.VISIBLE);
-
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            animatedLogo.setVisibility(View.GONE);
-                            if (onlistShownListener != null) {
-                                onlistShownListener.doOnListShownAction();
-                            }
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-                            animatedLogo.setVisibility(View.GONE);
-                            commentsList.setVisibility(View.VISIBLE);
-                        }
-                    });
-                    showList.start();
-                }
-            });
-            animatedLogo.stopAnimationOnceFinished();
-        } else {
-            animatedLogo.stopAnimationOnceFinished();
-            animatedLogo.setVisibility(View.GONE);
-            commentsList.setVisibility(View.VISIBLE);
-            if (onlistShownListener != null) {
-                onlistShownListener.doOnListShownAction();
-            }
-        }
-        //  }
-    }
 
     @Override
     public void onResume() {

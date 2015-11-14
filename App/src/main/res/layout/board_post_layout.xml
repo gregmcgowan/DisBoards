@@ -15,9 +15,10 @@
             android:fastScrollEnabled="true"
             android:smoothScrollbar="true"/>
 
-    <include
-            android:id="@+id/animated_logo_progress_bar"
-            layout="@layout/animated_logo"/>
+    <com.drownedinsound.ui.base.DisBoardsLoadingLayout
+            android:id="@+id/loading_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
     <TextView
             android:id="@+id/board_post_connection_error_text_view"
             android:layout_width="wrap_content"

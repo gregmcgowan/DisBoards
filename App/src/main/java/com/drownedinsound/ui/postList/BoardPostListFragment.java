@@ -11,6 +11,7 @@ import com.drownedinsound.events.SentNewPostEvent;
 import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseControllerFragment;
+import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 import com.drownedinsound.ui.controls.SvgAnimatePathView;
 import com.drownedinsound.ui.post.BoardPostActivity;
 import com.drownedinsound.ui.post.BoardPostFragment;
@@ -65,8 +66,8 @@ public class BoardPostListFragment
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
             + "BoardListFragment";
 
-    @InjectView(R.id.animated_logo_progress_bar)
-    SvgAnimatePathView animatedLogo;
+    @InjectView(R.id.loading_layout)
+    DisBoardsLoadingLayout loadingLayout;
 
     @InjectView(R.id.board_list_connection_error_text_view)
     TextView connectionErrorTextView;
@@ -131,8 +132,8 @@ public class BoardPostListFragment
     @Override
     public void onPause() {
         super.onPause();
-        if (animatedLogo != null) {
-            animatedLogo.stopAnimation();
+        if (loadingLayout != null) {
+            loadingLayout.stopAnimation();
         }
     }
 
@@ -142,6 +143,8 @@ public class BoardPostListFragment
         View rootView = inflater.inflate(R.layout.board_list_layout, container, false);
 
         ButterKnife.inject(this, rootView);
+
+        loadingLayout.setContentView(listView);
 
         swipeRefreshLayout.setColorSchemeResources(R.color.highlighted_blue);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -161,8 +164,6 @@ public class BoardPostListFragment
 
         listView.setLayoutManager(new LinearLayoutManager(listView.getContext()));
         listView.setAdapter(adapter);
-
-        animatedLogo.setSvgResource(R.raw.logo);
 
         return rootView;
     }
@@ -209,7 +210,6 @@ public class BoardPostListFragment
             viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_ID, postId);
             startActivity(viewPostIntent);
         }
-        animatedLogo.tag = board.getDisplayName();
     }
 
     @Override
@@ -224,67 +224,7 @@ public class BoardPostListFragment
         outState.putParcelable(DisBoardsConstants.BOARD, board);
     }
 
-
-    public void showAnimatedLogoAndHideList() {
-        Timber.d("Board " + board.getDisplayName() + " showAnimatedLogoAndHideList ");
-        if (listView.getVisibility() == View.VISIBLE) {
-            listView.setVisibility(View.GONE);
-            animatedLogo.setVisibility(View.VISIBLE);
-            Timber.d("Board " + board.getDisplayName() + " start animation");
-            animatedLogo.startAnimation();
-        } else {
-            if (!animatedLogo.animationInProgress()) {
-                Timber.d("Board " + board.getDisplayName() + " start animation");
-                animatedLogo.startAnimation();
-            }
-        }
-    }
-
-    public void hideAnimatedLogoAndShowList() {
-        Timber.d("Board " + board.getDisplayName() + " hide logo and show list");
-        if (animatedLogo.getVisibility() == View.VISIBLE) {
-            Timber.d("Board " + board.getDisplayName() + " fade out animated logo");
-            animatedLogo.setAnimationListener(new SimpleAnimatorListener() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    Timber.d("Board " + board.getDisplayName() + " Animation end");
-                    ObjectAnimator showList = ObjectAnimator.ofFloat(listView, "alpha", 0f, 1f);
-                    showList.addListener(new SimpleAnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-                            listView.setVisibility(View.VISIBLE);
-
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            animatedLogo.setVisibility(View.GONE);
-                            listView.setVisibility(View.VISIBLE);
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-                            animatedLogo.setVisibility(View.GONE);
-                            listView.setVisibility(View.VISIBLE);
-                        }
-                    });
-                    showList.start();
-                }
-
-
-            });
-            animatedLogo.stopAnimationOnceFinished();
-        } else {
-            animatedLogo.stopAnimationOnceFinished();
-            animatedLogo.setVisibility(View.GONE);
-            listView.setVisibility(View.VISIBLE);
-        }
-
-    }
-
-
     public void onEventMainThread(FailedToPostNewThreadEvent event) {
-        hideAnimatedLogoAndShowList();
         Toast.makeText(getActivity(), "Failed to create post",
                 Toast.LENGTH_SHORT).show();
     }
@@ -306,7 +246,7 @@ public class BoardPostListFragment
     public void onEventMainThread(SentNewPostEvent event) {
         SentNewPostState state = event.getState();
         if (state.equals(SentNewPostState.SENT)) {
-            showAnimatedLogoAndHideList();
+            //showAnimatedLogoAndHideList();
         } else if (state.equals(SentNewPostState.CONFIRMED)) {
             //Refresh the current list
             requestBoardSummaryPage(1, true, true);
@@ -318,7 +258,6 @@ public class BoardPostListFragment
             Log.d(TAG, "recieved  not logged in ");
         }
 
-        hideAnimatedLogoAndShowList();
         Toast.makeText(getActivity(),
                 "User is not logged in", Toast.LENGTH_SHORT)
                 .show();
@@ -412,12 +351,12 @@ public class BoardPostListFragment
 
     @Override
     public void hideLoadingView() {
-        hideAnimatedLogoAndShowList();
+        loadingLayout.hideAnimatedViewAndShowContent();
     }
 
     @Override
     public void showLoadingView(IBinder hideSoftKeyboardToken) {
-        showAnimatedLogoAndHideList();
+        loadingLayout.showAnimatedViewAndHideContent();
     }
 
     private class BoardPostSummaryListEndlessAdapter extends EndlessAdapter {

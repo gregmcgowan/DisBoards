@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/board_list_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/background_colour_light">
 
     <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipeToRefreshLayout"
@@ -22,19 +24,20 @@
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <include
-            android:id="@+id/animated_logo_progress_bar"
-            layout="@layout/animated_logo"/>
-
+    <com.drownedinsound.ui.base.DisBoardsLoadingLayout
+            android:id="@+id/loading_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     <TextView
             android:id="@+id/board_list_connection_error_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_gravity="center"
             android:gravity="center"
             android:text="@string/connection_error_text"
             android:textSize="@dimen/text_medium"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
-</RelativeLayout>
+</FrameLayout>
