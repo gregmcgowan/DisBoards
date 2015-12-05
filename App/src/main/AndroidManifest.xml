@@ -16,6 +16,7 @@
         <activity android:name=".ui.start.LoginActivity" android:label=""/>
         <activity android:name=".ui.postList.BoardPostListParentActivity" android:label=""/>
         <activity android:name=".ui.post.BoardPostActivity" android:label=""/>
+        <activity android:name=".ui.post.PostReplyActivity" android:label=""/>
         <activity android:name=".ui.favourites.FavouritesActivity" android:label="Favourite Posts"
                   android:icon="@null"/>
 
@@ -43,6 +44,8 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+
 
         <meta-data android:name="com.crashlytics.ApiKey"
                    android:value="cbf1e3f91081369d89e7101d65a0721a48066835"/>

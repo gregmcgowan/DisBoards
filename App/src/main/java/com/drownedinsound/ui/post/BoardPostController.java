@@ -4,6 +4,7 @@ import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.events.FailedToGetBoardPostEvent;
+import com.drownedinsound.events.PostCommentEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
 import com.drownedinsound.qualifiers.ForDatabase;
 import com.drownedinsound.ui.base.BaseUIController;
@@ -57,7 +58,7 @@ public class BoardPostController extends BaseUIController {
     public void onUiAttached(Ui ui) {
         if (ui instanceof BoardPostParentUi) {
             if (!eventBus.isRegistered(this)) {
-                eventBus.register(this);
+                eventBus.registerSticky(this);
             }
         }
     }
@@ -131,4 +132,27 @@ public class BoardPostController extends BaseUIController {
         }
     }
 
+    public void replyToComment(ReplyToCommentUi replyToCommentUi,String boardPostId, String replyToCommentID, String commentTitle,
+            String commentContent, BoardType boardType) {
+        replyToCommentUi.showLoadingProgress(true);
+
+        int uiID = getId(replyToCommentUi);
+
+        disApiClient.postComment(boardPostId,replyToCommentID,commentTitle,commentContent,boardType,uiID);
+    }
+
+    @SuppressWarnings("unused")
+    public void onEventMainThread(PostCommentEvent postCommentEvent) {
+        eventBus.removeStickyEvent(postCommentEvent);
+        ReplyToCommentUi replyToCommentUi = (ReplyToCommentUi) findUi(postCommentEvent.getUiID());
+        if(replyToCommentUi != null) {
+            if(postCommentEvent.isSuccess()) {
+                replyToCommentUi.hidePostCommentUi();
+            } else {
+                replyToCommentUi.handlePostCommentFailure();
+            }
+
+        }
+
+    }
 }

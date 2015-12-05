@@ -3,7 +3,7 @@ package com.drownedinsound.data.network.handlers;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
-import com.drownedinsound.events.FailedToPostCommentEvent;
+import com.drownedinsound.events.PostCommentEvent;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
@@ -17,32 +17,31 @@ public class PostACommentHandler extends OkHttpAsyncResponseHandler {
     private BoardType boardType;
 
 
-    public PostACommentHandler(String boardPostId, BoardType boardType) {
+    public PostACommentHandler(String boardPostId, BoardType boardType, int uiID) {
         this.postID = boardPostId;
         this.boardType = boardType;
         setUpdateUI(true);
+        setUiID(uiID);
     }
 
     @Override
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
-        BoardPost boardPost = null;
         if (inputStream != null) {
             BoardPostParser boardPostParser = new BoardPostParser(userSessionManager, inputStream,
                     postID, boardType);
-            boardPost = boardPostParser.parse();
+            BoardPost boardPost = boardPostParser.parse();
             if (boardPost != null) {
                 databaseHelper.setBoardPost(boardPost);
             }
         }
         if (isUpdateUI()) {
-//            eventBus.post(
-//                    new RetrievedBoardPostEvent(boardPost, false, false));
+            eventBus.postSticky(new PostCommentEvent(getUiID(), true));
         }
     }
 
     @Override
     public void handleFailure(Request request, Throwable throwable) {
-        eventBus.post(new FailedToPostCommentEvent());
+        eventBus.postSticky(new PostCommentEvent(getUiID(),false));
     }
 
 

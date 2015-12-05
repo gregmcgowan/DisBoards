@@ -37,7 +37,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"/>
             <ImageButton
-                    android:id="@+id/refresh_board_posts_button"
+                    android:id="@+id/reply_send_button"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:paddingLeft="@dimen/toolbar_button_padding"
@@ -45,7 +45,7 @@
                     android:background="@drawable/selectable_background_dis_boards"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
-                    android:src="@drawable/ic_refresh_black_24dp"/>
+                    android:src="@drawable/ic_send_black_24dp"/>
         </RelativeLayout>
 
         <include

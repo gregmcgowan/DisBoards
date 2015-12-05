@@ -8,16 +8,12 @@ import com.drownedinsound.data.model.BoardPostComment;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.network.UrlConstants;
 import com.drownedinsound.database.DatabaseService;
-import com.drownedinsound.events.BoardPostCommentSentEvent;
-import com.drownedinsound.events.FailedToPostCommentEvent;
 import com.drownedinsound.events.FailedToThisThisEvent;
 import com.drownedinsound.events.SetBoardPostFavouriteStatusResultEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 import com.drownedinsound.ui.controls.AutoScrollListView;
-import com.drownedinsound.ui.controls.SvgAnimatePathView;
-import com.drownedinsound.utils.SimpleAnimatorListener;
 import com.drownedinsound.utils.UiUtils;
 
 import android.animation.Animator;
@@ -142,6 +138,12 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
                 thisAComment(boardPostComment);
             }
         });
+        adapter.setReplyToCommentActionListener(new ReplyToCommentActionListener() {
+            @Override
+            public void doReplyToCommentAction(BoardPostComment boardPostComment) {
+                displayReplyDialog(boardPostComment);
+            }
+        });
         commentsList.setAdapter(adapter);
         moveToFirstOrLastCommentLayout
                 .setOnClickListener(new OnClickListener() {
@@ -164,9 +166,16 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         return rootView;
     }
 
+    private void displayReplyDialog(BoardPostComment boardPostComment) {
+        String replyToAuthor = boardPostComment.getReplyToUsername();
+        String commentId = boardPostComment.getId();
+        startActivity(PostReplyActivity
+                .getIntent(getActivity(), replyToAuthor, commentId, boardPostId, boardType));
+    }
+
     private void thisAComment(BoardPostComment boardPostComment) {
         String commentID = boardPostComment.getId();
-        boardPostController.thisAComment(this,boardPostUrl,boardType,boardPostId,commentID);
+        boardPostController.thisAComment(this, boardPostUrl, boardType, boardPostId, commentID);
     }
 
     @Override
@@ -274,12 +283,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
                 .show();
     }
 
-    public void onEventMainThread(FailedToPostCommentEvent event) {
-        Toast.makeText(getActivity(),
-                "Failed to post comment. Please try again later",
-                Toast.LENGTH_SHORT).show();
-    }
-
     public void onEventMainThread(UserIsNotLoggedInEvent event) {
         if (DisBoardsConstants.DEBUG) {
             Log.d(TAG, "recieved  not logged in ");
@@ -290,9 +293,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
                 .show();
     }
 
-
-    public void onEventMainThread(BoardPostCommentSentEvent event) {
-    }
 
     public void onEventMainThread(SetBoardPostFavouriteStatusResultEvent event) {
         if (event.isSuccess()) {
@@ -377,18 +377,11 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     @OnClick(R.id.floating_reply_button)
     public void doReplyAction() {
-        Bundle replyDetails = new Bundle();
         String replyToAuthor = boardPost.getAuthorUsername();
-        replyDetails.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
-                replyToAuthor);
-        replyDetails.putString(DisBoardsConstants.BOARD_POST_ID,
-                boardPost.getId());
-        replyDetails.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
-
-        PostReplyFragment.newInstance(replyToAuthor,null,boardPostId,boardType)
-                .show(getFragmentManager(),
-                "REPLY-DIALOG");
+        startActivity(PostReplyActivity
+                .getIntent(getActivity(), replyToAuthor, null, boardPostId, boardType));
     }
+
 
     public void doRefreshAction() {
         Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Refresh  post");

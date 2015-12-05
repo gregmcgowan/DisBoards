@@ -3,30 +3,44 @@ package com.drownedinsound.ui.post;
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.BoardType;
-import com.drownedinsound.events.BoardPostCommentSentEvent;
-import com.drownedinsound.ui.base.BaseDialogFragment;
+import com.drownedinsound.ui.base.BaseControllerFragment;
+import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 
-import android.app.Dialog;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class PostReplyFragment extends BaseDialogFragment {
+import javax.inject.Inject;
 
-    private TextView replyToTextView;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 
-    private ImageButton replyButton;
+/**
+ * Created by gregmcgowan on 14/11/15.
+ */
+public class PostReplyFragment extends BaseControllerFragment<BoardPostController> implements ReplyToCommentUi {
 
-    // private TextView originalCommentTextView;
-    private EditText commentTitleEditView;
+    @InjectView(R.id.loading_layout)
+    DisBoardsLoadingLayout loadingLayout;
 
-    private EditText commentContentEditView;
+    @InjectView(R.id.content_container)
+    ViewGroup contentConatiner;
+
+    @InjectView(R.id.board_post_reply_original_comment)
+    TextView replyToTextView;
+
+    @InjectView(R.id.board_post_reply_subject)
+    EditText commentTitleEditView;
+
+    @InjectView(R.id.board_post_reply_content)
+    EditText commentContentEditView;
 
     private String boardPostId;
 
@@ -34,94 +48,106 @@ public class PostReplyFragment extends BaseDialogFragment {
 
     private String replyToCommentID;
 
+    private String replyToAuthor;
+    @Inject
+    BoardPostController boardPostController;
+
     public static PostReplyFragment newInstance(String replyToAuthor,
             String replyToCommentId, String postId, BoardType boardType) {
-        PostReplyFragment postReplyFragment = new PostReplyFragment();
-        Bundle argumentsBundle = new Bundle();
-        argumentsBundle.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
+        Bundle arguments = new Bundle();
+        arguments.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
                 replyToAuthor);
-        argumentsBundle.putString(DisBoardsConstants.BOARD_COMMENT_ID,
+        arguments.putString(DisBoardsConstants.BOARD_COMMENT_ID,
                 replyToCommentId);
-        argumentsBundle.putString(DisBoardsConstants.BOARD_POST_ID,
+        arguments.putString(DisBoardsConstants.BOARD_POST_ID,
                 postId);
-        argumentsBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
+        arguments.putSerializable(DisBoardsConstants.BOARD_TYPE,
                 boardType);
-        postReplyFragment.setArguments(argumentsBundle);
+        PostReplyFragment postReplyFragment = new PostReplyFragment();
+        postReplyFragment.setArguments(arguments);
+
         return postReplyFragment;
     }
 
-    public PostReplyFragment() {
-
+    @Override
+    protected BoardPostController getController() {
+        return boardPostController;
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        return dialog;
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle arguments = getArguments();
+
+        this.replyToCommentID = arguments.getString(DisBoardsConstants.BOARD_COMMENT_ID);
+        this.boardType = (BoardType) arguments.getSerializable(DisBoardsConstants.BOARD_TYPE);
+        this.boardPostId = arguments.getString(DisBoardsConstants.BOARD_POST_ID);
+        this.replyToAuthor = arguments.getString(DisBoardsConstants.REPLY_TO_AUTHOR);
     }
 
+    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.board_post_reply, container,
-                false);
+        View view = inflater.inflate(R.layout.board_post_reply,container,false);
 
-        commentTitleEditView = (EditText) view
-                .findViewById(R.id.board_post_reply_subject);
-        commentContentEditView = (EditText) view
-                .findViewById(R.id.board_post_reply_reply);
-        replyToTextView = (TextView) view
-                .findViewById(R.id.board_post_reply_to_author);
+        ButterKnife.inject(this,view);
 
-        replyButton = (ImageButton) view
-                .findViewById(R.id.board_post_reply_button);
-        replyButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doReplyAction();
-            }
-        });
-    /*
-         * originalCommentTextView = (TextView) view
-	 * .findViewById(R.id.board_post_reply_original_comment);
-	 */
+        loadingLayout.setContentView(contentConatiner);
 
-        String originalComment = getArguments().getString(
-                DisBoardsConstants.REPLY_TO_TEXT);
-        String replyToAuthor = getArguments().getString(
-                DisBoardsConstants.REPLY_TO_AUTHOR);
+
         String replyToText = "In reply to " + replyToAuthor;
-
-        // originalCommentTextView.setText(Html.fromHtml(originalComment));
         replyToTextView.setText(replyToText);
-
-        this.boardPostId = getArguments().getString(
-                DisBoardsConstants.BOARD_POST_ID);
-        this.boardType = (BoardType) getArguments().getSerializable(
-                DisBoardsConstants.BOARD_TYPE);
-        this.replyToCommentID = getArguments().getString(
-                DisBoardsConstants.BOARD_COMMENT_ID);
 
         return view;
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        commentTitleEditView.requestFocus();
+    public void showLoadingProgress(boolean show) {
+        if(show) {
+            requestToShowLoadingView();
+        } else {
+            requestToHideLoadingView();
+        }
     }
 
-    private void doReplyAction() {
-        // TODO check to see if data has been entered
-        disApiClient.postComment(boardPostId,
-                replyToCommentID,
-                commentTitleEditView.getText().toString(),
-                commentContentEditView.getText().toString(), boardType);
-
-        dismiss();
-        eventBus.post(new BoardPostCommentSentEvent());
+    @Override
+    public void hideLoadingView() {
+        loadingLayout.hideAnimatedViewAndShowContent();
     }
 
+    @Override
+    public void showLoadingView(IBinder hideSoftKeyboardToken) {
+        loadingLayout.showAnimatedViewAndHideContent();
+    }
+
+    @OnClick(R.id.reply_send_button)
+    protected void doReplyAction() {
+        String commentTitle = commentTitleEditView.getText().toString();
+        String commentContent = commentContentEditView.getText().toString();
+
+        //TODO validation
+
+        boardPostController
+                .replyToComment(this, boardPostId, replyToCommentID, commentTitle, commentContent,
+                        boardType);
+    }
+
+    @OnClick(R.id.back_button)
+    protected void doBackAction() {
+        getActivity().finish();
+    }
+
+    @Override
+    public void hidePostCommentUi() {
+        getActivity().finish();
+    }
+
+    @Override
+    public void handlePostCommentFailure() {
+        Toast.makeText(getActivity(),
+                "Failed to post comment. Please try again later",
+                Toast.LENGTH_SHORT).show();
+    }
 }

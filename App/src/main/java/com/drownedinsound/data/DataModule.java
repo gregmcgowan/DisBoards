@@ -13,7 +13,7 @@ import com.drownedinsound.qualifiers.ForDatabase;
 import com.drownedinsound.qualifiers.ForNetworkRequests;
 import com.drownedinsound.ui.post.BoardPostActivity;
 import com.drownedinsound.ui.post.BoardPostFragment;
-import com.drownedinsound.ui.post.PostReplyFragment;
+import com.drownedinsound.ui.post.PostReplyActivity;
 import com.drownedinsound.ui.postList.BoardPostListFragment;
 import com.drownedinsound.ui.postList.BoardPostListParentActivity;
 import com.drownedinsound.ui.postList.NewPostFragment;
@@ -54,7 +54,7 @@ import static android.content.Context.MODE_PRIVATE;
                 BoardPostActivity.class,
                 BoardPostFragment.class,
                 BoardPostListFragment.class,
-                PostReplyFragment.class,
+                PostReplyActivity.class,
                 NewPostFragment.class
         },
         complete = false,

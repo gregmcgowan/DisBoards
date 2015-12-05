@@ -1,57 +1,42 @@
 package com.drownedinsound.ui.post;
 
-import com.drownedinsound.core.DisBoardsConstants;
+import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardPostComment;
+import com.drownedinsound.data.model.BoardType;
 
-import android.app.FragmentManager;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 
-import java.lang.ref.WeakReference;
 
 /**
  * Created by gregmcgowan on 13/08/15.
  */
-public class ReplyToCommentListener {
+public class ReplyToCommentListener implements View.OnClickListener {
 
-    private WeakReference<BoardPostListAdapter> adapterWeakReference;
+    private BoardPostComment comment;
 
-    private WeakReference<FragmentManager> fragmentManagerReference;
+    private BoardPost boardPost;
+
 
     public ReplyToCommentListener(
-            WeakReference<BoardPostListAdapter> adapterWeakReference,
-            WeakReference<FragmentManager> fragmentManager) {
-        this.adapterWeakReference = adapterWeakReference;
-        this.fragmentManagerReference = fragmentManager;
+            BoardPost boardPost,
+            BoardPostComment boardPostComment) {
+        this.comment = boardPostComment;
+        this.boardPost = boardPost;
     }
 
-    public void doCommentClickAction(View parentView, int position) {
-        BoardPostComment comment = null;
-        BoardPostListAdapter boardPostListAdapter = adapterWeakReference
-                .get();
-        if (boardPostListAdapter != null) {
-            comment = boardPostListAdapter.getItem(position);
-        }
-
+    @Override
+    public void onClick(View v) {
         if (comment != null) {
             String replyToAuthor = comment.getAuthorUsername();
             if (TextUtils.isEmpty(replyToAuthor)) {
-                BoardPostComment initalPost = boardPostListAdapter
-                        .getItem(0);
-                replyToAuthor = initalPost.getAuthorUsername();
+                replyToAuthor = boardPost.getAuthorUsername();
             }
             String replyToId = comment.getId();
+            String postId = comment.getBoardPost().getId();
+            BoardType boardType = comment.getBoardPost().getBoardType();
 
-            Bundle replyDetails = new Bundle();
-            replyDetails.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
-                    replyToAuthor);
-            replyDetails.putString(DisBoardsConstants.BOARD_COMMENT_ID,
-                    replyToId);
-            replyDetails.putString(DisBoardsConstants.BOARD_POST_ID,
-                    comment.getBoardPost().getId());
-            replyDetails.putSerializable(DisBoardsConstants.BOARD_TYPE,
-                    comment.getBoardPost().getBoardType());
+
     /*
              * String replyText = comment.getTitle(); if
              * (TextUtils.isEmpty(replyText)) { replyText =
@@ -61,11 +46,9 @@ public class ReplyToCommentListener {
              */
             // TextUtils.ellipsize(text, p, avail, where)
 
-            PostReplyFragment.newInstance(replyDetails)
-                    .show(fragmentManagerReference.get(),
-                            "REPLY_FRAGMENT_DIALOG");
-
-        } else {
+//            PostReplyFragment.newInstance(replyToAuthor,replyToId,postId,boardType)
+//                    .show(fragmentManagerReference.get(),
+//                            "REPLY_FRAGMENT_DIALOG");
 
         }
     }

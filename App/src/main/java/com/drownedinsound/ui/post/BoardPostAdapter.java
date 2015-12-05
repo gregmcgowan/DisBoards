@@ -40,6 +40,8 @@ public class BoardPostAdapter extends BaseAdapter {
 
     private ThisACommentActionListener thisACommentActionListener;
 
+    private ReplyToCommentActionListener replyToCommentActionListener;
+
     public BoardPostAdapter(Context context) {
         this.context = context;
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -85,6 +87,11 @@ public class BoardPostAdapter extends BaseAdapter {
     public void setThisACommentActionListener(
             ThisACommentActionListener thisACommentActionListener) {
         this.thisACommentActionListener = thisACommentActionListener;
+    }
+
+    public void setReplyToCommentActionListener(
+            ReplyToCommentActionListener replyToCommentActionListener) {
+        this.replyToCommentActionListener = replyToCommentActionListener;
     }
 
     @Override
@@ -203,16 +210,10 @@ public class BoardPostAdapter extends BaseAdapter {
                                         comment));
                 boardPostCommentHolder.thisTextView.setOnClickListener(
                         new ThisACommentClickListener(comment,thisACommentActionListener));
-//              board
-//                boardPostCommentHolder.replyTextView
-//                        .setOnClickListener(new CommentSectionClickListener(
-//                                position,
-//                                new ReplyToCommentListener(
-//                                        new WeakReference<BoardPostListAdapter>(
-//                                                adapter),
-//                                        new WeakReference<FragmentManager>(
-//                                                getActivity()
-//                                                        .getFragmentManager()))));
+
+                boardPostCommentHolder.replyTextView.setOnClickListener(
+                        new ReplyToCommentClickListener(comment, replyToCommentActionListener)
+                );
 
                 boolean actionSectionVisible = comment
                         .isActionSectionVisible();

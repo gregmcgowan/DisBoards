@@ -97,6 +97,7 @@ public class BoardPostListController extends BaseUIController {
             if (ui instanceof BoardPostListUi) {
                 BoardPostListUi boardPostListUi
                         = (BoardPostListUi) ui;
+
                 if (boardPostListUi.getPageIndex()
                         == positon) {
                     return boardPostListUi;

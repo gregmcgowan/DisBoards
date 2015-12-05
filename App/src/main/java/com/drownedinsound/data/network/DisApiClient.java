@@ -242,7 +242,7 @@ public class DisApiClient {
     }
 
     public void postComment(String boardPostId, String commentId, String title, String content,
-            BoardType boardType) {
+            BoardType boardType, int callingUiId) {
         String authToken = userSessionManager.getAuthenticityToken();
 
         if (TextUtils.isEmpty(authToken)) {
@@ -253,7 +253,8 @@ public class DisApiClient {
             throw new IllegalArgumentException("BoardPostId cannot be null");
         }
 
-        PostACommentHandler postACommentHandler = new PostACommentHandler(boardPostId, boardType);
+        PostACommentHandler postACommentHandler = new PostACommentHandler(boardPostId, boardType,
+                callingUiId);
         inject(postACommentHandler);
 
         if (commentId == null) {
@@ -305,7 +306,6 @@ public class DisApiClient {
 
     private void performRequest(Request.Builder requestBuilder, final Object tag, String url,
             final OkHttpAsyncResponseHandler okHttpAsyncResponseHandler) {
-
         inProgressRequests.add(tag);
 
         Request request = requestBuilder.url(url).build();

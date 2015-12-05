@@ -37,4 +37,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Ui {
 
     protected abstract int getLayoutResource();
 
+    public Toolbar getToolbar() {
+        return toolbar;
+    }
 }
