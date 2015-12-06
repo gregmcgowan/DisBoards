@@ -11,6 +11,8 @@ import android.os.Bundle;
 
 import javax.inject.Inject;
 
+import io.fabric.sdk.android.Fabric;
+
 
 public class StartActivity extends BaseActivity {
 
@@ -20,11 +22,6 @@ public class StartActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (BuildConfig.BUILD_TYPE.equals("beta")
-                || BuildConfig.BUILD_TYPE.equals("release")) {
-            Crashlytics.start(this);
-        }
 
         if (userSessionManager.isUserLoggedIn()) {
             goToMainActivity();

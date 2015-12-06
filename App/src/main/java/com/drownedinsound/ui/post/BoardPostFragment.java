@@ -7,7 +7,7 @@ import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardPostComment;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.network.UrlConstants;
-import com.drownedinsound.database.DatabaseService;
+import com.drownedinsound.data.database.DatabaseService;
 import com.drownedinsound.events.FailedToThisThisEvent;
 import com.drownedinsound.events.SetBoardPostFavouriteStatusResultEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;

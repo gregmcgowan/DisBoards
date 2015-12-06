@@ -1,15 +1,16 @@
 package com.drownedinsound.ui.start;
 
-import com.drownedinsound.data.UserSessionManager;
-import com.drownedinsound.data.network.DisApiClient;
-import com.drownedinsound.events.LoginResponseEvent;
+import com.drownedinsound.data.DisBoardRepo;
+import com.drownedinsound.data.network.LoginResponse;
 import com.drownedinsound.ui.base.BaseUIController;
 import com.drownedinsound.ui.base.Ui;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.greenrobot.event.EventBus;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscriber;
 
 /**
  * Created by gregmcgowan on 01/11/15.
@@ -17,30 +18,18 @@ import de.greenrobot.event.EventBus;
 @Singleton
 public class LoginController extends BaseUIController {
 
-
-    private DisApiClient disApiClient;
-
-    private EventBus eventBus;
-
-    private UserSessionManager userSessionManager;
+    private DisBoardRepo disBoardRepo;
 
     @Inject
-    public LoginController(DisApiClient disApiClient, EventBus eventBus,
-            UserSessionManager userSessionManager) {
-        this.disApiClient = disApiClient;
-        this.eventBus = eventBus;
-        this.userSessionManager = userSessionManager;
+    public LoginController(DisBoardRepo disBoardRepo) {
+        this.disBoardRepo = disBoardRepo;
     }
 
 
     @Override
     public void onUiAttached(Ui ui) {
-        if (!eventBus.isRegistered(this)) {
-            eventBus.register(this);
-        }
-
         if (ui instanceof LoginUi) {
-            if (userSessionManager.isUserLoggedIn()) {
+            if (disBoardRepo.isUserLoggedIn()) {
                 ((LoginUi) ui).handleLoginSuccess();
             }
         }
@@ -48,35 +37,40 @@ public class LoginController extends BaseUIController {
 
     @Override
     public void onUiDetached(Ui ui) {
-        if (eventBus.isRegistered(this)) {
-            eventBus.unregister(this);
-        }
     }
 
     public void doLurkAction(LoginUi loginUi) {
-        userSessionManager.clearSession();
+        disBoardRepo.clearUserSession();
         loginUi.handleLoginSuccess();
     }
 
     public void doLoginAction(LoginUi loginUi, String username, String password) {
-        int id = getId(loginUi);
+        final int id = getId(loginUi);
         loginUi.showLoadingProgress(true);
-        disApiClient.loginUser(username, password, id);
-    }
+        Observable<LoginResponse> loginResponseObservable = disBoardRepo.loginUser(username,password);
+        Observer<LoginResponse> loginResponseObserver = new Subscriber<LoginResponse>() {
+            @Override
+            public void onCompleted() {
 
-    @SuppressWarnings("unused")
-    public void onEventMainThread(LoginResponseEvent event) {
-        int callingID = event.getLoginUiId();
-
-        LoginUi loginUi = (LoginUi) findUi(callingID);
-        if (loginUi != null) {
-            boolean loginSucceeded = event.isSuccess();
-            if (loginSucceeded) {
-                loginUi.handleLoginSuccess();
-            } else {
-                loginUi.showLoadingProgress(false);
-                loginUi.handleLoginFailure();
             }
-        }
+
+            @Override
+            public void onError(Throwable e) {
+                LoginUi loginUi = (LoginUi) findUi(id);
+                if(loginUi != null) {
+                    loginUi.showLoadingProgress(false);
+                    loginUi.handleLoginFailure();
+                }
+            }
+
+            @Override
+            public void onNext(LoginResponse loginResponse) {
+                LoginUi loginUi = (LoginUi) findUi(id);
+                if(loginUi != null) {
+                    loginUi.handleLoginSuccess();
+                }
+            }
+        };
     }
+
 }

@@ -17,7 +17,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class LoginResponseHandler extends OkHttpAsyncResponseHandler {
+public class LoginResponseHandler extends ResponseHandler {
 
     public LoginResponseHandler(int uiId) {
         setUiID(uiId);

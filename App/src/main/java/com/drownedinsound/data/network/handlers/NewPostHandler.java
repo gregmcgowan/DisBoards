@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-public class NewPostHandler extends OkHttpAsyncResponseHandler {
+public class NewPostHandler extends ResponseHandler {
 
     private Board board;
 

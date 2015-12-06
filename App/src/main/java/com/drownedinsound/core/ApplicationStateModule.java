@@ -1,15 +1,15 @@
 package com.drownedinsound.core;
 
 import com.drownedinsound.data.UserSessionManager;
+import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.network.CookieManager;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.handlers.LoginResponseHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
-import com.drownedinsound.database.DatabaseService;
+import com.drownedinsound.data.database.DatabaseService;
 import com.drownedinsound.ui.favourites.FavouritesListFragment;
 import com.drownedinsound.ui.post.BoardPostFragment;
-import com.drownedinsound.ui.post.PostReplyActivity;
 import com.drownedinsound.ui.post.PostReplyFragment;
 import com.drownedinsound.ui.postList.BoardPostListFragment;
 import com.drownedinsound.ui.postList.BoardPostListParentActivity;
@@ -54,7 +54,7 @@ public class ApplicationStateModule {
 
     @Provides
     @Singleton
-    UserSessionManager provideUserSessionManager(CookieManager cookieManager) {
+    UserSessionRepo provideUserSessionManager(CookieManager cookieManager) {
         return new UserSessionManager(cookieManager);
     }
 

@@ -39,20 +39,6 @@ public class BoardPostController extends BaseUIController {
         this.databaseExecutorService = dbExecutorService;
     }
 
-    @Override
-    public void init(Intent intent) {
-
-    }
-
-    @Override
-    public void onPause() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
 
     @Override
     public void onUiAttached(Ui ui) {

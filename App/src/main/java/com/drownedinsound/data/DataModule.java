@@ -1,5 +1,6 @@
 package com.drownedinsound.data;
 
+import com.drownedinsound.data.database.DisBoardsLocalRepo;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.handlers.LoginResponseHandler;
 import com.drownedinsound.data.network.handlers.NewPostHandler;
@@ -7,8 +8,8 @@ import com.drownedinsound.data.network.handlers.PostACommentHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
-import com.drownedinsound.database.DatabaseHelper;
-import com.drownedinsound.database.DatabaseService;
+import com.drownedinsound.data.database.DatabaseHelper;
+import com.drownedinsound.data.database.DatabaseService;
 import com.drownedinsound.qualifiers.ForDatabase;
 import com.drownedinsound.qualifiers.ForNetworkRequests;
 import com.drownedinsound.ui.post.BoardPostActivity;
@@ -113,5 +114,20 @@ public class DataModule {
 
         return client;
     }
+
+
+    @Provides
+    @Singleton
+    DisBoardsLocalRepo disBoardsLocalRepo(Application application) {
+        return new DatabaseHelper(application.getApplicationContext());
+    }
+
+    @Provides
+    @Singleton
+    DisBoardRepo provideDisBoardRepo(DisApiClient disApiClient, DisBoardsLocalRepo disBoardsLocalRepo, UserSessionRepo userSessionRepo) {
+        return new DisBoardRepoImpl(disApiClient,disBoardsLocalRepo,userSessionRepo);
+    }
+
+
 
 }

@@ -1,5 +1,6 @@
 package com.drownedinsound.core;
 
+import com.crashlytics.android.Crashlytics;
 import com.drownedinsound.BuildConfig;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.utils.CrashlyticsTree;
@@ -11,6 +12,7 @@ import android.content.Context;
 import javax.inject.Inject;
 
 import dagger.ObjectGraph;
+import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 public class DisBoardsApp extends Application {
@@ -30,6 +32,10 @@ public class DisBoardsApp extends Application {
         buildObjectGraphAndInject();
         initialiseLogging();
         initialiseDebuggingSettings();
+        if (BuildConfig.BUILD_TYPE.equals("beta")
+                || BuildConfig.BUILD_TYPE.equals("release")) {
+            Fabric.with(this,new Crashlytics());
+        }
     }
 
     private void initialiseDebuggingSettings() {
@@ -57,6 +63,10 @@ public class DisBoardsApp extends Application {
     public void buildObjectGraphAndInject() {
         objectGraph = ObjectGraph.create(Modules.list(this));
         objectGraph.inject(this);
+    }
+
+    public ObjectGraph getObjectGraph() {
+        return objectGraph;
     }
 
     public void inject(Object o) {

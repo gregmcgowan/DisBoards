@@ -1,6 +1,6 @@
 package com.drownedinsound.data.model;
 
-import com.drownedinsound.database.DatabaseHelper;
+import com.drownedinsound.data.database.DatabaseHelper;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 

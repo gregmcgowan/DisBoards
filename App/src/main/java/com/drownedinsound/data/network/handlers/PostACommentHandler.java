@@ -10,7 +10,7 @@ import com.squareup.okhttp.Response;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class PostACommentHandler extends OkHttpAsyncResponseHandler {
+public class PostACommentHandler extends ResponseHandler {
 
     private String postID;
 

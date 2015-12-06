@@ -4,7 +4,7 @@ import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.model.Board;
-import com.drownedinsound.database.DatabaseHelper;
+import com.drownedinsound.data.database.DatabaseHelper;
 import com.drownedinsound.ui.base.BaseControllerActivity;
 import com.drownedinsound.ui.base.SimpleDialogFragment;
 import com.drownedinsound.ui.favourites.FavouritesActivity;

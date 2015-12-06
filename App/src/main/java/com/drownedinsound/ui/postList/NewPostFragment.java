@@ -4,7 +4,7 @@ import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.DraftBoardPost;
-import com.drownedinsound.database.DatabaseHelper;
+import com.drownedinsound.data.database.DatabaseHelper;
 import com.drownedinsound.events.SentNewPostEvent;
 import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.drownedinsound.ui.base.BaseDialogFragment;
@@ -73,8 +73,9 @@ public class NewPostFragment extends BaseDialogFragment {
         clearButton = (ImageButton) view.findViewById(R.id.new_board_post_abandon);
         board = getArguments().getParcelable(DisBoardsConstants.BOARD);
 
-        DraftBoardPost existingDraftPost = DatabaseHelper.getInstance(getActivity())
-                .getDraftBoardPost(board.getBoardType());
+        DraftBoardPost existingDraftPost = null;
+        //DatabaseHelper.getInstance(getActivity())
+          //      .getDraftBoardPost(board.getBoardType());
         if (existingDraftPost != null) {
             postTitleEditText.setText(existingDraftPost.getTitle());
             postContentEditText.setText(existingDraftPost.getContent());

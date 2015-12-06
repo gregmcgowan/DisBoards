@@ -6,8 +6,8 @@ import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
-import com.drownedinsound.database.DatabaseHelper;
-import com.drownedinsound.database.DatabaseService;
+import com.drownedinsound.data.database.DatabaseHelper;
+import com.drownedinsound.data.database.DatabaseService;
 import com.drownedinsound.events.RetrievedFavouritesEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseFragment;
@@ -262,7 +262,7 @@ public class FavouritesListFragment extends BaseFragment {
         BoardPost boardPostSummary = favouriteBoardPosts.get(position);
         if (boardPostSummary != null) {
             BoardType boardType = boardPostSummary.getBoardType();
-            Board board = DatabaseHelper.getInstance(getActivity()).getBoard(boardType);
+            Board board = null;//DatabaseHelper.getInstance(getActivity()).getBoard(boardType);
             postId = boardPostSummary.getId();
 
             postUrl = board.getUrl() + "/" + postId;

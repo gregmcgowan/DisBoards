@@ -4,7 +4,7 @@ import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
-import com.drownedinsound.database.DatabaseHelper;
+import com.drownedinsound.data.database.DatabaseHelper;
 import com.drownedinsound.utils.DateUtils;
 
 import net.htmlparser.jericho.Attributes;
@@ -110,9 +110,10 @@ public class BoardPostSummaryListParser extends StreamingParser {
                                 // TODO we need to get the last viewed time and
                                 // set it here
                                 if (databaseHelper != null) {
-                                    BoardPost existingPost = databaseHelper
-                                            .getBoardPost(currentBoardPost
-                                                    .getId());
+                                    BoardPost existingPost = null;
+//                                    databaseHelper
+//                                            .getBoardPost(currentBoardPost
+//                                                    .getId());
                                     // We don't want to overwrite certain values
                                     if (existingPost != null) {
                                         currentBoardPost

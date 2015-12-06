@@ -3,10 +3,13 @@ package com.drownedinsound.ui.start;
 import com.drownedinsound.R;
 import com.drownedinsound.ui.base.BaseControllerActivity;
 import com.drownedinsound.ui.postList.BoardPostListParentActivity;
+import com.drownedinsound.utils.EspressoIdlingResource;
 import com.drownedinsound.utils.UiUtils;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -86,9 +89,8 @@ public class LoginActivity extends BaseControllerActivity<LoginController> imple
     @Override
     public void handleLoginFailure() {
         Toast.makeText(this, "Login failed", Toast.LENGTH_LONG).show();
-        usernameField.setText("");
         passwordField.setText("");
-        usernameField.requestFocus();
+        passwordField.requestFocus();
     }
 
     @OnClick(R.id.lurk_button)
@@ -121,4 +123,5 @@ public class LoginActivity extends BaseControllerActivity<LoginController> imple
         UiUtils.hideSoftKeyboard(this, loginButton.getApplicationWindowToken());
         loginController.doLoginAction(this, username, password);
     }
+
 }

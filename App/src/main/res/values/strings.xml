@@ -7,6 +7,7 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="drowned_in_sound_logo">Drowned in sound logo</string>
+    <string name="please_enter_both_username_and_password">Please enter a username and password</string>
     <string name="login">Login</string>
     <string name="refresh_text">Refresh</string>
     <string name="reply_text">Reply</string>

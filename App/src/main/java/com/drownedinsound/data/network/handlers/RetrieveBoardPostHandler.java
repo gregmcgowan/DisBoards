@@ -9,14 +9,13 @@ import com.drownedinsound.events.RetrievedBoardPostEvent;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import timber.log.Timber;
 
-public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
+public class RetrieveBoardPostHandler extends ResponseHandler {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
             + "RetrieveBoardPostHandler";
@@ -40,7 +39,7 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
             BoardPostParser boardPostParser = new BoardPostParser(userSessionManager, inputStream,
                     boardPostId, boardPostType);
             boardPost = boardPostParser.parse();
-            BoardPost exisitingBoardPost = databaseHelper.getBoardPost(boardPostId);
+            BoardPost exisitingBoardPost = null;//databaseHelper.getBoardPost(boardPostId);
             int numberOfTimesRead = 0;
             if (exisitingBoardPost != null) {
                 numberOfTimesRead = exisitingBoardPost.getNumberOfTimesRead() + 1;
@@ -57,16 +56,9 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
     @Override
     public void handleFailure(Request request, Throwable throwable) {
         if (DisBoardsConstants.DEBUG) {
-            if (throwable instanceof HttpResponseException) {
-                HttpResponseException exception = (HttpResponseException) throwable;
-                int statusCode = exception.getStatusCode();
-                Timber.d("Status code " + statusCode);
-                Timber.d("Message " + exception.getMessage());
-            } else {
-                Timber.d("Something went really wrong throwable = " + throwable);
-            }
+            Timber.d("Throwable "+throwable.getMessage());
         }
-        BoardPost exisitingBoardPost = databaseHelper.getBoardPost(boardPostId);
+        BoardPost exisitingBoardPost = null;//databaseHelper.getBoardPost(boardPostId);
         if (isUpdateUI() && exisitingBoardPost != null) {
             eventBus.post(new RetrievedBoardPostEvent(exisitingBoardPost, true, true, getUiID()));
         } else {

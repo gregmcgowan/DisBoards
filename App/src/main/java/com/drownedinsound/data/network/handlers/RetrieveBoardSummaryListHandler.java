@@ -1,4 +1,4 @@
-package com.drownedinsound.data.network.handlers;
+    package com.drownedinsound.data.network.handlers;
 
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.Board;
@@ -10,7 +10,6 @@ import com.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +19,7 @@ import java.util.List;
 import timber.log.Timber;
 
 public class RetrieveBoardSummaryListHandler extends
-        OkHttpAsyncResponseHandler {
+        ResponseHandler {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
             + "RetrieveBoardSummaryListHandler";
@@ -53,7 +52,7 @@ public class RetrieveBoardSummaryListHandler extends
             if (boardPostSummaries.size() > 0) {
                 databaseHelper.setBoardPosts(boardPostSummaries);
             }
-            Board board = databaseHelper.getBoard(boardType);
+            Board board = null;//databaseHelper.getBoard(boardType);
             if (board != null) {
                 board.setLastFetchedTime(System.currentTimeMillis());
                 databaseHelper.setBoard(board);
@@ -71,18 +70,11 @@ public class RetrieveBoardSummaryListHandler extends
     @Override
     public void handleFailure(Request request, Throwable throwable) {
         if (DisBoardsConstants.DEBUG) {
-            if (throwable instanceof HttpResponseException) {
-                HttpResponseException exception = (HttpResponseException) throwable;
-                int statusCode = exception.getStatusCode();
-                Timber.d("Status code " + statusCode);
-                Timber.d("Message " + exception.getMessage());
-            } else {
-                Timber.d("Something went really wrong throwable = " + throwable);
-            }
+            Timber.d("Something went really wrong throwable = " + throwable);
         }
 
         if (isUpdateUI()) {
-            List<BoardPost> cachedBoardPosts = databaseHelper.getBoardPosts(boardType);
+            List<BoardPost> cachedBoardPosts = null;//databaseHelper.getBoardPosts(boardType);
             if (cachedBoardPosts.size() > 0) {
                 eventBus.post(
                         new RetrievedBoardPostSummaryListEvent(cachedBoardPosts, boardType,

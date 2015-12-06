@@ -1,7 +1,7 @@
 package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.data.model.Board;
-import com.drownedinsound.database.DatabaseHelper;
+import com.drownedinsound.data.database.DatabaseHelper;
 import com.drownedinsound.ui.base.FragmentPagerAdapter;
 
 import android.app.Fragment;

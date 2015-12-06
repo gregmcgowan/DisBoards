@@ -1,6 +1,5 @@
 package com.drownedinsound.data.network;
 
-import org.apache.http.ProtocolException;
 
 /**
  * This will be thrown by the redirect handler. And caught in the base network handling calls.
@@ -8,6 +7,6 @@ import org.apache.http.ProtocolException;
  *
  * @author gregmcgowan
  */
-public class UserNotLoggedInException extends ProtocolException {
+public class UserNotLoggedInException  {
 
 }

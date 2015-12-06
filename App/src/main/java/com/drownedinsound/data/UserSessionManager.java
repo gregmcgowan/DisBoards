@@ -2,17 +2,20 @@ package com.drownedinsound.data;
 
 import com.drownedinsound.data.network.CookieManager;
 
+import javax.inject.Inject;
+
 import timber.log.Timber;
 
 /**
  * Created by gregmcgowan on 12/08/2014.
  */
-public class UserSessionManager {
+public class UserSessionManager implements UserSessionRepo{
 
     private CookieManager cookieManager;
 
     private String authenticityToken;
 
+    @Inject
     public UserSessionManager(CookieManager cookieManager) {
         this.cookieManager = cookieManager;
     }

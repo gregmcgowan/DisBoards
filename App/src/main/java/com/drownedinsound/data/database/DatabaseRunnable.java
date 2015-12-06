@@ -1,4 +1,4 @@
-package com.drownedinsound.database;
+package com.drownedinsound.data.database;
 
 /**
  * Created by gregmcgowan on 02/12/14.
