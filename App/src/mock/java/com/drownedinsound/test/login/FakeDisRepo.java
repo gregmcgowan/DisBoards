@@ -17,13 +17,23 @@ public class FakeDisRepo implements DisBoardRepo {
 
     private static List<BoardPost> boardPosts;
 
+    private static boolean loginSuccess;
+
     public static void setBoardPostSummariesToReturn(List<BoardPost> boardPostSummariesToReturn) {
         boardPosts = boardPostSummariesToReturn;
     }
 
+    public static void setLoginSuccess(boolean success) {
+        loginSuccess = success;
+    }
+
     @Override
     public Observable<LoginResponse> loginUser(String username, String password) {
-        return Observable.just(new LoginResponse());
+        if(loginSuccess) {
+            return Observable.just(new LoginResponse());
+        } else {
+            return Observable.error(new Exception());
+        }
     }
 
     @Override
