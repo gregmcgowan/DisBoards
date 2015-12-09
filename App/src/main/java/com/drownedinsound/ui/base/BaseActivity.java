@@ -48,4 +48,14 @@ public abstract class BaseActivity extends AppCompatActivity implements Ui {
     public IdlingResource getCountingIdlingResource() {
         return EspressoIdlingResource.getIdlingResource();
     }
+
+    @Override
+    public boolean isBeingDestroyed() {
+        return isFinishing();
+    }
+
+    @Override
+    public int getId() {
+        return hashCode();
+    }
 }

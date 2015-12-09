@@ -24,6 +24,8 @@ public class UrlConstants {
 
     public final static String LOGIN_URL = BASE_URL + "/session/create";
 
+    public final static String LOGIN_PATH = "/session/create";
+
     public final static String BOARD_BASE_URL = BASE_URL + "/community/boards/";
 
     public final static String MUSIC_URL = BOARD_BASE_URL + MUSIC_BOARD_NAME;

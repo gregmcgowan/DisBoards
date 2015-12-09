@@ -5,4 +5,6 @@ package com.drownedinsound.ui.base;
  */
 public interface Ui {
 
+    boolean isBeingDestroyed();
+    int getId();
 }

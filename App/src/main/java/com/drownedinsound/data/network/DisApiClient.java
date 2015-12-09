@@ -2,23 +2,19 @@ package com.drownedinsound.data.network;
 
 import com.drownedinsound.core.DisBoardsApp;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
-import com.drownedinsound.data.network.handlers.LoginResponseHandler;
 import com.drownedinsound.data.network.handlers.NewPostHandler;
-import com.drownedinsound.data.network.handlers.ResponseHandler;
 import com.drownedinsound.data.network.handlers.PostACommentHandler;
+import com.drownedinsound.data.network.handlers.ResponseHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
-import com.drownedinsound.data.database.DatabaseRunnable;
-import com.drownedinsound.events.RetrievedBoardPostEvent;
-import com.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
+import com.drownedinsound.data.parser.streaming.HtmlConstants;
+import com.drownedinsound.data.parser.streaming.LoginException;
 import com.drownedinsound.utils.NetworkUtils;
-import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.OkHttpClient;
@@ -26,21 +22,27 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import net.htmlparser.jericho.Attributes;
+import net.htmlparser.jericho.Segment;
+import net.htmlparser.jericho.StreamedSource;
+import net.htmlparser.jericho.Tag;
+
 import android.app.Application;
 import android.content.Context;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
+import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.greenrobot.event.EventBus;
 import rx.Observable;
+import rx.Subscriber;
+import rx.functions.Func1;
 import timber.log.Timber;
 
 /**
@@ -80,6 +82,8 @@ public class DisApiClient implements DisBoardsApi {
 
     private CopyOnWriteArrayList<Object> inProgressRequests;
 
+    private String baseUrl;
+
     @Inject
     public DisApiClient(Application applicationContext, OkHttpClient httpClient,
             UserSessionRepo userSessionManager) {
@@ -88,10 +92,84 @@ public class DisApiClient implements DisBoardsApi {
         this.httpClient = httpClient;
         this.userSessionManager = userSessionManager;
         this.inProgressRequests = new CopyOnWriteArrayList<>();
+        this.baseUrl = UrlConstants.BASE_URL;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 
     @Override
     public Observable<LoginResponse> loginUser(String username, String password) {
+        RequestBody requestBody = new FormEncodingBuilder().add("user_session[username]", username)
+                .add("user_session[password]", password)
+                .add("user_session[remember_me]", "1")
+                .add("return_to", UrlConstants.SOCIAL_URL)
+                .add("commit", "Go!*").build();
+
+        String url = baseUrl + UrlConstants.LOGIN_PATH;
+
+        return makeRequest(RequestMethod.POST, url, requestBody, "LOGIN")
+                .flatMap(new Func1<Response, Observable<LoginResponse>>() {
+                    @Override
+                    public Observable<LoginResponse> call(Response response) {
+                        try {
+                            LoginResponse loginResponse = parseResponse(response);
+                            return Observable.just(loginResponse);
+                        } catch (IOException | LoginException e) {
+                            return Observable.error(e);
+                        }
+                    }
+                });
+    }
+
+    private LoginResponse parseResponse(Response response) throws IOException, LoginException {
+        String url = response.request().urlString();
+        System.out.println("Login response url " + url);
+
+        boolean logInSuccess = UrlConstants.SOCIAL_URL.equals(url);
+        if (logInSuccess) {
+            String authToken = getAuthToken(getInputStreamFromResponse(response));
+            if (authToken != null && authToken.length() > 0) {
+                LoginResponse loginResponse = new LoginResponse();
+                loginResponse.setAuthenticationToken(authToken);
+                return loginResponse;
+            } else {
+                throw new LoginException();
+            }
+        } else {
+            throw new LoginException();
+        }
+    }
+
+    private InputStream getInputStreamFromResponse(Response response) throws IOException{
+        String encodingHeader = response.header("Content-Encoding");
+        boolean gzipped = encodingHeader != null && encodingHeader.contains("gzip");
+        if (gzipped) {
+            return new GZIPInputStream(response.body().byteStream());
+        } else {
+            return response.body().byteStream();
+        }
+    }
+
+
+    private String getAuthToken(InputStream inputStream) throws IOException {
+        StreamedSource streamedSource = new StreamedSource(inputStream);
+        for (Segment segment : streamedSource) {
+            if (segment instanceof Tag) {
+                Tag tag = (Tag) segment;
+                String tagName = tag.getName();
+                if (HtmlConstants.META.equals(tagName)) {
+                    String metaString = tag.toString();
+                    if (metaString.contains(HtmlConstants.AUTHENTICITY_TOKEN_NAME)) {
+                        Attributes attributes = tag.parseAttributes();
+                        if (attributes != null) {
+                            return attributes.getValue("content");
+                        }
+                    }
+                }
+            }
+        }
         return null;
     }
 
@@ -124,18 +202,75 @@ public class DisApiClient implements DisBoardsApi {
         return null;
     }
 
-    public void loginUser(final String username, final String password, int loginUiId) {
-        RequestBody requestBody = new FormEncodingBuilder().add("user_session[username]", username)
-                .add("user_session[password]", password)
-                .add("user_session[remember_me]", "1")
-                .add("return_to", UrlConstants.SOCIAL_URL)
-                .add("commit", "Go!*").build();
+    private Observable<Response> makeRequest(RequestMethod requestMethod, String url, Object tag) {
+        return makeRequest(requestMethod, url, null, null, tag);
+    }
 
-        LoginResponseHandler loginResponseHandler = new LoginResponseHandler(loginUiId);
-        inject(loginResponseHandler);
+    private Observable<Response> makeRequest(RequestMethod requestMethod, String url,
+            RequestBody requestBody,
+            Object tag) {
+        return makeRequest(requestMethod, url, requestBody, null, tag);
+    }
 
-        makeRequest(RequestMethod.POST, "LOGIN", UrlConstants.LOGIN_URL, requestBody,
-                null, loginResponseHandler);
+    private Observable<Response> makeRequest(RequestMethod requestMethod, String url,
+            RequestBody requestBody,
+            Headers.Builder extraHeaders, Object tag) {
+
+        Headers.Builder headerBuilder = addMandatoryHeaders(extraHeaders);
+
+        Request.Builder builder = new Request.Builder().
+                headers(headerBuilder.build());
+
+        if (RequestMethod.GET.equals(requestMethod)) {
+            builder = builder.get();
+        } else if (RequestMethod.POST.equals(requestMethod)) {
+            builder = builder.post(requestBody);
+        } else if (RequestMethod.PUT.equals(requestMethod)) {
+            builder = builder.put(requestBody);
+        } else if (RequestMethod.DELETE.equals(requestMethod)) {
+            builder = builder.delete();
+        } else {
+            throw new IllegalArgumentException("Invalid request type");
+        }
+
+        return makeRequest(builder, url, tag);
+    }
+
+    private Observable<Response> makeRequest(final Request.Builder requestBuilder,
+            final String url,
+            final Object tag) {
+        return Observable.create(new Observable.OnSubscribe<Response>() {
+            @Override
+            public void call(Subscriber<? super Response> subscriber) {
+                inProgressRequests.add(tag);
+                Request request = requestBuilder.url(url).build();
+                try {
+                    Response response = httpClient.newCall(request).execute();
+                    if (!subscriber.isUnsubscribed()) {
+                        subscriber.onNext(response);
+                        subscriber.onCompleted();
+                    }
+                } catch (IOException e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    protected Headers.Builder addMandatoryHeaders(Headers.Builder headers) {
+        if (headers == null) {
+            headers = new Headers.Builder();
+        }
+
+        headers.add("Cache-Control", "max-age=0");
+        headers.add("User-Agent",
+                "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11");
+        headers
+                .add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+        headers.add("Accept-Encoding", "gzip,deflate,sdch");
+        headers.add("Accept-Language", "en-US,en;q=0.8,en-GB;q=0.6");
+        headers.add("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.3");
+        return headers;
     }
 
     private void inject(Object object) {
@@ -153,7 +288,7 @@ public class DisApiClient implements DisBoardsApi {
                         RetrieveBoardPostHandler(boardPostId, boardType, true, callerUiId);
                 inject(retrieveBoardPostHandler);
 
-                makeRequest(RequestMethod.GET, tag, boardPostUrl, retrieveBoardPostHandler);
+                makeRequest(RequestMethod.GET, boardPostUrl, tag);
 
             } else {
                 Timber.d("Board post " + boardPostId + " has already been requested");
@@ -179,9 +314,9 @@ public class DisApiClient implements DisBoardsApi {
         final boolean networkConnectionAvailable = NetworkUtils.isConnected(applicationContext);
 
         Timber.d("networkConnectionAvailable " + networkConnectionAvailable
-                + " forceUpdate " + forceUpdate );
+                + " forceUpdate " + forceUpdate);
         if (networkConnectionAvailable
-                && (forceUpdate )) {
+                && (forceUpdate)) {
             String boardUrl = board.getUrl();
             if (append) {
                 boardUrl += "/page/" + pageNumber;
@@ -194,7 +329,7 @@ public class DisApiClient implements DisBoardsApi {
 
             inject(retrieveBoardSummaryListHandler);
 
-            makeRequest(RequestMethod.GET, tag, boardUrl, retrieveBoardSummaryListHandler);
+            //makeRequest(RequestMethod.GET, tag, boardUrl);
 
         } else {
 //            dbExecutorService.execute(new DatabaseRunnable(databaseHelper) {
@@ -212,17 +347,17 @@ public class DisApiClient implements DisBoardsApi {
     }
 
 
-
     public void thisAComment(String boardPostUrl, String boardPostId, String commentId,
             BoardType boardType, int callingId) {
-        ThisACommentHandler thisACommentHandler = new ThisACommentHandler(callingId, boardPostId, boardType);
+        ThisACommentHandler thisACommentHandler = new ThisACommentHandler(callingId, boardPostId,
+                boardType);
         inject(thisACommentHandler);
 
         String fullUrl = boardPostUrl + "/" + commentId + "/this";
         Timber.d("Going to this with  =" + fullUrl);
 
         String tag = "THIS" + boardPostId;
-        makeRequest(RequestMethod.GET, tag, fullUrl, thisACommentHandler);
+        makeRequest(RequestMethod.GET, tag, fullUrl);
     }
 
 
@@ -241,8 +376,8 @@ public class DisApiClient implements DisBoardsApi {
         NewPostHandler newPostHandler = new NewPostHandler(board);
         inject(newPostHandler);
 
-        makeRequest(RequestMethod.POST, REQUEST_TYPE.NEW_POST,
-                UrlConstants.NEW_POST_URL, requestBody, extraHeaders, newPostHandler);
+        makeRequest(RequestMethod.POST,
+                UrlConstants.NEW_POST_URL, requestBody, extraHeaders,REQUEST_TYPE.NEW_POST);
     }
 
     public void postComment(String boardPostId, String commentId, String title, String content,
@@ -276,79 +411,14 @@ public class DisApiClient implements DisBoardsApi {
 
         String tag = boardPostId + "COMMENT" + commentId;
 
-        makeRequest(RequestMethod.POST, tag, UrlConstants.COMMENTS_URL, requestBody, null,
-                postACommentHandler);
+        makeRequest(RequestMethod.POST, UrlConstants.COMMENTS_URL, requestBody, null, tag);
     }
 
-    private void makeRequest(RequestMethod requestMethod, Object tag, String url,
-            ResponseHandler
-                    responseHandler) {
-        makeRequest(requestMethod, tag, url, null, null, responseHandler);
-    }
-
-
-    private void makeRequest(RequestMethod requestMethod, Object tag, String url,
-            RequestBody requestBody,
-            Headers.Builder extraHeaders,
-            ResponseHandler responseHandler) {
-
-        Headers.Builder headerBuilder = addMandatoryHeaders(extraHeaders);
-
-        Request.Builder builder = new Request.Builder().
-                headers(headerBuilder.build());
-
-        if (RequestMethod.GET.equals(requestMethod)) {
-            performRequest(builder.get(), tag, url, responseHandler);
-        } else if (RequestMethod.POST.equals(requestMethod)) {
-            performRequest(builder.post(requestBody), tag, url, responseHandler);
-        } else if (RequestMethod.PUT.equals(requestMethod)) {
-            performRequest(builder.put(requestBody), tag, url, responseHandler);
-        } else if (RequestMethod.DELETE.equals(requestMethod)) {
-            performRequest(builder.delete(), tag, url, responseHandler);
-        }
-    }
-
-    private void performRequest(Request.Builder requestBuilder, final Object tag, String url,
-            final ResponseHandler responseHandler) {
-        inProgressRequests.add(tag);
-
-        Request request = requestBuilder.url(url).build();
-        httpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                inProgressRequests.remove(tag);
-                responseHandler.onFailure(request, e);
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-                inProgressRequests.remove(tag);
-                responseHandler.onResponse(response);
-            }
-        });
-    }
-
-    protected Headers.Builder addMandatoryHeaders(Headers.Builder headers) {
-        if (headers == null) {
-            headers = new Headers.Builder();
-        }
-
-        headers.add("Cache-Control", "max-age=0");
-        headers.add("User-Agent",
-                "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11");
-        headers
-                .add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-        headers.add("Accept-Encoding", "gzip,deflate,sdch");
-        headers.add("Accept-Language", "en-US,en;q=0.8,en-GB;q=0.6");
-        headers.add("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.3");
-        return headers;
-    }
 
     @Override
     public boolean requestInProgress(Object tag) {
         return inProgressRequests.contains(tag);
     }
-
 
 
 }

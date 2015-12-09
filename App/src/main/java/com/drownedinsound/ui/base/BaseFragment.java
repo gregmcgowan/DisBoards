@@ -85,6 +85,12 @@ public class BaseFragment extends Fragment implements Ui {
     }
 
 
+    @Override
+    public boolean isBeingDestroyed() {
+        return isDetached() || isRemoving();
+    }
+
+
     private static class LoadingViewHandler extends Handler {
 
         private WeakReference<BaseFragment> baseFragmentWeakReference;

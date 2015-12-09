@@ -2,7 +2,6 @@ package com.drownedinsound.data;
 
 import com.drownedinsound.data.database.DisBoardsLocalRepo;
 import com.drownedinsound.data.network.DisApiClient;
-import com.drownedinsound.data.network.handlers.LoginResponseHandler;
 import com.drownedinsound.data.network.handlers.NewPostHandler;
 import com.drownedinsound.data.network.handlers.PostACommentHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
@@ -11,7 +10,8 @@ import com.drownedinsound.data.network.handlers.ThisACommentHandler;
 import com.drownedinsound.data.database.DatabaseHelper;
 import com.drownedinsound.data.database.DatabaseService;
 import com.drownedinsound.qualifiers.ForDatabase;
-import com.drownedinsound.qualifiers.ForNetworkRequests;
+import com.drownedinsound.qualifiers.ForMainThreadScheduler;
+import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.ui.post.BoardPostActivity;
 import com.drownedinsound.ui.post.BoardPostFragment;
 import com.drownedinsound.ui.post.PostReplyActivity;
@@ -36,12 +36,14 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import static android.content.Context.MODE_PRIVATE;
 
 @Module(
         injects = {
-                LoginResponseHandler.class,
                 NewPostHandler.class,
                 RetrieveBoardPostHandler.class,
                 RetrieveBoardSummaryListHandler.class,
@@ -80,7 +82,7 @@ public class DataModule {
 
     @Provides
     @Singleton
-    @ForNetworkRequests
+    @ForIoScheduler
     public ExecutorService provideMultiThreadExecutor() {
         final int numberCores = Runtime.getRuntime().availableProcessors();
         return Executors.newFixedThreadPool(numberCores * 2 + 1);
@@ -128,6 +130,19 @@ public class DataModule {
         return new DisBoardRepoImpl(disApiClient,disBoardsLocalRepo,userSessionRepo);
     }
 
+    @Provides
+    @Singleton
+    @ForMainThreadScheduler
+    Scheduler mainThreadScheduler() {
+        return AndroidSchedulers.mainThread();
+    }
 
+
+    @Provides
+    @Singleton
+    @ForIoScheduler
+    Scheduler ioThreadScheduler() {
+        return Schedulers.io();
+    }
 
 }
