@@ -29,9 +29,9 @@ public class ThisACommentHandler extends ResponseHandler {
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
         BoardPost boardPost;
         if (inputStream != null) {
-            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager, inputStream,
+            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,
                     postID, boardType);
-            boardPost = boardPostParser.parse();
+            boardPost = boardPostParser.parse(inputStream);
             if (boardPost != null) {
                 databaseHelper.setBoardPost(boardPost);
                 if (isUpdateUI()) {

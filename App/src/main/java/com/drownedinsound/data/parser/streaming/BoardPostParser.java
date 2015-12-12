@@ -51,8 +51,6 @@ public class BoardPostParser extends StreamingParser {
 
     private BoardType boardType;
 
-    private InputStream inputStream;
-
     private StringBuilder buffer;
 
     private boolean consumingHtmlTags;
@@ -83,12 +81,10 @@ public class BoardPostParser extends StreamingParser {
 
     private UserSessionManager userSessionManager;
 
-    public BoardPostParser(UserSessionManager userSessionManager,
-            InputStream inputStream, String boardPostId,
+    public BoardPostParser(UserSessionManager userSessionManager, String boardPostId,
             BoardType boardType) {
         this.boardPostId = boardPostId;
         this.boardType = boardType;
-        this.inputStream = inputStream;
         this.userSessionManager = userSessionManager;
         this.buffer = new StringBuilder(1024);
         comments = new ArrayList<BoardPostComment>();
@@ -111,7 +107,7 @@ public class BoardPostParser extends StreamingParser {
         return pageState != null && pageState.equals(requiredPageState);
     }
 
-    public BoardPost parse() {
+    public BoardPost parse(InputStream inputStream) {
         long start = System.currentTimeMillis();
         currentBoardPost = new BoardPost();
         currentBoardPost.setBoardType(boardType);

@@ -20,17 +20,20 @@ public class UrlConstants {
 
     public static final String ERRORS_SUGGESTIONS_BOARD_NAME = "errors";
 
-    public final static String BASE_URL = "http://drownedinsound.com";
+    public final static String BASE_URL = "http://drownedinsound.com/";
 
-    public final static String LOGIN_URL = BASE_URL + "/session/create";
+    public final static String LOGIN_URL = BASE_URL + "session/create";
 
-    public final static String LOGIN_PATH = "/session/create";
+    public final static String LOGIN_PATH = "session/create";
 
-    public final static String BOARD_BASE_URL = BASE_URL + "/community/boards/";
+    public static final String BOARD_BASE_PATH = "community/boards/";
+
+    public final static String BOARD_BASE_URL = BASE_URL + BOARD_BASE_PATH;
 
     public final static String MUSIC_URL = BOARD_BASE_URL + MUSIC_BOARD_NAME;
 
     public final static String SOCIAL_URL = BOARD_BASE_URL + SOCIAL_BOARD_NAME;
+
 
     public final static String ANNOUNCEMENTS_CLASSIFIEDS_URL = BOARD_BASE_URL
             + ANNOUNCEMENTS_BOARD_NAME;

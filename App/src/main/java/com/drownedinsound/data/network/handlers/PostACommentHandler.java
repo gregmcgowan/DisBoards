@@ -27,9 +27,9 @@ public class PostACommentHandler extends ResponseHandler {
     @Override
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
         if (inputStream != null) {
-            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager, inputStream,
+            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,
                     postID, boardType);
-            BoardPost boardPost = boardPostParser.parse();
+            BoardPost boardPost = boardPostParser.parse(inputStream);
             if (boardPost != null) {
                 databaseHelper.setBoardPost(boardPost);
             }

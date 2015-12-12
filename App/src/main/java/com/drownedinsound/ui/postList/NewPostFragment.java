@@ -152,7 +152,7 @@ public class NewPostFragment extends BaseDialogFragment {
         String title = postTitleEditText.getText().toString();
         if (!TextUtils.isEmpty(title)) {
             //TODO make sure the text is not a ridiculous length
-            disApiClient.addNewPost(board, title, content);
+            //disApiClient.addNewPost(board, title, content);
             eventBus.post(new SentNewPostEvent(SentNewPostState.SENT));
             dismiss();
         } else {

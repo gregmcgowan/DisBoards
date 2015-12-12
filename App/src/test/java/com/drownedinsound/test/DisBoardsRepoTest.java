@@ -13,11 +13,9 @@ import org.mockito.MockitoAnnotations;
 
 
 import rx.Observable;
-import rx.Observer;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 

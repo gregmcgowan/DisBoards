@@ -124,7 +124,7 @@ public class BoardPostController extends BaseUIController {
 
         int uiID = getId(replyToCommentUi);
 
-        disApiClient.postComment(boardPostId,replyToCommentID,commentTitle,commentContent,boardType,uiID);
+        //disApiClient.postComment(boardPostId,replyToCommentID,commentTitle,commentContent,boardType);
     }
 
     @SuppressWarnings("unused")

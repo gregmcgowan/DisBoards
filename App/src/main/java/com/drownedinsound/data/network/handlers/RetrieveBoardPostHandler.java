@@ -36,9 +36,9 @@ public class RetrieveBoardPostHandler extends ResponseHandler {
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
         BoardPost boardPost = null;
         if (inputStream != null) {
-            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager, inputStream,
+            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,
                     boardPostId, boardPostType);
-            boardPost = boardPostParser.parse();
+            boardPost = boardPostParser.parse(inputStream);
             BoardPost exisitingBoardPost = null;//databaseHelper.getBoardPost(boardPostId);
             int numberOfTimesRead = 0;
             if (exisitingBoardPost != null) {

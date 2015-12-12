@@ -1,18 +1,14 @@
 package com.drownedinsound.data.network;
 
-import com.drownedinsound.core.DisBoardsApp;
-import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.network.handlers.NewPostHandler;
-import com.drownedinsound.data.network.handlers.PostACommentHandler;
 import com.drownedinsound.data.network.handlers.ResponseHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
-import com.drownedinsound.data.parser.streaming.HtmlConstants;
+import com.drownedinsound.data.parser.streaming.DisWebPageParser;
 import com.drownedinsound.data.parser.streaming.LoginException;
 import com.drownedinsound.utils.NetworkUtils;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -21,11 +17,6 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-
-import net.htmlparser.jericho.Attributes;
-import net.htmlparser.jericho.Segment;
-import net.htmlparser.jericho.StreamedSource;
-import net.htmlparser.jericho.Tag;
 
 import android.app.Application;
 import android.content.Context;
@@ -76,22 +67,22 @@ public class DisApiClient implements DisBoardsApi {
 
     private Context applicationContext;
 
-    private OkHttpClient httpClient;
-
-    private UserSessionRepo userSessionManager;
+    private OkHttpClient httpClient;;
 
     private CopyOnWriteArrayList<Object> inProgressRequests;
 
     private String baseUrl;
 
+    private DisWebPageParser disWebPageParser;
+
     @Inject
     public DisApiClient(Application applicationContext, OkHttpClient httpClient,
-            UserSessionRepo userSessionManager) {
+            DisWebPageParser disWebPageParser) {
 
         this.applicationContext = applicationContext;
         this.httpClient = httpClient;
-        this.userSessionManager = userSessionManager;
         this.inProgressRequests = new CopyOnWriteArrayList<>();
+        this.disWebPageParser = disWebPageParser;
         this.baseUrl = UrlConstants.BASE_URL;
     }
 
@@ -124,12 +115,15 @@ public class DisApiClient implements DisBoardsApi {
     }
 
     private LoginResponse parseResponse(Response response) throws IOException, LoginException {
-        String url = response.request().urlString();
-        System.out.println("Login response url " + url);
+        String url = response.priorResponse().header("Location");
+        String expected = baseUrl + UrlConstants.BOARD_BASE_PATH
+                + UrlConstants.SOCIAL_BOARD_NAME;
+        System.out.println("Login response url " + url + " expected " + expected);
 
-        boolean logInSuccess = UrlConstants.SOCIAL_URL.equals(url);
+        boolean logInSuccess = expected.equals(url);
         if (logInSuccess) {
-            String authToken = getAuthToken(getInputStreamFromResponse(response));
+            String authToken = disWebPageParser.getAuthenticationToken(
+                    getInputStreamFromResponse(response));
             if (authToken != null && authToken.length() > 0) {
                 LoginResponse loginResponse = new LoginResponse();
                 loginResponse.setAuthenticationToken(authToken);
@@ -140,37 +134,6 @@ public class DisApiClient implements DisBoardsApi {
         } else {
             throw new LoginException();
         }
-    }
-
-    private InputStream getInputStreamFromResponse(Response response) throws IOException{
-        String encodingHeader = response.header("Content-Encoding");
-        boolean gzipped = encodingHeader != null && encodingHeader.contains("gzip");
-        if (gzipped) {
-            return new GZIPInputStream(response.body().byteStream());
-        } else {
-            return response.body().byteStream();
-        }
-    }
-
-
-    private String getAuthToken(InputStream inputStream) throws IOException {
-        StreamedSource streamedSource = new StreamedSource(inputStream);
-        for (Segment segment : streamedSource) {
-            if (segment instanceof Tag) {
-                Tag tag = (Tag) segment;
-                String tagName = tag.getName();
-                if (HtmlConstants.META.equals(tagName)) {
-                    String metaString = tag.toString();
-                    if (metaString.contains(HtmlConstants.AUTHENTICITY_TOKEN_NAME)) {
-                        Attributes attributes = tag.parseAttributes();
-                        if (attributes != null) {
-                            return attributes.getValue("content");
-                        }
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     @Override
@@ -273,8 +236,14 @@ public class DisApiClient implements DisBoardsApi {
         return headers;
     }
 
-    private void inject(Object object) {
-        DisBoardsApp.getApplication(applicationContext).inject(object);
+    private InputStream getInputStreamFromResponse(Response response) throws IOException{
+        String encodingHeader = response.header("Content-Encoding");
+        boolean gzipped = encodingHeader != null && encodingHeader.contains("gzip");
+        if (gzipped) {
+            return new GZIPInputStream(response.body().byteStream());
+        } else {
+            return response.body().byteStream();
+        }
     }
 
     public void getBoardPost(String boardPostUrl, final String boardPostId, BoardType boardType,
@@ -286,8 +255,6 @@ public class DisApiClient implements DisBoardsApi {
             if (!requestIsInProgress) {
                 RetrieveBoardPostHandler retrieveBoardPostHandler = new
                         RetrieveBoardPostHandler(boardPostId, boardType, true, callerUiId);
-                inject(retrieveBoardPostHandler);
-
                 makeRequest(RequestMethod.GET, boardPostUrl, tag);
 
             } else {
@@ -327,8 +294,6 @@ public class DisApiClient implements DisBoardsApi {
                             board.getBoardType(),
                             updateUI, append);
 
-            inject(retrieveBoardSummaryListHandler);
-
             //makeRequest(RequestMethod.GET, tag, boardUrl);
 
         } else {
@@ -351,7 +316,6 @@ public class DisApiClient implements DisBoardsApi {
             BoardType boardType, int callingId) {
         ThisACommentHandler thisACommentHandler = new ThisACommentHandler(callingId, boardPostId,
                 boardType);
-        inject(thisACommentHandler);
 
         String fullUrl = boardPostUrl + "/" + commentId + "/this";
         Timber.d("Going to this with  =" + fullUrl);
@@ -361,9 +325,7 @@ public class DisApiClient implements DisBoardsApi {
     }
 
 
-    public void addNewPost(Board board, String title, String content) {
-        String authToken = userSessionManager.getAuthenticityToken();
-
+    public void addNewPost(Board board, String title, String content, String authToken) {
         Headers.Builder extraHeaders = new Headers.Builder();
         extraHeaders.add("Referer", board.getUrl());
         RequestBody requestBody = new FormEncodingBuilder().add("section_id", String.valueOf(board
@@ -374,16 +336,13 @@ public class DisApiClient implements DisBoardsApi {
                 .add("authenticity_token", authToken).build();
 
         NewPostHandler newPostHandler = new NewPostHandler(board);
-        inject(newPostHandler);
 
         makeRequest(RequestMethod.POST,
                 UrlConstants.NEW_POST_URL, requestBody, extraHeaders,REQUEST_TYPE.NEW_POST);
     }
 
     public void postComment(String boardPostId, String commentId, String title, String content,
-            BoardType boardType, int callingUiId) {
-        String authToken = userSessionManager.getAuthenticityToken();
-
+            BoardType boardType, String authToken) {
         if (TextUtils.isEmpty(authToken)) {
             throw new IllegalArgumentException("Auth token cannot be null");
         }
@@ -392,9 +351,9 @@ public class DisApiClient implements DisBoardsApi {
             throw new IllegalArgumentException("BoardPostId cannot be null");
         }
 
-        PostACommentHandler postACommentHandler = new PostACommentHandler(boardPostId, boardType,
-                callingUiId);
-        inject(postACommentHandler);
+//        PostACommentHandler postACommentHandler = new PostACommentHandler(boardPostId, boardType,
+//                callingUiId);
+       // inject(postACommentHandler);
 
         if (commentId == null) {
             commentId = "";

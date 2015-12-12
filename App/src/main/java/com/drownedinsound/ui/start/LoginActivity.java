@@ -108,7 +108,7 @@ public class LoginActivity extends BaseControllerActivity<LoginController> imple
         if (usernameEntered && passwordEntered) {
             attemptLogin(username, password);
         } else {
-            Toast.makeText(this, "Please enter a username and password",
+            Toast.makeText(this, getString(R.string.please_enter_both_username_and_password),
                     Toast.LENGTH_LONG).show();
             if (!usernameEntered) {
                 usernameField.requestFocus();

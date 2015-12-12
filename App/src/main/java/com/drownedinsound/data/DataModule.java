@@ -9,6 +9,8 @@ import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
 import com.drownedinsound.data.database.DatabaseHelper;
 import com.drownedinsound.data.database.DatabaseService;
+import com.drownedinsound.data.parser.streaming.DisWebPageParser;
+import com.drownedinsound.data.parser.streaming.DisWebPagerParserImpl;
 import com.drownedinsound.qualifiers.ForDatabase;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.qualifiers.ForIoScheduler;
@@ -115,6 +117,12 @@ public class DataModule {
         client.setCache(cache);
 
         return client;
+    }
+
+    @Provides
+    @Singleton
+    DisWebPageParser disWebPageParser() {
+        return new DisWebPagerParserImpl(null, null);
     }
 
 
