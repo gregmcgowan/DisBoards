@@ -1,5 +1,6 @@
 package com.drownedinsound.data;
 
+import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.network.LoginResponse;
@@ -18,7 +19,7 @@ public interface DisBoardRepo {
     Observable<BoardPost> getBoardPost(String boardPostUrl, String boardPostId,
             BoardType boardType);
 
-    Observable<List<BoardPost>> getBoardPostSummaryList(Object tag, int pageNumber);
+    Observable<List<BoardPost>> getBoardPostSummaryList(BoardType board, Object tag, int pageNumber,boolean forceUpdate);
 
     Observable<Void> thisAComment(String boardPostUrl, String boardPostId, String commentId,
             BoardType boardType);

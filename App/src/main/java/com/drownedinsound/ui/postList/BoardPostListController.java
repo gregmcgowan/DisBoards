@@ -1,23 +1,24 @@
 package com.drownedinsound.ui.postList;
 
+import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.network.DisApiClient;
-import com.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
-import com.drownedinsound.qualifiers.ForDatabase;
+import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.qualifiers.ForIoScheduler;
+import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.ui.base.BaseUIController;
 import com.drownedinsound.ui.base.Ui;
 
-import android.content.Intent;
+import android.support.annotation.NonNull;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.greenrobot.event.EventBus;
+import rx.Observable;
+import rx.Scheduler;
 import timber.log.Timber;
 
 /**
@@ -26,37 +27,29 @@ import timber.log.Timber;
 @Singleton
 public class BoardPostListController extends BaseUIController {
 
-    private DisApiClient disApiClient;
+    private DisBoardRepo disBoardRepo;
 
-    private EventBus eventBus;
+    private Scheduler mainThreadScheduler;
 
-    private ExecutorService databaseExecutorService;
+    private Scheduler backgroundThreadScheduler;
 
     @Inject
-    public BoardPostListController(EventBus eventBus,
-            DisApiClient disApiClient, @ForDatabase ExecutorService dbExecutorService) {
-        this.eventBus = eventBus;
-        this.disApiClient = disApiClient;
-        this.databaseExecutorService = dbExecutorService;
+    public BoardPostListController(DisBoardRepo disBoardRepo,
+            @ForMainThreadScheduler Scheduler mainThreadScheduler,
+            @ForIoScheduler Scheduler backgroundThreadScheduler) {
+        this.disBoardRepo = disBoardRepo;
+        this.mainThreadScheduler = mainThreadScheduler;
+        this.backgroundThreadScheduler = backgroundThreadScheduler;
     }
 
 
     @Override
     public void onUiAttached(Ui ui) {
-        if (ui instanceof BoardPostListParentUi) {
-            if (!eventBus.isRegistered(this)) {
-                eventBus.register(this);
-            }
-        }
-
         if (ui instanceof BoardPostListUi) {
             BoardPostListUi boardPostListUi = (BoardPostListUi) ui;
             if (boardPostCurrentShow(boardPostListUi)) {
-                Timber.d("Attached and shown UI for " + boardPostListUi.getBoardList()
-                        .getDisplayName()
-                        + " id " + getId(boardPostListUi));
                 requestBoardSummaryPage(boardPostListUi,
-                        boardPostListUi.getBoardList(), 1, true, false, true);
+                        boardPostListUi.getBoardType(), 1, false);
             }
         }
     }
@@ -73,11 +66,11 @@ public class BoardPostListController extends BaseUIController {
         BoardPostListUi boardPostList = findListAt(position);
         if (boardPostList != null) {
             requestBoardSummaryPage(boardPostList,
-                    boardPostList.getBoardList(), 1, true, false, true);
+                    boardPostList.getBoardType(), 1, false);
         }
     }
 
-    private BoardPostListUi findListAt(int positon) {
+    private BoardPostListUi findListAt(int position) {
         Set<Ui> uis = getUis();
         for (Ui ui : uis) {
             if (ui instanceof BoardPostListUi) {
@@ -85,7 +78,7 @@ public class BoardPostListController extends BaseUIController {
                         = (BoardPostListUi) ui;
 
                 if (boardPostListUi.getPageIndex()
-                        == positon) {
+                        == position) {
                     return boardPostListUi;
                 }
             }
@@ -93,52 +86,56 @@ public class BoardPostListController extends BaseUIController {
         return null;
     }
 
-    public void requestBoardSummaryPage(BoardPostListUi boardPostListUi, Board board, int page,
-            boolean showLoadingProgress, boolean forceUpdate, boolean updateUI) {
-        String tag = board.getDisplayName() + "GET_LIST";
-        if (!disApiClient.requestInProgress(tag)) {
-            if (showLoadingProgress && page == 1) {
+    public void requestBoardSummaryPage(@NonNull BoardPostListUi boardPostListUi,
+            @NonNull BoardType board, final int page, boolean forceUpdate) {
+        String boardDisplayName = boardPostListUi.getBoardList().getDisplayName();
+        String tag = boardDisplayName + "GET_LIST";
+        if (!hasSubscription(boardPostListUi, tag)) {
+            if (page == 1) {
                 boardPostListUi.showLoadingProgress(true);
             }
             int uiId = getId(boardPostListUi);
-            Timber.d("Going to update id " + uiId + " for board " + board.getDisplayName());
-            disApiClient.getBoardPostSummaryList(tag, uiId, page, board, forceUpdate, updateUI);
+            Timber.d("Going to update id " + uiId
+                    + " for board " + boardDisplayName);
+            Observable<List<BoardPost>> getBoardPostListObservable = disBoardRepo
+                    .getBoardPostSummaryList(board, tag, page, forceUpdate)
+                    .subscribeOn(backgroundThreadScheduler)
+                    .observeOn(mainThreadScheduler);
+
+            BaseObserver<List<BoardPost>, BoardPostListUi> getboardPostListObserver =
+                    new BaseObserver<List<BoardPost>, BoardPostListUi>(uiId) {
+                        @Override
+                        public void onError(Throwable e) {
+                            getUI().showLoadingProgress(false);
+                            getUI().showErrorView();
+                        }
+
+                        @Override
+                        public void onNext(List<BoardPost> boardPosts) {
+                            if (page == 1) {
+                                getUI().setBoardPosts(boardPosts);
+                            } else {
+                                getUI().appendBoardPosts(boardPosts);
+                            }
+                            getUI().showLoadingProgress(false);
+                        }
+                    };
+            subscribeAndCache(boardPostListUi, tag, getboardPostListObserver,
+                    getBoardPostListObservable);
         } else {
-            Timber.d("Request for " + board.getDisplayName() + " already in progress");
+            Timber.d("Request for " + boardDisplayName + " already in progress");
         }
     }
 
     @Override
     public void onUiDetached(Ui ui) {
-        if (ui instanceof BoardPostListParentUi) {
-            eventBus.unregister(this);
-        }
         if (ui instanceof BoardPostListUi) {
-            Timber.d("BoardPostListUi detached " + ((BoardPostListUi) ui).getBoardList()
-                    .getDisplayName());
-            ((BoardPostListUi) ui).showLoadingProgress(false);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public void onEventMainThread(RetrievedBoardPostSummaryListEvent event) {
-        int callingID = event.getUiId();
-
-        BoardPostListUi boardPostListUi = (BoardPostListUi) findUi(callingID);
-        if (boardPostListUi != null) {
-            Timber.d("Updated UI for " + event.getBoardType() + " with id " + callingID);
-            List<BoardPost> boardPosts = event.getBoardPostSummaryList();
-            if (boardPosts.size() > 0) {
-                if (!event.isAppend()) {
-                    boardPostListUi.setBoardPosts(boardPosts);
-                } else {
-                    boardPostListUi.appendBoardPosts(boardPosts);
-                }
-            } else {
-                boardPostListUi.showErrorView();
+            BoardPostListUi boardPostListUi = ((BoardPostListUi) ui);
+            Board board = boardPostListUi.getBoardList();
+            if (board != null) {
+                Timber.d("BoardPostListUi detached " + board.getDisplayName());
             }
-        } else {
-            Timber.d("Could not find ui for " + event.getBoardType());
+            boardPostListUi.showLoadingProgress(false);
         }
     }
 

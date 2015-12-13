@@ -1,6 +1,7 @@
 package com.drownedinsound.test.login;
 
 import com.drownedinsound.data.DisBoardRepo;
+import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.network.LoginResponse;
@@ -43,7 +44,8 @@ public class FakeDisRepo implements DisBoardRepo {
     }
 
     @Override
-    public Observable<List<BoardPost>> getBoardPostSummaryList(Object tag, int pageNumber) {
+    public Observable<List<BoardPost>> getBoardPostSummaryList(BoardType board, Object tag, int pageNumber,
+            boolean forceUpdate) {
         return Observable.just(boardPosts);
     }
 

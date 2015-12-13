@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
+import rx.Subscriber;
 
 /**
  * Database helper class used to manage the creation and upgrading of the the
@@ -91,9 +92,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements DisBoards
         }
 
     }
-
-
-
 
     public void clearAllTables() {
         try {
@@ -356,17 +354,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements DisBoards
     /**
      * Gets the requested board type from the database
      */
-    public Observable<Board> getBoard(BoardType boardType) {
-        Board board = null;
-        try {
-            Dao<Board, BoardType> boardDao = getBoardDao();
-            board = boardDao.queryForId(boardType);
-        } catch (SQLException e) {
-            if (DisBoardsConstants.DEBUG) {
-                e.printStackTrace();
+    public Observable<Board> getBoard(final BoardType boardType) {
+        return  Observable.create(new Observable.OnSubscribe<Board>() {
+            @Override
+            public void call(Subscriber<? super Board> subscriber) {
+                try {
+                    Dao<Board, BoardType> boardDao = getBoardDao();
+                    Board board = boardDao.queryForId(boardType);
+                    subscriber.onNext(board);
+                    subscriber.onCompleted();
+                } catch (SQLException e) {
+                    subscriber.onError(e);
+                }
             }
-        }
-        return null;
+        });
     }
 
     /**

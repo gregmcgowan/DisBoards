@@ -46,9 +46,8 @@ public class RetrieveBoardSummaryListHandler extends
             Timber.d("Got response");
         }
         if (inputStream != null) {
-            BoardPostSummaryListParser parser = new BoardPostSummaryListParser(
-                    userSessionManager, inputStream, boardType, databaseHelper);
-            boardPostSummaries = parser.parse();
+            BoardPostSummaryListParser parser = null;
+            //boardPostSummaries = parser.parse();
             if (boardPostSummaries.size() > 0) {
                 databaseHelper.setBoardPosts(boardPostSummaries);
             }

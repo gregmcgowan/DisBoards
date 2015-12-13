@@ -24,6 +24,7 @@ import android.text.TextUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.GZIPInputStream;
@@ -44,8 +45,6 @@ import timber.log.Timber;
 @Singleton
 public class DisApiClient implements DisBoardsApi {
 
-    private static final long MAX_BOARD_POST_LIST_AGE_MINUTES = 5;
-
     public enum RequestMethod {
         GET(false),
         POST(true),
@@ -54,7 +53,7 @@ public class DisApiClient implements DisBoardsApi {
 
         public final boolean hasRequestBody;
 
-        private RequestMethod(boolean hasRequestBody) {
+        RequestMethod(boolean hasRequestBody) {
             this.hasRequestBody = hasRequestBody;
         }
     }
@@ -143,8 +142,29 @@ public class DisApiClient implements DisBoardsApi {
     }
 
     @Override
-    public Observable<List<BoardPost>> getBoardPostSummaryList(Object tag, int pageNumber) {
-        return null;
+    public Observable<List<BoardPost>> getBoardPostSummaryList(final Board board, int pageNumber) {
+        Object tag = board.getDisplayName() + "_GET_LIST";
+
+        final boolean append = pageNumber > 1;
+        String boardUrl = board.getUrl();
+        if (append) {
+            boardUrl += "/page/" + pageNumber;
+        }
+        return makeRequest(RequestMethod.GET,boardUrl,tag).flatMap(
+                new Func1<Response, Observable<List<BoardPost>>>() {
+                    @Override
+                    public Observable<List<BoardPost>> call(Response response) {
+                        try {
+                            List<BoardPost> boardPostList
+                                    = disWebPageParser.parseBoardPostSummaryList(
+                                    board.getBoardType(),
+                                    getInputStreamFromResponse(response));
+                            return Observable.just(boardPostList);
+                        } catch (IOException e) {
+                            return Observable.error(e);
+                        }
+                    }
+                });
     }
 
     @Override
@@ -273,44 +293,6 @@ public class DisApiClient implements DisBoardsApi {
         }
 
     }
-
-    public void getBoardPostSummaryList(Object tag, final int callerUiId, int pageNumber,
-            final Board board,
-            boolean forceUpdate, boolean updateUI) {
-        final boolean append = pageNumber > 1;
-        final boolean networkConnectionAvailable = NetworkUtils.isConnected(applicationContext);
-
-        Timber.d("networkConnectionAvailable " + networkConnectionAvailable
-                + " forceUpdate " + forceUpdate);
-        if (networkConnectionAvailable
-                && (forceUpdate)) {
-            String boardUrl = board.getUrl();
-            if (append) {
-                boardUrl += "/page/" + pageNumber;
-            }
-
-            RetrieveBoardSummaryListHandler retrieveBoardSummaryListHandler =
-                    new RetrieveBoardSummaryListHandler(callerUiId,
-                            board.getBoardType(),
-                            updateUI, append);
-
-            //makeRequest(RequestMethod.GET, tag, boardUrl);
-
-        } else {
-//            dbExecutorService.execute(new DatabaseRunnable(databaseHelper) {
-//                @Override
-//                public void run() {
-//                    List<BoardPost> cachedBoardPosts = dbHelper.getBoardPosts(board
-//                            .getBoardType());
-//                    eventBus.post(
-//                            new RetrievedBoardPostSummaryListEvent(cachedBoardPosts,
-//                                    board.getBoardType(),
-//                                    !networkConnectionAvailable, append, callerUiId));
-//                }
-//            });
-        }
-    }
-
 
     public void thisAComment(String boardPostUrl, String boardPostId, String commentId,
             BoardType boardType, int callingId) {

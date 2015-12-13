@@ -1,6 +1,7 @@
 package com.drownedinsound.data.parser.streaming;
 
 import com.drownedinsound.data.model.BoardPost;
+import com.drownedinsound.data.model.BoardType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +16,7 @@ public interface DisWebPageParser {
 
      BoardPost parseBoardPost(InputStream inputStream) throws IOException;
 
-     List<BoardPost> parseBoardPostSummaryList(InputStream inputStream) throws IOException;
+     List<BoardPost> parseBoardPostSummaryList(BoardType boardType, InputStream inputStream) throws IOException;
 
 
 

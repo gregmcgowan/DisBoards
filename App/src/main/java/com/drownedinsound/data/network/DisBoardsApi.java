@@ -18,7 +18,7 @@ public interface DisBoardsApi {
 
         Observable<BoardPost> getBoardPost(String boardPostUrl, String boardPostId, BoardType boardType);
 
-        Observable<List<BoardPost>> getBoardPostSummaryList(Object tag, int pageNumber);
+        Observable<List<BoardPost>> getBoardPostSummaryList(Board board, int pageNumber);
 
         Observable<Void> thisAComment(String boardPostUrl, String boardPostId, String commentId,
                 BoardType boardType);

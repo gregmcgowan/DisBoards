@@ -40,8 +40,6 @@ public class LoginControllerTest {
 
     @Test
     public void testSuccesfulLogin() {
-        FakeDisRepo.setLoginSuccess(true);
-
         loginController.attachUi(loginUi);
 
         when(disBoardRepo.loginUser(anyString(), anyString()))
@@ -56,8 +54,6 @@ public class LoginControllerTest {
 
     @Test
     public void testLoginFailed() {
-        FakeDisRepo.setLoginSuccess(false);
-
         loginController.attachUi(loginUi);
 
         when(disBoardRepo.loginUser(anyString(), anyString()))

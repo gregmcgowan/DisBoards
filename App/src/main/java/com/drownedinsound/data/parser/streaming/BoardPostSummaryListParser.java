@@ -1,11 +1,13 @@
 package com.drownedinsound.data.parser.streaming;
 
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.UserSessionManager;
+import com.drownedinsound.data.UserSessionRepo;
+import com.drownedinsound.data.database.DisBoardsLocalRepo;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.database.DatabaseHelper;
 import com.drownedinsound.utils.DateUtils;
+import com.drownedinsound.utils.StringUtils;
 
 import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.EndTag;
@@ -14,9 +16,6 @@ import net.htmlparser.jericho.StartTag;
 import net.htmlparser.jericho.StreamedSource;
 import net.htmlparser.jericho.Tag;
 
-import android.text.Html;
-import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,9 +42,6 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private static final boolean DEBUG_PARSER = false;
 
-    private InputStream inputStream;
-
-    private BoardType boardType;
 
     private boolean inBoardPostTable;
 
@@ -63,22 +59,18 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private StringBuilder buffer;
 
-    private DatabaseHelper databaseHelper;
+    private DisBoardsLocalRepo disBoardsLocalRepo;
 
-    private UserSessionManager userSessionManager;
+    private UserSessionRepo userSessionRepo;
 
-    public BoardPostSummaryListParser(UserSessionManager userSessionManager,
-            InputStream inputStream,
-            BoardType boardType, DatabaseHelper databaseHelper) {
-        this.inputStream = inputStream;
-        this.boardType = boardType;
+    public BoardPostSummaryListParser(UserSessionRepo userSessionRepo, DisBoardsLocalRepo databaseHelper) {
         this.boardPosts = new ArrayList<>();
         this.buffer = new StringBuilder(1024);
-        this.databaseHelper = databaseHelper;
-        this.userSessionManager = userSessionManager;
+        this.disBoardsLocalRepo = databaseHelper;
+        this.userSessionRepo = userSessionRepo;
     }
 
-    public ArrayList<BoardPost> parse() {
+    public ArrayList<BoardPost> parse(BoardType boardType,InputStream inputStream) {
         long start = System.currentTimeMillis();
         try {
             StreamedSource streamedSource = new StreamedSource(inputStream);
@@ -94,7 +86,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                             Attributes attributes = tag.parseAttributes();
                             if (attributes != null) {
                                 String authToken = attributes.getValue("content");
-                                userSessionManager.setAuthenticityToken(authToken);
+                                userSessionRepo.setAuthenticityToken(authToken);
                             }
                         }
                     } else if (tagName.equals(HtmlConstants.TABLE_ROW)) {
@@ -109,7 +101,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                             if (currentBoardPost != null) {
                                 // TODO we need to get the last viewed time and
                                 // set it here
-                                if (databaseHelper != null) {
+                                if (disBoardsLocalRepo != null) {
                                     BoardPost existingPost = null;
 //                                    databaseHelper
 //                                            .getBoardPost(currentBoardPost
@@ -169,8 +161,9 @@ public class BoardPostSummaryListParser extends StreamingParser {
                         } else {
                             if (inBoardPostTable
                                     && tableRowCell == DESCRIPTION_TABLE_ROW_INDEX) {
-                                String bufferOutput = Html.fromHtml(
-                                        buffer.toString().trim()).toString();
+//                                String bufferOutput = Html.fromHtml(
+//                                        buffer.toString().trim()).toString();
+                                String bufferOutput = buffer.toString().trim();
                                 parseDescriptionRowAnchorText(bufferOutput);
                             }
                         }
@@ -189,7 +182,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                             Attributes attributes = tag.parseAttributes();
                             if (attributes != null) {
                                 String authToken = attributes.getValue("content");
-                                userSessionManager.setAuthenticityToken(authToken);
+                                userSessionRepo.setAuthenticityToken(authToken);
                             }
                         }
                     }
@@ -211,10 +204,10 @@ public class BoardPostSummaryListParser extends StreamingParser {
             }
         }
         if (DisBoardsConstants.DEBUG && DEBUG_PARSER) {
-            Log.d(TAG, "Parsed " + boardPosts.size() + " board posts in "
+            Timber.d( "Parsed " + boardPosts.size() + " board posts in "
                     + (System.currentTimeMillis() - start) + " ms");
             for (BoardPost boardPost : boardPosts) {
-                Log.d(TAG, boardPost.toString());
+                Timber.d(boardPost.toString());
             }
         }
         return boardPosts;
@@ -244,7 +237,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private long parseDate(String dateString, String format) {
         long timeStamp = -1;
-        if (!TextUtils.isEmpty(dateString)) {
+        if (!StringUtils.isEmpty(dateString)) {
             int indexOfComma = dateString.indexOf(",");
             if (indexOfComma != -1) {
                 dateString = dateString.substring(1, indexOfComma - 2) +
@@ -258,7 +251,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                 timeStamp = parsedDate.getTime();
             }
             if (DEBUG_PARSER) {
-                Log.d(TAG, "parse date =" + parsedDate.toString());
+                Timber.d( "parse date =" + parsedDate.toString());
             }
         }
         return timeStamp;
@@ -266,10 +259,11 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private void setNumberOfReplies() {
         int numberOfReplies = 0;
-        String repliesText = Html.fromHtml(buffer.toString().trim()).toString();
-        if (!TextUtils.isEmpty(repliesText)) {
+        String repliesText = buffer.toString().trim();
+        if (!StringUtils.isEmpty(repliesText)) {
+            repliesText = repliesText.replace("&nbsp;"," ");
             String[] repliesTokens = repliesText.split("\\s");
-            if (repliesTokens != null && repliesTokens.length > 0) {
+            if (repliesTokens.length > 0) {
                 try {
                     numberOfReplies = Integer.parseInt(repliesTokens[0]);
                 } catch (NumberFormatException nfe) {
@@ -306,7 +300,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
         HashMap<String, String> parameters = createAttributeMapFromStartTag(tagString);
         if (parameters != null) {
             String href = parameters.get(HtmlConstants.HREF);
-            if (!TextUtils.isEmpty(href)) {
+            if (!StringUtils.isEmpty(href)) {
                 int indexOfLastForwardSlash = href.lastIndexOf("/");
                 if (indexOfLastForwardSlash != -1) {
                     postId = href.substring(indexOfLastForwardSlash + 1);

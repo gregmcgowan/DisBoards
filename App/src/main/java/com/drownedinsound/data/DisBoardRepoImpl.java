@@ -7,15 +7,22 @@ import com.drownedinsound.data.model.BoardType;
 import com.drownedinsound.data.network.DisBoardsApi;
 import com.drownedinsound.data.network.LoginResponse;
 
+import android.text.format.DateUtils;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
 import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
 /**
  * Created by gregmcgowan on 05/12/15.
  */
 public class DisBoardRepoImpl implements DisBoardRepo {
+
+    private static final long MAX_BOARD_POST_LIST_AGE_MINUTES = 5;
 
     private DisBoardsApi disApi;
     private DisBoardsLocalRepo disBoardsLocalRepo;
@@ -31,7 +38,6 @@ public class DisBoardRepoImpl implements DisBoardRepo {
 
     @Override
     public Observable<LoginResponse> loginUser(String username, String password) {
-        //Make login request
         return disApi.loginUser(username,password)
                 .doOnNext(new Action1<LoginResponse>() {
             @Override
@@ -42,13 +48,49 @@ public class DisBoardRepoImpl implements DisBoardRepo {
     }
 
     @Override
-    public Observable<BoardPost> getBoardPost(String boardPostUrl, String boardPostId,
-            BoardType boardType) {
-        return null;
+    public Observable<List<BoardPost>> getBoardPostSummaryList(BoardType boardType,
+            Object tag, int pageNumber, final boolean forceUpdate) {
+
+        Observable<List<BoardPost>> getCachedBoardPost = Observable.zip(
+                disBoardsLocalRepo.getBoard(boardType)
+                , disBoardsLocalRepo.getBoardPosts(boardType),
+                new Func2<Board, List<BoardPost>, List<BoardPost>>() {
+                    @Override
+                    public List<BoardPost> call(Board board, List<BoardPost> boardPosts) {
+                        long lastFetchedTime = board.getLastFetchedTime();
+                        long fiveMinutesAgo = System.currentTimeMillis()
+                                - (DateUtils.MINUTE_IN_MILLIS * MAX_BOARD_POST_LIST_AGE_MINUTES);
+
+                        boolean recentlyFetched = lastFetchedTime > fiveMinutesAgo;
+                        return recentlyFetched && !forceUpdate ? boardPosts : null;
+                    }
+                });
+
+        return Observable.concat(getCachedBoardPost,
+                disApi.getBoardPostSummaryList(null,pageNumber))
+                .takeFirst(
+                new Func1<List<BoardPost>, Boolean>() {
+                    @Override
+                    public Boolean call(List<BoardPost> boardPosts) {
+                        return boardPosts != null;
+                    }
+                })
+                .onErrorResumeNext(disBoardsLocalRepo.getBoardPosts(boardType))
+                .map(new Func1<List<BoardPost>, List<BoardPost>>() {
+                    @Override
+                    public List<BoardPost> call(List<BoardPost> boardPosts) {
+                        if(boardPosts == null) {
+                            boardPosts = new ArrayList<>();
+                        }
+                        return boardPosts;
+                    }
+                });
+
     }
 
     @Override
-    public Observable<List<BoardPost>> getBoardPostSummaryList(Object tag, int pageNumber) {
+    public Observable<BoardPost> getBoardPost(String boardPostUrl, String boardPostId,
+            BoardType boardType) {
         return null;
     }
 
@@ -78,23 +120,5 @@ public class DisBoardRepoImpl implements DisBoardRepo {
     }
 
 
-//    private boolean recentlyFetched(Board cachedBoard) {
-//        BoardType type = cachedBoard.getBoardType();
-//        Board board = disBoardsLocalRepo.getBoard(type);
-//        long lastFetchedTime = board.getLastFetchedTime();
-//        long fiveMinutesAgo = System.currentTimeMillis()
-//                - (DateUtils.MINUTE_IN_MILLIS * MAX_BOARD_POST_LIST_AGE_MINUTES);
-//
-//        boolean recentlyFetched = lastFetchedTime > fiveMinutesAgo;
-//
-//        if (DisBoardsConstants.DEBUG) {
-//            Timber.d("type " + type + " fetched " + (((System.currentTimeMillis() - lastFetchedTime)
-//                    / 1000))
-//                    + " seconds ago "
-//                    + (recentlyFetched ? "recently fetched"
-//                    : "not recently fetched"));
-//        }
-//
-//        return recentlyFetched;
-//    }
+
 }

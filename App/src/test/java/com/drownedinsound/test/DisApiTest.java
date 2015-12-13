@@ -1,6 +1,10 @@
 package com.drownedinsound.test;
 
 import com.drownedinsound.data.UserSessionRepo;
+import com.drownedinsound.data.model.Board;
+import com.drownedinsound.data.model.BoardPost;
+import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.LoginResponse;
 import com.drownedinsound.data.network.UrlConstants;
@@ -21,6 +25,8 @@ import android.app.Application;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import rx.functions.Action1;
@@ -50,12 +56,29 @@ public class DisApiTest {
 
     CountDownLatch countDownLatch;
 
+    private List<BoardPost> testBoardPosts;
+
+    private Board board;
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
         OkHttpClient okHttpClient = new OkHttpClient();
         disApiClient = new DisApiClient(application,okHttpClient,disWebPageParser);
+
+        board = new Board(BoardType.MUSIC,
+                BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 19, 0);
+
+        BoardPost boardPost = new BoardPost();
+        boardPost.setAuthorUsername(BoardPostTestData.BOARD_POST_AUTHOR);
+        boardPost.setDateOfPost(BoardPostTestData.BOARD_POST_DATE_TIME);
+        boardPost.setTitle(BoardPostTestData.BOARD_POST_TITLE);
+        boardPost.setNumberOfReplies(BoardPostTestData.BOARD_POST_NUMBER_OF_COMMENTS);
+        boardPost.setContent(BoardPostTestData.BOARD_POST_CONTENT);
+
+        testBoardPosts = new ArrayList<>();
+        testBoardPosts.add(boardPost);
     }
 
     @Test
@@ -85,6 +108,36 @@ public class DisApiTest {
                     @Override
                     public void call(LoginResponse loginResponse) {
                         Assert.assertEquals(token, loginResponse.getAuthenticationToken());
+                        countDownLatch.countDown();
+                    }
+                });
+        countDownLatch.await();
+        mockWebServer.shutdown();
+    }
+
+    @Test
+    public void testGetList() throws Exception {
+        when(disWebPageParser.parseBoardPostSummaryList(any(BoardType.class),
+                any(InputStream.class))).thenReturn(
+                testBoardPosts);
+
+        MockWebServer mockWebServer = new MockWebServer();
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("gewgewgewgew"));
+        mockWebServer.start();
+
+        HttpUrl base = mockWebServer.url("");
+        disApiClient.setBaseUrl(base.toString());
+
+        countDownLatch = new CountDownLatch(1);
+
+        disApiClient.getBoardPostSummaryList(board,1)
+                .subscribeOn(Schedulers.immediate())
+                .subscribe(new Action1<List<BoardPost>>() {
+                    @Override
+                    public void call(List<BoardPost> boardPosts) {
+                        BoardPost expected = testBoardPosts.get(0);
+                        BoardPost actual = boardPosts.get(0);
+                        AssertUtils.assertBoardPost(expected, actual);
                         countDownLatch.countDown();
                     }
                 });

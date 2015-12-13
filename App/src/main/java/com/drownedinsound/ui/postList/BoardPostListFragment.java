@@ -12,14 +12,10 @@ import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
-import com.drownedinsound.ui.controls.SvgAnimatePathView;
 import com.drownedinsound.ui.post.BoardPostActivity;
 import com.drownedinsound.ui.post.BoardPostFragment;
-import com.drownedinsound.utils.SimpleAnimatorListener;
 import com.drownedinsound.utils.UiUtils;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
@@ -230,17 +226,13 @@ public class BoardPostListFragment
     }
 
     public void doRefreshAction() {
-        requestBoardSummaryPage(1, false, true);
+        requestBoardSummaryPage(1, true);
     }
 
-    public void loadListIfNotAlready() {
-        requestBoardSummaryPage(1, true, false);
-    }
 
-    public void requestBoardSummaryPage(int page, boolean showLoadingProgress,
-            boolean forceUpdate) {
+    public void requestBoardSummaryPage(int page, boolean forceUpdate) {
         boardPostListController
-                .requestBoardSummaryPage(this, board, page, showLoadingProgress, forceUpdate, true);
+                .requestBoardSummaryPage(this, boardType, page, forceUpdate);
     }
 
     public void onEventMainThread(SentNewPostEvent event) {
@@ -249,7 +241,7 @@ public class BoardPostListFragment
             //showAnimatedLogoAndHideList();
         } else if (state.equals(SentNewPostState.CONFIRMED)) {
             //Refresh the current list
-            requestBoardSummaryPage(1, true, true);
+            //requestBoardSummaryPage(1, true, true);
         }
     }
 
@@ -359,6 +351,16 @@ public class BoardPostListFragment
         loadingLayout.showAnimatedViewAndHideContent();
     }
 
+    @Override
+    public void stopEndlessLoadingUI() {
+
+    }
+
+    @Override
+    public BoardType getBoardType() {
+        return boardType;
+    }
+
     private class BoardPostSummaryListEndlessAdapter extends EndlessAdapter {
 
         public BoardPostSummaryListEndlessAdapter(ListAdapter wrapped) {
@@ -375,7 +377,7 @@ public class BoardPostListFragment
         @Override
         protected boolean cacheInBackground() throws Exception {
             int pageToFetch = lastPageFetched + 1;
-            requestBoardSummaryPage(pageToFetch, false, false);
+            requestBoardSummaryPage(pageToFetch, false);
             return true;
         }
 
