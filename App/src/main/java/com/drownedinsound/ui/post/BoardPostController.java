@@ -58,18 +58,18 @@ public class BoardPostController extends BaseUIController {
         }
     }
 
-    public void thisAComment(BoardPostUI boardPostUI, String postUrl, BoardType boardType,
+    public void thisAComment(BoardPostUI boardPostUI, BoardType boardType,
             String postID, String commentID) {
         boardPostUI.showLoadingProgress(true);
         int id = getId(boardPostUI);
-        disApiClient.thisAComment(postUrl, postID, commentID, boardType,id  );
+        //disApiClient.thisAComment(postUrl, postID, commentID, boardType,id  );
     }
 
-    public void loadBoardPost(BoardPostUI boardPostUI, String boardPostUrl, String boardPostId,
+    public void loadBoardPost(BoardPostUI boardPostUI, String boardPostId,
             BoardType boardType) {
         boardPostUI.showLoadingProgress(true);
         int uiID = getId(boardPostUI);
-        disApiClient.getBoardPost(boardPostUrl, boardPostId, boardType, uiID);
+        //disApiClient.getBoardPost(boardPostUrl, boardPostId, boardType, uiID);
     }
 
     @SuppressWarnings("unused")

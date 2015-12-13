@@ -44,7 +44,7 @@ public class DeepLinkClickedActivity extends Activity {
 
             BoardType boardType = UrlConstants.getBoardType(url);
             Timber.d("Board " + board + " postID " + postId + " boardType " + boardType);
-            startActivity(BoardPostActivity.getIntent(this, url, postId, boardType));
+            startActivity(BoardPostActivity.getIntent(this, postId, boardType));
         } else {
 
         }

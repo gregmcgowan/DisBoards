@@ -1,14 +1,7 @@
 package com.drownedinsound.data.model;
 
-import com.drownedinsound.data.database.DatabaseHelper;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-
-import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import java.util.ArrayList;
 
 /**
  * This represents information for a specific type of board.
@@ -16,7 +9,7 @@ import java.util.ArrayList;
  * @author gregmcgowan
  */
 @DatabaseTable(tableName = "board")
-public class Board implements Parcelable {
+public class Board {
 
     @DatabaseField(id = true, generatedId = false)
     private BoardType boardType;
@@ -47,10 +40,6 @@ public class Board implements Parcelable {
         this.url = url;
         this.sectionId = sectionId;
         this.pageIndex = pageIndex;
-    }
-
-    protected Board(Parcel in) {
-        createFromParcel(in);
     }
 
     public BoardType getBoardType() {
@@ -92,38 +81,6 @@ public class Board implements Parcelable {
     public void setPageIndex(int pageIndex) {
         this.pageIndex = pageIndex;
     }
-
-    private void createFromParcel(Parcel in) {
-        displayName = in.readString();
-        url = in.readString();
-        boardType = (BoardType) in.readSerializable();
-        lastFetchedTime = in.readLong();
-        sectionId = in.readInt();
-        pageIndex = in.readInt();
-    }
-
-    public int describeContents() {
-        return 0;
-    }
-
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(displayName);
-        dest.writeString(url);
-        dest.writeSerializable(boardType);
-        dest.writeLong(lastFetchedTime);
-        dest.writeInt(sectionId);
-        dest.writeInt(pageIndex);
-    }
-
-    public static final Parcelable.Creator<Board> CREATOR = new Parcelable.Creator<Board>() {
-        public Board createFromParcel(Parcel in) {
-            return new Board(in);
-        }
-
-        public Board[] newArray(int size) {
-            return new Board[size];
-        }
-    };
 
     @Override
     public int hashCode() {
@@ -167,31 +124,6 @@ public class Board implements Parcelable {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Returns the 2 closets boards to the board provided.
-     */
-    public static ArrayList<Board> getBoardsToFetch(
-            Board board, Context context) {
-        ArrayList<Board> boards = DatabaseHelper.getInstance(context).getCachedBoards();
-        ArrayList<Board> next2Tabs = new ArrayList<Board>();
-        int indexOfBoardTypeInfo = boards.indexOf(board);
-        if (indexOfBoardTypeInfo != -1) {
-            int lastIndex = boards.size() - 1;
-            if (indexOfBoardTypeInfo == 0) {
-                next2Tabs.add(boards.get(indexOfBoardTypeInfo + 1));
-                next2Tabs.add(boards.get(indexOfBoardTypeInfo + 2));
-            } else if (indexOfBoardTypeInfo == lastIndex) {
-                next2Tabs.add(boards.get(indexOfBoardTypeInfo + -1));
-                next2Tabs.add(boards.get(indexOfBoardTypeInfo - 2));
-            } else {
-                next2Tabs.add(boards.get(indexOfBoardTypeInfo - 1));
-                next2Tabs.add(boards.get(indexOfBoardTypeInfo + 1));
-            }
-        }
-
-        return next2Tabs;
     }
 
     public int getSectionId() {

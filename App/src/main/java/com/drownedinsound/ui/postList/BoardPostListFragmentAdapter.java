@@ -26,7 +26,7 @@ public class BoardPostListFragmentAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int item) {
         Board boardInfo = boards.get(item);
-        return BoardPostListFragment.newInstance(boardInfo);
+        return BoardPostListFragment.newInstance(boardInfo.getBoardType());
     }
 
     @Override

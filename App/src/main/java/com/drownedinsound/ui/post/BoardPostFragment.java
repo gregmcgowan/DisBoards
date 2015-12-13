@@ -62,8 +62,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     private BoardPostAdapter adapter;
 
-    private String boardPostUrl;
-
     private String boardPostId;
 
     private BoardType boardType;
@@ -100,12 +98,9 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     @Inject
     BoardPostController boardPostController;
 
-    public static BoardPostFragment newInstance(String boardPostUrl,
-            String boardPostID,
-            boolean inDualPaneMode, BoardType boardType) {
+    public static BoardPostFragment newInstance(String boardPostID, boolean inDualPaneMode, BoardType boardType) {
         BoardPostFragment boardPostFragment = new BoardPostFragment();
         Bundle arguments = new Bundle();
-        arguments.putString(DisBoardsConstants.BOARD_POST_URL, boardPostUrl);
         arguments.putString(DisBoardsConstants.BOARD_POST_ID, boardPostID);
         arguments.putBoolean(DisBoardsConstants.DUAL_PANE_MODE, inDualPaneMode);
         arguments.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
@@ -175,7 +170,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     private void thisAComment(BoardPostComment boardPostComment) {
         String commentID = boardPostComment.getId();
-        boardPostController.thisAComment(this, boardPostUrl, boardType, boardPostId, commentID);
+        boardPostController.thisAComment(this, boardType, boardPostId, commentID);
     }
 
     @Override
@@ -195,8 +190,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     private void initialise(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
-            boardPostUrl = (String) getArguments().get(
-                    DisBoardsConstants.BOARD_POST_URL);
             boardPostId = (String) getArguments().get(
                     DisBoardsConstants.BOARD_POST_ID);
             inDualPaneMode = getArguments().getBoolean(
@@ -204,8 +197,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
             boardType = (BoardType) getArguments().getSerializable(
                     DisBoardsConstants.BOARD_TYPE);
         } else {
-            boardPostUrl = savedInstanceState
-                    .getString(DisBoardsConstants.BOARD_POST_URL);
             boardPostId = savedInstanceState
                     .getString(DisBoardsConstants.BOARD_POST_ID);
             boardPost = savedInstanceState
@@ -217,10 +208,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
             if (boardPost != null) {
                 adapter.setComments(new ArrayList<>(boardPost.getComments()));
             }
-        }
-
-        if (boardPostUrl == null) {
-            Log.d(TAG, "Board post url is null");
         }
     }
 
@@ -314,7 +301,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     @Override
     public void onResume() {
         super.onResume();
-        boardPostController.loadBoardPost(this, boardPostUrl, boardPostId, boardType);
+        boardPostController.loadBoardPost(this, boardPostId, boardType);
     }
 
     @Override
@@ -325,9 +312,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(DisBoardsConstants.BOARD_POST_KEY, boardPost);
         outState.putString(DisBoardsConstants.BOARD_POST_ID, boardPostId);
-        outState.putString(DisBoardsConstants.BOARD_POST_URL, boardPostUrl);
         outState.putBoolean(DisBoardsConstants.DUAL_PANE_MODE, inDualPaneMode);
         outState.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
     }
@@ -364,7 +349,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         if (boardPost != null) {
             boolean existingFavouriteStatus = boardPost.isFavourited();
             Bundle serviceBundle = new Bundle();
-            serviceBundle.putParcelable(DisBoardsConstants.BOARD_POST_KEY, boardPost);
             serviceBundle.putInt(DatabaseService.DATABASE_SERVICE_REQUESTED_KEY,
                     DatabaseService.SET_BOARD_POST_FAVOURITE_STATUS);
             serviceBundle.putBoolean(DisBoardsConstants.IS_FAVOURITE, !existingFavouriteStatus);
@@ -472,10 +456,10 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
             if (indexOfLastForwardSlash != -1) {
                 postId = url.substring(indexOfLastForwardSlash + 1);
             }
-            //TODO remove comment if there is one
+                //TODO remove comment if there is one
             Log.d(TAG, "PostID = " + postId);
             BoardType boardType = UrlConstants.getBoardType(url);
-            startActivity(BoardPostActivity.getIntent(getActivity(), url, postId, boardType));
+            startActivity(BoardPostActivity.getIntent(getActivity(), postId, boardType));
         }
 
 

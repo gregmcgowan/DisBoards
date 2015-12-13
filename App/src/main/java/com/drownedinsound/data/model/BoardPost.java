@@ -4,8 +4,6 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
@@ -22,20 +20,9 @@ import java.util.List;
  * @author Greg
  */
 @DatabaseTable(tableName = "board_post")
-public class BoardPost implements Parcelable {
+public class BoardPost {
 
     public static final BoardPostComparator COMPARATOR = new BoardPostComparator();
-
-    public static final Parcelable.Creator<BoardPost> CREATOR
-            = new Parcelable.Creator<BoardPost>() {
-        public BoardPost createFromParcel(Parcel in) {
-            return new BoardPost(in);
-        }
-
-        public BoardPost[] newArray(int size) {
-            return new BoardPost[size];
-        }
-    };
 
     public static final String BOARD_TYPE_FIELD = "board_type";
 
@@ -66,9 +53,6 @@ public class BoardPost implements Parcelable {
 
     @DatabaseField
     private int numberOfReplies;
-
-    @DatabaseField
-    private BoardPostStatus boardPostStatus;
 
     @DatabaseField
     private long lastViewedTime;
@@ -102,11 +86,6 @@ public class BoardPost implements Parcelable {
 
     public BoardPost(Collection<BoardPostComment> comments) {
         setComments(comments);
-    }
-
-    public BoardPost(Parcel in) {
-        boardPostTreeNodes = new ArrayList<BoardPostCommentTreeNode>();
-        createFromParcel(in);
     }
 
     public void setComments(Collection<BoardPostComment> newComents) {
@@ -237,14 +216,6 @@ public class BoardPost implements Parcelable {
         this.numberOfReplies = numberOfReplies;
     }
 
-    public BoardPostStatus getBoardPostStatus() {
-        return boardPostStatus;
-    }
-
-    public void setBoardPostStatus(BoardPostStatus boardPostStatus) {
-        this.boardPostStatus = boardPostStatus;
-    }
-
     public long getLastViewedTime() {
         return lastViewedTime;
     }
@@ -298,7 +269,6 @@ public class BoardPost implements Parcelable {
         this.latestCommentId = latestCommentId;
     }
 
-
     public boolean isFavourited() {
         return isFavourited;
     }
@@ -310,50 +280,6 @@ public class BoardPost implements Parcelable {
     public boolean showGoToLastCommentOption() {
         return getNumberOfTimesRead() > 1;
     }
-
-    public void writeToParcel(Parcel parcel, int flag) {
-        parcel.writeString(id);
-        parcel.writeString(title);
-        parcel.writeString(summary);
-        parcel.writeInt(isSticky ? 1 : 0);
-        parcel.writeString(content);
-        parcel.writeString(authorUsername);
-        parcel.writeString(dateOfPost);
-        parcel.writeInt(numberOfReplies);
-        parcel.writeSerializable(boardPostStatus);
-        parcel.writeLong(lastViewedTime);
-        parcel.writeLong(createdTime);
-        parcel.writeLong(lastUpdatedTime);
-        parcel.writeSerializable(boardType);
-        parcel.writeString(latestCommentId);
-        parcel.writeInt(numberOfTimesRead);
-        parcel.writeInt(isFavourited ? 1 : 0);
-        List<BoardPostComment> comments = new ArrayList<BoardPostComment>(getComments());
-        parcel.writeTypedList(comments);
-    }
-
-    private void createFromParcel(Parcel parcel) {
-        id = parcel.readString();
-        title = parcel.readString();
-        summary = parcel.readString();
-        isSticky = parcel.readInt() == 1;
-        content = parcel.readString();
-        authorUsername = parcel.readString();
-        dateOfPost = parcel.readString();
-        numberOfReplies = parcel.readInt();
-        boardPostStatus = (BoardPostStatus) parcel.readSerializable();
-        lastViewedTime = parcel.readLong();
-        createdTime = parcel.readLong();
-        lastUpdatedTime = parcel.readLong();
-        boardType = (BoardType) parcel.readSerializable();
-        latestCommentId = parcel.readString();
-        numberOfTimesRead = parcel.readInt();
-        isFavourited = parcel.readInt() == 1 ? true : false;
-        List<BoardPostComment> comments = new ArrayList<BoardPostComment>();
-        parcel.readTypedList(comments, BoardPostComment.CREATOR);
-        setComments(comments);
-    }
-
 
     @Override
     public int hashCode() {
@@ -430,7 +356,7 @@ public class BoardPost implements Parcelable {
                 + isSticky + ", summary=" + summary + ", content=" + content
                 + ", authorUsername=" + authorUsername + ", dateOfPost="
                 + dateOfPost + ", numberOfReplies=" + numberOfReplies
-                + ", boardPostStatus=" + boardPostStatus + ", lastViewedTime="
+                + ", " + ", lastViewedTime="
                 + lastViewedTime + ", createdTime=" + createdTime
                 + ", lastUpdatedTime=" + lastUpdatedTime + ", boardType="
                 + boardType + "]";

@@ -97,18 +97,16 @@ public class BoardPostListFragment
 
     private String postId;
 
-    private String postUrl;
-
     private int lastPageFetched;
 
     public BoardPostListFragment() {
     }
 
-    public static BoardPostListFragment newInstance(Board board) {
+    public static BoardPostListFragment newInstance(BoardType board) {
         BoardPostListFragment boardListFragment = new BoardPostListFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putParcelable(DisBoardsConstants.BOARD, board);
+        arguments.putSerializable(DisBoardsConstants.BOARD_TYPE, board);
         boardListFragment.setArguments(arguments);
         return boardListFragment;
     }
@@ -118,11 +116,7 @@ public class BoardPostListFragment
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        board = getArguments().getParcelable(DisBoardsConstants.BOARD);
-        if (board != null) {
-            boardUrl = board.getUrl();
-            boardType = board.getBoardType();
-        }
+        boardType = (BoardType) getArguments().getSerializable(DisBoardsConstants.BOARD_TYPE);
     }
 
     @Override
@@ -179,8 +173,6 @@ public class BoardPostListFragment
                     CURRENTLY_SELECTED_BOARD_POST, -1);
             wasInDualPaneMode = savedInstanceState.getBoolean(
                     WAS_IN_DUAL_PANE_MODE, false);
-            postUrl = savedInstanceState
-                    .getString(DisBoardsConstants.BOARD_POST_URL);
             postId = savedInstanceState
                     .getString(DisBoardsConstants.BOARD_POST_ID);
             boardType = (BoardType) savedInstanceState
@@ -202,7 +194,6 @@ public class BoardPostListFragment
                 && currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
             Intent viewPostIntent = new Intent(getActivity(),
                     BoardPostActivity.class);
-            viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_URL, postUrl);
             viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_ID, postId);
             startActivity(viewPostIntent);
         }
@@ -214,10 +205,8 @@ public class BoardPostListFragment
         outState.putInt(CURRENTLY_SELECTED_BOARD_POST, currentlySelectedPost);
         outState.putBoolean(WAS_IN_DUAL_PANE_MODE, dualPaneMode);
         outState.putString(DisBoardsConstants.BOARD_POST_ID, postId);
-        outState.putString(DisBoardsConstants.BOARD_POST_URL, postUrl);
         outState.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
         outState.putString(DisBoardsConstants.BOARD_URL, boardUrl);
-        outState.putParcelable(DisBoardsConstants.BOARD, board);
     }
 
     public void onEventMainThread(FailedToPostNewThreadEvent event) {
@@ -261,7 +250,6 @@ public class BoardPostListFragment
         currentlySelectedPost = position;
         if (boardPost != null) {
             postId = boardPost.getId();
-            postUrl = boardUrl + "/" + postId;
 
             if (dualPaneMode) {
                 BoardPostFragment boardPostFragment = (BoardPostFragment) getFragmentManager()
@@ -269,7 +257,7 @@ public class BoardPostListFragment
                 if (boardPostFragment == null
                         || !postId.equals(boardPostFragment.getBoardPostId())) {
                     boardPostFragment = BoardPostFragment
-                            .newInstance(postUrl, postId, true, boardType);
+                            .newInstance(postId, true, boardType);
                     // Execute a transaction, replacing any existing fragment
                     // with this one inside the frame.x§
                     FragmentTransaction ft = getFragmentManager()
@@ -281,7 +269,7 @@ public class BoardPostListFragment
 
             } else {
                 startActivity(BoardPostActivity
-                        .getIntent(getActivity(), postUrl, postId, boardType));
+                        .getIntent(getActivity(), postId, boardType));
             }
         }
     }

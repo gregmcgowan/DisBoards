@@ -10,7 +10,7 @@ import android.os.Parcelable;
  * Created by gregmcgowan on 17/10/2013.
  */
 @DatabaseTable(tableName = "draft_board_post")
-public class DraftBoardPost implements Parcelable {
+public class DraftBoardPost {
 
     public static final String BOARD_TYPE_FIELD = "board_type";
 
@@ -55,35 +55,6 @@ public class DraftBoardPost implements Parcelable {
     public DraftBoardPost() {
 
     }
-
-    protected DraftBoardPost(Parcel in) {
-        id = in.readString();
-        title = in.readString();
-        content = in.readString();
-        boardType = (BoardType) in.readSerializable();
-    }
-
-    public int describeContents() {
-        return 0;
-    }
-
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
-        dest.writeString(title);
-        dest.writeString(content);
-        dest.writeSerializable(boardType);
-    }
-
-    public static final Parcelable.Creator<DraftBoardPost> CREATOR
-            = new Parcelable.Creator<DraftBoardPost>() {
-        public DraftBoardPost createFromParcel(Parcel in) {
-            return new DraftBoardPost(in);
-        }
-
-        public DraftBoardPost[] newArray(int size) {
-            return new DraftBoardPost[size];
-        }
-    };
 
 
 }

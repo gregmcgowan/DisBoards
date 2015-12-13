@@ -34,13 +34,11 @@ public class BoardPostActivity extends BaseControllerActivity<BoardPostControlle
     @Inject
     protected BoardPostController boardPostController;
 
-    public static Intent getIntent(Context context, String postUrl, String postID,
+    public static Intent getIntent(Context context, String postID,
             BoardType boardType) {
         Intent boardPostActivityIntent = new Intent(context, BoardPostActivity.class);
 
         Bundle parametersBundle = new Bundle();
-        parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
-                postUrl);
         parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
                 postID);
         parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
@@ -69,12 +67,11 @@ public class BoardPostActivity extends BaseControllerActivity<BoardPostControlle
 
         if (savedInstanceState == null) {
             // During initial setup, plug in the details fragment.
-            String postUrl = getIntent().getStringExtra(DisBoardsConstants.BOARD_POST_URL);
             String postID = getIntent().getStringExtra(DisBoardsConstants.BOARD_POST_ID);
             BoardType boardType = (BoardType) getIntent()
                     .getSerializableExtra(DisBoardsConstants.BOARD_TYPE);
 
-            boardPostFragment = BoardPostFragment.newInstance(postUrl, postID, false, boardType);
+            boardPostFragment = BoardPostFragment.newInstance(postID, false, boardType);
             fragmentManager.beginTransaction()
                     .add(R.id.board_post_fragment_holder, boardPostFragment).commit();
         }

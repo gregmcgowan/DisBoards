@@ -1,8 +1,5 @@
 package com.drownedinsound.data.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.util.ArrayList;
 
 /**
@@ -11,7 +8,7 @@ import java.util.ArrayList;
  *
  * @author Greg
  */
-public class BoardPostCommentTreeNode implements Parcelable {
+public class BoardPostCommentTreeNode {
 
     private BoardPostComment boardPostComment;
 
@@ -21,11 +18,7 @@ public class BoardPostCommentTreeNode implements Parcelable {
 
     public BoardPostCommentTreeNode(BoardPostComment boardPostComment) {
         this.boardPostComment = boardPostComment;
-        children = new ArrayList<BoardPostCommentTreeNode>();
-    }
-
-    public BoardPostCommentTreeNode(Parcel in) {
-        writeFromParcel(in);
+        children = new ArrayList<>();
     }
 
     public void addChild(BoardPostCommentTreeNode childBoardPostComment) {
@@ -93,38 +86,6 @@ public class BoardPostCommentTreeNode implements Parcelable {
         }
         return true;
     }
-
-    public int describeContents() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    private void writeFromParcel(Parcel in) {
-        boardPostComment = in.readParcelable(BoardPostComment.class.getClassLoader());
-        children = in.readArrayList(BoardPostCommentTreeNode.class.getClassLoader());
-        if (children == null) {
-            children = new ArrayList<BoardPostCommentTreeNode>();
-        }
-        parent = in.readParcelable(BoardPostCommentTreeNode.class.getClassLoader());
-    }
-
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(boardPostComment, flags);
-        dest.writeParcelableArray(children.toArray(new BoardPostCommentTreeNode[children.size()]),
-                flags);
-        dest.writeParcelable(parent, flags);
-    }
-
-    public static final Parcelable.Creator<BoardPostCommentTreeNode> CREATOR
-            = new Parcelable.Creator<BoardPostCommentTreeNode>() {
-        public BoardPostCommentTreeNode createFromParcel(Parcel in) {
-            return new BoardPostCommentTreeNode(in);
-        }
-
-        public BoardPostCommentTreeNode[] newArray(int size) {
-            return new BoardPostCommentTreeNode[size];
-        }
-    };
 
 
 }

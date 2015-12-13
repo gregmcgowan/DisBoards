@@ -3,16 +3,13 @@ package com.drownedinsound.data.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 /**
  * Represents a comment that has been made against a drowned in sound board post
  *
  * @author Greg
  */
 @DatabaseTable(tableName = "board_post_comment")
-public class BoardPostComment implements Parcelable {
+public class BoardPostComment {
 
     private static final String ID_FIELD = "_id";
 
@@ -58,10 +55,6 @@ public class BoardPostComment implements Parcelable {
 
     public BoardPostComment() {
 
-    }
-
-    protected BoardPostComment(Parcel in) {
-        readFromParcel(in);
     }
 
     public String getTitle() {
@@ -156,36 +149,6 @@ public class BoardPostComment implements Parcelable {
         this.replyToUsername = replyToUsername;
     }
 
-    private void readFromParcel(Parcel in) {
-        title = in.readString();
-        content = in.readString();
-        authorUsername = in.readString();
-        id = in.readString();
-        commentLevel = in.readInt();
-        dateAndTimeOfComment = in.readString();
-        actionSectionVisible = in.readInt() == 1;
-    }
-
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(title);
-        dest.writeString(content);
-        dest.writeString(authorUsername);
-        dest.writeString(id);
-        dest.writeInt(commentLevel);
-        dest.writeString(dateAndTimeOfComment);
-        dest.writeInt(actionSectionVisible ? 1 : 0);
-    }
-
-    public static final Parcelable.Creator<BoardPostComment> CREATOR
-            = new Parcelable.Creator<BoardPostComment>() {
-        public BoardPostComment createFromParcel(Parcel in) {
-            return new BoardPostComment(in);
-        }
-
-        public BoardPostComment[] newArray(int size) {
-            return new BoardPostComment[size];
-        }
-    };
 
     @Override
     public String toString() {

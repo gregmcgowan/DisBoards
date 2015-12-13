@@ -67,8 +67,6 @@ public class FavouritesListFragment extends BaseFragment {
 
     private String postId;
 
-    private String postUrl;
-
     protected
     ProgressBar progressBar;
 
@@ -128,8 +126,6 @@ public class FavouritesListFragment extends BaseFragment {
                     CURRENTLY_SELECTED_BOARD_POST, -1);
             wasInDualPaneMode = savedInstanceState.getBoolean(
                     WAS_IN_DUAL_PANE_MODE, false);
-            postUrl = savedInstanceState
-                    .getString(DisBoardsConstants.BOARD_POST_URL);
             postId = savedInstanceState
                     .getString(DisBoardsConstants.BOARD_POST_ID);
         }
@@ -145,7 +141,6 @@ public class FavouritesListFragment extends BaseFragment {
                 && currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
             Intent viewPostIntent = new Intent(getActivity(),
                     BoardPostActivity.class);
-            viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_URL, postUrl);
             viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_ID, postId);
             startActivity(viewPostIntent);
         }
@@ -165,8 +160,6 @@ public class FavouritesListFragment extends BaseFragment {
         outState.putInt(CURRENTLY_SELECTED_BOARD_POST, currentlySelectedPost);
         outState.putBoolean(WAS_IN_DUAL_PANE_MODE, dualPaneMode);
         outState.putString(DisBoardsConstants.BOARD_POST_ID, postId);
-        outState.putString(DisBoardsConstants.BOARD_POST_URL, postUrl);
-
     }
 
     private boolean favouritesLoaded() {
@@ -265,8 +258,6 @@ public class FavouritesListFragment extends BaseFragment {
             Board board = null;//DatabaseHelper.getInstance(getActivity()).getBoard(boardType);
             postId = boardPostSummary.getId();
 
-            postUrl = board.getUrl() + "/" + postId;
-
             if (dualPaneMode) {
                 // listView.setItemChecked(position, true);
                 BoardPostFragment boardPostFragment = (BoardPostFragment) getFragmentManager()
@@ -274,7 +265,7 @@ public class FavouritesListFragment extends BaseFragment {
                 if (boardPostFragment == null
                         || !postId.equals(boardPostFragment.getBoardPostId())) {
                     boardPostFragment = BoardPostFragment
-                            .newInstance(postUrl, postId, true, boardType);
+                            .newInstance(postId, true, boardType);
                     // Execute a transaction, replacing any existing fragment
                     // with this one inside the frame.
                     FragmentTransaction ft = getFragmentManager()
@@ -288,8 +279,6 @@ public class FavouritesListFragment extends BaseFragment {
                 Intent viewPostIntent = new Intent(getActivity(),
                         BoardPostActivity.class);
                 Bundle parametersBundle = new Bundle();
-                parametersBundle.putString(DisBoardsConstants.BOARD_POST_URL,
-                        postUrl);
                 parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
                         postId);
                 parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
