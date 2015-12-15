@@ -2,7 +2,7 @@ package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 
@@ -44,7 +44,7 @@ public class PostReplyFragment extends BaseControllerFragment<BoardPostControlle
 
     private String boardPostId;
 
-    private BoardType boardType;
+    private BoardListType boardListType;
 
     private String replyToCommentID;
 
@@ -53,7 +53,7 @@ public class PostReplyFragment extends BaseControllerFragment<BoardPostControlle
     BoardPostController boardPostController;
 
     public static PostReplyFragment newInstance(String replyToAuthor,
-            String replyToCommentId, String postId, BoardType boardType) {
+            String replyToCommentId, String postId, BoardListType boardListType) {
         Bundle arguments = new Bundle();
         arguments.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
                 replyToAuthor);
@@ -62,7 +62,7 @@ public class PostReplyFragment extends BaseControllerFragment<BoardPostControlle
         arguments.putString(DisBoardsConstants.BOARD_POST_ID,
                 postId);
         arguments.putSerializable(DisBoardsConstants.BOARD_TYPE,
-                boardType);
+                boardListType);
         PostReplyFragment postReplyFragment = new PostReplyFragment();
         postReplyFragment.setArguments(arguments);
 
@@ -81,7 +81,7 @@ public class PostReplyFragment extends BaseControllerFragment<BoardPostControlle
         Bundle arguments = getArguments();
 
         this.replyToCommentID = arguments.getString(DisBoardsConstants.BOARD_COMMENT_ID);
-        this.boardType = (BoardType) arguments.getSerializable(DisBoardsConstants.BOARD_TYPE);
+        this.boardListType = (BoardListType) arguments.getSerializable(DisBoardsConstants.BOARD_TYPE);
         this.boardPostId = arguments.getString(DisBoardsConstants.BOARD_POST_ID);
         this.replyToAuthor = arguments.getString(DisBoardsConstants.REPLY_TO_AUTHOR);
     }
@@ -131,7 +131,7 @@ public class PostReplyFragment extends BaseControllerFragment<BoardPostControlle
 
         boardPostController
                 .replyToComment(this, boardPostId, replyToCommentID, commentTitle, commentContent,
-                        boardType);
+                        boardListType);
     }
 
     @OnClick(R.id.back_button)

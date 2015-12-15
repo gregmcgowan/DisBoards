@@ -1,9 +1,9 @@
 package com.drownedinsound.data;
 
 import com.drownedinsound.data.database.DisBoardsLocalRepo;
-import com.drownedinsound.data.model.Board;
+import com.drownedinsound.data.model.BoardPostListInfo;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.data.network.DisBoardsApi;
 import com.drownedinsound.data.network.LoginResponse;
 
@@ -48,15 +48,15 @@ public class DisBoardRepoImpl implements DisBoardRepo {
     }
 
     @Override
-    public Observable<List<BoardPost>> getBoardPostSummaryList(BoardType boardType,
-            Object tag, int pageNumber, final boolean forceUpdate) {
+    public Observable<List<BoardPost>> getBoardPostSummaryList(final BoardListType boardListType,
+            final int pageNumber, final boolean forceUpdate) {
 
-        Observable<List<BoardPost>> getCachedBoardPost = Observable.zip(
-                disBoardsLocalRepo.getBoard(boardType)
-                , disBoardsLocalRepo.getBoardPosts(boardType),
-                new Func2<Board, List<BoardPost>, List<BoardPost>>() {
+        final Observable<List<BoardPost>> getCachedBoardPost = Observable.zip(
+                disBoardsLocalRepo.getBoard(boardListType)
+                , disBoardsLocalRepo.getBoardPosts(boardListType),
+                new Func2<BoardPostListInfo, List<BoardPost>, List<BoardPost>>() {
                     @Override
-                    public List<BoardPost> call(Board board, List<BoardPost> boardPosts) {
+                    public List<BoardPost> call(BoardPostListInfo board, List<BoardPost> boardPosts) {
                         long lastFetchedTime = board.getLastFetchedTime();
                         long fiveMinutesAgo = System.currentTimeMillis()
                                 - (DateUtils.MINUTE_IN_MILLIS * MAX_BOARD_POST_LIST_AGE_MINUTES);
@@ -65,47 +65,57 @@ public class DisBoardRepoImpl implements DisBoardRepo {
                         return recentlyFetched && !forceUpdate ? boardPosts : null;
                     }
                 });
-
-        return Observable.concat(getCachedBoardPost,
-                disApi.getBoardPostSummaryList(null,pageNumber))
-                .takeFirst(
-                new Func1<List<BoardPost>, Boolean>() {
+        return disBoardsLocalRepo.getBoard(boardListType).flatMap(
+                new Func1<BoardPostListInfo, Observable<List<BoardPost>>>() {
                     @Override
-                    public Boolean call(List<BoardPost> boardPosts) {
-                        return boardPosts != null;
-                    }
-                })
-                .onErrorResumeNext(disBoardsLocalRepo.getBoardPosts(boardType))
-                .map(new Func1<List<BoardPost>, List<BoardPost>>() {
-                    @Override
-                    public List<BoardPost> call(List<BoardPost> boardPosts) {
-                        if(boardPosts == null) {
-                            boardPosts = new ArrayList<>();
-                        }
-                        return boardPosts;
+                    public Observable<List<BoardPost>> call(final BoardPostListInfo boardPostListInfo) {
+                        return Observable.concat(getCachedBoardPost,
+                                disApi.getBoardPostSummaryList(boardListType,
+                                        boardPostListInfo.getUrl(),pageNumber))
+                                .takeFirst(
+                                        new Func1<List<BoardPost>, Boolean>() {
+                                            @Override
+                                            public Boolean call(List<BoardPost> boardPosts) {
+                                                return boardPosts != null;
+                                            }
+                                        })
+                                .onErrorResumeNext(disBoardsLocalRepo.getBoardPosts(boardListType))
+                                .map(new Func1<List<BoardPost>, List<BoardPost>>() {
+                                    @Override
+                                    public List<BoardPost> call(List<BoardPost> boardPosts) {
+                                        if(boardPosts == null) {
+                                            boardPosts = new ArrayList<>();
+                                        }
+                                        return boardPosts;
+                                    }
+                                });
                     }
                 });
-
     }
 
     @Override
-    public Observable<BoardPost> getBoardPost(String boardPostUrl, String boardPostId,
-            BoardType boardType) {
+    public Observable<List<BoardPostListInfo>> getBoardPostListInfo() {
+        return disBoardsLocalRepo.getAllBoardPostInfos();
+    }
+
+    @Override
+    public Observable<BoardPost> getBoardPost(String boardPostId,
+            BoardListType boardListType) {
         return null;
     }
 
     @Override
     public Observable<Void> thisAComment(String boardPostUrl, String boardPostId, String commentId,
-            BoardType boardType) {
+            BoardListType boardListType) {
         return null;
     }
 
-    public Observable<Void> addNewPost(Board board, String title, String content) {
+    public Observable<Void> addNewPost(BoardPostListInfo boardPostListInfo, String title, String content) {
         return null;
     }
 
     public Observable<Void> postComment(String boardPostId, String commentId, String title, String content,
-            BoardType boardType) {
+            BoardListType boardListType) {
         return null;
     }
 

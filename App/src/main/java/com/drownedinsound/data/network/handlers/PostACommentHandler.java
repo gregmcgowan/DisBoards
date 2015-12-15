@@ -1,7 +1,7 @@
 package com.drownedinsound.data.network.handlers;
 
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.events.PostCommentEvent;
 import com.squareup.okhttp.Request;
@@ -14,12 +14,12 @@ public class PostACommentHandler extends ResponseHandler {
 
     private String postID;
 
-    private BoardType boardType;
+    private BoardListType boardListType;
 
 
-    public PostACommentHandler(String boardPostId, BoardType boardType, int uiID) {
+    public PostACommentHandler(String boardPostId, BoardListType boardListType, int uiID) {
         this.postID = boardPostId;
-        this.boardType = boardType;
+        this.boardListType = boardListType;
         setUpdateUI(true);
         setUiID(uiID);
     }
@@ -28,10 +28,10 @@ public class PostACommentHandler extends ResponseHandler {
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
         if (inputStream != null) {
             BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,
-                    postID, boardType);
+                    postID, boardListType);
             BoardPost boardPost = boardPostParser.parse(inputStream);
             if (boardPost != null) {
-                databaseHelper.setBoardPost(boardPost);
+                //databaseHelper.setBoardPost(boardPost);
             }
         }
         if (isUpdateUI()) {

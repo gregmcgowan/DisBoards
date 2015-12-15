@@ -1,9 +1,9 @@
 package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.data.DisBoardRepo;
-import com.drownedinsound.data.model.Board;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardPostListInfo;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.ui.base.BaseUIController;
@@ -49,7 +49,33 @@ public class BoardPostListController extends BaseUIController {
             BoardPostListUi boardPostListUi = (BoardPostListUi) ui;
             if (boardPostCurrentShow(boardPostListUi)) {
                 requestBoardSummaryPage(boardPostListUi,
-                        boardPostListUi.getBoardType(), 1, false);
+                        boardPostListUi.getBoardListType(), 1, false);
+            }
+        }
+
+        if(ui instanceof  BoardPostListParentUi) {
+            BoardPostListParentUi boardPostListParentUi
+                    = (BoardPostListParentUi) ui;
+            if(boardPostListParentUi.getNoOfBoardListShown() == 0) {
+                int id = getId(boardPostListParentUi);
+                Observable<List<BoardPostListInfo>>
+                    getBoardPostListInfoObservable = disBoardRepo.getBoardPostListInfo()
+                        .subscribeOn(backgroundThreadScheduler)
+                        .observeOn(mainThreadScheduler);
+
+                BaseObserver<List<BoardPostListInfo>,BoardPostListParentUi>
+                        getBoardPostListInfoObserever = new BaseObserver<List<BoardPostListInfo>, BoardPostListParentUi>(id) {
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(List<BoardPostListInfo> boardPostListInfos) {
+                        getUI().setBoardPostLists(boardPostListInfos);
+                    }
+                };
+                subscribeAndCache(boardPostListParentUi,"INFO",getBoardPostListInfoObserever,getBoardPostListInfoObservable);
             }
         }
     }
@@ -66,7 +92,7 @@ public class BoardPostListController extends BaseUIController {
         BoardPostListUi boardPostList = findListAt(position);
         if (boardPostList != null) {
             requestBoardSummaryPage(boardPostList,
-                    boardPostList.getBoardType(), 1, false);
+                    boardPostList.getBoardListType(), 1, false);
         }
     }
 
@@ -87,18 +113,17 @@ public class BoardPostListController extends BaseUIController {
     }
 
     public void requestBoardSummaryPage(@NonNull BoardPostListUi boardPostListUi,
-            @NonNull BoardType board, final int page, boolean forceUpdate) {
-        String boardDisplayName = boardPostListUi.getBoardList().getDisplayName();
-        String tag = boardDisplayName + "GET_LIST";
+            @NonNull BoardListType boardListType, final int page, boolean forceUpdate) {
+        String tag = boardListType.name();
         if (!hasSubscription(boardPostListUi, tag)) {
             if (page == 1) {
                 boardPostListUi.showLoadingProgress(true);
             }
             int uiId = getId(boardPostListUi);
             Timber.d("Going to update id " + uiId
-                    + " for board " + boardDisplayName);
+                    + " for board " + tag);
             Observable<List<BoardPost>> getBoardPostListObservable = disBoardRepo
-                    .getBoardPostSummaryList(board, tag, page, forceUpdate)
+                    .getBoardPostSummaryList(boardListType, page, forceUpdate)
                     .subscribeOn(backgroundThreadScheduler)
                     .observeOn(mainThreadScheduler);
 
@@ -120,10 +145,10 @@ public class BoardPostListController extends BaseUIController {
                             getUI().showLoadingProgress(false);
                         }
                     };
-            subscribeAndCache(boardPostListUi, tag, getboardPostListObserver,
+            subscribeAndCache(boardPostListUi, boardListType, getboardPostListObserver,
                     getBoardPostListObservable);
         } else {
-            Timber.d("Request for " + boardDisplayName + " already in progress");
+            Timber.d("Request for " + boardListType.name() + " already in progress");
         }
     }
 
@@ -131,10 +156,6 @@ public class BoardPostListController extends BaseUIController {
     public void onUiDetached(Ui ui) {
         if (ui instanceof BoardPostListUi) {
             BoardPostListUi boardPostListUi = ((BoardPostListUi) ui);
-            Board board = boardPostListUi.getBoardList();
-            if (board != null) {
-                Timber.d("BoardPostListUi detached " + board.getDisplayName());
-            }
             boardPostListUi.showLoadingProgress(false);
         }
     }

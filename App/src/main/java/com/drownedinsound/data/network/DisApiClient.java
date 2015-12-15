@@ -1,12 +1,11 @@
 package com.drownedinsound.data.network;
 
-import com.drownedinsound.data.model.Board;
+import com.drownedinsound.data.model.BoardPostListInfo;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.data.network.handlers.NewPostHandler;
 import com.drownedinsound.data.network.handlers.ResponseHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
-import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
 import com.drownedinsound.data.parser.streaming.LoginException;
@@ -24,7 +23,6 @@ import android.text.TextUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.GZIPInputStream;
@@ -137,27 +135,26 @@ public class DisApiClient implements DisBoardsApi {
 
     @Override
     public Observable<BoardPost> getBoardPost(String boardPostUrl, String boardPostId,
-            BoardType boardType) {
+            BoardListType boardListType) {
         return null;
     }
 
     @Override
-    public Observable<List<BoardPost>> getBoardPostSummaryList(final Board board, int pageNumber) {
-        Object tag = board.getDisplayName() + "_GET_LIST";
+    public Observable<List<BoardPost>> getBoardPostSummaryList(final BoardListType boardListType,
+            String boardPostUrl, int pageNumber) {
 
         final boolean append = pageNumber > 1;
-        String boardUrl = board.getUrl();
         if (append) {
-            boardUrl += "/page/" + pageNumber;
+            boardPostUrl += "/page/" + pageNumber;
         }
-        return makeRequest(RequestMethod.GET,boardUrl,tag).flatMap(
+        return makeRequest(RequestMethod.GET,boardPostUrl,boardPostUrl).flatMap(
                 new Func1<Response, Observable<List<BoardPost>>>() {
                     @Override
                     public Observable<List<BoardPost>> call(Response response) {
                         try {
                             List<BoardPost> boardPostList
                                     = disWebPageParser.parseBoardPostSummaryList(
-                                    board.getBoardType(),
+                                    boardListType,
                                     getInputStreamFromResponse(response));
                             return Observable.just(boardPostList);
                         } catch (IOException e) {
@@ -169,19 +166,19 @@ public class DisApiClient implements DisBoardsApi {
 
     @Override
     public Observable<Void> thisAComment(String boardPostUrl, String boardPostId, String commentId,
-            BoardType boardType) {
+            BoardListType boardListType) {
         return null;
     }
 
     @Override
-    public Observable<Void> addNewPost(Board board, String title, String content,
+    public Observable<Void> addNewPost(BoardPostListInfo boardPostListInfo, String title, String content,
             ResponseHandler responseHandler) {
         return null;
     }
 
     @Override
     public Observable<Void> postComment(String boardPostId, String commentId, String title,
-            String content, BoardType boardType, ResponseHandler responseHandler) {
+            String content, BoardListType boardListType, ResponseHandler responseHandler) {
         return null;
     }
 
@@ -266,7 +263,7 @@ public class DisApiClient implements DisBoardsApi {
         }
     }
 
-    public void getBoardPost(String boardPostUrl, final String boardPostId, BoardType boardType,
+    public void getBoardPost(String boardPostUrl, final String boardPostId, BoardListType boardListType,
             final int callerUiId) {
         if (NetworkUtils.isConnected(applicationContext)) {
             String tag = "GET_BOARD_POST_" + boardPostId;
@@ -274,7 +271,7 @@ public class DisApiClient implements DisBoardsApi {
             boolean requestIsInProgress = inProgressRequests.contains(tag);
             if (!requestIsInProgress) {
                 RetrieveBoardPostHandler retrieveBoardPostHandler = new
-                        RetrieveBoardPostHandler(boardPostId, boardType, true, callerUiId);
+                        RetrieveBoardPostHandler(boardPostId, boardListType, true, callerUiId);
                 makeRequest(RequestMethod.GET, boardPostUrl, tag);
 
             } else {
@@ -295,9 +292,9 @@ public class DisApiClient implements DisBoardsApi {
     }
 
     public void thisAComment(String boardPostUrl, String boardPostId, String commentId,
-            BoardType boardType, int callingId) {
+            BoardListType boardListType, int callingId) {
         ThisACommentHandler thisACommentHandler = new ThisACommentHandler(callingId, boardPostId,
-                boardType);
+                boardListType);
 
         String fullUrl = boardPostUrl + "/" + commentId + "/this";
         Timber.d("Going to this with  =" + fullUrl);
@@ -307,24 +304,25 @@ public class DisApiClient implements DisBoardsApi {
     }
 
 
-    public void addNewPost(Board board, String title, String content, String authToken) {
+    public void addNewPost(BoardPostListInfo boardPostListInfo, String title, String content, String authToken) {
         Headers.Builder extraHeaders = new Headers.Builder();
-        extraHeaders.add("Referer", board.getUrl());
-        RequestBody requestBody = new FormEncodingBuilder().add("section_id", String.valueOf(board
+        extraHeaders.add("Referer", boardPostListInfo.getUrl());
+        RequestBody requestBody = new FormEncodingBuilder().add("section_id", String.valueOf(
+                boardPostListInfo
                 .getSectionId()))
                 .add("topic[title]", title)
                 .add("topic[content_raw]", content)
                 .add("topic[sticky]", "0")
                 .add("authenticity_token", authToken).build();
 
-        NewPostHandler newPostHandler = new NewPostHandler(board);
+        NewPostHandler newPostHandler = new NewPostHandler(boardPostListInfo);
 
         makeRequest(RequestMethod.POST,
                 UrlConstants.NEW_POST_URL, requestBody, extraHeaders,REQUEST_TYPE.NEW_POST);
     }
 
     public void postComment(String boardPostId, String commentId, String title, String content,
-            BoardType boardType, String authToken) {
+            BoardListType boardListType, String authToken) {
         if (TextUtils.isEmpty(authToken)) {
             throw new IllegalArgumentException("Auth token cannot be null");
         }

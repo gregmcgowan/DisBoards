@@ -1,7 +1,7 @@
 package com.drownedinsound.data.network.handlers;
 
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.events.FailedToThisThisEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
@@ -16,11 +16,11 @@ public class ThisACommentHandler extends ResponseHandler {
 
     private String postID;
 
-    private BoardType boardType;
+    private BoardListType boardListType;
 
-    public ThisACommentHandler(int calliingUiId, String postID, BoardType boardType) {
+    public ThisACommentHandler(int calliingUiId, String postID, BoardListType boardListType) {
         this.postID = postID;
-        this.boardType = boardType;
+        this.boardListType = boardListType;
         setUiID(calliingUiId);
         setUpdateUI(true);
     }
@@ -30,10 +30,10 @@ public class ThisACommentHandler extends ResponseHandler {
         BoardPost boardPost;
         if (inputStream != null) {
             BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,
-                    postID, boardType);
+                    postID, boardListType);
             boardPost = boardPostParser.parse(inputStream);
             if (boardPost != null) {
-                databaseHelper.setBoardPost(boardPost);
+                //databaseHelper.setBoardPost(boardPost);
                 if (isUpdateUI()) {
                     eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true, getUiID()));
                 }

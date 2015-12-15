@@ -4,7 +4,7 @@ import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardPostComment;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.utils.DateUtils;
 
 import net.htmlparser.jericho.Attributes;
@@ -49,7 +49,7 @@ public class BoardPostParser extends StreamingParser {
 
     private String boardPostId;
 
-    private BoardType boardType;
+    private BoardListType boardListType;
 
     private StringBuilder buffer;
 
@@ -82,9 +82,9 @@ public class BoardPostParser extends StreamingParser {
     private UserSessionManager userSessionManager;
 
     public BoardPostParser(UserSessionManager userSessionManager, String boardPostId,
-            BoardType boardType) {
+            BoardListType boardListType) {
         this.boardPostId = boardPostId;
-        this.boardType = boardType;
+        this.boardListType = boardListType;
         this.userSessionManager = userSessionManager;
         this.buffer = new StringBuilder(1024);
         comments = new ArrayList<BoardPostComment>();
@@ -110,7 +110,7 @@ public class BoardPostParser extends StreamingParser {
     public BoardPost parse(InputStream inputStream) {
         long start = System.currentTimeMillis();
         currentBoardPost = new BoardPost();
-        currentBoardPost.setBoardType(boardType);
+        currentBoardPost.setBoardListType(boardListType);
         currentBoardPost.setId(boardPostId);
         try {
             StreamedSource streamedSource = new StreamedSource(inputStream);

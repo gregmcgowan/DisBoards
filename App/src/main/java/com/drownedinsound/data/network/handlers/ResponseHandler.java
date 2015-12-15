@@ -20,9 +20,6 @@ import de.greenrobot.event.EventBus;
 public abstract class ResponseHandler implements Callback {
 
     @Inject
-    DatabaseHelper databaseHelper;
-
-    @Inject
     UserSessionManager userSessionManager;
 
     @Inject

@@ -1,9 +1,9 @@
     package com.drownedinsound.data.network.handlers;
 
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.Board;
+import com.drownedinsound.data.model.BoardPostListInfo;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.data.parser.streaming.BoardPostSummaryListParser;
 import com.drownedinsound.events.RequestCompletedEvent;
 import com.drownedinsound.events.RetrievedBoardPostSummaryListEvent;
@@ -24,17 +24,17 @@ public class RetrieveBoardSummaryListHandler extends
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
             + "RetrieveBoardSummaryListHandler";
 
-    private BoardType boardType;
+    private BoardListType boardListType;
 
     private boolean append;
 
     public RetrieveBoardSummaryListHandler(
             int uiID,
-            BoardType boardType,
+            BoardListType boardListType,
             boolean updateUI,
             boolean append) {
         setUiID(uiID);
-        this.boardType = boardType;
+        this.boardListType = boardListType;
         this.append = append;
         setUpdateUI(updateUI);
     }
@@ -49,21 +49,21 @@ public class RetrieveBoardSummaryListHandler extends
             BoardPostSummaryListParser parser = null;
             //boardPostSummaries = parser.parse();
             if (boardPostSummaries.size() > 0) {
-                databaseHelper.setBoardPosts(boardPostSummaries);
+                //databaseHelper.setBoardPosts(boardPostSummaries);
             }
-            Board board = null;//databaseHelper.getBoard(boardType);
-            if (board != null) {
-                board.setLastFetchedTime(System.currentTimeMillis());
-                databaseHelper.setBoard(board);
+            BoardPostListInfo boardPostListInfo = null;//databaseHelper.getBoard(boardType);
+            if (boardPostListInfo != null) {
+                boardPostListInfo.setLastFetchedTime(System.currentTimeMillis());
+                //databaseHelper.setBoard(boardPostList);
             }
         }
 
         if (isUpdateUI()) {
             eventBus.post(
                     new RetrievedBoardPostSummaryListEvent(boardPostSummaries,
-                            boardType, false, append, getUiID()));
+                            boardListType, false, append, getUiID()));
         }
-        eventBus.post(new RequestCompletedEvent(boardType.name()));
+        eventBus.post(new RequestCompletedEvent(boardListType.name()));
     }
 
     @Override
@@ -76,11 +76,11 @@ public class RetrieveBoardSummaryListHandler extends
             List<BoardPost> cachedBoardPosts = null;//databaseHelper.getBoardPosts(boardType);
             if (cachedBoardPosts.size() > 0) {
                 eventBus.post(
-                        new RetrievedBoardPostSummaryListEvent(cachedBoardPosts, boardType,
+                        new RetrievedBoardPostSummaryListEvent(cachedBoardPosts, boardListType,
                                 true, append, getUiID()));
             } else {
                 eventBus.post(
-                        new RetrievedBoardPostSummaryListEvent(cachedBoardPosts, boardType,
+                        new RetrievedBoardPostSummaryListEvent(cachedBoardPosts, boardListType,
                                 false, append, getUiID()));
             }
         }

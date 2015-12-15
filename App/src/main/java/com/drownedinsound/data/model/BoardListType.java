@@ -20,7 +20,7 @@ package com.drownedinsound.data.model;
  *
  * @author gregmcgowan
  */
-public enum BoardType {
+public enum BoardListType {
     MUSIC,
     SOCIAL,
     ANNOUNCEMENTS_CLASSIFIEDS,

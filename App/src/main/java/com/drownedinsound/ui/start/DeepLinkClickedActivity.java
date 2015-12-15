@@ -1,6 +1,6 @@
 package com.drownedinsound.ui.start;
 
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.data.network.UrlConstants;
 import com.drownedinsound.ui.post.BoardPostActivity;
 
@@ -42,9 +42,9 @@ public class DeepLinkClickedActivity extends Activity {
                 postId = postId.replace("#", "");
             }
 
-            BoardType boardType = UrlConstants.getBoardType(url);
-            Timber.d("Board " + board + " postID " + postId + " boardType " + boardType);
-            startActivity(BoardPostActivity.getIntent(this, postId, boardType));
+            BoardListType boardListType = UrlConstants.getBoardType(url);
+            Timber.d("Board " + board + " postID " + postId + " boardType " + boardListType);
+            startActivity(BoardPostActivity.getIntent(this, postId, boardListType));
         } else {
 
         }

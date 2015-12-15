@@ -8,11 +8,6 @@ import java.util.Collection;
 import java.util.List;
 
 
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import junit.framework.Assert;
 
 public class AssertUtils {
@@ -40,7 +35,7 @@ public class AssertUtils {
         Assert.assertEquals(expected.getSummary(), actual.getSummary());
         Assert.assertEquals(expected.getContent(), actual.getContent());
         Assert.assertEquals(expected.getTitle(), actual.getTitle());
-        Assert.assertEquals(expected.getBoardType(), actual.getBoardType());
+        Assert.assertEquals(expected.getBoardListType(), actual.getBoardListType());
 
         Collection<BoardPostComment> expectedComments = expected.getComments();
         if (expectedComments != null && expectedComments.size() > 0) {

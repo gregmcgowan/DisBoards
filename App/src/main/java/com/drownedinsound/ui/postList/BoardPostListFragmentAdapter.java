@@ -1,13 +1,13 @@
 package com.drownedinsound.ui.postList;
 
-import com.drownedinsound.data.model.Board;
-import com.drownedinsound.data.database.DatabaseHelper;
+import com.drownedinsound.data.model.BoardPostListInfo;
 import com.drownedinsound.ui.base.FragmentPagerAdapter;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Adapter to handle the different board pages
@@ -16,32 +16,37 @@ import java.util.ArrayList;
  */
 public class BoardPostListFragmentAdapter extends FragmentPagerAdapter {
 
-    private ArrayList<Board> boards;
+    private List<BoardPostListInfo> boardPostListInfos = new ArrayList<>();
 
-    public BoardPostListFragmentAdapter(FragmentManager fm, DatabaseHelper databaseHelper) {
+    public BoardPostListFragmentAdapter(FragmentManager fm) {
         super(fm);
-        boards = databaseHelper.getCachedBoards();
     }
+
+    public void setBoardPostListInfos(List<BoardPostListInfo> boardPostListInfos) {
+        this.boardPostListInfos = boardPostListInfos;
+        notifyDataSetChanged();
+    }
+
 
     @Override
     public Fragment getItem(int item) {
-        Board boardInfo = boards.get(item);
-        return BoardPostListFragment.newInstance(boardInfo.getBoardType());
+        BoardPostListInfo boardPostListInfoInfo = boardPostListInfos.get(item);
+        return BoardPostListFragment.newInstance(boardPostListInfoInfo.getBoardListType(),item);
     }
 
     @Override
     public int getCount() {
-        return boards.size();
+        return boardPostListInfos.size();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        Board boardInfo = boards.get(position);
-        return boardInfo.getDisplayName();
+        BoardPostListInfo boardPostListInfoInfo = boardPostListInfos.get(position);
+        return boardPostListInfoInfo.getDisplayName();
     }
 
-    public Board getBoard(int position) {
-        return boards.get(position);
+    public BoardPostListInfo getBoard(int position) {
+        return boardPostListInfos.get(position);
     }
 
 }

@@ -6,7 +6,6 @@ import com.drownedinsound.data.network.CookieManager;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
-import com.drownedinsound.data.database.DatabaseService;
 import com.drownedinsound.ui.favourites.FavouritesListFragment;
 import com.drownedinsound.ui.post.BoardPostFragment;
 import com.drownedinsound.ui.post.PostReplyFragment;
@@ -35,7 +34,6 @@ import de.greenrobot.event.EventBus;
                 RetrieveBoardPostHandler.class,
                 FavouritesListFragment.class,
                 DisApiClient.class,
-                DatabaseService.class,
                 BoardPostFragment.class,
                 BoardPostListFragment.class,
                 BoardPostListParentActivity.class,

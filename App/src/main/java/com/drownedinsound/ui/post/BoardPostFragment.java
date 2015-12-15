@@ -5,9 +5,8 @@ import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardPostComment;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.data.network.UrlConstants;
-import com.drownedinsound.data.database.DatabaseService;
 import com.drownedinsound.events.FailedToThisThisEvent;
 import com.drownedinsound.events.SetBoardPostFavouriteStatusResultEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
@@ -64,7 +63,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     private String boardPostId;
 
-    private BoardType boardType;
+    private BoardListType boardListType;
 
     private boolean inDualPaneMode;
 
@@ -98,12 +97,12 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     @Inject
     BoardPostController boardPostController;
 
-    public static BoardPostFragment newInstance(String boardPostID, boolean inDualPaneMode, BoardType boardType) {
+    public static BoardPostFragment newInstance(String boardPostID, boolean inDualPaneMode, BoardListType boardListType) {
         BoardPostFragment boardPostFragment = new BoardPostFragment();
         Bundle arguments = new Bundle();
         arguments.putString(DisBoardsConstants.BOARD_POST_ID, boardPostID);
         arguments.putBoolean(DisBoardsConstants.DUAL_PANE_MODE, inDualPaneMode);
-        arguments.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
+        arguments.putSerializable(DisBoardsConstants.BOARD_TYPE, boardListType);
         boardPostFragment.setArguments(arguments);
         return boardPostFragment;
     }
@@ -165,12 +164,12 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         String replyToAuthor = boardPostComment.getReplyToUsername();
         String commentId = boardPostComment.getId();
         startActivity(PostReplyActivity
-                .getIntent(getActivity(), replyToAuthor, commentId, boardPostId, boardType));
+                .getIntent(getActivity(), replyToAuthor, commentId, boardPostId, boardListType));
     }
 
     private void thisAComment(BoardPostComment boardPostComment) {
         String commentID = boardPostComment.getId();
-        boardPostController.thisAComment(this, boardType, boardPostId, commentID);
+        boardPostController.thisAComment(this, boardListType, boardPostId, commentID);
     }
 
     @Override
@@ -194,7 +193,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
                     DisBoardsConstants.BOARD_POST_ID);
             inDualPaneMode = getArguments().getBoolean(
                     DisBoardsConstants.DUAL_PANE_MODE);
-            boardType = (BoardType) getArguments().getSerializable(
+            boardListType = (BoardListType) getArguments().getSerializable(
                     DisBoardsConstants.BOARD_TYPE);
         } else {
             boardPostId = savedInstanceState
@@ -203,7 +202,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
                     .getParcelable(DisBoardsConstants.BOARD_POST_KEY);
             inDualPaneMode = savedInstanceState
                     .getBoolean(DisBoardsConstants.DUAL_PANE_MODE);
-            boardType = (BoardType) savedInstanceState
+            boardListType = (BoardListType) savedInstanceState
                     .getSerializable(DisBoardsConstants.BOARD_TYPE);
             if (boardPost != null) {
                 adapter.setComments(new ArrayList<>(boardPost.getComments()));
@@ -301,7 +300,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     @Override
     public void onResume() {
         super.onResume();
-        boardPostController.loadBoardPost(this, boardPostId, boardType);
+        boardPostController.loadBoardPost(this, boardPostId, boardListType);
     }
 
     @Override
@@ -314,7 +313,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         super.onSaveInstanceState(outState);
         outState.putString(DisBoardsConstants.BOARD_POST_ID, boardPostId);
         outState.putBoolean(DisBoardsConstants.DUAL_PANE_MODE, inDualPaneMode);
-        outState.putSerializable(DisBoardsConstants.BOARD_TYPE, boardType);
+        outState.putSerializable(DisBoardsConstants.BOARD_TYPE, boardListType);
     }
 
     private void findAndUpdateFavouritesMenuItem(Menu menu) {
@@ -346,24 +345,14 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     }
 
     private void doFavouriteAction() {
-        if (boardPost != null) {
-            boolean existingFavouriteStatus = boardPost.isFavourited();
-            Bundle serviceBundle = new Bundle();
-            serviceBundle.putInt(DatabaseService.DATABASE_SERVICE_REQUESTED_KEY,
-                    DatabaseService.SET_BOARD_POST_FAVOURITE_STATUS);
-            serviceBundle.putBoolean(DisBoardsConstants.IS_FAVOURITE, !existingFavouriteStatus);
-
-            Intent databaseServiceIntent = new Intent(getActivity(), DatabaseService.class);
-            databaseServiceIntent.putExtras(serviceBundle);
-            getActivity().startService(databaseServiceIntent);
-        }
+        //TODO
     }
 
     @OnClick(R.id.floating_reply_button)
     public void doReplyAction() {
         String replyToAuthor = boardPost.getAuthorUsername();
         startActivity(PostReplyActivity
-                .getIntent(getActivity(), replyToAuthor, null, boardPostId, boardType));
+                .getIntent(getActivity(), replyToAuthor, null, boardPostId, boardListType));
     }
 
 
@@ -458,8 +447,8 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
             }
                 //TODO remove comment if there is one
             Log.d(TAG, "PostID = " + postId);
-            BoardType boardType = UrlConstants.getBoardType(url);
-            startActivity(BoardPostActivity.getIntent(getActivity(), postId, boardType));
+            BoardListType boardListType = UrlConstants.getBoardType(url);
+            startActivity(BoardPostActivity.getIntent(getActivity(), postId, boardListType));
         }
 
 

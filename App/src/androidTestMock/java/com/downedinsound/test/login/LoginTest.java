@@ -1,10 +1,7 @@
 package com.downedinsound.test.login;
 
 import com.drownedinsound.R;
-import com.drownedinsound.core.DisBoardsApp;
-import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.test.login.FakeDataModule;
 import com.drownedinsound.test.login.FakeDisRepo;
 import com.drownedinsound.ui.start.LoginActivity;
 

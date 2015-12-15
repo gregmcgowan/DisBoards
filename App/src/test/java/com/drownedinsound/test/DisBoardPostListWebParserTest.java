@@ -3,7 +3,7 @@ package com.drownedinsound.test;
 import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.database.DisBoardsLocalRepo;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.data.parser.streaming.BoardPostSummaryListParser;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
 import com.drownedinsound.data.parser.streaming.DisWebPagerParserImpl;
@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Created by gregmcgowan on 12/12/15.
  */
-public class DisBoardWebParserTest {
+public class DisBoardPostListWebParserTest {
 
     private DisWebPageParser disWebPageParser;
 
@@ -57,7 +57,7 @@ public class DisBoardWebParserTest {
         expectedBoardPostOne.setSticky(true);
         expectedBoardPostOne.setLastUpdatedTime(1447159080000l);
         expectedBoardPostOne.setNumberOfReplies(298);
-        expectedBoardPostOne.setBoardType(BoardType.SOCIAL);
+        expectedBoardPostOne.setBoardListType(BoardListType.SOCIAL);
 
         BoardPost expectedBoardPostFour = new BoardPost();
         expectedBoardPostFour.setId("4470683");
@@ -65,11 +65,11 @@ public class DisBoardWebParserTest {
         expectedBoardPostFour.setAuthorUsername("marilyninthesky");
         expectedBoardPostOne.setLastUpdatedTime(14500050000000l);
         expectedBoardPostFour.setNumberOfReplies(8);
-        expectedBoardPostFour.setBoardType(BoardType.SOCIAL);
+        expectedBoardPostFour.setBoardListType(BoardListType.SOCIAL);
 
         InputStream inputStream = getInputStream("board_post_summary_list.html");
 
-        List<BoardPost> actualBoardPosts = disWebPageParser.parseBoardPostSummaryList(BoardType.SOCIAL,
+        List<BoardPost> actualBoardPosts = disWebPageParser.parseBoardPostSummaryList(BoardListType.SOCIAL,
                 inputStream);
         Assert.assertEquals(42, actualBoardPosts.size());
 

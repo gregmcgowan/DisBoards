@@ -4,8 +4,7 @@ import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.database.DisBoardsLocalRepo;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
-import com.drownedinsound.data.database.DatabaseHelper;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.utils.DateUtils;
 import com.drownedinsound.utils.StringUtils;
 
@@ -70,7 +69,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
         this.userSessionRepo = userSessionRepo;
     }
 
-    public ArrayList<BoardPost> parse(BoardType boardType,InputStream inputStream) {
+    public ArrayList<BoardPost> parse(BoardListType boardListType,InputStream inputStream) {
         long start = System.currentTimeMillis();
         try {
             StreamedSource streamedSource = new StreamedSource(inputStream);
@@ -94,7 +93,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                             String trString = tag.toString();
                             if (isStartOfNewPostTr(trString)) {
                                 currentBoardPost = new BoardPost();
-                                currentBoardPost.setBoardType(boardType);
+                                currentBoardPost.setBoardListType(boardListType);
                             }
                             tableRowCell = 0;
                         } else {

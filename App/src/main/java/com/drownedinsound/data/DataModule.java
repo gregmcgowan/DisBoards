@@ -8,7 +8,7 @@ import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
 import com.drownedinsound.data.database.DatabaseHelper;
-import com.drownedinsound.data.database.DatabaseService;
+import com.drownedinsound.data.parser.streaming.BoardPostSummaryListParser;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
 import com.drownedinsound.data.parser.streaming.DisWebPagerParserImpl;
 import com.drownedinsound.qualifiers.ForDatabase;
@@ -52,7 +52,6 @@ import static android.content.Context.MODE_PRIVATE;
                 PostACommentHandler.class,
                 ThisACommentHandler.class,
                 DisApiClient.class,
-                DatabaseService.class,
                 StartActivity.class,
                 LoginActivity.class,
                 BoardPostListParentActivity.class,
@@ -73,12 +72,6 @@ public class DataModule {
     @Singleton
     SharedPreferences provideSharedPreferences(Application app) {
         return app.getSharedPreferences("DisBoards", MODE_PRIVATE);
-    }
-
-    @Provides
-    @Singleton
-    DatabaseHelper provideDatabaseHelper(Application app) {
-        return new DatabaseHelper(app);
     }
 
 
@@ -119,10 +112,16 @@ public class DataModule {
         return client;
     }
 
+    @Singleton
+    @Provides
+    BoardPostSummaryListParser postSummaryListParser(UserSessionRepo userSessionRepo, DisBoardsLocalRepo disBoardsLocalRepo) {
+        return new BoardPostSummaryListParser(userSessionRepo,disBoardsLocalRepo);
+    }
+
     @Provides
     @Singleton
-    DisWebPageParser disWebPageParser() {
-        return new DisWebPagerParserImpl(null, null);
+    DisWebPageParser disWebPageParser(BoardPostSummaryListParser boardPostSummaryListParser) {
+        return new DisWebPagerParserImpl(null, boardPostSummaryListParser);
     }
 
 

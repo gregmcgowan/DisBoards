@@ -1,8 +1,8 @@
 package com.drownedinsound.test;
 
-import com.drownedinsound.data.model.Board;
+import com.drownedinsound.data.model.BoardPostListInfo;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.UrlConstants;
 import com.drownedinsound.test.login.FakeDisRepo;
@@ -25,14 +25,13 @@ import rx.schedulers.Schedulers;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
  * Created by gregmcgowan on 12/12/15.
  */
-public class BoardPostListControllerTest {
+public class BoardPostListPostListControllerTest {
 
     @Mock
     BoardPostListUi boardPostListUi;
@@ -45,9 +44,9 @@ public class BoardPostListControllerTest {
 
     private BoardPostListController boardPostController;
 
-    private Board board;
+    private BoardPostListInfo boardPostListInfo;
 
-    private BoardType boardType;
+    private BoardListType boardListType;
 
     private List<BoardPost> boardPosts;
 
@@ -56,9 +55,9 @@ public class BoardPostListControllerTest {
         MockitoAnnotations.initMocks(this);
         boardPostController = new BoardPostListController(fakeDisRepo, Schedulers.immediate(),
                 Schedulers.immediate());
-        boardType = BoardType.MUSIC;
+        boardListType = BoardListType.MUSIC;
 
-        board = new Board(BoardType.MUSIC,
+        boardPostListInfo = new BoardPostListInfo(BoardListType.MUSIC,
                 BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 19, 0);
 
         BoardPost boardPost = new BoardPost();
@@ -74,14 +73,13 @@ public class BoardPostListControllerTest {
 
     @Test
     public void testGetListFirstPageSuccessfully() {
-        when(boardPostListUi.getBoardType()).thenReturn(boardType);
-        when(boardPostListUi.getBoardList()).thenReturn(board);
-        when(fakeDisRepo.getBoardPostSummaryList(any(BoardType.class), anyObject(), anyInt(), anyBoolean()))
+        when(boardPostListUi.getBoardListType()).thenReturn(boardListType);
+        when(fakeDisRepo.getBoardPostSummaryList(any(BoardListType.class), anyInt(), anyBoolean()))
                 .thenReturn(Observable.just(boardPosts));
 
         boardPostController.attachUi(boardPostListUi);
 
-        boardPostController.requestBoardSummaryPage(boardPostListUi, boardType, 1, true);
+        boardPostController.requestBoardSummaryPage(boardPostListUi, boardListType, 1, true);
 
         verify(boardPostListUi).showLoadingProgress(true);
         verify(boardPostListUi).setBoardPosts(boardPosts);
@@ -93,15 +91,14 @@ public class BoardPostListControllerTest {
 
     @Test
     public void testGetListSecondPageSuccessfully() {
-        when(boardPostListUi.getBoardType()).thenReturn(boardType);
-        when(boardPostListUi.getBoardList()).thenReturn(board);
+        when(boardPostListUi.getBoardListType()).thenReturn(boardListType);
 
-        when(fakeDisRepo.getBoardPostSummaryList(any(BoardType.class), anyObject(), anyInt(), anyBoolean()))
+        when(fakeDisRepo.getBoardPostSummaryList(any(BoardListType.class), anyInt(), anyBoolean()))
                 .thenReturn(Observable.just(boardPosts));
 
         boardPostController.attachUi(boardPostListUi);
 
-        boardPostController.requestBoardSummaryPage(boardPostListUi, boardType, 2, true);
+        boardPostController.requestBoardSummaryPage(boardPostListUi, boardListType, 2, true);
 
         verify(boardPostListUi).appendBoardPosts(boardPosts);
 
@@ -110,11 +107,10 @@ public class BoardPostListControllerTest {
 
     @Test
     public void testGetListFirstPageError() {
-        when(boardPostListUi.getBoardType()).thenReturn(boardType);
-        when(boardPostListUi.getBoardList()).thenReturn(board);
+        when(boardPostListUi.getBoardListType()).thenReturn(boardListType);
 
         when(fakeDisRepo
-                .getBoardPostSummaryList(any(BoardType.class), anyObject(), anyInt(), anyBoolean()))
+                .getBoardPostSummaryList(any(BoardListType.class),anyInt(), anyBoolean()))
                 .thenReturn(Observable.create(new Observable.OnSubscribe<List<BoardPost>>() {
                     @Override
                     public void call(Subscriber<? super List<BoardPost>> subscriber) {
@@ -124,7 +120,7 @@ public class BoardPostListControllerTest {
 
         boardPostController.attachUi(boardPostListUi);
 
-        boardPostController.requestBoardSummaryPage(boardPostListUi, boardType, 1, true);
+        boardPostController.requestBoardSummaryPage(boardPostListUi, boardListType, 1, true);
 
         verify(boardPostListUi).showLoadingProgress(true);
         verify(boardPostListUi).showErrorView();
@@ -135,7 +131,7 @@ public class BoardPostListControllerTest {
 
     @Test
     public void testStopLoadingOnDetach() {
-        when(boardPostListUi.getBoardType()).thenReturn(boardType);
+        when(boardPostListUi.getBoardListType()).thenReturn(boardListType);
 
         boardPostController.attachUi(boardPostListUi);
         boardPostController.detachUi(boardPostListUi);
@@ -146,16 +142,20 @@ public class BoardPostListControllerTest {
     @Test
     public void testLoadListOnAttachToParent() {
         when(boardPostListParentUi.boardPostListShown(boardPostListUi)).thenReturn(true);
-        when(boardPostListUi.getBoardList()).thenReturn(board);
-        when(boardPostListUi.getBoardType()).thenReturn(boardType);
+        when(boardPostListUi.getBoardListType()).thenReturn(boardListType);
 
         when(boardPostListUi.getId()).thenReturn(1);
         when(boardPostListParentUi.getId()).thenReturn(2);
 
         when(fakeDisRepo
-                .getBoardPostSummaryList(any(BoardType.class), anyObject(), anyInt(),
-                        anyBoolean()))
+                .getBoardPostSummaryList(any(BoardListType.class), anyInt(), anyBoolean()))
                 .thenReturn(Observable.just(boardPosts));
+
+        List<BoardPostListInfo> boardPostListInfos = new ArrayList<>();
+        boardPostListInfos.add(boardPostListInfo);
+
+        when(fakeDisRepo.getBoardPostListInfo())
+                .thenReturn(Observable.just(boardPostListInfos));
 
         boardPostController.attachUi(boardPostListParentUi);
         boardPostController.attachUi(boardPostListUi);
@@ -167,4 +167,28 @@ public class BoardPostListControllerTest {
         boardPostController.detachUi(boardPostListUi);
         boardPostController.detachUi(boardPostListParentUi);
     }
+
+    @Test
+    public void testGetListInfo() {
+        List<BoardPostListInfo> boardPostListInfos = new ArrayList<>();
+        boardPostListInfos.add(boardPostListInfo);
+
+        when(fakeDisRepo.getBoardPostListInfo())
+                .thenReturn(Observable.just(boardPostListInfos));
+
+        when(boardPostListParentUi.getNoOfBoardListShown()).thenReturn(0);
+
+        boardPostController.attachUi(boardPostListParentUi);
+
+        verify(fakeDisRepo).getBoardPostListInfo();
+        verify(boardPostListParentUi).setBoardPostLists(boardPostListInfos);
+
+        boardPostController.detachUi(boardPostListParentUi);
+        boardPostController.attachUi(boardPostListParentUi);
+
+        when(boardPostListParentUi.getNoOfBoardListShown()).thenReturn(1);
+
+    }
+
+
 }

@@ -1,9 +1,9 @@
 package com.drownedinsound.test;
 
 import com.drownedinsound.data.UserSessionRepo;
-import com.drownedinsound.data.model.Board;
+import com.drownedinsound.data.model.BoardPostListInfo;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.LoginResponse;
@@ -23,7 +23,6 @@ import org.mockito.MockitoAnnotations;
 
 import android.app.Application;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,6 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -58,7 +56,7 @@ public class DisApiTest {
 
     private List<BoardPost> testBoardPosts;
 
-    private Board board;
+    private BoardPostListInfo boardPostListInfo;
 
     @Before
     public void setup() {
@@ -67,7 +65,7 @@ public class DisApiTest {
         OkHttpClient okHttpClient = new OkHttpClient();
         disApiClient = new DisApiClient(application,okHttpClient,disWebPageParser);
 
-        board = new Board(BoardType.MUSIC,
+        boardPostListInfo = new BoardPostListInfo(BoardListType.MUSIC,
                 BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 19, 0);
 
         BoardPost boardPost = new BoardPost();
@@ -117,7 +115,7 @@ public class DisApiTest {
 
     @Test
     public void testGetList() throws Exception {
-        when(disWebPageParser.parseBoardPostSummaryList(any(BoardType.class),
+        when(disWebPageParser.parseBoardPostSummaryList(any(BoardListType.class),
                 any(InputStream.class))).thenReturn(
                 testBoardPosts);
 
@@ -130,7 +128,8 @@ public class DisApiTest {
 
         countDownLatch = new CountDownLatch(1);
 
-        disApiClient.getBoardPostSummaryList(board,1)
+        disApiClient.getBoardPostSummaryList(boardPostListInfo.getBoardListType(),
+                boardPostListInfo.getUrl(),1)
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(new Action1<List<BoardPost>>() {
                     @Override

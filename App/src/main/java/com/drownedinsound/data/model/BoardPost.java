@@ -67,7 +67,7 @@ public class BoardPost {
     private String latestCommentId;
 
     @DatabaseField(columnName = BOARD_TYPE_FIELD)
-    private BoardType boardType;
+    private BoardListType boardListType;
 
     @DatabaseField
     private int numberOfTimesRead;
@@ -81,7 +81,7 @@ public class BoardPost {
     private List<BoardPostCommentTreeNode> boardPostTreeNodes;
 
     public BoardPost() {
-        boardPostTreeNodes = new ArrayList<BoardPostCommentTreeNode>();
+        boardPostTreeNodes = new ArrayList<>();
     }
 
     public BoardPost(Collection<BoardPostComment> comments) {
@@ -89,14 +89,14 @@ public class BoardPost {
     }
 
     public void setComments(Collection<BoardPostComment> newComents) {
-        boardPostTreeNodes = new ArrayList<BoardPostCommentTreeNode>();
+        boardPostTreeNodes = new ArrayList<>();
         for (BoardPostComment comment : newComents) {
             if (comment.getCommentLevel() == 0) {
                 boardPostTreeNodes.add(makeTreeNode(comment, newComents));
             }
         }
         if (comments == null) {
-            comments = new ArrayList<BoardPostComment>();
+            comments = new ArrayList<>();
         }
         comments.clear();
         for (BoardPostCommentTreeNode node : boardPostTreeNodes) {
@@ -111,10 +111,10 @@ public class BoardPost {
     public Collection<BoardPostComment> getComments() {
         if (comments == null) {
             if (boardPostTreeNodes == null) {
-                boardPostTreeNodes = new ArrayList<BoardPostCommentTreeNode>();
+                boardPostTreeNodes = new ArrayList<>();
             }
             if (comments == null) {
-                comments = new ArrayList<BoardPostComment>();
+                comments = new ArrayList<>();
             }
             for (BoardPostCommentTreeNode node : boardPostTreeNodes) {
                 comments.addAll(node.getCommentAndAllChildren());
@@ -178,10 +178,6 @@ public class BoardPost {
 
     public void setDateOfPost(String dateOfPost) {
         this.dateOfPost = dateOfPost;
-    }
-
-    public int describeContents() {
-        return 0;
     }
 
     public String getId() {
@@ -253,12 +249,12 @@ public class BoardPost {
         return lastUpdatedBuilder.toString();
     }
 
-    public BoardType getBoardType() {
-        return boardType;
+    public BoardListType getBoardListType() {
+        return boardListType;
     }
 
-    public void setBoardType(BoardType boardType) {
-        this.boardType = boardType;
+    public void setBoardListType(BoardListType boardListType) {
+        this.boardListType = boardListType;
     }
 
     public String getLatestCommentId() {
@@ -359,7 +355,7 @@ public class BoardPost {
                 + ", " + ", lastViewedTime="
                 + lastViewedTime + ", createdTime=" + createdTime
                 + ", lastUpdatedTime=" + lastUpdatedTime + ", boardType="
-                + boardType + "]";
+                + boardListType + "]";
     }
 
     public int getNumberOfTimesRead() {

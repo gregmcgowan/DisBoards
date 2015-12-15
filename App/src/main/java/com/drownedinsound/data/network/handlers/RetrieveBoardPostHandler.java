@@ -2,7 +2,7 @@ package com.drownedinsound.data.network.handlers;
 
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.events.FailedToGetBoardPostEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
@@ -22,12 +22,12 @@ public class RetrieveBoardPostHandler extends ResponseHandler {
 
     private String boardPostId;
 
-    private BoardType boardPostType;
+    private BoardListType boardPostType;
 
-    public RetrieveBoardPostHandler(String boardPostId, BoardType boardType,
+    public RetrieveBoardPostHandler(String boardPostId, BoardListType boardListType,
             boolean updateUI, int uiID) {
         this.boardPostId = boardPostId;
-        this.boardPostType = boardType;
+        this.boardPostType = boardListType;
         setUiID(uiID);
         setUpdateUI(updateUI);
     }
@@ -46,7 +46,7 @@ public class RetrieveBoardPostHandler extends ResponseHandler {
                 boardPost.setFavourited(exisitingBoardPost.isFavourited());
             }
             boardPost.setNumberOfTimesRead(numberOfTimesRead);
-            databaseHelper.setBoardPost(boardPost);
+            //databaseHelper.setBoardPost(boardPost);
         }
         if (isUpdateUI()) {
             eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true, getUiID()));

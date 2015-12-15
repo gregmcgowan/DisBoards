@@ -1,8 +1,8 @@
 package com.drownedinsound.data.network;
 
-import com.drownedinsound.data.model.Board;
+import com.drownedinsound.data.model.BoardPostListInfo;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.data.network.handlers.ResponseHandler;
 
 import java.util.List;
@@ -16,17 +16,17 @@ public interface DisBoardsApi {
 
         Observable<LoginResponse> loginUser(String username, String password);
 
-        Observable<BoardPost> getBoardPost(String boardPostUrl, String boardPostId, BoardType boardType);
+        Observable<BoardPost> getBoardPost(String boardPostUrl, String boardPostId, BoardListType boardListType);
 
-        Observable<List<BoardPost>> getBoardPostSummaryList(Board board, int pageNumber);
+        Observable<List<BoardPost>> getBoardPostSummaryList(BoardListType boardListType, String boardPostUrl, int pageNumber);
 
         Observable<Void> thisAComment(String boardPostUrl, String boardPostId, String commentId,
-                BoardType boardType);
+                BoardListType boardListType);
 
-        Observable<Void> addNewPost(Board board, String title, String content, ResponseHandler responseHandler);
+        Observable<Void> addNewPost(BoardPostListInfo boardPostListInfo, String title, String content, ResponseHandler responseHandler);
 
         Observable<Void> postComment(String boardPostId, String commentId, String title, String content,
-                BoardType boardType, ResponseHandler responseHandler);
+                BoardListType boardListType, ResponseHandler responseHandler);
 
         boolean requestInProgress(Object tag);
 }

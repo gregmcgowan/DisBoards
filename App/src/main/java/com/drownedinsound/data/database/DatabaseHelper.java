@@ -1,10 +1,10 @@
 package com.drownedinsound.data.database;
 
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.Board;
+import com.drownedinsound.data.model.BoardPostListInfo;
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardPostComment;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.model.DraftBoardPost;
 import com.drownedinsound.data.network.UrlConstants;
@@ -21,12 +21,10 @@ import android.util.Log;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
@@ -47,7 +45,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements DisBoards
             + "DatabaseHelper";
 
     private static final Class<?>[] DATA_CLASSES = {BoardPost.class,
-            BoardPostComment.class, Board.class, DraftBoardPost.class};
+            BoardPostComment.class, BoardPostListInfo.class, DraftBoardPost.class};
 
     private static final String DATABASE_NAME = "disBoards.db";
 
@@ -59,23 +57,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements DisBoards
 
     private Dao<BoardPostComment, String> boardPostCommentDao;
 
-    private Dao<Board, BoardType> boardDao;
+    private Dao<BoardPostListInfo, BoardListType> boardDao;
 
     private Dao<DraftBoardPost, String> draftBoardPostDao;
 
-    private ArrayList<Board> boards;
+    private ArrayList<BoardPostListInfo> boardPostListInfos;
 
-    public synchronized static DatabaseHelper getInstance(Context context) {
-        if (instance == null) {
-            instance = new DatabaseHelper(context);
-        }
-        return instance;
-    }
-
-    @Inject
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        initliase();
     }
 
     @Override
@@ -83,6 +72,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements DisBoards
         for (Class<?> dataClass : DATA_CLASSES) {
             try {
                 TableUtils.createTable(connectionSource, dataClass);
+                initliase();
             } catch (SQLException e) {
                 if (DisBoardsConstants.DEBUG) {
                     Log.e(TAG, "Cannot create database");
@@ -113,31 +103,43 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements DisBoards
     }
 
     private void initliaseBoardType() {
-        boards = new ArrayList<>();
-        boards.add(new Board(BoardType.MUSIC,
+        boardPostListInfos = new ArrayList<>();
+        boardPostListInfos.add(new BoardPostListInfo(BoardListType.MUSIC,
                 BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 19, 0));
-        boards.add(new Board(BoardType.SOCIAL,
+        boardPostListInfos.add(new BoardPostListInfo(BoardListType.SOCIAL,
                 BoardTypeConstants.SOCIAL_DISPLAY_NAME, UrlConstants.SOCIAL_URL, 20, 1));
-        boards.add(new Board(BoardType.ANNOUNCEMENTS_CLASSIFIEDS,
+        boardPostListInfos.add(new BoardPostListInfo(BoardListType.ANNOUNCEMENTS_CLASSIFIEDS,
                 BoardTypeConstants.ANNOUNCEMENTS_CLASSIFIEDS_DISPLAY_NAME,
                 UrlConstants.ANNOUNCEMENTS_CLASSIFIEDS_URL, 21, 2));
-        boards.add(new Board(BoardType.MUSICIANS,
+        boardPostListInfos.add(new BoardPostListInfo(BoardListType.MUSICIANS,
                 BoardTypeConstants.MUSICIANS_DISPLAY_NAME,
                 UrlConstants.MUSICIANS_URL, 22, 3));
-        boards.add(new Board(BoardType.FESTIVALS,
+        boardPostListInfos.add(new BoardPostListInfo(BoardListType.FESTIVALS,
                 BoardTypeConstants.FESTIVALS_DISPLAY_NAME,
                 UrlConstants.FESTIVALS_URL, 23, 4));
-        boards.add(new Board(BoardType.YOUR_MUSIC,
+        boardPostListInfos.add(new BoardPostListInfo(BoardListType.YOUR_MUSIC,
                 BoardTypeConstants.YOUR_MUSIC_DISPLAY_NAME,
                 UrlConstants.YOUR_MUSIC_URL, 24, 5));
-        boards.add(new Board(BoardType.ERRORS_SUGGESTIONS,
+        boardPostListInfos.add(new BoardPostListInfo(BoardListType.ERRORS_SUGGESTIONS,
                 BoardTypeConstants.ERROR_SUGGESTIONS_DISPLAY_NAME,
                 UrlConstants.ERRORS_SUGGESTIONS_URL, 25, 6));
-        for (Board board : boards) {
-//            Board storedBoard = getBoard(board.getBoardType());
-//            if (storedBoard == null) {
-//                setBoard(board);
-//            }
+        for (BoardPostListInfo boardPostListInfo : boardPostListInfos) {
+            setBoard(boardPostListInfo).first().subscribe(new Subscriber<Void>() {
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onNext(Void aVoid) {
+
+                }
+            });
         }
 
     }
@@ -183,9 +185,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements DisBoards
         return boardPostCommentDao;
     }
 
-    private Dao<Board, BoardType> getBoardDao() throws SQLException {
+    private Dao<BoardPostListInfo, BoardListType> getBoardDao() throws SQLException {
         if (boardDao == null) {
-            boardDao = getDao(Board.class);
+            boardDao = getDao(BoardPostListInfo.class);
         }
         return boardDao;
     }
@@ -268,7 +270,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements DisBoards
         return null;
     }
 
-    public Observable<DraftBoardPost> getDraftBoardPost(BoardType boardType) {
+    public Observable<DraftBoardPost> getDraftBoardPost(BoardListType boardListType) {
 //        DraftBoardPost draftBoardPost = null;
 //        try {
 //            final Dao<DraftBoardPost, String> draftBoardPostDao = getDraftBoardPostDao();
@@ -293,7 +295,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements DisBoards
     public Observable<Void> setDraftBoardPost(DraftBoardPost draftBoardPost) {
         try {
             final Dao<DraftBoardPost, String> draftBoardPostDao = getDraftBoardPostDao();
-            removeDraftBoardPost(draftBoardPost.getBoardType());
+            removeDraftBoardPost(draftBoardPost.getBoardListType());
             int i = draftBoardPostDao.create(draftBoardPost);
             Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Added " + i + " Draft board posts");
         } catch (SQLException sqlException) {
@@ -303,11 +305,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements DisBoards
     }
 
 
-    public Observable<Void> removeDraftBoardPost(BoardType boardType) {
+    public Observable<Void> removeDraftBoardPost(BoardListType boardListType) {
         try {
             final Dao<DraftBoardPost, String> draftBoardPostDao = getDraftBoardPostDao();
             DeleteBuilder<DraftBoardPost, String> deleteBuilder = draftBoardPostDao.deleteBuilder();
-            deleteBuilder.where().eq(DraftBoardPost.BOARD_TYPE_FIELD, boardType);
+            deleteBuilder.where().eq(DraftBoardPost.BOARD_TYPE_FIELD, boardListType);
             int i = deleteBuilder.delete();
             Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Deleted " + i + " Draft board posts");
         } catch (SQLException sqlException) {
@@ -319,12 +321,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements DisBoards
     /**
      * Fetches all the boardPosts from the database with the suppied boardTypeId
      */
-    public Observable<List<BoardPost>> getBoardPosts(BoardType boardType) {
+    public Observable<List<BoardPost>> getBoardPosts(BoardListType boardListType) {
         List<BoardPost> posts = new ArrayList<BoardPost>();
         try {
             final Dao<BoardPost, String> boardPostDao = getBoardPostDao();
             posts = boardPostDao.queryForEq(BoardPost.BOARD_TYPE_FIELD,
-                    boardType);
+                    boardListType);
         } catch (SQLException e) {
             if (DisBoardsConstants.DEBUG) {
                 e.printStackTrace();
@@ -333,7 +335,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements DisBoards
         if (DisBoardsConstants.DEBUG) {
             Log.d(TAG,
                     "Found "
-                            + (posts.size() + " posts for " + boardType.name()));
+                            + (posts.size() + " posts for " + boardListType.name()));
         }
         Collections.sort(posts, BoardPost.COMPARATOR);
         return null;
@@ -354,14 +356,51 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements DisBoards
     /**
      * Gets the requested board type from the database
      */
-    public Observable<Board> getBoard(final BoardType boardType) {
-        return  Observable.create(new Observable.OnSubscribe<Board>() {
+    public Observable<BoardPostListInfo> getBoard(final BoardListType boardListType) {
+        return  Observable.create(new Observable.OnSubscribe<BoardPostListInfo>() {
             @Override
-            public void call(Subscriber<? super Board> subscriber) {
+            public void call(Subscriber<? super BoardPostListInfo> subscriber) {
                 try {
-                    Dao<Board, BoardType> boardDao = getBoardDao();
-                    Board board = boardDao.queryForId(boardType);
-                    subscriber.onNext(board);
+                    Dao<BoardPostListInfo, BoardListType> boardDao = getBoardDao();
+                    BoardPostListInfo boardPostListInfo = boardDao.queryForId(boardListType);
+                    subscriber.onNext(boardPostListInfo);
+                    subscriber.onCompleted();
+                } catch (SQLException e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Observable<List<BoardPostListInfo>> getAllBoardPostInfos() {
+        return Observable.create(new Observable.OnSubscribe<List<BoardPostListInfo>>() {
+            @Override
+            public void call(Subscriber<? super List<BoardPostListInfo>> subscriber) {
+                try {
+                    Dao<BoardPostListInfo, BoardListType> boardDao = getBoardDao();
+                    List<BoardPostListInfo> boardPostListInfos = boardDao.queryForAll();
+                    subscriber.onNext(boardPostListInfos);
+                    subscriber.onCompleted();
+                } catch (SQLException e) {
+                    subscriber.onError(e);
+                }
+
+            }
+        });
+    }
+
+    /**
+     * Saves the provided board to the database.
+     */
+    public Observable<Void> setBoard(final BoardPostListInfo boardPostListInfo) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                try {
+                    Dao<BoardPostListInfo, BoardListType> boardDao = getBoardDao();
+                    CreateOrUpdateStatus createOrUpdateStatus
+                            = boardDao.createOrUpdate(boardPostListInfo);
                     subscriber.onCompleted();
                 } catch (SQLException e) {
                     subscriber.onError(e);
@@ -371,25 +410,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements DisBoards
     }
 
     /**
-     * Saves the provided board to the database.
-     */
-    public Observable<Void> setBoard(Board board) {
-        try {
-            Dao<Board, BoardType> boardDao = getBoardDao();
-            boardDao.createOrUpdate(board);
-        } catch (SQLException e) {
-            if (DisBoardsConstants.DEBUG) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-    /**
      * Returns the board are stored in memory
      */
-    public ArrayList<Board> getCachedBoards() {
-        return boards;
+    public ArrayList<BoardPostListInfo> getCachedBoards() {
+        return boardPostListInfos;
     }
 
     public boolean setBoardPostFavouriteStatus(final BoardPost boardPost, boolean isFavourite) {

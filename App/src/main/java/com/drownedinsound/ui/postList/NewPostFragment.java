@@ -2,9 +2,8 @@ package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.Board;
+import com.drownedinsound.data.model.BoardPostListInfo;
 import com.drownedinsound.data.model.DraftBoardPost;
-import com.drownedinsound.data.database.DatabaseHelper;
 import com.drownedinsound.events.SentNewPostEvent;
 import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.drownedinsound.ui.base.BaseDialogFragment;
@@ -38,7 +37,7 @@ public class NewPostFragment extends BaseDialogFragment {
 
     private RobotoLightTextView heading;
 
-    private Board board;
+    private BoardPostListInfo boardPostListInfo;
 
     public static NewPostFragment newInstance(Bundle passedInData) {
         NewPostFragment newPostFragment = new NewPostFragment();
@@ -71,7 +70,7 @@ public class NewPostFragment extends BaseDialogFragment {
                 .findViewById(R.id.new_board_post_add_button);
         heading = (RobotoLightTextView) view.findViewById(R.id.new_board_post_heading);
         clearButton = (ImageButton) view.findViewById(R.id.new_board_post_abandon);
-        board = getArguments().getParcelable(DisBoardsConstants.BOARD);
+        boardPostListInfo = getArguments().getParcelable(DisBoardsConstants.BOARD);
 
         DraftBoardPost existingDraftPost = null;
         //DatabaseHelper.getInstance(getActivity())
@@ -127,7 +126,7 @@ public class NewPostFragment extends BaseDialogFragment {
             }
         });
 
-        heading.setText("New " + board.getDisplayName() + " Post");
+        heading.setText("New " + boardPostListInfo.getDisplayName() + " Post");
 
         return view;
     }
@@ -168,7 +167,7 @@ public class NewPostFragment extends BaseDialogFragment {
         DraftBoardPost draftBoardPost = new DraftBoardPost();
         draftBoardPost.setTitle(postTitleEditText.getText().toString());
         draftBoardPost.setContent(postContentEditText.getText().toString());
-        draftBoardPost.setBoardType(board.getBoardType());
-        DatabaseHelper.getInstance(getActivity()).setDraftBoardPost(draftBoardPost);
+        draftBoardPost.setBoardListType(boardPostListInfo.getBoardListType());
+        //DatabaseHelper.getInstance(getActivity()).setDraftBoardPost(draftBoardPost);
     }
 }

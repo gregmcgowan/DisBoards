@@ -1,10 +1,8 @@
 package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
-import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.UserSessionManager;
-import com.drownedinsound.data.model.Board;
-import com.drownedinsound.data.database.DatabaseHelper;
+import com.drownedinsound.data.model.BoardPostListInfo;
 import com.drownedinsound.ui.base.BaseControllerActivity;
 import com.drownedinsound.ui.base.SimpleDialogFragment;
 import com.drownedinsound.ui.favourites.FavouritesActivity;
@@ -18,6 +16,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -54,7 +54,7 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
     @Inject
     BoardPostListController boardPostListController;
 
-    Board board;
+    BoardPostListInfo boardPostListInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +62,7 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
 
         ButterKnife.inject(this);
 
-        mAdapter = new BoardPostListFragmentAdapter(getFragmentManager(),
-                DatabaseHelper.getInstance(getApplicationContext()));
-
-        initialiseViewPager();
+        mAdapter = new BoardPostListFragmentAdapter(getFragmentManager());
     }
 
     @Override
@@ -74,13 +71,8 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
     }
 
     private void initialiseViewPager() {
-        mPager.setAdapter(mAdapter);
-        mPager.getCurrentItem();
-
         tabLayout.setupWithViewPager(mPager);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-
-        board = mAdapter.getBoard(0);
 
         mPager.addOnPageChangeListener(new OnPageChangeListener() {
 
@@ -105,7 +97,7 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
             }
 
             public void onPageSelected(int position) {
-                board = mAdapter.getBoard(position);
+                boardPostListInfo = mAdapter.getBoard(position);
                 boardPostListController.loadListAt(position);
             }
 
@@ -141,9 +133,21 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
         }
     }
 
+    @Override
+    public void setBoardPostLists(List<BoardPostListInfo> boardPostListInfos) {
+        mAdapter.setBoardPostListInfos(boardPostListInfos);
+        mPager.setAdapter(mAdapter);
+        initialiseViewPager();
+        boardPostListInfo = mAdapter.getBoard(0);
+    }
+
+    @Override
+    public int getNoOfBoardListShown() {
+        return mAdapter.getCount();
+    }
 
     public void doLogoutAction() {
-        //Might need to do a proper logout
+        //TODO Might need to do a proper logout
         userSessionManager.clearSession();
     }
 

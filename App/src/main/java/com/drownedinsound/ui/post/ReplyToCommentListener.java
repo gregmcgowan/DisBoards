@@ -2,7 +2,7 @@ package com.drownedinsound.ui.post;
 
 import com.drownedinsound.data.model.BoardPost;
 import com.drownedinsound.data.model.BoardPostComment;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 
 import android.text.TextUtils;
 import android.view.View;
@@ -34,7 +34,7 @@ public class ReplyToCommentListener implements View.OnClickListener {
             }
             String replyToId = comment.getId();
             String postId = comment.getBoardPost().getId();
-            BoardType boardType = comment.getBoardPost().getBoardType();
+            BoardListType boardListType = comment.getBoardPost().getBoardListType();
 
 
     /*

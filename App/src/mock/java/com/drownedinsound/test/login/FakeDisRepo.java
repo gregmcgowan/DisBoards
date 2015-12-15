@@ -1,9 +1,9 @@
 package com.drownedinsound.test.login;
 
 import com.drownedinsound.data.DisBoardRepo;
-import com.drownedinsound.data.model.Board;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.model.BoardPostListInfo;
 import com.drownedinsound.data.network.LoginResponse;
 
 import java.util.List;
@@ -38,20 +38,24 @@ public class FakeDisRepo implements DisBoardRepo {
     }
 
     @Override
-    public Observable<BoardPost> getBoardPost(String boardPostUrl, String boardPostId,
-            BoardType boardType) {
+    public Observable<BoardPost> getBoardPost( String boardPostId, BoardListType boardListType) {
         return null;
     }
 
     @Override
-    public Observable<List<BoardPost>> getBoardPostSummaryList(BoardType board, Object tag, int pageNumber,
+    public Observable<List<BoardPost>> getBoardPostSummaryList(BoardListType board, int pageNumber,
             boolean forceUpdate) {
         return Observable.just(boardPosts);
     }
 
     @Override
+    public Observable<List<BoardPostListInfo>> getBoardPostListInfo() {
+        return null;
+    }
+
+    @Override
     public Observable<Void> thisAComment(String boardPostUrl, String boardPostId, String commentId,
-            BoardType boardType) {
+            BoardListType boardListType) {
         return null;
     }
 

@@ -1,7 +1,7 @@
 package com.drownedinsound.data.network.handlers;
 
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.Board;
+import com.drownedinsound.data.model.BoardPostListInfo;
 import com.drownedinsound.events.FailedToPostNewThreadEvent;
 import com.drownedinsound.events.SentNewPostEvent;
 import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
@@ -16,11 +16,11 @@ import java.io.InputStream;
 
 public class NewPostHandler extends ResponseHandler {
 
-    private Board board;
+    private BoardPostListInfo boardPostListInfo;
 
 
-    public NewPostHandler(Board board) {
-        this.board = board;
+    public NewPostHandler(BoardPostListInfo boardPostListInfo) {
+        this.boardPostListInfo = boardPostListInfo;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class NewPostHandler extends ResponseHandler {
         String postID = "";
         String locationHeader = response.header("location");
         Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Location Header " + locationHeader);
-        databaseHelper.removeDraftBoardPost(board.getBoardType());
+        //databaseHelper.removeDraftBoardPost(boardPostList.getBoardListType());
         eventBus.post(new SentNewPostEvent(SentNewPostState.CONFIRMED));
     }
 

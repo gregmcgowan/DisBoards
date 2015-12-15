@@ -9,10 +9,10 @@ import com.j256.ormlite.table.DatabaseTable;
  * @author gregmcgowan
  */
 @DatabaseTable(tableName = "board")
-public class Board {
+public class BoardPostListInfo {
 
     @DatabaseField(id = true, generatedId = false)
-    private BoardType boardType;
+    private BoardListType boardListType;
 
     @DatabaseField
     private String displayName;
@@ -29,25 +29,26 @@ public class Board {
     @DatabaseField
     private int pageIndex;
 
-    Board() {
+    BoardPostListInfo() {
 
     }
 
-    public Board(BoardType boardType, String displayName, String url, int sectionId,
+    public BoardPostListInfo(BoardListType boardListType, String displayName, String url,
+            int sectionId,
             int pageIndex) {
-        this.boardType = boardType;
+        this.boardListType = boardListType;
         this.displayName = displayName;
         this.url = url;
         this.sectionId = sectionId;
         this.pageIndex = pageIndex;
     }
 
-    public BoardType getBoardType() {
-        return boardType;
+    public BoardListType getBoardListType() {
+        return boardListType;
     }
 
-    public void setBoardType(BoardType boardType) {
-        this.boardType = boardType;
+    public void setBoardListType(BoardListType boardListType) {
+        this.boardListType = boardListType;
     }
 
     public String getDisplayName() {
@@ -87,7 +88,7 @@ public class Board {
         final int prime = 31;
         int result = 1;
         result = prime * result
-                + ((boardType == null) ? 0 : boardType.hashCode());
+                + ((boardListType == null) ? 0 : boardListType.hashCode());
         result = prime * result
                 + ((displayName == null) ? 0 : displayName.hashCode());
         result = prime * result + ((url == null) ? 0 : url.hashCode());
@@ -105,8 +106,8 @@ public class Board {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        Board other = (Board) obj;
-        if (boardType != other.boardType) {
+        BoardPostListInfo other = (BoardPostListInfo) obj;
+        if (boardListType != other.boardListType) {
             return false;
         }
         if (displayName == null) {

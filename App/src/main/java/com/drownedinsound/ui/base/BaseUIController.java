@@ -1,5 +1,7 @@
 package com.drownedinsound.ui.base;
 
+import com.drownedinsound.BuildConfig;
+
 import android.support.annotation.NonNull;
 
 import java.util.Collections;
@@ -283,6 +285,10 @@ public abstract class BaseUIController {
         @Override
         public void onError(Throwable e) {
             Ui ui = findUi(uiID);
+
+            if(BuildConfig.DEBUG) {
+                e.printStackTrace();
+            }
 
             Timber.d("OnError "+e + " for "+ ui);
             removeCached(ui,tag);

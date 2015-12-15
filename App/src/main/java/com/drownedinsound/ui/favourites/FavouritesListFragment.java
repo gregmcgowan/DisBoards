@@ -3,11 +3,9 @@ package com.drownedinsound.ui.favourites;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.Board;
+import com.drownedinsound.data.model.BoardPostListInfo;
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
-import com.drownedinsound.data.database.DatabaseHelper;
-import com.drownedinsound.data.database.DatabaseService;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.events.RetrievedFavouritesEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseFragment;
@@ -177,16 +175,6 @@ public class FavouritesListFragment extends BaseFragment {
 
     public void getFavourites() {
         if (!isRequesting) {
-            Intent disWebServiceIntent = new Intent(getActivity(),
-                    DatabaseService.class);
-            Bundle parametersBundle = new Bundle();
-
-            parametersBundle.putInt(
-                    DatabaseService.DATABASE_SERVICE_REQUESTED_KEY,
-                    DatabaseService.GET_FAVOURITE_BOARD_POSTS);
-            disWebServiceIntent.putExtras(parametersBundle);
-            getActivity().startService(disWebServiceIntent);
-            setProgressBarVisiblity(true);
             isRequesting = true;
         } else {
             setProgressBarVisiblity(true);
@@ -254,8 +242,8 @@ public class FavouritesListFragment extends BaseFragment {
         currentlySelectedPost = position;
         BoardPost boardPostSummary = favouriteBoardPosts.get(position);
         if (boardPostSummary != null) {
-            BoardType boardType = boardPostSummary.getBoardType();
-            Board board = null;//DatabaseHelper.getInstance(getActivity()).getBoard(boardType);
+            BoardListType boardListType = boardPostSummary.getBoardListType();
+            BoardPostListInfo boardPostListInfo = null;//DatabaseHelper.getInstance(getActivity()).getBoard(boardType);
             postId = boardPostSummary.getId();
 
             if (dualPaneMode) {
@@ -265,7 +253,7 @@ public class FavouritesListFragment extends BaseFragment {
                 if (boardPostFragment == null
                         || !postId.equals(boardPostFragment.getBoardPostId())) {
                     boardPostFragment = BoardPostFragment
-                            .newInstance(postId, true, boardType);
+                            .newInstance(postId, true, boardListType);
                     // Execute a transaction, replacing any existing fragment
                     // with this one inside the frame.
                     FragmentTransaction ft = getFragmentManager()
@@ -282,7 +270,7 @@ public class FavouritesListFragment extends BaseFragment {
                 parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
                         postId);
                 parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
-                        boardType);
+                        boardListType);
                 viewPostIntent.putExtras(parametersBundle);
 
                 startActivity(viewPostIntent);

@@ -1,7 +1,7 @@
 package com.drownedinsound.ui.post;
 
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.events.FailedToGetBoardPostEvent;
 import com.drownedinsound.events.PostCommentEvent;
@@ -9,8 +9,6 @@ import com.drownedinsound.events.RetrievedBoardPostEvent;
 import com.drownedinsound.qualifiers.ForDatabase;
 import com.drownedinsound.ui.base.BaseUIController;
 import com.drownedinsound.ui.base.Ui;
-
-import android.content.Intent;
 
 import java.util.concurrent.ExecutorService;
 
@@ -58,7 +56,7 @@ public class BoardPostController extends BaseUIController {
         }
     }
 
-    public void thisAComment(BoardPostUI boardPostUI, BoardType boardType,
+    public void thisAComment(BoardPostUI boardPostUI, BoardListType boardListType,
             String postID, String commentID) {
         boardPostUI.showLoadingProgress(true);
         int id = getId(boardPostUI);
@@ -66,7 +64,7 @@ public class BoardPostController extends BaseUIController {
     }
 
     public void loadBoardPost(BoardPostUI boardPostUI, String boardPostId,
-            BoardType boardType) {
+            BoardListType boardListType) {
         boardPostUI.showLoadingProgress(true);
         int uiID = getId(boardPostUI);
         //disApiClient.getBoardPost(boardPostUrl, boardPostId, boardType, uiID);
@@ -119,7 +117,7 @@ public class BoardPostController extends BaseUIController {
     }
 
     public void replyToComment(ReplyToCommentUi replyToCommentUi,String boardPostId, String replyToCommentID, String commentTitle,
-            String commentContent, BoardType boardType) {
+            String commentContent, BoardListType boardListType) {
         replyToCommentUi.showLoadingProgress(true);
 
         int uiID = getId(replyToCommentUi);

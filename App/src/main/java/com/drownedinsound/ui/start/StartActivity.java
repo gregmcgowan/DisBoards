@@ -1,7 +1,5 @@
 package com.drownedinsound.ui.start;
 
-import com.crashlytics.android.Crashlytics;
-import com.drownedinsound.BuildConfig;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.ui.base.BaseActivity;
 import com.drownedinsound.ui.postList.BoardPostListParentActivity;
@@ -10,8 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import javax.inject.Inject;
-
-import io.fabric.sdk.android.Fabric;
 
 
 public class StartActivity extends BaseActivity {

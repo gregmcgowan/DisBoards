@@ -3,9 +3,6 @@ package com.drownedinsound.data.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 /**
  * Created by gregmcgowan on 17/10/2013.
  */
@@ -26,7 +23,7 @@ public class DraftBoardPost {
     private String content;
 
     @DatabaseField(columnName = BOARD_TYPE_FIELD)
-    private BoardType boardType;
+    private BoardListType boardListType;
 
     public String getTitle() {
         return title;
@@ -44,12 +41,12 @@ public class DraftBoardPost {
         this.content = content;
     }
 
-    public BoardType getBoardType() {
-        return boardType;
+    public BoardListType getBoardListType() {
+        return boardListType;
     }
 
-    public void setBoardType(BoardType boardType) {
-        this.boardType = boardType;
+    public void setBoardListType(BoardListType boardListType) {
+        this.boardListType = boardListType;
     }
 
     public DraftBoardPost() {

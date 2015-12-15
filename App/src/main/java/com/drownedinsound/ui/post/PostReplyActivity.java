@@ -2,7 +2,7 @@ package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 import com.drownedinsound.ui.base.BaseActivity;
 
 import android.app.FragmentTransaction;
@@ -16,7 +16,7 @@ public class PostReplyActivity extends BaseActivity {
 
 
     public static Intent getIntent(Context context, String replyToAuthor,
-            String replyToCommentId, String postId, BoardType boardType) {
+            String replyToCommentId, String postId, BoardListType boardListType) {
 
         Intent intent = new Intent(context,PostReplyActivity.class);
 
@@ -27,7 +27,7 @@ public class PostReplyActivity extends BaseActivity {
         intent.putExtra(DisBoardsConstants.BOARD_POST_ID,
                 postId);
         intent.putExtra(DisBoardsConstants.BOARD_TYPE,
-                boardType);
+                boardListType);
 
         return intent;
     }
@@ -42,12 +42,12 @@ public class PostReplyActivity extends BaseActivity {
         Intent intent = getIntent();
 
         String replyToCommentID = intent.getStringExtra(DisBoardsConstants.BOARD_COMMENT_ID);
-        BoardType boardType = (BoardType) intent.getSerializableExtra(DisBoardsConstants.BOARD_TYPE);
+        BoardListType boardListType = (BoardListType) intent.getSerializableExtra(DisBoardsConstants.BOARD_TYPE);
         String boardPostId = intent.getStringExtra(DisBoardsConstants.BOARD_POST_ID);
         String replyToAuthor = intent.getStringExtra(DisBoardsConstants.REPLY_TO_AUTHOR);
 
         PostReplyFragment postReplyFragment = PostReplyFragment.newInstance(replyToAuthor,replyToCommentID,boardPostId,
-                boardType);
+                boardListType);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.container,postReplyFragment);
         fragmentTransaction.commit();

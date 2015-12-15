@@ -1,7 +1,7 @@
 package com.drownedinsound.events;
 
 import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ public class RetrievedBoardPostSummaryListEvent {
 
     private List<BoardPost> boardPostSummaryList;
 
-    private BoardType boardType;
+    private BoardListType boardListType;
 
     private boolean isCached;
 
@@ -18,10 +18,10 @@ public class RetrievedBoardPostSummaryListEvent {
     private int uiId;
 
     public RetrievedBoardPostSummaryListEvent(
-            List<BoardPost> boardPostSummaryList, BoardType boardType, boolean isCached,
+            List<BoardPost> boardPostSummaryList, BoardListType boardListType, boolean isCached,
             boolean append, int uiId) {
         setBoardPostSummaryList(boardPostSummaryList);
-        setBoardType(boardType);
+        setBoardListType(boardListType);
         setCached(isCached);
         setAppend(append);
         setUiId(uiId);
@@ -36,12 +36,12 @@ public class RetrievedBoardPostSummaryListEvent {
         this.boardPostSummaryList = boardPostSummaryList;
     }
 
-    public BoardType getBoardType() {
-        return boardType;
+    public BoardListType getBoardListType() {
+        return boardListType;
     }
 
-    public void setBoardType(BoardType boardType) {
-        this.boardType = boardType;
+    public void setBoardListType(BoardListType boardListType) {
+        this.boardListType = boardListType;
     }
 
     public boolean isCached() {

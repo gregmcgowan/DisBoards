@@ -1,6 +1,6 @@
 package com.drownedinsound.data.network;
 
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.model.BoardListType;
 
 import android.text.TextUtils;
 
@@ -52,28 +52,28 @@ public class UrlConstants {
     public final static String NEW_POST_URL = "http://drownedinsound.com/topics";
 
 
-    public static BoardType getBoardType(String url) {
-        BoardType boardType = null;
+    public static BoardListType getBoardType(String url) {
+        BoardListType boardListType = null;
         if (!TextUtils.isEmpty(url)) {
             if (url.contains("www.")) {
                 url = url.replace("www.", "");
             }
             if (url.startsWith(UrlConstants.MUSIC_URL)) {
-                boardType = BoardType.MUSIC;
+                boardListType = BoardListType.MUSIC;
             } else if (url.startsWith(UrlConstants.SOCIAL_URL)) {
-                boardType = BoardType.SOCIAL;
+                boardListType = BoardListType.SOCIAL;
             } else if (url.startsWith(UrlConstants.ANNOUNCEMENTS_CLASSIFIEDS_URL)) {
-                boardType = BoardType.ANNOUNCEMENTS_CLASSIFIEDS;
+                boardListType = BoardListType.ANNOUNCEMENTS_CLASSIFIEDS;
             } else if (url.startsWith(UrlConstants.MUSICIANS_URL)) {
-                boardType = BoardType.MUSICIANS;
+                boardListType = BoardListType.MUSICIANS;
             } else if (url.startsWith(UrlConstants.FESTIVALS_URL)) {
-                boardType = BoardType.FESTIVALS;
+                boardListType = BoardListType.FESTIVALS;
             } else if (url.startsWith(UrlConstants.YOUR_MUSIC_URL)) {
-                boardType = BoardType.YOUR_MUSIC;
+                boardListType = BoardListType.YOUR_MUSIC;
             } else if (url.startsWith(UrlConstants.ERRORS_SUGGESTIONS_URL)) {
-                boardType = BoardType.ERRORS_SUGGESTIONS;
+                boardListType = BoardListType.ERRORS_SUGGESTIONS;
             }
         }
-        return boardType;
+        return boardListType;
     }
 }
