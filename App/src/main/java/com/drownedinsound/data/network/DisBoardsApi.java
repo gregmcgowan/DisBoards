@@ -1,8 +1,7 @@
 package com.drownedinsound.data.network;
 
-import com.drownedinsound.data.model.BoardPostListInfo;
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.network.handlers.ResponseHandler;
 
 import java.util.List;
@@ -16,17 +15,15 @@ public interface DisBoardsApi {
 
         Observable<LoginResponse> loginUser(String username, String password);
 
-        Observable<BoardPost> getBoardPost(String boardPostUrl, String boardPostId, BoardListType boardListType);
+        Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType String boardListType, String boardPostUrl, String boardPostId);
 
-        Observable<List<BoardPost>> getBoardPostSummaryList(BoardListType boardListType, String boardPostUrl, int pageNumber);
+        Observable<List<BoardPost>> getBoardPostSummaryList(@BoardPostList.BoardPostListType String boardListType, String boardPostUrl, int pageNumber);
 
-        Observable<Void> thisAComment(String boardPostUrl, String boardPostId, String commentId,
-                BoardListType boardListType);
+        Observable<Void> thisAComment(@BoardPostList.BoardPostListType String boardListType, String boardPostUrl, String boardPostId, String commentId);
 
-        Observable<Void> addNewPost(BoardPostListInfo boardPostListInfo, String title, String content, ResponseHandler responseHandler);
+        Observable<Void> addNewPost(@BoardPostList.BoardPostListType String boardListType, String title, String content, ResponseHandler responseHandler);
 
-        Observable<Void> postComment(String boardPostId, String commentId, String title, String content,
-                BoardListType boardListType, ResponseHandler responseHandler);
+        Observable<Void> postComment(@BoardPostList.BoardPostListType String boardListType, String boardPostId, String commentId, String title, String content);
 
         boolean requestInProgress(Object tag);
 }

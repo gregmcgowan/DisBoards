@@ -1,6 +1,6 @@
 package com.drownedinsound.ui.post;
 
-import com.drownedinsound.data.model.BoardPost;
+import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.ui.base.Ui;
 
 /**

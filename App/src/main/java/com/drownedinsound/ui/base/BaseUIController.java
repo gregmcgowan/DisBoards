@@ -1,6 +1,7 @@
 package com.drownedinsound.ui.base;
 
 import com.drownedinsound.BuildConfig;
+import com.fernandocejas.frodo.annotation.RxLogSubscriber;
 
 import android.support.annotation.NonNull;
 
@@ -64,7 +65,7 @@ public abstract class BaseUIController {
     }
 
     protected int getId(Ui ui) {
-        return ui.getId();
+        return ui.getID();
     }
 
     protected synchronized HashMap<Object,CachedPair> getCachedObservables(int uiId) {
@@ -263,7 +264,7 @@ public abstract class BaseUIController {
      *
      * @param <T>
      */
-    private class WrappedObserver <T> implements Observer <T>  {
+    private class WrappedObserver <T> extends Subscriber <T>  {
 
         private Object tag;
         private int uiID;

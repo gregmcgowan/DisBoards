@@ -1,10 +1,9 @@
 package com.drownedinsound.data.network.handlers;
 
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.events.FailedToThisThisEvent;
-import com.drownedinsound.events.RetrievedBoardPostEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -16,9 +15,9 @@ public class ThisACommentHandler extends ResponseHandler {
 
     private String postID;
 
-    private BoardListType boardListType;
+    private @BoardPostList.BoardPostListType String boardListType;
 
-    public ThisACommentHandler(int calliingUiId, String postID, BoardListType boardListType) {
+    public ThisACommentHandler(int calliingUiId, String postID, @BoardPostList.BoardPostListType String boardListType) {
         this.postID = postID;
         this.boardListType = boardListType;
         setUiID(calliingUiId);
@@ -35,7 +34,7 @@ public class ThisACommentHandler extends ResponseHandler {
             if (boardPost != null) {
                 //databaseHelper.setBoardPost(boardPost);
                 if (isUpdateUI()) {
-                    eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true, getUiID()));
+                    //eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true, getUiID()));
                 }
             }
         } else {

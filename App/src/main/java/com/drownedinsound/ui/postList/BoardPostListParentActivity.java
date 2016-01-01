@@ -2,7 +2,7 @@ package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
 import com.drownedinsound.data.UserSessionManager;
-import com.drownedinsound.data.model.BoardPostListInfo;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.BaseControllerActivity;
 import com.drownedinsound.ui.base.SimpleDialogFragment;
 import com.drownedinsound.ui.favourites.FavouritesActivity;
@@ -54,7 +54,7 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
     @Inject
     BoardPostListController boardPostListController;
 
-    BoardPostListInfo boardPostListInfo;
+    BoardPostList boardPostListInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,10 +88,10 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
                     int pageToRight = currentPage + 1;
 
                     if (pageToLeft > -1) {
-                        boardPostListController.loadListAt(pageToLeft);
+                        //boardPostListController.loadListAt(pageToLeft);
                     }
                     if (pageToRight < maxPages) {
-                        boardPostListController.loadListAt(pageToRight);
+                        //boardPostListController.loadListAt(pageToRight);
                     }
                 }
             }
@@ -134,7 +134,7 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
     }
 
     @Override
-    public void setBoardPostLists(List<BoardPostListInfo> boardPostListInfos) {
+    public void setBoardPostLists(List<BoardPostList> boardPostListInfos) {
         mAdapter.setBoardPostListInfos(boardPostListInfos);
         mPager.setAdapter(mAdapter);
         initialiseViewPager();

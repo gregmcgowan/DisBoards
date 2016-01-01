@@ -1,15 +1,10 @@
 package com.drownedinsound.data.network;
 
-import com.drownedinsound.data.model.BoardPostListInfo;
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
-import com.drownedinsound.data.network.handlers.NewPostHandler;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.network.handlers.ResponseHandler;
-import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
-import com.drownedinsound.data.network.handlers.ThisACommentHandler;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
 import com.drownedinsound.data.parser.streaming.LoginException;
-import com.drownedinsound.utils.NetworkUtils;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.OkHttpClient;
@@ -19,7 +14,6 @@ import com.squareup.okhttp.Response;
 
 import android.app.Application;
 import android.content.Context;
-import android.text.TextUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,8 +27,6 @@ import javax.inject.Singleton;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
-import timber.log.Timber;
-
 /**
  * A service that will handle all the requests to the website
  *
@@ -134,13 +126,13 @@ public class DisApiClient implements DisBoardsApi {
     }
 
     @Override
-    public Observable<BoardPost> getBoardPost(String boardPostUrl, String boardPostId,
-            BoardListType boardListType) {
+    public Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType String boardListType,
+            String boardPostUrl, String boardPostId) {
         return null;
     }
 
     @Override
-    public Observable<List<BoardPost>> getBoardPostSummaryList(final BoardListType boardListType,
+    public Observable<List<BoardPost>> getBoardPostSummaryList(final @BoardPostList.BoardPostListType String boardListType,
             String boardPostUrl, int pageNumber) {
 
         final boolean append = pageNumber > 1;
@@ -165,20 +157,20 @@ public class DisApiClient implements DisBoardsApi {
     }
 
     @Override
-    public Observable<Void> thisAComment(String boardPostUrl, String boardPostId, String commentId,
-            BoardListType boardListType) {
+    public Observable<Void> thisAComment(@BoardPostList.BoardPostListType String boardListType,
+            String boardPostUrl, String boardPostId, String commentId) {
         return null;
     }
 
     @Override
-    public Observable<Void> addNewPost(BoardPostListInfo boardPostListInfo, String title, String content,
-            ResponseHandler responseHandler) {
+    public Observable<Void> addNewPost(@BoardPostList.BoardPostListType String boardListType,
+            String title, String content, ResponseHandler responseHandler) {
         return null;
     }
 
     @Override
-    public Observable<Void> postComment(String boardPostId, String commentId, String title,
-            String content, BoardListType boardListType, ResponseHandler responseHandler) {
+    public Observable<Void> postComment(@BoardPostList.BoardPostListType String boardListType,
+            String boardPostId, String commentId, String title, String content) {
         return null;
     }
 
@@ -263,95 +255,95 @@ public class DisApiClient implements DisBoardsApi {
         }
     }
 
-    public void getBoardPost(String boardPostUrl, final String boardPostId, BoardListType boardListType,
-            final int callerUiId) {
-        if (NetworkUtils.isConnected(applicationContext)) {
-            String tag = "GET_BOARD_POST_" + boardPostId;
-
-            boolean requestIsInProgress = inProgressRequests.contains(tag);
-            if (!requestIsInProgress) {
-                RetrieveBoardPostHandler retrieveBoardPostHandler = new
-                        RetrieveBoardPostHandler(boardPostId, boardListType, true, callerUiId);
-                makeRequest(RequestMethod.GET, boardPostUrl, tag);
-
-            } else {
-                Timber.d("Board post " + boardPostId + " has already been requested");
-            }
-
-        } else {
-//            dbExecutorService.execute(new DatabaseRunnable(databaseHelper) {
-//                @Override
-//                public void run() {
-//                    BoardPost cachedPost = dbHelper.getBoardPost(boardPostId);
-//                    eventBus.post(
-//                            new RetrievedBoardPostEvent(cachedPost, true, true, callerUiId));
-//                }
-//            });
-        }
-
-    }
-
-    public void thisAComment(String boardPostUrl, String boardPostId, String commentId,
-            BoardListType boardListType, int callingId) {
-        ThisACommentHandler thisACommentHandler = new ThisACommentHandler(callingId, boardPostId,
-                boardListType);
-
-        String fullUrl = boardPostUrl + "/" + commentId + "/this";
-        Timber.d("Going to this with  =" + fullUrl);
-
-        String tag = "THIS" + boardPostId;
-        makeRequest(RequestMethod.GET, tag, fullUrl);
-    }
-
-
-    public void addNewPost(BoardPostListInfo boardPostListInfo, String title, String content, String authToken) {
-        Headers.Builder extraHeaders = new Headers.Builder();
-        extraHeaders.add("Referer", boardPostListInfo.getUrl());
-        RequestBody requestBody = new FormEncodingBuilder().add("section_id", String.valueOf(
-                boardPostListInfo
-                .getSectionId()))
-                .add("topic[title]", title)
-                .add("topic[content_raw]", content)
-                .add("topic[sticky]", "0")
-                .add("authenticity_token", authToken).build();
-
-        NewPostHandler newPostHandler = new NewPostHandler(boardPostListInfo);
-
-        makeRequest(RequestMethod.POST,
-                UrlConstants.NEW_POST_URL, requestBody, extraHeaders,REQUEST_TYPE.NEW_POST);
-    }
-
-    public void postComment(String boardPostId, String commentId, String title, String content,
-            BoardListType boardListType, String authToken) {
-        if (TextUtils.isEmpty(authToken)) {
-            throw new IllegalArgumentException("Auth token cannot be null");
-        }
-
-        if (TextUtils.isEmpty(boardPostId)) {
-            throw new IllegalArgumentException("BoardPostId cannot be null");
-        }
-
-//        PostACommentHandler postACommentHandler = new PostACommentHandler(boardPostId, boardType,
-//                callingUiId);
-       // inject(postACommentHandler);
-
-        if (commentId == null) {
-            commentId = "";
-        }
-
-        RequestBody requestBody = new FormEncodingBuilder()
-                .add("comment[commentable_id]", boardPostId)
-                .add("comment[title]", title)
-                .add("comment[commentable_type]", "Topic")
-                .add("comment[content_raw]", content)
-                .add("parent_id", commentId)
-                .add("authenticity_token", authToken)
-                .add("commit", "Post reply").build();
-
-        String tag = boardPostId + "COMMENT" + commentId;
-
-        makeRequest(RequestMethod.POST, UrlConstants.COMMENTS_URL, requestBody, null, tag);
-    }
+//    public void getBoardPost(String boardPostUrl, final String boardPostId, BoardListType boardListType,
+//            final int callerUiId) {
+//        if (NetworkUtils.isConnected(applicationContext)) {
+//            String tag = "GET_BOARD_POST_" + boardPostId;
+//
+//            boolean requestIsInProgress = inProgressRequests.contains(tag);
+//            if (!requestIsInProgress) {
+//                RetrieveBoardPostHandler retrieveBoardPostHandler = new
+//                        RetrieveBoardPostHandler(boardPostId, boardListType, true, callerUiId);
+//                makeRequest(RequestMethod.GET, boardPostUrl, tag);
+//
+//            } else {
+//                Timber.d("Board post " + boardPostId + " has already been requested");
+//            }
+//
+//        } else {
+////            dbExecutorService.execute(new DatabaseRunnable(databaseHelper) {
+////                @Override
+////                public void run() {
+////                    BoardPost cachedPost = dbHelper.getBoardPost(boardPostId);
+////                    eventBus.post(
+////                            new RetrievedBoardPostEvent(cachedPost, true, true, callerUiId));
+////                }
+////            });
+//        }
+//
+//    }
+//
+//    public void thisAComment(String boardPostUrl, String boardPostId, String commentId,
+//            BoardListType boardListType, int callingId) {
+//        ThisACommentHandler thisACommentHandler = new ThisACommentHandler(callingId, boardPostId,
+//                boardListType);
+//
+//        String fullUrl = boardPostUrl + "/" + commentId + "/this";
+//        Timber.d("Going to this with  =" + fullUrl);
+//
+//        String tag = "THIS" + boardPostId;
+//        makeRequest(RequestMethod.GET, tag, fullUrl);
+//    }
+//
+//
+//    public void addNewPost(BoardPostListInfo boardPostListInfo, String title, String content, String authToken) {
+//        Headers.Builder extraHeaders = new Headers.Builder();
+//        extraHeaders.add("Referer", boardPostListInfo.getUrl());
+//        RequestBody requestBody = new FormEncodingBuilder().add("section_id", String.valueOf(
+//                boardPostListInfo
+//                .getSectionId()))
+//                .add("topic[title]", title)
+//                .add("topic[content_raw]", content)
+//                .add("topic[sticky]", "0")
+//                .add("authenticity_token", authToken).build();
+//
+//        NewPostHandler newPostHandler = new NewPostHandler(boardPostListInfo);
+//
+//        makeRequest(RequestMethod.POST,
+//                UrlConstants.NEW_POST_URL, requestBody, extraHeaders,REQUEST_TYPE.NEW_POST);
+//    }
+//
+//    public void postComment(String boardPostId, String commentId, String title, String content,
+//            BoardListType boardListType, String authToken) {
+//        if (TextUtils.isEmpty(authToken)) {
+//            throw new IllegalArgumentException("Auth token cannot be null");
+//        }
+//
+//        if (TextUtils.isEmpty(boardPostId)) {
+//            throw new IllegalArgumentException("BoardPostId cannot be null");
+//        }
+//
+////        PostACommentHandler postACommentHandler = new PostACommentHandler(boardPostId, boardType,
+////                callingUiId);
+//       // inject(postACommentHandler);
+//
+//        if (commentId == null) {
+//            commentId = "";
+//        }
+//
+//        RequestBody requestBody = new FormEncodingBuilder()
+//                .add("comment[commentable_id]", boardPostId)
+//                .add("comment[title]", title)
+//                .add("comment[commentable_type]", "Topic")
+//                .add("comment[content_raw]", content)
+//                .add("parent_id", commentId)
+//                .add("authenticity_token", authToken)
+//                .add("commit", "Post reply").build();
+//
+//        String tag = boardPostId + "COMMENT" + commentId;
+//
+//        makeRequest(RequestMethod.POST, UrlConstants.COMMENTS_URL, requestBody, null, tag);
+//    }
 
 
     @Override

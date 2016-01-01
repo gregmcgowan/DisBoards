@@ -1,8 +1,7 @@
 package com.drownedinsound.data;
 
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
-import com.drownedinsound.data.model.BoardPostListInfo;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.network.LoginResponse;
 
 import java.util.List;
@@ -16,15 +15,14 @@ public interface DisBoardRepo {
 
     Observable<LoginResponse> loginUser(String username, String password);
 
-    Observable<BoardPost> getBoardPost(String boardPostId,
-            BoardListType boardListType);
+    Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType String boardListType, String boardPostId);
 
-    Observable<List<BoardPost>> getBoardPostSummaryList(BoardListType board, int pageNumber,boolean forceUpdate);
+    Observable<List<BoardPostList>> getAllBoardPostLists();
 
-    Observable<List<BoardPostListInfo>> getBoardPostListInfo();
+    Observable<List<BoardPost>> getBoardPostList(@BoardPostList.BoardPostListType String boardListType, int pageNumber,boolean forceUpdate);
 
     Observable<Void> thisAComment(String boardPostUrl, String boardPostId, String commentId,
-            BoardListType boardListType);
+            @BoardPostList.BoardPostListType String boardListType);
 
     boolean isUserLoggedIn();
 

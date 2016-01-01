@@ -1,6 +1,6 @@
 package com.drownedinsound.events;
 
-import com.drownedinsound.data.model.BoardPost;
+import com.drownedinsound.data.generatered.BoardPost;
 
 import java.util.ArrayList;
 

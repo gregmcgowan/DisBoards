@@ -2,7 +2,7 @@ package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 
@@ -44,16 +44,17 @@ public class PostReplyFragment extends BaseControllerFragment<BoardPostControlle
 
     private String boardPostId;
 
-    private BoardListType boardListType;
+    private String boardListType;
 
     private String replyToCommentID;
 
     private String replyToAuthor;
+
     @Inject
     BoardPostController boardPostController;
 
     public static PostReplyFragment newInstance(String replyToAuthor,
-            String replyToCommentId, String postId, BoardListType boardListType) {
+            String replyToCommentId, String postId, @BoardPostList.BoardPostListType String boardListType ) {
         Bundle arguments = new Bundle();
         arguments.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
                 replyToAuthor);
@@ -81,7 +82,7 @@ public class PostReplyFragment extends BaseControllerFragment<BoardPostControlle
         Bundle arguments = getArguments();
 
         this.replyToCommentID = arguments.getString(DisBoardsConstants.BOARD_COMMENT_ID);
-        this.boardListType = (BoardListType) arguments.getSerializable(DisBoardsConstants.BOARD_TYPE);
+        this.boardListType = arguments.getString(DisBoardsConstants.BOARD_TYPE);
         this.boardPostId = arguments.getString(DisBoardsConstants.BOARD_POST_ID);
         this.replyToAuthor = arguments.getString(DisBoardsConstants.REPLY_TO_AUTHOR);
     }

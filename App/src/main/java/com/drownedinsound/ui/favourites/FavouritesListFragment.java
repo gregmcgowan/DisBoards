@@ -3,18 +3,14 @@ package com.drownedinsound.ui.favourites;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.BoardPostListInfo;
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.events.RetrievedFavouritesEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseFragment;
 import com.drownedinsound.ui.post.BoardPostActivity;
-import com.drownedinsound.ui.post.BoardPostFragment;
 import com.drownedinsound.ui.postList.BoardPostListAdapter;
 import com.drownedinsound.utils.UiUtils;
 
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
@@ -239,42 +235,6 @@ public class FavouritesListFragment extends BaseFragment {
 
 
     private void showBoardPost(int position) {
-        currentlySelectedPost = position;
-        BoardPost boardPostSummary = favouriteBoardPosts.get(position);
-        if (boardPostSummary != null) {
-            BoardListType boardListType = boardPostSummary.getBoardListType();
-            BoardPostListInfo boardPostListInfo = null;//DatabaseHelper.getInstance(getActivity()).getBoard(boardType);
-            postId = boardPostSummary.getId();
 
-            if (dualPaneMode) {
-                // listView.setItemChecked(position, true);
-                BoardPostFragment boardPostFragment = (BoardPostFragment) getFragmentManager()
-                        .findFragmentById(R.id.board_post_details);
-                if (boardPostFragment == null
-                        || !postId.equals(boardPostFragment.getBoardPostId())) {
-                    boardPostFragment = BoardPostFragment
-                            .newInstance(postId, true, boardListType);
-                    // Execute a transaction, replacing any existing fragment
-                    // with this one inside the frame.
-                    FragmentTransaction ft = getFragmentManager()
-                            .beginTransaction();
-                    ft.replace(R.id.board_post_details, boardPostFragment);
-                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                    ft.commit();
-                }
-
-            } else {
-                Intent viewPostIntent = new Intent(getActivity(),
-                        BoardPostActivity.class);
-                Bundle parametersBundle = new Bundle();
-                parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
-                        postId);
-                parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
-                        boardListType);
-                viewPostIntent.putExtras(parametersBundle);
-
-                startActivity(viewPostIntent);
-            }
-        }
     }
 }

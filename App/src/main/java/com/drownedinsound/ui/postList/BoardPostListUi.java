@@ -1,7 +1,8 @@
 package com.drownedinsound.ui.postList;
 
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPost;
+
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.Ui;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  */
 public interface BoardPostListUi extends Ui {
 
-    BoardListType getBoardListType();
+    @BoardPostList.BoardPostListType String getBoardListType();
 
     void setBoardPosts(List<BoardPost> boardPosts);
 

@@ -1,8 +1,8 @@
 package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardPostComment;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostComment;
 import com.drownedinsound.ui.controls.ActiveTextView;
 import com.drownedinsound.utils.UiUtils;
 
@@ -20,8 +20,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-
-;
 
 /**
  * Created by gregmcgowan on 13/08/15.
@@ -76,7 +74,7 @@ public class BoardPostAdapter extends BaseAdapter {
     public int getIndexOfCommentId(String commentId) {
         int index = 0;
         for (BoardPostComment comment : comments) {
-            if (commentId.equals(comment.getId())) {
+            if (commentId.equals(comment.getCommentID())) {
                 break;
             }
             index++;
@@ -161,7 +159,7 @@ public class BoardPostAdapter extends BaseAdapter {
                 }
             }
 
-            String dateAndTime = comment.getDateAndTimeOfComment();
+            String dateAndTime = comment.getDateAndTime();
 
             if (!isFirstComment) {
                 boardPostCommentHolder.commentAuthorTextView

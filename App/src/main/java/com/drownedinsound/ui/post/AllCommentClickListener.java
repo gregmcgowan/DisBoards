@@ -1,6 +1,6 @@
 package com.drownedinsound.ui.post;
 
-import com.drownedinsound.data.model.BoardPostComment;
+import com.drownedinsound.data.generatered.BoardPostComment;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;

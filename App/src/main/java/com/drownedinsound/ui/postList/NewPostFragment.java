@@ -2,8 +2,7 @@ package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.BoardPostListInfo;
-import com.drownedinsound.data.model.DraftBoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.events.SentNewPostEvent;
 import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.drownedinsound.ui.base.BaseDialogFragment;
@@ -37,7 +36,7 @@ public class NewPostFragment extends BaseDialogFragment {
 
     private RobotoLightTextView heading;
 
-    private BoardPostListInfo boardPostListInfo;
+    private BoardPostList boardPostListInfo;
 
     public static NewPostFragment newInstance(Bundle passedInData) {
         NewPostFragment newPostFragment = new NewPostFragment();
@@ -72,13 +71,14 @@ public class NewPostFragment extends BaseDialogFragment {
         clearButton = (ImageButton) view.findViewById(R.id.new_board_post_abandon);
         boardPostListInfo = getArguments().getParcelable(DisBoardsConstants.BOARD);
 
-        DraftBoardPost existingDraftPost = null;
-        //DatabaseHelper.getInstance(getActivity())
-          //      .getDraftBoardPost(board.getBoardType());
-        if (existingDraftPost != null) {
-            postTitleEditText.setText(existingDraftPost.getTitle());
-            postContentEditText.setText(existingDraftPost.getContent());
-        }
+        //TODO restore
+//        DraftBoardPost existingDraftPost = null;
+//        //DatabaseHelper.getInstance(getActivity())
+//          //      .getDraftBoardPost(board.getBoardType());
+//        if (existingDraftPost != null) {
+//            postTitleEditText.setText(existingDraftPost.getTitle());
+//            postContentEditText.setText(existingDraftPost.getContent());
+//        }
         newPostButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,10 +164,11 @@ public class NewPostFragment extends BaseDialogFragment {
     @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
-        DraftBoardPost draftBoardPost = new DraftBoardPost();
-        draftBoardPost.setTitle(postTitleEditText.getText().toString());
-        draftBoardPost.setContent(postContentEditText.getText().toString());
-        draftBoardPost.setBoardListType(boardPostListInfo.getBoardListType());
+        //TODO restore
+//        DraftBoardPost draftBoardPost = new DraftBoardPost();
+//        draftBoardPost.setTitle(postTitleEditText.getText().toString());
+//        draftBoardPost.setContent(postContentEditText.getText().toString());
+//        draftBoardPost.setBoardListType(boardPostListInfo.getBoardListType());
         //DatabaseHelper.getInstance(getActivity()).setDraftBoardPost(draftBoardPost);
     }
 }

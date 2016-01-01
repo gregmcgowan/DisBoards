@@ -1,13 +1,14 @@
 package com.drownedinsound.data;
 
+import com.drownedinsound.data.database.DisBoardsDataBaseHelper;
 import com.drownedinsound.data.database.DisBoardsLocalRepo;
+import com.drownedinsound.data.database.DisBoardsLocalRepoImpl;
+import com.drownedinsound.data.generatered.DaoMaster;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.handlers.NewPostHandler;
 import com.drownedinsound.data.network.handlers.PostACommentHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
-import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
-import com.drownedinsound.data.database.DatabaseHelper;
 import com.drownedinsound.data.parser.streaming.BoardPostSummaryListParser;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
 import com.drownedinsound.data.parser.streaming.DisWebPagerParserImpl;
@@ -48,7 +49,6 @@ import static android.content.Context.MODE_PRIVATE;
         injects = {
                 NewPostHandler.class,
                 RetrieveBoardPostHandler.class,
-                RetrieveBoardSummaryListHandler.class,
                 PostACommentHandler.class,
                 ThisACommentHandler.class,
                 DisApiClient.class,
@@ -124,11 +124,16 @@ public class DataModule {
         return new DisWebPagerParserImpl(null, boardPostSummaryListParser);
     }
 
+    @Provides
+    @Singleton
+    DaoMaster provideDaoMaster(Application application) {
+        return new DaoMaster(new DisBoardsDataBaseHelper(application.getApplicationContext(),"dis.db",null).getWritableDatabase());
+    }
 
     @Provides
     @Singleton
-    DisBoardsLocalRepo disBoardsLocalRepo(Application application) {
-        return new DatabaseHelper(application.getApplicationContext());
+    DisBoardsLocalRepo disBoardsLocalRepo(DaoMaster daoMaster) {
+        return new DisBoardsLocalRepoImpl(daoMaster.newSession());
     }
 
     @Provides

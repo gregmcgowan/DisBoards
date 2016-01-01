@@ -72,8 +72,11 @@ public class BaseFragment extends Fragment implements Ui {
         }
     }
 
+
     public void hideLoadingView() {
     }
+
+
 
 
     /**
@@ -90,6 +93,10 @@ public class BaseFragment extends Fragment implements Ui {
         return isDetached() || isRemoving();
     }
 
+    @Override
+    public int getID() {
+        return hashCode();
+    }
 
     private static class LoadingViewHandler extends Handler {
 

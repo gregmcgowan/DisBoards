@@ -1,6 +1,6 @@
 package com.drownedinsound.ui.postList;
 
-import com.drownedinsound.data.model.BoardPostListInfo;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.FragmentPagerAdapter;
 
 import android.app.Fragment;
@@ -16,37 +16,38 @@ import java.util.List;
  */
 public class BoardPostListFragmentAdapter extends FragmentPagerAdapter {
 
-    private List<BoardPostListInfo> boardPostListInfos = new ArrayList<>();
+    private List<BoardPostList> boardPostLists = new ArrayList<>();
 
     public BoardPostListFragmentAdapter(FragmentManager fm) {
         super(fm);
     }
 
-    public void setBoardPostListInfos(List<BoardPostListInfo> boardPostListInfos) {
-        this.boardPostListInfos = boardPostListInfos;
+    public void setBoardPostListInfos(List<BoardPostList> boardPostListInfos) {
+        this.boardPostLists = boardPostListInfos;
         notifyDataSetChanged();
     }
 
 
     @Override
     public Fragment getItem(int item) {
-        BoardPostListInfo boardPostListInfoInfo = boardPostListInfos.get(item);
-        return BoardPostListFragment.newInstance(boardPostListInfoInfo.getBoardListType(),item);
+        BoardPostList boardPostListInfoInfo = boardPostLists.get(item);
+        @BoardPostList.BoardPostListType String listType = boardPostListInfoInfo.getBoardListTypeID();
+        return BoardPostListFragment.newInstance(listType, item);
     }
 
     @Override
     public int getCount() {
-        return boardPostListInfos.size();
+        return boardPostLists.size();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        BoardPostListInfo boardPostListInfoInfo = boardPostListInfos.get(position);
+        BoardPostList boardPostListInfoInfo = boardPostLists.get(position);
         return boardPostListInfoInfo.getDisplayName();
     }
 
-    public BoardPostListInfo getBoard(int position) {
-        return boardPostListInfos.get(position);
+    public BoardPostList getBoard(int position) {
+        return boardPostLists.get(position);
     }
 
 }

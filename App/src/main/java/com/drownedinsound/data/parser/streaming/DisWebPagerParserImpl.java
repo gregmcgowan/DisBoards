@@ -1,7 +1,8 @@
 package com.drownedinsound.data.parser.streaming;
 
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
+
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 
 import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.Segment;
@@ -54,7 +55,7 @@ public class DisWebPagerParserImpl implements DisWebPageParser {
     }
 
     @Override
-    public List<BoardPost> parseBoardPostSummaryList(BoardListType boardListType, InputStream inputStream) throws IOException{
+    public List<BoardPost> parseBoardPostSummaryList(@BoardPostList.BoardPostListType String boardListType, InputStream inputStream) throws IOException{
         return boardPostSummaryListParser.parse(boardListType, inputStream);
     }
 }

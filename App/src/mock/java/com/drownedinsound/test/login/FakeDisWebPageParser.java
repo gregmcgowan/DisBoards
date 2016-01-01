@@ -1,7 +1,7 @@
 package com.drownedinsound.test.login;
 
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
 
 import java.io.IOException;
@@ -29,8 +29,10 @@ public class FakeDisWebPageParser implements DisWebPageParser {
         return null;
     }
 
+
     @Override
-    public List<BoardPost> parseBoardPostSummaryList(BoardListType boardListType, InputStream inputStream)
+    public List<BoardPost> parseBoardPostSummaryList(
+            @BoardPostList.BoardPostListType String boardListType, InputStream inputStream)
             throws IOException {
         return null;
     }

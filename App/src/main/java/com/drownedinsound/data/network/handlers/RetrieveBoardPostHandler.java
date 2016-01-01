@@ -1,8 +1,8 @@
 package com.drownedinsound.data.network.handlers;
 
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.events.FailedToGetBoardPostEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
@@ -22,12 +22,12 @@ public class RetrieveBoardPostHandler extends ResponseHandler {
 
     private String boardPostId;
 
-    private BoardListType boardPostType;
+    @BoardPostList.BoardPostListType String boardListType;
 
-    public RetrieveBoardPostHandler(String boardPostId, BoardListType boardListType,
+    public RetrieveBoardPostHandler(String boardPostId, @BoardPostList.BoardPostListType String boardListType,
             boolean updateUI, int uiID) {
         this.boardPostId = boardPostId;
-        this.boardPostType = boardListType;
+        this.boardListType = boardListType;
         setUiID(uiID);
         setUpdateUI(updateUI);
     }
@@ -37,19 +37,19 @@ public class RetrieveBoardPostHandler extends ResponseHandler {
         BoardPost boardPost = null;
         if (inputStream != null) {
             BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,
-                    boardPostId, boardPostType);
+                    boardPostId, boardListType);
             boardPost = boardPostParser.parse(inputStream);
             BoardPost exisitingBoardPost = null;//databaseHelper.getBoardPost(boardPostId);
             int numberOfTimesRead = 0;
             if (exisitingBoardPost != null) {
                 numberOfTimesRead = exisitingBoardPost.getNumberOfTimesRead() + 1;
-                boardPost.setFavourited(exisitingBoardPost.isFavourited());
+               // boardPost.setFavourited(exisitingBoardPost.isFavourited());
             }
             boardPost.setNumberOfTimesRead(numberOfTimesRead);
             //databaseHelper.setBoardPost(boardPost);
         }
         if (isUpdateUI()) {
-            eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true, getUiID()));
+            //eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true, getUiID()));
         }
     }
 
@@ -60,9 +60,9 @@ public class RetrieveBoardPostHandler extends ResponseHandler {
         }
         BoardPost exisitingBoardPost = null;//databaseHelper.getBoardPost(boardPostId);
         if (isUpdateUI() && exisitingBoardPost != null) {
-            eventBus.post(new RetrievedBoardPostEvent(exisitingBoardPost, true, true, getUiID()));
+            //eventBus.post(new RetrievedBoardPostEvent(exisitingBoardPost, true, true, getUiID()));
         } else {
-            eventBus.post(new FailedToGetBoardPostEvent(getUiID()));
+            //eventBus.post(new FailedToGetBoardPostEvent(getUiID()));
         }
     }
 }

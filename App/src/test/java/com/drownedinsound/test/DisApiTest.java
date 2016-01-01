@@ -1,9 +1,9 @@
 package com.drownedinsound.test;
 
 import com.drownedinsound.data.UserSessionRepo;
-import com.drownedinsound.data.model.BoardPostListInfo;
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.LoginResponse;
@@ -32,8 +32,8 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.eq;
 
 /**
  * Created by gregmcgowan on 09/12/15.
@@ -56,7 +56,7 @@ public class DisApiTest {
 
     private List<BoardPost> testBoardPosts;
 
-    private BoardPostListInfo boardPostListInfo;
+    private BoardPostList boardPostListInfo;
 
     @Before
     public void setup() {
@@ -65,8 +65,8 @@ public class DisApiTest {
         OkHttpClient okHttpClient = new OkHttpClient();
         disApiClient = new DisApiClient(application,okHttpClient,disWebPageParser);
 
-        boardPostListInfo = new BoardPostListInfo(BoardListType.MUSIC,
-                BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 19, 0);
+        boardPostListInfo = new BoardPostList(BoardListTypes.MUSIC,
+                BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 0, 19,0);
 
         BoardPost boardPost = new BoardPost();
         boardPost.setAuthorUsername(BoardPostTestData.BOARD_POST_AUTHOR);
@@ -115,7 +115,7 @@ public class DisApiTest {
 
     @Test
     public void testGetList() throws Exception {
-        when(disWebPageParser.parseBoardPostSummaryList(any(BoardListType.class),
+        when(disWebPageParser.parseBoardPostSummaryList(eq(BoardListTypes.MUSIC),
                 any(InputStream.class))).thenReturn(
                 testBoardPosts);
 
@@ -128,7 +128,7 @@ public class DisApiTest {
 
         countDownLatch = new CountDownLatch(1);
 
-        disApiClient.getBoardPostSummaryList(boardPostListInfo.getBoardListType(),
+        disApiClient.getBoardPostSummaryList(BoardListTypes.MUSIC,
                 boardPostListInfo.getUrl(),1)
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(new Action1<List<BoardPost>>() {

@@ -1,6 +1,6 @@
 package com.drownedinsound.ui.postList;
 
-import com.drownedinsound.data.model.BoardPostListInfo;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.Ui;
 
 import java.util.List;
@@ -12,7 +12,7 @@ public interface BoardPostListParentUi extends Ui {
 
     boolean boardPostListShown(BoardPostListUi boardPostListUi);
 
-    void setBoardPostLists(List<BoardPostListInfo> boardPostListInfos);
+    void setBoardPostLists(List<BoardPostList> boardPostListInfos);
 
     int getNoOfBoardListShown();
 

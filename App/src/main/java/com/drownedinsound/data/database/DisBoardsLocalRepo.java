@@ -1,10 +1,7 @@
 package com.drownedinsound.data.database;
 
-import com.drownedinsound.data.model.BoardPostListInfo;
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
-import com.drownedinsound.data.model.DraftBoardPost;
-
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 import java.util.List;
 
 import rx.Observable;
@@ -18,19 +15,27 @@ public interface DisBoardsLocalRepo {
 
     Observable<Void> setBoardPost(BoardPost boardPost);
 
-    Observable<DraftBoardPost> getDraftBoardPost(BoardListType boardListType);
+    Observable<List<BoardPost>> getBoardPostsObservable(@BoardPostList.BoardPostListType String boardListType);
 
-    Observable<Void> setDraftBoardPost(DraftBoardPost draftBoardPost);
+    List<BoardPost> getBoardPosts(@BoardPostList.BoardPostListType String boardListType);
 
-    Observable<Void> removeDraftBoardPost(BoardListType boardListType);
+    //Observable<Void> set(List<BoardPost> boardPosts);
 
-    Observable<List<BoardPost>> getBoardPosts(BoardListType boardListType);
+    /**
+     * Cannot be called from the main thread or will throw a run time expcetion
+     *
+     * @param boardPosts
+     */
+    void setBoardPosts(List<BoardPost> boardPosts);
 
-    Observable<Void> setBoardPosts(List<BoardPost> boardPosts);
+    Observable<BoardPostList> getBoardPostList(@BoardPostList.BoardPostListType String boardListType);
 
-    Observable<BoardPostListInfo> getBoard(BoardListType boardListType);
+    /**
+     * Cannot be called from the main thread or will throw a run time expcetion
+     *
+     * @param boardPostListInfo
+     */
+    void setBoardPostList(BoardPostList boardPostListInfo);
 
-    Observable<Void> setBoard(BoardPostListInfo boardPostListInfo);
-
-    Observable<List<BoardPostListInfo>> getAllBoardPostInfos();
+    Observable<List<BoardPostList>> getAllBoardPostLists();
 }

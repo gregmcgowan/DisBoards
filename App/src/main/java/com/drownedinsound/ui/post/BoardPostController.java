@@ -1,7 +1,7 @@
 package com.drownedinsound.ui.post;
 
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.events.FailedToGetBoardPostEvent;
 import com.drownedinsound.events.PostCommentEvent;
@@ -56,7 +56,7 @@ public class BoardPostController extends BaseUIController {
         }
     }
 
-    public void thisAComment(BoardPostUI boardPostUI, BoardListType boardListType,
+    public void thisAComment(BoardPostUI boardPostUI, @BoardPostList.BoardPostListType String boardListType,
             String postID, String commentID) {
         boardPostUI.showLoadingProgress(true);
         int id = getId(boardPostUI);
@@ -64,7 +64,7 @@ public class BoardPostController extends BaseUIController {
     }
 
     public void loadBoardPost(BoardPostUI boardPostUI, String boardPostId,
-            BoardListType boardListType) {
+            @BoardPostList.BoardPostListType String boardListType) {
         boardPostUI.showLoadingProgress(true);
         int uiID = getId(boardPostUI);
         //disApiClient.getBoardPost(boardPostUrl, boardPostId, boardType, uiID);
@@ -78,9 +78,9 @@ public class BoardPostController extends BaseUIController {
         if (boardPostUI != null) {
             BoardPost boardPost = event.getBoardPost();
 
-            boolean showGoToLastCommentOption = event
-                    .isDisplayGotToLatestCommentOption()
-                    && boardPost.showGoToLastCommentOption();
+//            boolean showGoToLastCommentOption = event
+//                    .isDisplayGotToLatestCommentOption()
+//                    && boardPost.();
 
             boardPostUI.showBoardPost(boardPost, -1);
 
@@ -117,7 +117,7 @@ public class BoardPostController extends BaseUIController {
     }
 
     public void replyToComment(ReplyToCommentUi replyToCommentUi,String boardPostId, String replyToCommentID, String commentTitle,
-            String commentContent, BoardListType boardListType) {
+            String commentContent, @BoardPostList.BoardPostListType String boardListType) {
         replyToCommentUi.showLoadingProgress(true);
 
         int uiID = getId(replyToCommentUi);

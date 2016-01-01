@@ -3,9 +3,9 @@ package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardPostComment;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostComment;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.network.UrlConstants;
 import com.drownedinsound.events.FailedToThisThisEvent;
 import com.drownedinsound.events.SetBoardPostFavouriteStatusResultEvent;
@@ -17,7 +17,6 @@ import com.drownedinsound.utils.UiUtils;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
@@ -63,7 +62,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     private String boardPostId;
 
-    private BoardListType boardListType;
+    private String boardListType;
 
     private boolean inDualPaneMode;
 
@@ -97,12 +96,12 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     @Inject
     BoardPostController boardPostController;
 
-    public static BoardPostFragment newInstance(String boardPostID, boolean inDualPaneMode, BoardListType boardListType) {
+    public static BoardPostFragment newInstance(String boardPostID, boolean inDualPaneMode, @BoardPostList.BoardPostListType String boardListType) {
         BoardPostFragment boardPostFragment = new BoardPostFragment();
         Bundle arguments = new Bundle();
         arguments.putString(DisBoardsConstants.BOARD_POST_ID, boardPostID);
         arguments.putBoolean(DisBoardsConstants.DUAL_PANE_MODE, inDualPaneMode);
-        arguments.putSerializable(DisBoardsConstants.BOARD_TYPE, boardListType);
+        arguments.putString(DisBoardsConstants.BOARD_TYPE, boardListType);
         boardPostFragment.setArguments(arguments);
         return boardPostFragment;
     }
@@ -162,13 +161,13 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     private void displayReplyDialog(BoardPostComment boardPostComment) {
         String replyToAuthor = boardPostComment.getReplyToUsername();
-        String commentId = boardPostComment.getId();
+        String commentId = boardPostComment.getCommentID();
         startActivity(PostReplyActivity
                 .getIntent(getActivity(), replyToAuthor, commentId, boardPostId, boardListType));
     }
 
     private void thisAComment(BoardPostComment boardPostComment) {
-        String commentID = boardPostComment.getId();
+        String commentID = boardPostComment.getCommentID();
         boardPostController.thisAComment(this, boardListType, boardPostId, commentID);
     }
 
@@ -193,8 +192,8 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
                     DisBoardsConstants.BOARD_POST_ID);
             inDualPaneMode = getArguments().getBoolean(
                     DisBoardsConstants.DUAL_PANE_MODE);
-            boardListType = (BoardListType) getArguments().getSerializable(
-                    DisBoardsConstants.BOARD_TYPE);
+            boardListType =
+                    getArguments().getString(DisBoardsConstants.BOARD_TYPE);
         } else {
             boardPostId = savedInstanceState
                     .getString(DisBoardsConstants.BOARD_POST_ID);
@@ -202,8 +201,8 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
                     .getParcelable(DisBoardsConstants.BOARD_POST_KEY);
             inDualPaneMode = savedInstanceState
                     .getBoolean(DisBoardsConstants.DUAL_PANE_MODE);
-            boardListType = (BoardListType) savedInstanceState
-                    .getSerializable(DisBoardsConstants.BOARD_TYPE);
+            boardListType =  savedInstanceState
+                    .getString(DisBoardsConstants.BOARD_TYPE);
             if (boardPost != null) {
                 adapter.setComments(new ArrayList<>(boardPost.getComments()));
             }
@@ -257,7 +256,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     public String getBoardPostId() {
         String boardPostId = null;
         if (boardPost != null) {
-            boardPostId = boardPost.getId();
+            boardPostId = boardPost.getBoardPostID();
         }
         return boardPostId;
     }
@@ -282,7 +281,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     public void onEventMainThread(SetBoardPostFavouriteStatusResultEvent event) {
         if (event.isSuccess()) {
-            boardPost.setFavourited(event.isNewStatus());
+            //boardPost.setFavourited(event.isNewStatus());
             updateFavouriteMenuItemStatus();
         } else {
             Toast.makeText(getActivity(), "Could not save to favourites",
@@ -317,14 +316,14 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     }
 
     private void findAndUpdateFavouritesMenuItem(Menu menu) {
-        MenuItem favouriteMenuItem = menu.findItem(R.id.menu_favourite);
-        if (favouriteMenuItem != null) {
-            if (boardPost != null && boardPost.isFavourited()) {
-                //favouriteMenuItem.setIcon(R.drawable.favourite_selected);
-            } else {
-                //favouriteMenuItem.setIcon(R.drawable.favourite_not_selected);
-            }
-        }
+//        MenuItem favouriteMenuItem = menu.findItem(R.id.menu_favourite);
+//        if (favouriteMenuItem != null) {
+//            if (boardPost != null && boardPost.isFavourited()) {
+//                //favouriteMenuItem.setIcon(R.drawable.favourite_selected);
+//            } else {
+//                //favouriteMenuItem.setIcon(R.drawable.favourite_not_selected);
+//            }
+//        }
     }
 
     @Override
@@ -362,7 +361,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
 
     public void scrollToLatestComment() {
-        String latestCommentId = boardPost.getLatestCommentId();
+        String latestCommentId = boardPost.getLatestCommentID();
         if (!TextUtils.isEmpty(latestCommentId)) {
             int index = adapter.getIndexOfCommentId(latestCommentId);
             if (index > 0) {
@@ -447,7 +446,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
             }
                 //TODO remove comment if there is one
             Log.d(TAG, "PostID = " + postId);
-            BoardListType boardListType = UrlConstants.getBoardType(url);
+            @BoardPostList.BoardPostListType String boardListType = UrlConstants.getBoardType(url);
             startActivity(BoardPostActivity.getIntent(getActivity(), postId, boardListType));
         }
 

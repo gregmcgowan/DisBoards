@@ -1,8 +1,8 @@
 package com.drownedinsound.ui.post;
 
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardPostComment;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostComment;
+import com.drownedinsound.data.generatered.BoardPostList;
 
 import android.text.TextUtils;
 import android.view.View;
@@ -32,9 +32,9 @@ public class ReplyToCommentListener implements View.OnClickListener {
             if (TextUtils.isEmpty(replyToAuthor)) {
                 replyToAuthor = boardPost.getAuthorUsername();
             }
-            String replyToId = comment.getId();
-            String postId = comment.getBoardPost().getId();
-            BoardListType boardListType = comment.getBoardPost().getBoardListType();
+            String replyToId = comment.getCommentID();
+            String postId = comment.getBoardPostID();
+            @BoardPostList.BoardPostListType String  boardListType = comment.getBoardPost().getBoardListTypeID();
 
 
     /*

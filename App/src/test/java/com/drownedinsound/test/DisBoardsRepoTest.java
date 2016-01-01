@@ -3,9 +3,9 @@ package com.drownedinsound.test;
 import com.drownedinsound.data.DisBoardRepoImpl;
 import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.database.DisBoardsLocalRepo;
-import com.drownedinsound.data.model.BoardPostListInfo;
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.LoginResponse;
@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -26,9 +25,9 @@ import rx.Subscriber;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.eq;
 
 /**
  * Created by gregmcgowan on 09/12/15.
@@ -50,7 +49,7 @@ public class DisBoardsRepoTest {
 
     private CountDownLatch countDownLatch;
 
-    private BoardPostListInfo boardPostListInfo;
+    private BoardPostList boardPostListInfo;
 
     @Before
     public void setup() {
@@ -59,8 +58,8 @@ public class DisBoardsRepoTest {
         disBoardRepo = new DisBoardRepoImpl(disApiClient, disBoardsLocalRepo,
                 userSessionRepo);
 
-        boardPostListInfo = new BoardPostListInfo(BoardListType.MUSIC,
-                BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 19, 0);
+        boardPostListInfo = new BoardPostList(BoardListTypes.MUSIC,
+                BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 0, 19,0);
 
         BoardPost boardPost = new BoardPost();
         boardPost.setAuthorUsername(BoardPostTestData.BOARD_POST_AUTHOR);
@@ -98,18 +97,16 @@ public class DisBoardsRepoTest {
     public void testGetListFromNetwork() throws Exception {
         int page = 1;
 
-        when(disApiClient.getBoardPostSummaryList(boardPostListInfo.getBoardListType(),
+        when(disBoardsLocalRepo.getBoardPostList(eq(BoardListTypes.MUSIC)))
+                .thenReturn(Observable.just(boardPostListInfo));
+
+        when(disApiClient.getBoardPostSummaryList(BoardListTypes.MUSIC,
                 boardPostListInfo.getUrl(), 1))
                 .thenReturn(Observable.just(testBoardPosts));
 
-        when(disBoardsLocalRepo.getBoard(BoardListType.MUSIC)).thenReturn(Observable.just(
-                boardPostListInfo));
-        when(disBoardsLocalRepo.getBoardPosts(BoardListType.MUSIC)).thenReturn(Observable.just(
-                Collections.<BoardPost>emptyList()));
-
         countDownLatch = new CountDownLatch(1);
 
-        disBoardRepo.getBoardPostSummaryList(BoardListType.MUSIC, page, true)
+        disBoardRepo.getBoardPostList(BoardListTypes.MUSIC, page, true)
                 .subscribeOn(Schedulers.immediate())
                 .observeOn(Schedulers.immediate())
                 .subscribe(new Action1<List<BoardPost>>() {
@@ -121,7 +118,7 @@ public class DisBoardsRepoTest {
                         countDownLatch.countDown();
                     }
                 });
-        verify(disApiClient).getBoardPostSummaryList(boardPostListInfo.getBoardListType(),
+        verify(disApiClient).getBoardPostSummaryList(BoardListTypes.MUSIC,
                 boardPostListInfo.getUrl(), page);
         countDownLatch.await();
     }
@@ -130,16 +127,14 @@ public class DisBoardsRepoTest {
     public void testGetListCached() throws Exception {
         int page = 1;
 
-        boardPostListInfo.setLastFetchedTime(System.currentTimeMillis() - (60 * 1000));
+        boardPostListInfo.setLastFetchedMs(System.currentTimeMillis() - (60 * 1000));
 
-        when(disBoardsLocalRepo.getBoard(BoardListType.MUSIC)).thenReturn(Observable.just(
-                boardPostListInfo));
-        when(disBoardsLocalRepo.getBoardPosts(BoardListType.MUSIC)).thenReturn(Observable.just(
-                testBoardPosts));
+        when(disBoardsLocalRepo.getBoardPostList(eq(BoardListTypes.MUSIC)))
+                .thenReturn(Observable.just(boardPostListInfo));
 
         countDownLatch = new CountDownLatch(1);
 
-        disBoardRepo.getBoardPostSummaryList(BoardListType.MUSIC, page, false)
+        disBoardRepo.getBoardPostList(BoardListTypes.MUSIC, page, false)
                 .subscribeOn(Schedulers.immediate())
                 .observeOn(Schedulers.immediate())
                 .subscribe(new Action1<List<BoardPost>>() {
@@ -158,7 +153,7 @@ public class DisBoardsRepoTest {
     public void testGetListNetworkError() throws Exception{
         int page = 1;
 
-        when(disApiClient.getBoardPostSummaryList(boardPostListInfo.getBoardListType(),
+        when(disApiClient.getBoardPostSummaryList(eq(BoardListTypes.MUSIC),
                 boardPostListInfo.getUrl(), 1)).thenReturn(Observable.create(
                 new Observable.OnSubscribe<List<BoardPost>>() {
                     @Override
@@ -166,14 +161,14 @@ public class DisBoardsRepoTest {
                         subscriber.onError(new Exception());
                     }
                 }));
-        when(disBoardsLocalRepo.getBoard(BoardListType.MUSIC)).thenReturn(Observable.just(
+
+        when(disBoardsLocalRepo.getBoardPostList(BoardListTypes.MUSIC)).thenReturn(Observable.just(
                 boardPostListInfo));
-        when(disBoardsLocalRepo.getBoardPosts(BoardListType.MUSIC)).thenReturn(Observable.just(
-                testBoardPosts));
+
 
         countDownLatch = new CountDownLatch(1);
 
-        disBoardRepo.getBoardPostSummaryList(BoardListType.MUSIC, page, false)
+        disBoardRepo.getBoardPostList(BoardListTypes.MUSIC, page, false)
                 .subscribeOn(Schedulers.immediate())
                 .observeOn(Schedulers.immediate())
                 .subscribe(new Action1<List<BoardPost>>() {
@@ -185,7 +180,7 @@ public class DisBoardsRepoTest {
                         countDownLatch.countDown();
                     }
                 });
-        verify(disApiClient).getBoardPostSummaryList(boardPostListInfo.getBoardListType(),
+        verify(disApiClient).getBoardPostSummaryList(BoardListTypes.MUSIC,
                 boardPostListInfo.getUrl(), page);
         countDownLatch.await();
     }

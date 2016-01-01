@@ -1,7 +1,7 @@
 package com.drownedinsound.data.network.handlers;
 
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.BoardPostListInfo;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.events.FailedToPostNewThreadEvent;
 import com.drownedinsound.events.SentNewPostEvent;
 import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
@@ -16,11 +16,11 @@ import java.io.InputStream;
 
 public class NewPostHandler extends ResponseHandler {
 
-    private BoardPostListInfo boardPostListInfo;
+    //private BoardPostListInfo boardPostListInfo;
 
 
-    public NewPostHandler(BoardPostListInfo boardPostListInfo) {
-        this.boardPostListInfo = boardPostListInfo;
+    public NewPostHandler(@BoardPostList.BoardPostListType String boardListType) {
+       // this.boardPostListInfo = boardPostListInfo;
     }
 
     @Override

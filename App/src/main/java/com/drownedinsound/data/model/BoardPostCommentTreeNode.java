@@ -1,5 +1,7 @@
 package com.drownedinsound.data.model;
 
+import com.drownedinsound.data.generatered.BoardPostComment;
+
 import java.util.ArrayList;
 
 /**

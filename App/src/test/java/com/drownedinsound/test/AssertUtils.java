@@ -1,7 +1,7 @@
 package com.drownedinsound.test;
 
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardPostComment;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostComment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +23,7 @@ public class AssertUtils {
     }
 
     public static void assertBoardPost(BoardPost expected, BoardPost actual) {
-        Assert.assertEquals(expected.getId(), actual.getId());
+        Assert.assertEquals(expected.getBoardPostID(), actual.getBoardPostID());
         Assert.assertEquals(expected.getAuthorUsername(),
         	actual.getAuthorUsername());
         Assert.assertEquals(expected.getContent(), actual.getContent());
@@ -35,7 +35,7 @@ public class AssertUtils {
         Assert.assertEquals(expected.getSummary(), actual.getSummary());
         Assert.assertEquals(expected.getContent(), actual.getContent());
         Assert.assertEquals(expected.getTitle(), actual.getTitle());
-        Assert.assertEquals(expected.getBoardListType(), actual.getBoardListType());
+        Assert.assertEquals(expected.getBoardListTypeID(), actual.getBoardListTypeID());
 
         Collection<BoardPostComment> expectedComments = expected.getComments();
         if (expectedComments != null && expectedComments.size() > 0) {
@@ -64,12 +64,11 @@ public class AssertUtils {
         Assert.assertEquals(expected.getCommentLevel(),
                 actual.getCommentLevel());
         Assert.assertEquals(expected.getContent(), actual.getContent());
-        Assert.assertEquals(expected.getDateAndTimeOfComment(),
-                actual.getDateAndTimeOfComment());
-        Assert.assertEquals(expected.getId(), actual.getId());
+        Assert.assertEquals(expected.getDateAndTime(),
+                actual.getDateAndTime());
+        Assert.assertEquals(expected.getCommentID(), actual.getCommentID());
         Assert.assertEquals(expected.getTitle(), actual.getTitle());
-        Assert.assertEquals(expected.getBoardPost().getId(), actual
-                .getBoardPost().getId());
+        Assert.assertEquals(expected.getBoardPostID(), actual.getBoardPostID());
         Assert.assertEquals("Expected ["+expected.getUsersWhoHaveThissed() + "] actual ["+actual.getUsersWhoHaveThissed()+"]",expected.getUsersWhoHaveThissed(), actual.getUsersWhoHaveThissed());
     }
 }

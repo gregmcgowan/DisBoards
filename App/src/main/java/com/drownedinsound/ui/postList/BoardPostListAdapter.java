@@ -1,7 +1,7 @@
 package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
-import com.drownedinsound.data.model.BoardPost;
+import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.utils.CollectionUtils;
 import com.drownedinsound.utils.UiUtils;
 
@@ -109,7 +109,7 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
             }
             String lastUpdatedText = boardPost
                     .getLastUpdatedInReadableString();
-            int stickyVisible = boardPost.isSticky() ? View.VISIBLE
+            int stickyVisible = boardPost.getIsSticky() ? View.VISIBLE
                     : View.GONE;
 
             long lastViewedTime = boardPost.getLastViewedTime();

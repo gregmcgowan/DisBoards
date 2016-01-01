@@ -2,9 +2,9 @@ package com.drownedinsound.data.parser.streaming;
 
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.UserSessionManager;
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardPostComment;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostComment;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.utils.DateUtils;
 
 import net.htmlparser.jericho.Attributes;
@@ -49,7 +49,7 @@ public class BoardPostParser extends StreamingParser {
 
     private String boardPostId;
 
-    private BoardListType boardListType;
+    private @BoardPostList.BoardPostListType String boardListType;
 
     private StringBuilder buffer;
 
@@ -82,12 +82,12 @@ public class BoardPostParser extends StreamingParser {
     private UserSessionManager userSessionManager;
 
     public BoardPostParser(UserSessionManager userSessionManager, String boardPostId,
-            BoardListType boardListType) {
+            @BoardPostList.BoardPostListType String boardListType) {
         this.boardPostId = boardPostId;
         this.boardListType = boardListType;
         this.userSessionManager = userSessionManager;
         this.buffer = new StringBuilder(1024);
-        comments = new ArrayList<BoardPostComment>();
+        comments = new ArrayList<>();
         boardPostCommentLevel = -1;
     }
 
@@ -110,8 +110,8 @@ public class BoardPostParser extends StreamingParser {
     public BoardPost parse(InputStream inputStream) {
         long start = System.currentTimeMillis();
         currentBoardPost = new BoardPost();
-        currentBoardPost.setBoardListType(boardListType);
-        currentBoardPost.setId(boardPostId);
+        currentBoardPost.setBoardListTypeID(boardListType);
+        currentBoardPost.setBoardPostID(boardPostId);
         try {
             StreamedSource streamedSource = new StreamedSource(inputStream);
             for (Segment segment : streamedSource) {
@@ -141,7 +141,7 @@ public class BoardPostParser extends StreamingParser {
                                         .getAttributeValue(HtmlConstants.ID);
                                 if (id != null && id.length() > 1) {
                                     id = id.substring(1);
-                                    currentBoardPostComment.setId(id);
+                                    currentBoardPostComment.setCommentID(id);
                                 }
                             } else if (COMMENT_CONTENT_CLASS.equals(className)) {
                                 consumingHtmlTags = true;
@@ -186,12 +186,12 @@ public class BoardPostParser extends StreamingParser {
                                 currentBoardPost.setContent(content);
                                 // Add the initial post as the first content
                                 BoardPostComment boardPostComment = new BoardPostComment();
-                                boardPostComment.setId(boardPostId);
+                                boardPostComment.setBoardPostID(boardPostId);
                                 boardPostComment
                                         .setAuthorUsername(currentBoardPost
                                                 .getAuthorUsername());
                                 boardPostComment
-                                        .setDateAndTimeOfComment(currentBoardPost
+                                        .setDateAndTime(currentBoardPost
                                                 .getDateOfPost());
                                 boardPostComment.setContent(content);
                                 boardPostComment.setTitle(currentBoardPost
@@ -244,7 +244,7 @@ public class BoardPostParser extends StreamingParser {
                                             currentBoardPostComment
                                                     .setReplyToUsername(replyToAuthor);
                                             currentBoardPostComment
-                                                    .setDateAndTimeOfComment(dateAndTime);
+                                                    .setDateAndTime(dateAndTime);
                                             dateAndTime = dateAndTime.replace(
                                                     "\'", "");
                                             dateAndTime = dateAndTime.replace(
@@ -259,7 +259,7 @@ public class BoardPostParser extends StreamingParser {
                                                 if (dateOfPostLongValue > latestCommentTime) {
                                                     latestCommentTime = dateOfPostLongValue;
                                                     latestCommentId = currentBoardPostComment
-                                                            .getId();
+                                                            .getCommentID();
                                                 }
                                             }
 
@@ -388,9 +388,7 @@ public class BoardPostParser extends StreamingParser {
                 comments.add(currentBoardPostComment);
             }
             if (latestCommentId != null) {
-                currentBoardPost.setLatestCommentId(latestCommentId);
-            } else {
-                currentBoardPost.setLatestCommentId(currentBoardPost.getId());
+                currentBoardPost.setLatestCommentID(latestCommentId);
             }
             currentBoardPost.setLastUpdatedTime(latestCommentTime);
             currentBoardPost.setLastViewedTime(System.currentTimeMillis());

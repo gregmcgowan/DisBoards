@@ -2,7 +2,7 @@ package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.BaseControllerActivity;
 import com.drownedinsound.utils.UiUtils;
 
@@ -35,13 +35,13 @@ public class BoardPostActivity extends BaseControllerActivity<BoardPostControlle
     protected BoardPostController boardPostController;
 
     public static Intent getIntent(Context context, String postID,
-            BoardListType boardListType) {
+            @BoardPostList.BoardPostListType String boardListType) {
         Intent boardPostActivityIntent = new Intent(context, BoardPostActivity.class);
 
         Bundle parametersBundle = new Bundle();
         parametersBundle.putString(DisBoardsConstants.BOARD_POST_ID,
                 postID);
-        parametersBundle.putSerializable(DisBoardsConstants.BOARD_TYPE,
+        parametersBundle.putString(DisBoardsConstants.BOARD_TYPE,
                 boardListType);
         boardPostActivityIntent.putExtras(parametersBundle);
         return boardPostActivityIntent;
@@ -68,8 +68,8 @@ public class BoardPostActivity extends BaseControllerActivity<BoardPostControlle
         if (savedInstanceState == null) {
             // During initial setup, plug in the details fragment.
             String postID = getIntent().getStringExtra(DisBoardsConstants.BOARD_POST_ID);
-            BoardListType boardListType = (BoardListType) getIntent()
-                    .getSerializableExtra(DisBoardsConstants.BOARD_TYPE);
+            @BoardPostList.BoardPostListType String boardListType  = getIntent()
+                    .getStringExtra(DisBoardsConstants.BOARD_TYPE);
 
             boardPostFragment = BoardPostFragment.newInstance(postID, false, boardListType);
             fragmentManager.beginTransaction()

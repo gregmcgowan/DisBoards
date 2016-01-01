@@ -1,10 +1,11 @@
 package com.drownedinsound.data.network;
 
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardPostComment;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostComment;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class FakeDataFactory {
 
@@ -34,7 +35,7 @@ public class FakeDataFactory {
         }
         boardPost.setComments(getFakeComments());
         boardPost.setDateOfPost("Some time");
-        boardPost.setId(String.valueOf(currentTime));
+        boardPost.setBoardPostID(String.valueOf(currentTime));
         // boardPost.setContent("Here is a board)
         return boardPost;
     }
@@ -360,7 +361,7 @@ public class FakeDataFactory {
                     .setTitle("Here is a drowned in sound post no " + i);
             boardPostSummary.setNumberOfReplies(10);
             //boardPostSummary.setLastPostDate(new Date());
-            boardPostSummary.setId(String.valueOf(i));
+            boardPostSummary.setBoardPostID(String.valueOf(i));
             list.add(boardPostSummary);
         }
 

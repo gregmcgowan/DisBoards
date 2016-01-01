@@ -3,8 +3,8 @@ package com.drownedinsound.data.parser.streaming;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.database.DisBoardsLocalRepo;
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.utils.DateUtils;
 import com.drownedinsound.utils.StringUtils;
 
@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import timber.log.Timber;
 
@@ -52,7 +53,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private int anchorNumber;
 
-    private ArrayList<BoardPost> boardPosts;
+    private List<BoardPost> boardPosts;
 
     private BoardPost currentBoardPost;
 
@@ -69,7 +70,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
         this.userSessionRepo = userSessionRepo;
     }
 
-    public ArrayList<BoardPost> parse(BoardListType boardListType,InputStream inputStream) {
+    public  List<BoardPost> parse(@BoardPostList.BoardPostListType String boardListType,InputStream inputStream) {
         long start = System.currentTimeMillis();
         try {
             StreamedSource streamedSource = new StreamedSource(inputStream);
@@ -93,7 +94,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                             String trString = tag.toString();
                             if (isStartOfNewPostTr(trString)) {
                                 currentBoardPost = new BoardPost();
-                                currentBoardPost.setBoardListType(boardListType);
+                                currentBoardPost.setBoardListTypeID(boardListType);
                             }
                             tableRowCell = 0;
                         } else {
@@ -113,7 +114,8 @@ public class BoardPostSummaryListParser extends StreamingParser {
                                         currentBoardPost
                                                 .setNumberOfTimesRead(existingPost
                                                         .getNumberOfTimesRead());
-                                        currentBoardPost.setFavourited(existingPost.isFavourited());
+                                        currentBoardPost.setIsFavourite(
+                                                existingPost.getIsFavourite());
                                     }
                                 }
                                 boardPosts.add(currentBoardPost);
@@ -230,7 +232,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
         if (spanNumber == 1 && STICKY_CLASS.equals(spanClass)) {
             currentBoardPost
-                    .setSticky(HtmlConstants.STICKY.equalsIgnoreCase(buffer.toString().trim()));
+                    .setIsSticky(HtmlConstants.STICKY.equalsIgnoreCase(buffer.toString().trim()));
         }
     }
 
@@ -308,7 +310,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                     } else if (postId.contains("#")) {
                         postId = postId.replace("#", "");
                     }
-                    currentBoardPost.setId(postId);
+                    currentBoardPost.setBoardPostID(postId);
                 }
             }
         }

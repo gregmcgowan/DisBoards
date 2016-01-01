@@ -1,6 +1,7 @@
 package com.drownedinsound.data.network;
 
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.model.BoardListTypes;
 
 import android.text.TextUtils;
 
@@ -52,26 +53,26 @@ public class UrlConstants {
     public final static String NEW_POST_URL = "http://drownedinsound.com/topics";
 
 
-    public static BoardListType getBoardType(String url) {
-        BoardListType boardListType = null;
+    public static @BoardPostList.BoardPostListType String getBoardType(String url) {
+        @BoardPostList.BoardPostListType String boardListType = null;
         if (!TextUtils.isEmpty(url)) {
             if (url.contains("www.")) {
                 url = url.replace("www.", "");
             }
             if (url.startsWith(UrlConstants.MUSIC_URL)) {
-                boardListType = BoardListType.MUSIC;
+                boardListType = BoardListTypes.MUSIC;
             } else if (url.startsWith(UrlConstants.SOCIAL_URL)) {
-                boardListType = BoardListType.SOCIAL;
+                boardListType = BoardListTypes.SOCIAL;
             } else if (url.startsWith(UrlConstants.ANNOUNCEMENTS_CLASSIFIEDS_URL)) {
-                boardListType = BoardListType.ANNOUNCEMENTS_CLASSIFIEDS;
+                boardListType = BoardListTypes.ANNOUNCEMENTS_CLASSIFIEDS;
             } else if (url.startsWith(UrlConstants.MUSICIANS_URL)) {
-                boardListType = BoardListType.MUSICIANS;
+                boardListType = BoardListTypes.MUSICIANS;
             } else if (url.startsWith(UrlConstants.FESTIVALS_URL)) {
-                boardListType = BoardListType.FESTIVALS;
+                boardListType = BoardListTypes.FESTIVALS;
             } else if (url.startsWith(UrlConstants.YOUR_MUSIC_URL)) {
-                boardListType = BoardListType.YOUR_MUSIC;
+                boardListType = BoardListTypes.YOUR_MUSIC;
             } else if (url.startsWith(UrlConstants.ERRORS_SUGGESTIONS_URL)) {
-                boardListType = BoardListType.ERRORS_SUGGESTIONS;
+                boardListType = BoardListTypes.ERRORS_SUGGESTIONS;
             }
         }
         return boardListType;

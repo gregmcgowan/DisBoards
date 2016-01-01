@@ -1,7 +1,6 @@
 package com.drownedinsound.data.network.handlers;
 
 import com.drownedinsound.data.UserSessionManager;
-import com.drownedinsound.data.database.DatabaseHelper;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;

@@ -55,7 +55,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Ui {
     }
 
     @Override
-    public int getId() {
+    public int getID() {
         return hashCode();
     }
 }

@@ -1,6 +1,6 @@
 package com.drownedinsound.ui.postList;
 
-import com.drownedinsound.data.model.BoardPost;
+import com.drownedinsound.data.generatered.BoardPost;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

@@ -1,7 +1,7 @@
 package com.drownedinsound.data.network.handlers;
 
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.events.PostCommentEvent;
 import com.squareup.okhttp.Request;
@@ -14,10 +14,10 @@ public class PostACommentHandler extends ResponseHandler {
 
     private String postID;
 
-    private BoardListType boardListType;
+    private @BoardPostList.BoardPostListType String boardListType;
 
 
-    public PostACommentHandler(String boardPostId, BoardListType boardListType, int uiID) {
+    public PostACommentHandler(String boardPostId,@BoardPostList.BoardPostListType String boardListType, int uiID) {
         this.postID = boardPostId;
         this.boardListType = boardListType;
         setUpdateUI(true);

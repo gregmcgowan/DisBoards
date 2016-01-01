@@ -2,7 +2,7 @@ package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.BaseActivity;
 
 import android.app.FragmentTransaction;
@@ -16,7 +16,7 @@ public class PostReplyActivity extends BaseActivity {
 
 
     public static Intent getIntent(Context context, String replyToAuthor,
-            String replyToCommentId, String postId, BoardListType boardListType) {
+            String replyToCommentId, String postId, @BoardPostList.BoardPostListType String boardListType) {
 
         Intent intent = new Intent(context,PostReplyActivity.class);
 
@@ -42,7 +42,7 @@ public class PostReplyActivity extends BaseActivity {
         Intent intent = getIntent();
 
         String replyToCommentID = intent.getStringExtra(DisBoardsConstants.BOARD_COMMENT_ID);
-        BoardListType boardListType = (BoardListType) intent.getSerializableExtra(DisBoardsConstants.BOARD_TYPE);
+        @BoardPostList.BoardPostListType String boardListType = intent.getStringExtra(DisBoardsConstants.BOARD_TYPE);
         String boardPostId = intent.getStringExtra(DisBoardsConstants.BOARD_POST_ID);
         String replyToAuthor = intent.getStringExtra(DisBoardsConstants.REPLY_TO_AUTHOR);
 

@@ -3,8 +3,8 @@ package com.drownedinsound.ui.postList;
 import com.commonsware.cwac.endless.EndlessAdapter;
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardListType;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;;
 import com.drownedinsound.events.FailedToPostNewThreadEvent;
 import com.drownedinsound.events.SentNewPostEvent;
 import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
@@ -84,7 +84,7 @@ public class BoardPostListFragment
 
     private BoardPostListAdapter adapter;
 
-    private BoardListType boardListType;
+    private String boardListType;
 
     private boolean dualPaneMode;
 
@@ -101,11 +101,11 @@ public class BoardPostListFragment
     public BoardPostListFragment() {
     }
 
-    public static BoardPostListFragment newInstance(BoardListType board, int pageIndex) {
+    public static BoardPostListFragment newInstance(@BoardPostList.BoardPostListType String boardListType, int pageIndex) {
         BoardPostListFragment boardListFragment = new BoardPostListFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(DisBoardsConstants.BOARD_TYPE, board);
+        arguments.putString(DisBoardsConstants.BOARD_TYPE, boardListType);
         arguments.putInt("pageIndex",pageIndex);
         boardListFragment.setArguments(arguments);
         return boardListFragment;
@@ -116,7 +116,7 @@ public class BoardPostListFragment
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        boardListType = (BoardListType) getArguments().getSerializable(DisBoardsConstants.BOARD_TYPE);
+        boardListType =  getArguments().getString(DisBoardsConstants.BOARD_TYPE);
         pageIndex = getArguments().getInt("pageIndex");
     }
 
@@ -176,8 +176,8 @@ public class BoardPostListFragment
                     WAS_IN_DUAL_PANE_MODE, false);
             postId = savedInstanceState
                     .getString(DisBoardsConstants.BOARD_POST_ID);
-            boardListType = (BoardListType) savedInstanceState
-                    .getSerializable(DisBoardsConstants.BOARD_TYPE);
+            boardListType =  savedInstanceState
+                    .getString(DisBoardsConstants.BOARD_TYPE);
             boardUrl = savedInstanceState
                     .getString(DisBoardsConstants.BOARD_URL);
         }
@@ -248,7 +248,7 @@ public class BoardPostListFragment
     public void boardPostSelected(int position, BoardPost boardPost) {
         currentlySelectedPost = position;
         if (boardPost != null) {
-            postId = boardPost.getId();
+            postId = boardPost.getBoardPostID();
 
             if (dualPaneMode) {
                 BoardPostFragment boardPostFragment = (BoardPostFragment) getFragmentManager()
@@ -296,7 +296,7 @@ public class BoardPostListFragment
     @Override
     public void showLoadingProgress(boolean show) {
         //connectionErrorTextView.setVisibility(View.GONE);
-        Timber.d("Board " + boardListType.name() + " showLoadingProgress " + show);
+        Timber.d("Board " + boardListType + " showLoadingProgress " + show);
         if (show) {
             requestToShowLoadingView();
             // adapter.stopAppending();
@@ -339,7 +339,7 @@ public class BoardPostListFragment
     }
 
     @Override
-    public BoardListType getBoardListType() {
+    public @BoardPostList.BoardPostListType String getBoardListType() {
         return boardListType;
     }
 
