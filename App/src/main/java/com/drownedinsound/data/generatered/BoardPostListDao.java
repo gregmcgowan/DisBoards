@@ -31,8 +31,6 @@ public class BoardPostListDao extends AbstractDao<BoardPostList, String> {
         public final static Property PageIndex = new Property(5, int.class, "pageIndex", false, "PAGE_INDEX");
     };
 
-    private DaoSession daoSession;
-
 
     public BoardPostListDao(DaoConfig config) {
         super(config);
@@ -40,7 +38,6 @@ public class BoardPostListDao extends AbstractDao<BoardPostList, String> {
     
     public BoardPostListDao(DaoConfig config, DaoSession daoSession) {
         super(config, daoSession);
-        this.daoSession = daoSession;
     }
 
     /** Creates the underlying database table. */
@@ -71,12 +68,6 @@ public class BoardPostListDao extends AbstractDao<BoardPostList, String> {
         stmt.bindLong(4, entity.getLastFetchedMs());
         stmt.bindLong(5, entity.getSectionId());
         stmt.bindLong(6, entity.getPageIndex());
-    }
-
-    @Override
-    protected void attachEntity(BoardPostList entity) {
-        super.attachEntity(entity);
-        entity.__setDaoSession(daoSession);
     }
 
     /** @inheritdoc */

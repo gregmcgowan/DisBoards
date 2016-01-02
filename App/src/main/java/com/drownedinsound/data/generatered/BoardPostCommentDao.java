@@ -1,17 +1,12 @@
 package com.drownedinsound.data.generatered;
 
-import java.util.List;
-import java.util.ArrayList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
-import de.greenrobot.dao.internal.SqlUtils;
 import de.greenrobot.dao.internal.DaoConfig;
-import de.greenrobot.dao.query.Query;
-import de.greenrobot.dao.query.QueryBuilder;
 
 import com.drownedinsound.data.generatered.BoardPostComment;
 
@@ -35,13 +30,10 @@ public class BoardPostCommentDao extends AbstractDao<BoardPostComment, String> {
         public final static Property ReplyToUsername = new Property(4, String.class, "replyToUsername", false, "REPLY_TO_USERNAME");
         public final static Property UsersWhoHaveThissed = new Property(5, String.class, "usersWhoHaveThissed", false, "USERS_WHO_HAVE_THISSED");
         public final static Property DateAndTime = new Property(6, String.class, "dateAndTime", false, "DATE_AND_TIME");
-        public final static Property CommentLevel = new Property(7, Integer.class, "commentLevel", false, "COMMENT_LEVEL");
+        public final static Property CommentLevel = new Property(7, int.class, "commentLevel", false, "COMMENT_LEVEL");
         public final static Property BoardPostID = new Property(8, String.class, "boardPostID", false, "BOARD_POST_ID");
     };
 
-    private DaoSession daoSession;
-
-    private Query<BoardPostComment> boardPost_UnorderedCommentsQuery;
 
     public BoardPostCommentDao(DaoConfig config) {
         super(config);
@@ -49,7 +41,6 @@ public class BoardPostCommentDao extends AbstractDao<BoardPostComment, String> {
     
     public BoardPostCommentDao(DaoConfig config, DaoSession daoSession) {
         super(config, daoSession);
-        this.daoSession = daoSession;
     }
 
     /** Creates the underlying database table. */
@@ -63,7 +54,7 @@ public class BoardPostCommentDao extends AbstractDao<BoardPostComment, String> {
                 "\"REPLY_TO_USERNAME\" TEXT," + // 4: replyToUsername
                 "\"USERS_WHO_HAVE_THISSED\" TEXT," + // 5: usersWhoHaveThissed
                 "\"DATE_AND_TIME\" TEXT," + // 6: dateAndTime
-                "\"COMMENT_LEVEL\" INTEGER," + // 7: commentLevel
+                "\"COMMENT_LEVEL\" INTEGER NOT NULL ," + // 7: commentLevel
                 "\"BOARD_POST_ID\" TEXT);"); // 8: boardPostID
     }
 
@@ -112,22 +103,12 @@ public class BoardPostCommentDao extends AbstractDao<BoardPostComment, String> {
         if (dateAndTime != null) {
             stmt.bindString(7, dateAndTime);
         }
- 
-        Integer commentLevel = entity.getCommentLevel();
-        if (commentLevel != null) {
-            stmt.bindLong(8, commentLevel);
-        }
+        stmt.bindLong(8, entity.getCommentLevel());
  
         String boardPostID = entity.getBoardPostID();
         if (boardPostID != null) {
             stmt.bindString(9, boardPostID);
         }
-    }
-
-    @Override
-    protected void attachEntity(BoardPostComment entity) {
-        super.attachEntity(entity);
-        entity.__setDaoSession(daoSession);
     }
 
     /** @inheritdoc */
@@ -147,7 +128,7 @@ public class BoardPostCommentDao extends AbstractDao<BoardPostComment, String> {
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // replyToUsername
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // usersWhoHaveThissed
             cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // dateAndTime
-            cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7), // commentLevel
+            cursor.getInt(offset + 7), // commentLevel
             cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8) // boardPostID
         );
         return entity;
@@ -163,7 +144,7 @@ public class BoardPostCommentDao extends AbstractDao<BoardPostComment, String> {
         entity.setReplyToUsername(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setUsersWhoHaveThissed(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setDateAndTime(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setCommentLevel(cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7));
+        entity.setCommentLevel(cursor.getInt(offset + 7));
         entity.setBoardPostID(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
      }
     
@@ -189,109 +170,4 @@ public class BoardPostCommentDao extends AbstractDao<BoardPostComment, String> {
         return true;
     }
     
-    /** Internal query to resolve the "unorderedComments" to-many relationship of BoardPost. */
-    public List<BoardPostComment> _queryBoardPost_UnorderedComments(String boardPostID) {
-        synchronized (this) {
-            if (boardPost_UnorderedCommentsQuery == null) {
-                QueryBuilder<BoardPostComment> queryBuilder = queryBuilder();
-                queryBuilder.where(Properties.BoardPostID.eq(null));
-                boardPost_UnorderedCommentsQuery = queryBuilder.build();
-            }
-        }
-        Query<BoardPostComment> query = boardPost_UnorderedCommentsQuery.forCurrentThread();
-        query.setParameter(0, boardPostID);
-        return query.list();
-    }
-
-    private String selectDeep;
-
-    protected String getSelectDeep() {
-        if (selectDeep == null) {
-            StringBuilder builder = new StringBuilder("SELECT ");
-            SqlUtils.appendColumns(builder, "T", getAllColumns());
-            builder.append(',');
-            SqlUtils.appendColumns(builder, "T0", daoSession.getBoardPostDao().getAllColumns());
-            builder.append(" FROM BOARD_POST_COMMENT T");
-            builder.append(" LEFT JOIN BOARD_POST T0 ON T.\"BOARD_POST_ID\"=T0.\"BOARD_POST_ID\"");
-            builder.append(' ');
-            selectDeep = builder.toString();
-        }
-        return selectDeep;
-    }
-    
-    protected BoardPostComment loadCurrentDeep(Cursor cursor, boolean lock) {
-        BoardPostComment entity = loadCurrent(cursor, 0, lock);
-        int offset = getAllColumns().length;
-
-        BoardPost boardPost = loadCurrentOther(daoSession.getBoardPostDao(), cursor, offset);
-        entity.setBoardPost(boardPost);
-
-        return entity;    
-    }
-
-    public BoardPostComment loadDeep(Long key) {
-        assertSinglePk();
-        if (key == null) {
-            return null;
-        }
-
-        StringBuilder builder = new StringBuilder(getSelectDeep());
-        builder.append("WHERE ");
-        SqlUtils.appendColumnsEqValue(builder, "T", getPkColumns());
-        String sql = builder.toString();
-        
-        String[] keyArray = new String[] { key.toString() };
-        Cursor cursor = db.rawQuery(sql, keyArray);
-        
-        try {
-            boolean available = cursor.moveToFirst();
-            if (!available) {
-                return null;
-            } else if (!cursor.isLast()) {
-                throw new IllegalStateException("Expected unique result, but count was " + cursor.getCount());
-            }
-            return loadCurrentDeep(cursor, true);
-        } finally {
-            cursor.close();
-        }
-    }
-    
-    /** Reads all available rows from the given cursor and returns a list of new ImageTO objects. */
-    public List<BoardPostComment> loadAllDeepFromCursor(Cursor cursor) {
-        int count = cursor.getCount();
-        List<BoardPostComment> list = new ArrayList<BoardPostComment>(count);
-        
-        if (cursor.moveToFirst()) {
-            if (identityScope != null) {
-                identityScope.lock();
-                identityScope.reserveRoom(count);
-            }
-            try {
-                do {
-                    list.add(loadCurrentDeep(cursor, false));
-                } while (cursor.moveToNext());
-            } finally {
-                if (identityScope != null) {
-                    identityScope.unlock();
-                }
-            }
-        }
-        return list;
-    }
-    
-    protected List<BoardPostComment> loadDeepAllAndCloseCursor(Cursor cursor) {
-        try {
-            return loadAllDeepFromCursor(cursor);
-        } finally {
-            cursor.close();
-        }
-    }
-    
-
-    /** A raw-style query where you can pass any WHERE clause and arguments. */
-    public List<BoardPostComment> queryDeep(String where, String... selectionArg) {
-        Cursor cursor = db.rawQuery(getSelectDeep() + where, selectionArg);
-        return loadDeepAllAndCloseCursor(cursor);
-    }
- 
 }

@@ -61,7 +61,7 @@ public class DisBoardRepoImpl implements DisBoardRepo {
                                 * MAX_BOARD_POST_LIST_AGE_MINUTES);
 
                         boolean recentlyFetched = lastFetchedTime > fiveMinutesAgo;
-                        List<BoardPost> posts = boardPostList.getPosts();
+                        List<BoardPost> posts = boardPostList.getBoardPostSummaries();
                         Timber.d("recentlyFetched "+recentlyFetched + " posts "+posts.size() + " forceUpdate "+forceUpdate);
                         if (recentlyFetched && posts.size() > 0 && !forceUpdate) {
                             Timber.d("Return cached");
