@@ -147,8 +147,8 @@
     <orderEntry type="library" exported="" name="aspectjrt-1.8.6" level="project" />
     <orderEntry type="library" exported="" name="rxjava-1.1.0" level="project" />
     <orderEntry type="library" exported="" name="eventbus-2.2.1" level="project" />
-    <orderEntry type="library" exported="" scope="TEST" name="objenesis-2.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="powermock-reflect-1.6.2" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="objenesis-2.1" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-23.1.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="bcprov-jdk15on-1.50" level="project" />
     <orderEntry type="library" exported="" name="jsr305-2.0.1" level="project" />
@@ -172,8 +172,8 @@
     <orderEntry type="library" exported="" name="frodo-api-0.8.2" level="project" />
     <orderEntry type="library" exported="" name="endless-1.2.3" level="project" />
     <orderEntry type="library" exported="" name="beta-1.1.4" level="project" />
-    <orderEntry type="library" exported="" name="javax.inject-1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="powermock-module-junit4-common-1.6.2" level="project" />
+    <orderEntry type="library" exported="" name="javax.inject-1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="powermock-api-mockito-1.6.2" level="project" />
     <orderEntry type="library" exported="" name="commons-cli-1.2" level="project" />
   </component>
