@@ -128,8 +128,9 @@ public class DisBoardsRepoTest {
         int page = 1;
 
         boardPostListInfo.setLastFetchedMs(System.currentTimeMillis() - (60 * 1000));
+        boardPostListInfo.setBoardPostSummaries(testBoardPosts);
 
-        when(disBoardsLocalRepo.getBoardPostList(eq(BoardListTypes.MUSIC)))
+        when(disBoardsLocalRepo.getBoardPostList(BoardListTypes.MUSIC))
                 .thenReturn(Observable.just(boardPostListInfo));
 
         countDownLatch = new CountDownLatch(1);
@@ -152,8 +153,9 @@ public class DisBoardsRepoTest {
     @Test
     public void testGetListNetworkError() throws Exception{
         int page = 1;
+        boardPostListInfo.setBoardPostSummaries(testBoardPosts);
 
-        when(disApiClient.getBoardPostSummaryList(eq(BoardListTypes.MUSIC),
+        when(disApiClient.getBoardPostSummaryList(BoardListTypes.MUSIC,
                 boardPostListInfo.getUrl(), 1)).thenReturn(Observable.create(
                 new Observable.OnSubscribe<List<BoardPost>>() {
                     @Override
