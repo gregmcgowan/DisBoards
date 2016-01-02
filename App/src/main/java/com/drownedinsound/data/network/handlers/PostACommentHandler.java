@@ -1,54 +1,47 @@
 package com.drownedinsound.data.network.handlers;
 
-import com.drownedinsound.data.model.BoardPost;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
-import com.drownedinsound.data.model.BoardType;
-import com.drownedinsound.events.FailedToPostCommentEvent;
-import com.drownedinsound.events.RetrievedBoardPostEvent;
-import com.drownedinsound.events.UpdateCachedBoardPostEvent;
+import com.drownedinsound.events.PostCommentEvent;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-
-import android.content.Context;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class PostACommentHandler extends OkHttpAsyncResponseHandler {
+public class PostACommentHandler extends ResponseHandler {
 
     private String postID;
 
-    private BoardType boardType;
+    private @BoardPostList.BoardPostListType String boardListType;
 
 
-    public PostACommentHandler(Context context, String boardPostId, BoardType boardType) {
-        super(context);
+    public PostACommentHandler(String boardPostId,@BoardPostList.BoardPostListType String boardListType, int uiID) {
         this.postID = boardPostId;
-        this.boardType = boardType;
+        this.boardListType = boardListType;
         setUpdateUI(true);
+        setUiID(uiID);
     }
 
     @Override
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
-        BoardPost boardPost = null;
         if (inputStream != null) {
-            BoardPostParser boardPostParser = new BoardPostParser(inputStream,
-                    postID, boardType);
-            boardPost = boardPostParser.parse();
+            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,
+                    postID, boardListType);
+            BoardPost boardPost = boardPostParser.parse(inputStream);
             if (boardPost != null) {
-                databaseHelper.setBoardPost(boardPost);
+                //databaseHelper.setBoardPost(boardPost);
             }
         }
         if (isUpdateUI()) {
-            eventBus.post(
-                    new RetrievedBoardPostEvent(boardPost, false, false));
+            eventBus.postSticky(new PostCommentEvent(getUiID(), true));
         }
-        eventBus.post(new UpdateCachedBoardPostEvent(boardPost));
     }
 
     @Override
     public void handleFailure(Request request, Throwable throwable) {
-        eventBus.post(new FailedToPostCommentEvent());
+        eventBus.postSticky(new PostCommentEvent(getUiID(),false));
     }
 
 

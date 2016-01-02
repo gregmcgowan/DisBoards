@@ -1,35 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-
-    <com.drownedinsound.ui.widgets.AutoScrollListView
-        android:id="@+id/board_post_summary_list"
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/board_list_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@color/heading_background"
-        android:dividerHeight="0.5dip"/>
+        android:background="@color/background_colour_light">
 
-    <ProgressBar
-        android:id="@+id/board_list_progress_bar"
-        style="?android:attr/progressBarStyleInverse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:indeterminateDrawable="@drawable/spinner"
-        android:indeterminate="true"
-        android:visibility="invisible" >
-    </ProgressBar>
+    <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeToRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/board_post_summary_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@color/heading_background"
+                android:dividerHeight="0.5dip"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <com.drownedinsound.ui.base.DisBoardsLoadingLayout
+            android:id="@+id/loading_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     <TextView
-        android:id="@+id/board_list_connection_error_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:text="@string/connection_error_text"
-        android:textSize="@dimen/text_medium"
-        android:visibility="gone" />
+            android:id="@+id/board_list_connection_error_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/connection_error_text"
+            android:textSize="@dimen/text_medium"
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
-</RelativeLayout>
+</FrameLayout>

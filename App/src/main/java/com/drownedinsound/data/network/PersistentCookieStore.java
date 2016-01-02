@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import timber.log.Timber;
+
 
 /**
  * Created by gregmcgowan on 10/08/2014.
@@ -143,6 +145,7 @@ public class PersistentCookieStore implements CookieStore {
             String name = entry.getKey();
             HttpCookie cookie = entry.getValue();
             if (cookie.hasExpired()) {
+                Timber.i("Cookie " + name + " has expired");
                 // Clear cookies from local store
                 cookies.remove(name);
 

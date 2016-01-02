@@ -1,36 +1,34 @@
 package com.drownedinsound.data.network.handlers;
 
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
+import com.drownedinsound.events.FailedToGetBoardPostEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
-import com.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import org.apache.http.client.HttpResponseException;
-
-import android.content.Context;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
+import timber.log.Timber;
+
+public class RetrieveBoardPostHandler extends ResponseHandler {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
             + "RetrieveBoardPostHandler";
 
     private String boardPostId;
 
-    private BoardType boardPostType;
+    @BoardPostList.BoardPostListType String boardListType;
 
-    public RetrieveBoardPostHandler(Context context, String boardPostId, BoardType boardType,
-            boolean updateUI) {
-        super(context);
+    public RetrieveBoardPostHandler(String boardPostId, @BoardPostList.BoardPostListType String boardListType,
+            boolean updateUI, int uiID) {
         this.boardPostId = boardPostId;
-        this.boardPostType = boardType;
+        this.boardListType = boardListType;
+        setUiID(uiID);
         setUpdateUI(updateUI);
     }
 
@@ -38,41 +36,33 @@ public class RetrieveBoardPostHandler extends OkHttpAsyncResponseHandler {
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
         BoardPost boardPost = null;
         if (inputStream != null) {
-            BoardPostParser boardPostParser = new BoardPostParser(inputStream,
-                    boardPostId, boardPostType);
-            boardPost = boardPostParser.parse();
-            BoardPost exisitingBoardPost = databaseHelper.getBoardPost(boardPost.getId());
+            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,
+                    boardPostId, boardListType);
+            boardPost = boardPostParser.parse(inputStream);
+            BoardPost exisitingBoardPost = null;//databaseHelper.getBoardPost(boardPostId);
             int numberOfTimesRead = 0;
             if (exisitingBoardPost != null) {
                 numberOfTimesRead = exisitingBoardPost.getNumberOfTimesRead() + 1;
-                boardPost.setFavourited(exisitingBoardPost.isFavourited());
+               // boardPost.setFavourited(exisitingBoardPost.isFavourited());
             }
             boardPost.setNumberOfTimesRead(numberOfTimesRead);
-            if (boardPost != null) {
-                databaseHelper.setBoardPost(boardPost);
-            }
+            //databaseHelper.setBoardPost(boardPost);
         }
         if (isUpdateUI()) {
-            eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true));
+            //eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true, getUiID()));
         }
-        eventBus.post(new UpdateCachedBoardPostEvent(boardPost));
     }
 
     @Override
     public void handleFailure(Request request, Throwable throwable) {
         if (DisBoardsConstants.DEBUG) {
-            if (throwable instanceof HttpResponseException) {
-                HttpResponseException exception = (HttpResponseException) throwable;
-                int statusCode = exception.getStatusCode();
-                Log.d(TAG, "Status code " + statusCode);
-                Log.d(TAG, "Message " + exception.getMessage());
-            } else {
-                Log.d(TAG, "Something went really wrong");
-            }
+            Timber.d("Throwable "+throwable.getMessage());
         }
-
-        if (isUpdateUI()) {
-            eventBus.post(new RetrievedBoardPostEvent(null, false, true));
+        BoardPost exisitingBoardPost = null;//databaseHelper.getBoardPost(boardPostId);
+        if (isUpdateUI() && exisitingBoardPost != null) {
+            //eventBus.post(new RetrievedBoardPostEvent(exisitingBoardPost, true, true, getUiID()));
+        } else {
+            //eventBus.post(new FailedToGetBoardPostEvent(getUiID()));
         }
     }
 }

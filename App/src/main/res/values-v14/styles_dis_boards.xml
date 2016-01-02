@@ -19,5 +19,37 @@
 
 <resources>
 
+    <!--<style name="Theme.Dis_boards" parent="@style/android:Theme.Holo.Light">-->
+    <!--<item name="android:actionBarItemBackground">@drawable/selectable_background_dis_boards</item>-->
+    <!--<item name="android:popupMenuStyle">@style/PopupMenu.Dis_boards</item>-->
+    <!--<item name="android:dropDownListViewStyle">@style/DropDownListView.Dis_boards</item>-->
+    <!--<item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Dis_boards</item>-->
+    <!--<item name="android:actionDropDownStyle">@style/DropDownNav.Dis_boards</item>-->
+    <!--<item name="android:actionBarStyle">@style/ActionBar.Solid.Dis_boards</item>-->
+    <!--<item name="android:actionModeBackground">@drawable/cab_background_top_dis_boards</item>-->
+    <!--<item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_dis_boards</item>-->
+    <!--<item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Dis_boards</item>-->
+
+    <!--<item name="android:icon">@drawable/action_bar_icon</item>-->
+    <!--<item name="icon">@drawable/action_bar_icon</item>-->
+    <!--</style>-->
+
+    <!--<style name="ActionBar.Solid.Dis_boards" parent="@style/Widget.Sherlock.Light.ActionBar.Solid">-->
+    <!--<item name="android:background">@drawable/ab_solid_dis_boards</item>-->
+    <!--<item name="android:backgroundStacked">@drawable/ab_stacked_solid_dis_boards</item>-->
+    <!--<item name="android:backgroundSplit">@drawable/ab_bottom_solid_dis_boards</item>-->
+    <!--<item name="android:progressBarStyle">@style/ProgressBar.Dis_boards</item>-->
+    <!--</style>-->
+
+    <!--<style name="ActionBar.Transparent.Dis_boards" parent="@style/Widget.Sherlock.Light.ActionBar">-->
+    <!--<item name="android:background">@drawable/ab_transparent_dis_boards</item>-->
+    <!--<item name="android:progressBarStyle">@style/ProgressBar.Dis_boards</item>-->
+    <!--</style>-->
+    <!---->
+    <!--&lt;!&ndash; this style is only referenced in a Light.DarkActionBar based theme &ndash;&gt;-->
+    <!--<style name="Theme.Dis_boards.Widget" parent="@style/Theme.Sherlock">-->
+    <!--<item name="android:popupMenuStyle">@style/PopupMenu.Dis_boards</item>-->
+    <!--<item name="android:dropDownListViewStyle">@style/DropDownListView.Dis_boards</item>-->
+    <!--</style>-->
 
 </resources>

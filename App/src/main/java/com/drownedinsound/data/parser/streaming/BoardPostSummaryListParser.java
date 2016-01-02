@@ -1,26 +1,29 @@
 package com.drownedinsound.data.parser.streaming;
 
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.DatabaseHelper;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.UserSessionRepo;
+import com.drownedinsound.data.database.DisBoardsLocalRepo;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.utils.DateUtils;
+import com.drownedinsound.utils.StringUtils;
 
+import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.EndTag;
 import net.htmlparser.jericho.Segment;
 import net.htmlparser.jericho.StartTag;
 import net.htmlparser.jericho.StreamedSource;
 import net.htmlparser.jericho.Tag;
 
-import android.text.Html;
-import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+
+import timber.log.Timber;
 
 public class BoardPostSummaryListParser extends StreamingParser {
 
@@ -39,9 +42,6 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private static final boolean DEBUG_PARSER = false;
 
-    private InputStream inputStream;
-
-    private BoardType boardType;
 
     private boolean inBoardPostTable;
 
@@ -49,26 +49,28 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private int spanNumber;
 
+    private String spanClass;
+
     private int anchorNumber;
 
-    private ArrayList<BoardPost> boardPosts;
+    private List<BoardPost> boardPosts;
 
     private BoardPost currentBoardPost;
 
     private StringBuilder buffer;
 
-    private DatabaseHelper databaseHelper;
+    private DisBoardsLocalRepo disBoardsLocalRepo;
 
-    public BoardPostSummaryListParser(InputStream inputStream,
-            BoardType boardType, DatabaseHelper databaseHelper) {
-        this.inputStream = inputStream;
-        this.boardType = boardType;
+    private UserSessionRepo userSessionRepo;
+
+    public BoardPostSummaryListParser(UserSessionRepo userSessionRepo, DisBoardsLocalRepo databaseHelper) {
         this.boardPosts = new ArrayList<>();
         this.buffer = new StringBuilder(1024);
-        this.databaseHelper = databaseHelper;
+        this.disBoardsLocalRepo = databaseHelper;
+        this.userSessionRepo = userSessionRepo;
     }
 
-    public ArrayList<BoardPost> parse() {
+    public  List<BoardPost> parse(@BoardPostList.BoardPostListType String boardListType,InputStream inputStream) {
         long start = System.currentTimeMillis();
         try {
             StreamedSource streamedSource = new StreamedSource(inputStream);
@@ -78,22 +80,32 @@ public class BoardPostSummaryListParser extends StreamingParser {
                     String tagName = tag.getName();
                     if (tagName.equals(HtmlConstants.TABLE)) {
                         inBoardPostTable = tag instanceof StartTag;
+                    } else if (HtmlConstants.META.equals(tagName)) {
+                        String metaString = tag.toString();
+                        if (metaString.contains(HtmlConstants.AUTHENTICITY_TOKEN_NAME)) {
+                            Attributes attributes = tag.parseAttributes();
+                            if (attributes != null) {
+                                String authToken = attributes.getValue("content");
+                                userSessionRepo.setAuthenticityToken(authToken);
+                            }
+                        }
                     } else if (tagName.equals(HtmlConstants.TABLE_ROW)) {
                         if (tag instanceof StartTag) {
                             String trString = tag.toString();
                             if (isStartOfNewPostTr(trString)) {
                                 currentBoardPost = new BoardPost();
-                                currentBoardPost.setBoardType(boardType);
+                                currentBoardPost.setBoardListTypeID(boardListType);
                             }
                             tableRowCell = 0;
                         } else {
                             if (currentBoardPost != null) {
                                 // TODO we need to get the last viewed time and
                                 // set it here
-                                if (databaseHelper != null) {
-                                    BoardPost existingPost = databaseHelper
-                                            .getBoardPost(currentBoardPost
-                                                    .getId());
+                                if (disBoardsLocalRepo != null) {
+                                    BoardPost existingPost = null;
+//                                    databaseHelper
+//                                            .getBoardPost(currentBoardPost
+//                                                    .getId());
                                     // We don't want to overwrite certain values
                                     if (existingPost != null) {
                                         currentBoardPost
@@ -102,7 +114,8 @@ public class BoardPostSummaryListParser extends StreamingParser {
                                         currentBoardPost
                                                 .setNumberOfTimesRead(existingPost
                                                         .getNumberOfTimesRead());
-                                        currentBoardPost.setFavourited(existingPost.isFavourited());
+                                        currentBoardPost.setIsFavourite(
+                                                existingPost.getIsFavourite());
                                     }
                                 }
                                 boardPosts.add(currentBoardPost);
@@ -149,18 +162,32 @@ public class BoardPostSummaryListParser extends StreamingParser {
                         } else {
                             if (inBoardPostTable
                                     && tableRowCell == DESCRIPTION_TABLE_ROW_INDEX) {
-                                String bufferOutput = Html.fromHtml(
-                                        buffer.toString().trim()).toString();
+//                                String bufferOutput = Html.fromHtml(
+//                                        buffer.toString().trim()).toString();
+                                String bufferOutput = buffer.toString().trim();
                                 parseDescriptionRowAnchorText(bufferOutput);
                             }
                         }
                     } else if (tagName.endsWith(HtmlConstants.SPAN)) {
                         if (inBoardPostTable) {
+                            if (tag instanceof StartTag) {
+                                parseStartSpanSegment(segment);
+                            }
                             if (tag instanceof EndTag) {
-                                parseSpanSegment(segment);
+                                parseEndSpanSegment(segment);
+                            }
+                        }
+                    } else if (HtmlConstants.META.equals(tagName)) {
+                        String metaString = tag.toString();
+                        if (metaString.contains(HtmlConstants.AUTHENTICITY_TOKEN_NAME)) {
+                            Attributes attributes = tag.parseAttributes();
+                            if (attributes != null) {
+                                String authToken = attributes.getValue("content");
+                                userSessionRepo.setAuthenticityToken(authToken);
                             }
                         }
                     }
+
                     if (tag instanceof EndTag) {
                         clearBuffer();
                     }
@@ -178,48 +205,40 @@ public class BoardPostSummaryListParser extends StreamingParser {
             }
         }
         if (DisBoardsConstants.DEBUG && DEBUG_PARSER) {
-            Log.d(TAG, "Parsed " + boardPosts.size() + " board posts in "
+            Timber.d( "Parsed " + boardPosts.size() + " board posts in "
                     + (System.currentTimeMillis() - start) + " ms");
             for (BoardPost boardPost : boardPosts) {
-                Log.d(TAG, boardPost.toString());
+                Timber.d(boardPost.toString());
             }
         }
         return boardPosts;
     }
 
-    private void parseSpanSegment(Segment segment) {
+    private void parseStartSpanSegment(Segment segment) {
         spanNumber++;
         String spanString = segment.toString();
-        HashMap<String, String> parameters = createAttributeMapFromStartTag(spanString);
         if (spanNumber == 1) {
-            String spanClass = parameters.get(HtmlConstants.CLASS);
-            if (STICKY_CLASS.equals(spanClass)) {
-                currentBoardPost.setSticky(true);
-            }
-            if (parameters != null) {
-//                long timeStamp = parseDate();
-//                if (timeStamp != -1) {
-//                    if (tableRowCell == DESCRIPTION_TABLE_ROW_INDEX
-//                        && !currentBoardPost.isSticky()) {
-//                        //TODO not sure if we actually need this
-//                       // currentBoardPost.setCreatedTime(timeStamp);
-//                    }
-////                    if (tableRowCell == LAST_POST_TABLE_ROW_INDEX) {
-////                        currentBoardPost.setLastUpdatedTime(timeStamp);
-////                    }
-//                }
-            }
-        } else if (tableRowCell == DESCRIPTION_TABLE_ROW_INDEX
-                && spanNumber == 2 && currentBoardPost.isSticky()) {
-            //TODO not sure if we actually need this
-            //long timeStamp = parseDate();
-            //currentBoardPost.setCreatedTime(timeStamp);
+            HashMap<String, String> parameters = createAttributeMapFromStartTag(spanString);
+            spanClass = parameters.get(HtmlConstants.CLASS);
+
+        }
+    }
+
+    private void parseEndSpanSegment(Segment segment) {
+        if (DEBUG_PARSER) {
+            Timber.d("SpanNumber [" + spanNumber + "] content [" + buffer.toString().trim()
+                    + "] class " + spanClass);
+        }
+
+        if (spanNumber == 1 && STICKY_CLASS.equals(spanClass)) {
+            currentBoardPost
+                    .setIsSticky(HtmlConstants.STICKY.equalsIgnoreCase(buffer.toString().trim()));
         }
     }
 
     private long parseDate(String dateString, String format) {
         long timeStamp = -1;
-        if (!TextUtils.isEmpty(dateString)) {
+        if (!StringUtils.isEmpty(dateString)) {
             int indexOfComma = dateString.indexOf(",");
             if (indexOfComma != -1) {
                 dateString = dateString.substring(1, indexOfComma - 2) +
@@ -233,7 +252,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                 timeStamp = parsedDate.getTime();
             }
             if (DEBUG_PARSER) {
-                Log.d(TAG, "parse date =" + parsedDate.toString());
+                Timber.d( "parse date =" + parsedDate.toString());
             }
         }
         return timeStamp;
@@ -241,10 +260,11 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private void setNumberOfReplies() {
         int numberOfReplies = 0;
-        String repliesText = Html.fromHtml(buffer.toString().trim()).toString();
-        if (!TextUtils.isEmpty(repliesText)) {
+        String repliesText = buffer.toString().trim();
+        if (!StringUtils.isEmpty(repliesText)) {
+            repliesText = repliesText.replace("&nbsp;"," ");
             String[] repliesTokens = repliesText.split("\\s");
-            if (repliesTokens != null && repliesTokens.length > 0) {
+            if (repliesTokens.length > 0) {
                 try {
                     numberOfReplies = Integer.parseInt(repliesTokens[0]);
                 } catch (NumberFormatException nfe) {
@@ -281,16 +301,16 @@ public class BoardPostSummaryListParser extends StreamingParser {
         HashMap<String, String> parameters = createAttributeMapFromStartTag(tagString);
         if (parameters != null) {
             String href = parameters.get(HtmlConstants.HREF);
-            if (!TextUtils.isEmpty(href)) {
+            if (!StringUtils.isEmpty(href)) {
                 int indexOfLastForwardSlash = href.lastIndexOf("/");
                 if (indexOfLastForwardSlash != -1) {
                     postId = href.substring(indexOfLastForwardSlash + 1);
-                    if( postId.contains("#last")){
-                        postId = postId.replace("#last","");
-                    } else  if(postId.contains("#")) {
-                        postId = postId.replace("#","");
+                    if (postId.contains("#last")) {
+                        postId = postId.replace("#last", "");
+                    } else if (postId.contains("#")) {
+                        postId = postId.replace("#", "");
                     }
-                    currentBoardPost.setId(postId);
+                    currentBoardPost.setBoardPostID(postId);
                 }
             }
         }

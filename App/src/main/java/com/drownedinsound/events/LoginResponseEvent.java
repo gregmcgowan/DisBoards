@@ -4,16 +4,18 @@ public class LoginResponseEvent {
 
     private boolean success;
 
-    public LoginResponseEvent(boolean success) {
-        this.setSuccess(success);
+    private int loginUiId;
+
+    public LoginResponseEvent(boolean success, int loginUiId) {
+        this.success = success;
+        this.loginUiId = loginUiId;
     }
 
     public boolean isSuccess() {
         return success;
     }
 
-    public void setSuccess(boolean success) {
-        this.success = success;
+    public int getLoginUiId() {
+        return loginUiId;
     }
-
 }

@@ -3,19 +3,28 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.2'
+        classpath 'com.android.tools.build:gradle:1.0.0'
     }
 }
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
-dependencies {
-   compile 'com.android.support:support-v4:19.1.0'
+repositories {
+    mavenCentral()
 }
 
 android {
     compileSdkVersion 16
-    buildToolsVersion "19.1.0"
+    buildToolsVersion "21.1.2"
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 21
+    }
 
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+    }
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -29,4 +38,14 @@ android {
 
         instrumentTest.setRoot('tests')
     }
+
+    lintOptions {
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:21.0.3'
 }

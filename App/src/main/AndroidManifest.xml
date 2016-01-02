@@ -1,34 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.drownedinsound" >
+          package="com.drownedinsound">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
-        android:name=".core.DisBoardsApp"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/Theme.Dis_boards" >
-        <activity android:name=".ui.activity.LoginActivity"  android:label="" />
-        <activity android:name=".ui.activity.MainCommunityActivity" android:label="" />
-        <activity android:name=".ui.activity.BoardPostActivity"  android:label="" />
-        <activity android:name=".ui.activity.FavouritesActivity" android:label="Favourite Posts"
-            android:icon="@null"/>
+            android:name=".core.DisBoardsApp"
+            android:icon="@drawable/ic_launcher"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Dis_boards">
 
-        <service android:name=".data.network.service.DisWebService" />
+        <activity android:name=".ui.start.LoginActivity" android:label=""/>
+        <activity android:name=".ui.postList.BoardPostListParentActivity" android:label=""/>
+        <activity android:name=".ui.post.BoardPostActivity" android:label=""/>
+        <activity android:name=".ui.post.PostReplyActivity" android:label=""/>
+        <activity android:name=".ui.favourites.FavouritesActivity" android:label="Favourite Posts"
+                  android:icon="@null"/>
 
-        <service android:name=".data.DatabaseService" />
-
-        <activity
-            android:name=".ui.activity.StartActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+        <activity android:name=".ui.start.DeepLinkClickedActivity" android:label="">
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="http"
+                      android:host="www.drownedinsound.com"
+                      android:pathPrefix="/community/boards"/>
+            </intent-filter>
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="http"
+                      android:host="drownedinsound.com"
+                      android:pathPrefix="/community/boards"/>
             </intent-filter>
         </activity>
-        <meta-data android:name="com.crashlytics.ApiKey" android:value="cbf1e3f91081369d89e7101d65a0721a48066835"/>
+
+        <activity
+                android:name=".ui.start.StartActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+
+
+        <meta-data android:name="com.crashlytics.ApiKey"
+                   android:value="cbf1e3f91081369d89e7101d65a0721a48066835"/>
     </application>
 
 </manifest>

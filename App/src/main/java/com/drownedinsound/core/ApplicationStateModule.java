@@ -1,20 +1,18 @@
 package com.drownedinsound.core;
 
-import com.drownedinsound.data.DatabaseService;
 import com.drownedinsound.data.UserSessionManager;
+import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.network.CookieManager;
-import com.drownedinsound.data.network.handlers.LoginResponseHandler;
+import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
-import com.drownedinsound.data.network.handlers.RetrieveBoardSummaryListHandler;
-import com.drownedinsound.data.network.service.DisWebService;
-import com.drownedinsound.ui.activity.LoginActivity;
-import com.drownedinsound.ui.activity.MainCommunityActivity;
-import com.drownedinsound.ui.activity.StartActivity;
-import com.drownedinsound.ui.fragments.BoardPostFragment;
-import com.drownedinsound.ui.fragments.BoardPostSummaryListFragment;
-import com.drownedinsound.ui.fragments.FavouritesListFragment;
-import com.drownedinsound.ui.fragments.NewPostFragment;
-import com.drownedinsound.ui.fragments.PostReplyFragment;
+import com.drownedinsound.ui.favourites.FavouritesListFragment;
+import com.drownedinsound.ui.post.BoardPostFragment;
+import com.drownedinsound.ui.post.PostReplyFragment;
+import com.drownedinsound.ui.postList.BoardPostListFragment;
+import com.drownedinsound.ui.postList.BoardPostListParentActivity;
+import com.drownedinsound.ui.postList.NewPostFragment;
+import com.drownedinsound.ui.start.LoginActivity;
+import com.drownedinsound.ui.start.StartActivity;
 import com.squareup.okhttp.OkHttpClient;
 
 import android.content.SharedPreferences;
@@ -31,15 +29,12 @@ import de.greenrobot.event.EventBus;
  */
 @Module(
         injects = {
-                LoginResponseHandler.class,
-                RetrieveBoardSummaryListHandler.class,
                 RetrieveBoardPostHandler.class,
                 FavouritesListFragment.class,
-                DisWebService.class,
-                DatabaseService.class,
+                DisApiClient.class,
                 BoardPostFragment.class,
-                BoardPostSummaryListFragment.class,
-                MainCommunityActivity.class,
+                BoardPostListFragment.class,
+                BoardPostListParentActivity.class,
                 LoginActivity.class,
                 StartActivity.class,
                 PostReplyFragment.class,
@@ -53,7 +48,7 @@ public class ApplicationStateModule {
 
     @Provides
     @Singleton
-    UserSessionManager provideUserSessionManager(CookieManager cookieManager) {
+    UserSessionRepo provideUserSessionManager(CookieManager cookieManager) {
         return new UserSessionManager(cookieManager);
     }
 

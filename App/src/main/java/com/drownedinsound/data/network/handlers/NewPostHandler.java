@@ -1,28 +1,26 @@
 package com.drownedinsound.data.network.handlers;
 
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.model.Board;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.events.FailedToPostNewThreadEvent;
 import com.drownedinsound.events.SentNewPostEvent;
 import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 
-public class NewPostHandler extends OkHttpAsyncResponseHandler {
+public class NewPostHandler extends ResponseHandler {
 
-    private Board board;
+    //private BoardPostListInfo boardPostListInfo;
 
 
-    public NewPostHandler(Context context,Board board) {
-        super(context);
-        this.board = board;
+    public NewPostHandler(@BoardPostList.BoardPostListType String boardListType) {
+       // this.boardPostListInfo = boardPostListInfo;
     }
 
     @Override
@@ -30,7 +28,7 @@ public class NewPostHandler extends OkHttpAsyncResponseHandler {
         String postID = "";
         String locationHeader = response.header("location");
         Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Location Header " + locationHeader);
-        databaseHelper.removeDraftBoardPost(board.getBoardType());
+        //databaseHelper.removeDraftBoardPost(boardPostList.getBoardListType());
         eventBus.post(new SentNewPostEvent(SentNewPostState.CONFIRMED));
     }
 

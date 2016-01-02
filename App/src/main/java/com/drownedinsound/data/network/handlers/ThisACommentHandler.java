@@ -1,30 +1,26 @@
 package com.drownedinsound.data.network.handlers;
 
-import com.drownedinsound.data.model.BoardPost;
-import com.drownedinsound.data.model.BoardType;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.events.FailedToThisThisEvent;
-import com.drownedinsound.events.RetrievedBoardPostEvent;
-import com.drownedinsound.events.UpdateCachedBoardPostEvent;
 import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import android.content.Context;
-
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ThisACommentHandler extends OkHttpAsyncResponseHandler {
+public class ThisACommentHandler extends ResponseHandler {
 
     private String postID;
 
-    private BoardType boardType;
+    private @BoardPostList.BoardPostListType String boardListType;
 
-    public ThisACommentHandler(Context context, String postID, BoardType boardType) {
-        super(context);
+    public ThisACommentHandler(int calliingUiId, String postID, @BoardPostList.BoardPostListType String boardListType) {
         this.postID = postID;
-        this.boardType = boardType;
+        this.boardListType = boardListType;
+        setUiID(calliingUiId);
         setUpdateUI(true);
     }
 
@@ -32,17 +28,14 @@ public class ThisACommentHandler extends OkHttpAsyncResponseHandler {
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
         BoardPost boardPost;
         if (inputStream != null) {
-            BoardPostParser boardPostParser = new BoardPostParser(inputStream,
-                    postID, boardType);
-            boardPost = boardPostParser.parse();
+            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,
+                    postID, boardListType);
+            boardPost = boardPostParser.parse(inputStream);
             if (boardPost != null) {
-                databaseHelper.setBoardPost(boardPost);
+                //databaseHelper.setBoardPost(boardPost);
                 if (isUpdateUI()) {
-                    eventBus.post(
-                            new RetrievedBoardPostEvent(boardPost, false, false));
+                    //eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true, getUiID()));
                 }
-                eventBus.post(
-                        new UpdateCachedBoardPostEvent(boardPost));
             }
         } else {
             eventBus.post(new UserIsNotLoggedInEvent());

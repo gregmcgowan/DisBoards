@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <com.drownedinsound.ui.controls.SvgAnimatePathView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/animated_logo"
+            android:layout_gravity="center"
+            android:layout_width="85dp"
+            android:layout_height="85dp"
+            app:phase="1.0"
+            app:duration="2000"
+            app:fadeFactor="10.0"
+            app:svgStrokeWidth="2.0"
+            app:svgStrokeColor="#000000"/>
+</FrameLayout>
