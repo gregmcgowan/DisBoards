@@ -8,6 +8,7 @@ import com.drownedinsound.utils.UiUtils;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -117,7 +118,7 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
             boolean markAsRead = lastViewedTime > 0
                     && lastViewedTime >= lastUpdatedTime;
             holder.boardPost = boardPost;
-            holder.titleTextView.setText(title);
+            holder.titleTextView.setText(Html.fromHtml(title));
             holder.authorTextView.setText(authorusername);
             holder.numberOfRepliesTextView.setText(numberOfRepliesText);
             holder.lastUpdatedTextView.setText(lastUpdatedText);
