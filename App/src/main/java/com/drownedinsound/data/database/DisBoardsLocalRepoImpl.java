@@ -70,9 +70,17 @@ public class DisBoardsLocalRepoImpl implements DisBoardsLocalRepo {
         List<BoardPost> boardPosts = new ArrayList<>();
         BoardPostList boardPostList = boardPostListDao.load(boardListType);
         if (boardPostList != null) {
-            boardPosts = boardPostList.getPosts();
+            boardPosts = getBoardPostsforTypeId(boardPostList.getBoardListTypeID());
         }
 
+        return boardPosts;
+    }
+
+    private List<BoardPost> getBoardPostsforTypeId(String boardListTypeId) {
+        List<BoardPost> boardPosts = boardPostDao.queryBuilder().where(
+                BoardPostDao.Properties.BoardListTypeID.eq(boardListTypeId))
+                .list();
+        Collections.sort(boardPosts,BoardPost.COMPARATOR);
         return boardPosts;
     }
 
@@ -83,8 +91,7 @@ public class DisBoardsLocalRepoImpl implements DisBoardsLocalRepo {
             @Override
             public void call(Subscriber<? super BoardPostList> subscriber) {
                 BoardPostList boardPostList = boardPostListDao.load(boardListType);
-                Collections.sort(boardPostList.getPosts(),BoardPost.COMPARATOR);
-                boardPostList.getPosts();
+                boardPostList.setBoardPostSummaries(getBoardPostsforTypeId(boardListType));
                 subscriber.onNext(boardPostList);
                 subscriber.onCompleted();
             }
