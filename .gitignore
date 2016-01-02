@@ -21,6 +21,8 @@ bin
 gen
 *.apk
 build
+App/*.iml
+
 
 .gradle
 Libraries/*/build
