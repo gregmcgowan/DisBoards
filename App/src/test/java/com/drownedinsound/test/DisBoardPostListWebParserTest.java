@@ -29,14 +29,12 @@ public class DisBoardPostListWebParserTest {
     @Mock
     UserSessionRepo userSessionRepo;
 
-    @Mock
-    DisBoardsLocalRepo disBoardsLocalRepo;
 
     @Before
     public void setup(){
         MockitoAnnotations.initMocks(this);
 
-        BoardPostSummaryListParser boardPostSummaryListParser = new BoardPostSummaryListParser(userSessionRepo,disBoardsLocalRepo);
+        BoardPostSummaryListParser boardPostSummaryListParser = new BoardPostSummaryListParser(userSessionRepo);
         disWebPageParser = new DisWebPagerParserImpl(null, boardPostSummaryListParser);
     }
 

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.StringTokenizer;
 
-public class BoardPostParser extends StreamingParser {
+public class BoardPostParser {
 
     private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
             + "BoardPostParser";

@@ -24,7 +24,7 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class BoardPostSummaryListParser extends StreamingParser {
+public class BoardPostSummaryListParser  {
 
     private static final int POST_URL_ANCHOR_INDEX = 1;
 
@@ -192,7 +192,8 @@ public class BoardPostSummaryListParser extends StreamingParser {
         spanNumber++;
         String spanString = segment.toString();
         if (spanNumber == 1) {
-            HashMap<String, String> parameters = createAttributeMapFromStartTag(spanString);
+            HashMap<String, String> parameters = ParsingUtils.createAttributeMapFromStartTag(
+                    spanString);
             spanClass = parameters.get(HtmlConstants.CLASS);
 
         }
@@ -272,7 +273,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private void extractPostId(String tagString) {
         String postId;
-        HashMap<String, String> parameters = createAttributeMapFromStartTag(tagString);
+        HashMap<String, String> parameters = ParsingUtils.createAttributeMapFromStartTag(tagString);
         if (parameters != null) {
             String href = parameters.get(HtmlConstants.HREF);
             if (!StringUtils.isEmpty(href)) {

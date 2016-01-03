@@ -6,12 +6,12 @@ import com.drownedinsound.utils.StringUtils;
 
 import java.util.HashMap;
 
-public class StreamingParser {
+public class ParsingUtils {
 
     public static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX + "StreamingParser";
 
     //TODO we can get attributes from the tag object
-    protected long getTimestampFromParameters(HashMap<String, String> parameters) {
+    protected static long getTimestampFromParameters(HashMap<String, String> parameters) {
         String timeStampString = parameters.get(HtmlConstants.TITLE);
         long timeStamp = -1;
         try {
@@ -23,7 +23,7 @@ public class StreamingParser {
     }
 
     //TODO we can get attributes from the tag 
-    protected HashMap<String, String> createAttributeMapFromStartTag(String tag) {
+    protected static HashMap<String, String> createAttributeMapFromStartTag(String tag) {
         HashMap<String, String> hashMap = new HashMap<String, String>();
         if (!StringUtils.isEmpty(tag)) {
             String removeStartAndEnd = tag.substring(1, tag.length() - 1);
