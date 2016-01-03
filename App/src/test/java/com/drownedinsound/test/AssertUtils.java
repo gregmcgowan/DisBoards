@@ -2,6 +2,7 @@ package com.drownedinsound.test;
 
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostComment;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,6 +42,16 @@ public class AssertUtils {
         if (expectedComments != null && expectedComments.size() > 0) {
             assertComments(expectedComments, actual.getComments());
         }
+    }
+
+    public static void assertBoardPostSummary(BoardPostSummary expected, BoardPostSummary actual) {
+        Assert.assertEquals(expected.getBoardPostID(), actual.getBoardPostID());
+        Assert.assertEquals(expected.getAuthorUsername(),
+                actual.getAuthorUsername());;
+        Assert.assertEquals(expected.getNumberOfReplies(),
+                actual.getNumberOfReplies());
+        Assert.assertEquals(expected.getTitle(), actual.getTitle());
+        Assert.assertEquals(expected.getBoardListTypeID(), actual.getBoardListTypeID());
     }
 
     private static void assertComments(Collection<BoardPostComment> expected,

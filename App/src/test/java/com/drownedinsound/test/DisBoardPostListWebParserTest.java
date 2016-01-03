@@ -3,6 +3,7 @@ package com.drownedinsound.test;
 import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.database.DisBoardsLocalRepo;
 import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.parser.streaming.BoardPostSummaryListParser;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
@@ -50,7 +51,7 @@ public class DisBoardPostListWebParserTest {
 
     @Test
     public void testParseListSummary() throws Exception {
-        BoardPost expectedBoardPostOne = new BoardPost();
+        BoardPostSummary expectedBoardPostOne = new BoardPostSummary();
         expectedBoardPostOne.setBoardPostID("4445891");
         expectedBoardPostOne.setTitle("Contacting the Moderators for issues (Redux)");
         expectedBoardPostOne.setAuthorUsername("TheoGB");
@@ -59,7 +60,7 @@ public class DisBoardPostListWebParserTest {
         expectedBoardPostOne.setNumberOfReplies(298);
         expectedBoardPostOne.setBoardListTypeID(BoardListTypes.SOCIAL);
 
-        BoardPost expectedBoardPostFour = new BoardPost();
+        BoardPostSummary expectedBoardPostFour = new BoardPostSummary();
         expectedBoardPostFour.setBoardPostID("4470683");
         expectedBoardPostFour.setTitle("Sunday Thread");
         expectedBoardPostFour.setAuthorUsername("marilyninthesky");
@@ -69,12 +70,12 @@ public class DisBoardPostListWebParserTest {
 
         InputStream inputStream = getInputStream("board_post_summary_list.html");
 
-        List<BoardPost> actualBoardPosts = disWebPageParser.parseBoardPostSummaryList(BoardListTypes.SOCIAL,
+        List<BoardPostSummary> actualBoardPosts = disWebPageParser.parseBoardPostSummaryList(BoardListTypes.SOCIAL,
                 inputStream);
         Assert.assertEquals(42, actualBoardPosts.size());
 
-        AssertUtils.assertBoardPost(expectedBoardPostOne, actualBoardPosts.get(0));
-        AssertUtils.assertBoardPost(expectedBoardPostFour, actualBoardPosts.get(3));
+        AssertUtils.assertBoardPostSummary(expectedBoardPostOne, actualBoardPosts.get(0));
+        AssertUtils.assertBoardPostSummary(expectedBoardPostFour, actualBoardPosts.get(3));
     }
 
 

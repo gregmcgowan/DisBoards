@@ -1,8 +1,8 @@
 package com.drownedinsound.test;
 
 import com.drownedinsound.data.UserSessionRepo;
-import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.DisApiClient;
@@ -54,7 +54,7 @@ public class DisApiTest {
 
     CountDownLatch countDownLatch;
 
-    private List<BoardPost> testBoardPosts;
+    private List<BoardPostSummary> testBoardPostSummaires;
 
     private BoardPostList boardPostListInfo;
 
@@ -68,15 +68,13 @@ public class DisApiTest {
         boardPostListInfo = new BoardPostList(BoardListTypes.MUSIC,
                 BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 0, 19,0);
 
-        BoardPost boardPost = new BoardPost();
+        BoardPostSummary boardPost = new BoardPostSummary();
         boardPost.setAuthorUsername(BoardPostTestData.BOARD_POST_AUTHOR);
-        boardPost.setDateOfPost(BoardPostTestData.BOARD_POST_DATE_TIME);
         boardPost.setTitle(BoardPostTestData.BOARD_POST_TITLE);
         boardPost.setNumberOfReplies(BoardPostTestData.BOARD_POST_NUMBER_OF_COMMENTS);
-        boardPost.setContent(BoardPostTestData.BOARD_POST_CONTENT);
 
-        testBoardPosts = new ArrayList<>();
-        testBoardPosts.add(boardPost);
+        testBoardPostSummaires = new ArrayList<>();
+        testBoardPostSummaires.add(boardPost);
     }
 
     @Test
@@ -117,7 +115,7 @@ public class DisApiTest {
     public void testGetList() throws Exception {
         when(disWebPageParser.parseBoardPostSummaryList(eq(BoardListTypes.MUSIC),
                 any(InputStream.class))).thenReturn(
-                testBoardPosts);
+                testBoardPostSummaires);
 
         MockWebServer mockWebServer = new MockWebServer();
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("gewgewgewgew"));
@@ -131,12 +129,12 @@ public class DisApiTest {
         disApiClient.getBoardPostSummaryList(BoardListTypes.MUSIC,
                 boardPostListInfo.getUrl(),1)
                 .subscribeOn(Schedulers.immediate())
-                .subscribe(new Action1<List<BoardPost>>() {
+                .subscribe(new Action1<List<BoardPostSummary>>() {
                     @Override
-                    public void call(List<BoardPost> boardPosts) {
-                        BoardPost expected = testBoardPosts.get(0);
-                        BoardPost actual = boardPosts.get(0);
-                        AssertUtils.assertBoardPost(expected, actual);
+                    public void call(List<BoardPostSummary> boardPosts) {
+                        BoardPostSummary expected = testBoardPostSummaires.get(0);
+                        BoardPostSummary actual = boardPosts.get(0);
+                        AssertUtils.assertBoardPostSummary(expected, actual);
                         countDownLatch.countDown();
                     }
                 });

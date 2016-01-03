@@ -10,10 +10,12 @@ import de.greenrobot.dao.identityscope.IdentityScopeType;
 import de.greenrobot.dao.internal.DaoConfig;
 
 import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostComment;
 
 import com.drownedinsound.data.generatered.BoardPostListDao;
+import com.drownedinsound.data.generatered.BoardPostSummaryDao;
 import com.drownedinsound.data.generatered.BoardPostDao;
 import com.drownedinsound.data.generatered.BoardPostCommentDao;
 
@@ -27,10 +29,12 @@ import com.drownedinsound.data.generatered.BoardPostCommentDao;
 public class DaoSession extends AbstractDaoSession {
 
     private final DaoConfig boardPostListDaoConfig;
+    private final DaoConfig boardPostSummaryDaoConfig;
     private final DaoConfig boardPostDaoConfig;
     private final DaoConfig boardPostCommentDaoConfig;
 
     private final BoardPostListDao boardPostListDao;
+    private final BoardPostSummaryDao boardPostSummaryDao;
     private final BoardPostDao boardPostDao;
     private final BoardPostCommentDao boardPostCommentDao;
 
@@ -41,6 +45,9 @@ public class DaoSession extends AbstractDaoSession {
         boardPostListDaoConfig = daoConfigMap.get(BoardPostListDao.class).clone();
         boardPostListDaoConfig.initIdentityScope(type);
 
+        boardPostSummaryDaoConfig = daoConfigMap.get(BoardPostSummaryDao.class).clone();
+        boardPostSummaryDaoConfig.initIdentityScope(type);
+
         boardPostDaoConfig = daoConfigMap.get(BoardPostDao.class).clone();
         boardPostDaoConfig.initIdentityScope(type);
 
@@ -48,22 +55,29 @@ public class DaoSession extends AbstractDaoSession {
         boardPostCommentDaoConfig.initIdentityScope(type);
 
         boardPostListDao = new BoardPostListDao(boardPostListDaoConfig, this);
+        boardPostSummaryDao = new BoardPostSummaryDao(boardPostSummaryDaoConfig, this);
         boardPostDao = new BoardPostDao(boardPostDaoConfig, this);
         boardPostCommentDao = new BoardPostCommentDao(boardPostCommentDaoConfig, this);
 
         registerDao(BoardPostList.class, boardPostListDao);
+        registerDao(BoardPostSummary.class, boardPostSummaryDao);
         registerDao(BoardPost.class, boardPostDao);
         registerDao(BoardPostComment.class, boardPostCommentDao);
     }
     
     public void clear() {
         boardPostListDaoConfig.getIdentityScope().clear();
+        boardPostSummaryDaoConfig.getIdentityScope().clear();
         boardPostDaoConfig.getIdentityScope().clear();
         boardPostCommentDaoConfig.getIdentityScope().clear();
     }
 
     public BoardPostListDao getBoardPostListDao() {
         return boardPostListDao;
+    }
+
+    public BoardPostSummaryDao getBoardPostSummaryDao() {
+        return boardPostSummaryDao;
     }
 
     public BoardPostDao getBoardPostDao() {

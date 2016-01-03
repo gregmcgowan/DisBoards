@@ -4,7 +4,8 @@ import com.commonsware.cwac.endless.EndlessAdapter;
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.generatered.BoardPost;
-import com.drownedinsound.data.generatered.BoardPostList;;
+import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.events.FailedToPostNewThreadEvent;
 import com.drownedinsound.events.SentNewPostEvent;
 import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
@@ -42,6 +43,8 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import timber.log.Timber;
+
+;
 
 /**
  * A fragment that will represent a different section of the community board
@@ -184,7 +187,7 @@ public class BoardPostListFragment
 
         if (dualPaneMode && currentlySelectedPost != -1) {
             BoardPost boardPost = (BoardPost) adapter.getItem(currentlySelectedPost);
-            boardPostSelected(currentlySelectedPost, boardPost);
+            boardPostSelected(currentlySelectedPost, boardPost.getBoardPostID());
         }
 
         // TODO This does not work at the moment. SavedInstanceState always
@@ -245,36 +248,35 @@ public class BoardPostListFragment
 
 
     @Override
-    public void boardPostSelected(int position, BoardPost boardPost) {
+    public void boardPostSelected(int position, String boardPostId) {
         currentlySelectedPost = position;
-        if (boardPost != null) {
-            postId = boardPost.getBoardPostID();
+        postId = boardPostId;
 
-            if (dualPaneMode) {
-                BoardPostFragment boardPostFragment = (BoardPostFragment) getFragmentManager()
-                        .findFragmentById(R.id.board_post_details);
-                if (boardPostFragment == null
-                        || !postId.equals(boardPostFragment.getBoardPostId())) {
-                    boardPostFragment = BoardPostFragment
-                            .newInstance(postId, true, boardListType);
-                    // Execute a transaction, replacing any existing fragment
-                    // with this one inside the frame.x§
-                    FragmentTransaction ft = getFragmentManager()
-                            .beginTransaction();
-                    ft.replace(R.id.board_post_details, boardPostFragment);
-                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                    ft.commit();
-                }
-
-            } else {
-                startActivity(BoardPostActivity
-                        .getIntent(getActivity(), postId, boardListType));
+        if (dualPaneMode) {
+            BoardPostFragment boardPostFragment = (BoardPostFragment) getFragmentManager()
+                    .findFragmentById(R.id.board_post_details);
+            if (boardPostFragment == null
+                    || !postId.equals(boardPostFragment.getBoardPostId())) {
+                boardPostFragment = BoardPostFragment
+                        .newInstance(postId, true, boardListType);
+                // Execute a transaction, replacing any existing fragment
+                // with this one inside the frame.x§
+                FragmentTransaction ft = getFragmentManager()
+                        .beginTransaction();
+                ft.replace(R.id.board_post_details, boardPostFragment);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                ft.commit();
             }
+
+        } else {
+            startActivity(BoardPostActivity
+                    .getIntent(getActivity(), postId, boardListType));
         }
+
     }
 
     @Override
-    public void setBoardPosts(List<BoardPost> boardPosts) {
+    public void setBoardPostSummaries(List<BoardPostSummary> boardPosts) {
         requestToHideLoadingView();
         currentlySelectedPost = -1;
         adapter.setBoardPosts(boardPosts);
@@ -286,10 +288,10 @@ public class BoardPostListFragment
     }
 
     @Override
-    public void appendBoardPosts(List<BoardPost> boardPosts) {
+    public void appendBoardPostSummaries(List<BoardPostSummary> boardPosts) {
         currentlySelectedPost = -1;
         lastPageFetched++;
-        //adapter.appendBoardPosts(boardPosts);
+        //adapter.appendBoardPostSummaries(boardPosts);
         //adapter.restartAppending();
     }
 
@@ -379,11 +381,11 @@ public class BoardPostListFragment
             return pendingRow;
         }
 
-        public void setBoardPosts(List<BoardPost> summaries) {
+        public void setBoardPosts(List<BoardPostSummary> summaries) {
             ((BoardPostListAdapter) getWrappedAdapter()).setBoardPosts(summaries);
         }
 
-        public void appendBoardPosts(List<BoardPost> summaries) {
+        public void appendBoardPosts(List<BoardPostSummary> summaries) {
             ((BoardPostListAdapter) getWrappedAdapter()).appendSummaries(summaries);
             onDataReady();
         }

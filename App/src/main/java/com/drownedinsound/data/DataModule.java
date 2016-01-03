@@ -68,6 +68,8 @@ public class DataModule {
 
     static final int DISK_CACHE_SIZE = 50 * 1024 * 1024; // 50MB
 
+    public static final String DIS_DB = "dis.db";
+
     @Provides
     @Singleton
     SharedPreferences provideSharedPreferences(Application app) {
@@ -114,8 +116,8 @@ public class DataModule {
 
     @Singleton
     @Provides
-    BoardPostSummaryListParser postSummaryListParser(UserSessionRepo userSessionRepo, DisBoardsLocalRepo disBoardsLocalRepo) {
-        return new BoardPostSummaryListParser(userSessionRepo,disBoardsLocalRepo);
+    BoardPostSummaryListParser postSummaryListParser(UserSessionRepo userSessionRepo) {
+        return new BoardPostSummaryListParser(userSessionRepo);
     }
 
     @Provides
@@ -127,7 +129,8 @@ public class DataModule {
     @Provides
     @Singleton
     DaoMaster provideDaoMaster(Application application) {
-        return new DaoMaster(new DisBoardsDataBaseHelper(application.getApplicationContext(),"dis.db",null).getWritableDatabase());
+        return new DaoMaster(new DisBoardsDataBaseHelper(application.getApplicationContext(),
+                DIS_DB,null).getWritableDatabase());
     }
 
     @Provides

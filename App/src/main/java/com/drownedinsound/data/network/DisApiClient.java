@@ -2,6 +2,7 @@ package com.drownedinsound.data.network;
 
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.network.handlers.ResponseHandler;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
 import com.drownedinsound.data.parser.streaming.LoginException;
@@ -132,7 +133,7 @@ public class DisApiClient implements DisBoardsApi {
     }
 
     @Override
-    public Observable<List<BoardPost>> getBoardPostSummaryList(final @BoardPostList.BoardPostListType String boardListType,
+    public Observable<List<BoardPostSummary>> getBoardPostSummaryList(final @BoardPostList.BoardPostListType String boardListType,
             String boardPostUrl, int pageNumber) {
 
         final boolean append = pageNumber > 1;
@@ -140,11 +141,11 @@ public class DisApiClient implements DisBoardsApi {
             boardPostUrl += "/page/" + pageNumber;
         }
         return makeRequest(RequestMethod.GET,boardPostUrl,boardPostUrl).flatMap(
-                new Func1<Response, Observable<List<BoardPost>>>() {
+                new Func1<Response, Observable<List<BoardPostSummary>>>() {
                     @Override
-                    public Observable<List<BoardPost>> call(Response response) {
+                    public Observable<List<BoardPostSummary>> call(Response response) {
                         try {
-                            List<BoardPost> boardPostList
+                            List<BoardPostSummary> boardPostList
                                     = disWebPageParser.parseBoardPostSummaryList(
                                     boardListType,
                                     getInputStreamFromResponse(response));

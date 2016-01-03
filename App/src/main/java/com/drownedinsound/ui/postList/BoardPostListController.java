@@ -1,8 +1,8 @@
 package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.data.DisBoardRepo;
-import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.ui.base.BaseUIController;
@@ -120,13 +120,13 @@ public class BoardPostListController extends BaseUIController {
             int uiId = getId(boardPostListUi);
             Timber.d("Going to update id " + uiId
                     + " for board " + boardListType);
-            Observable<List<BoardPost>> getBoardPostListObservable = disBoardRepo
-                    .getBoardPostList(boardListType, page, forceUpdate)
+            Observable<List<BoardPostSummary>> getBoardPostListObservable = disBoardRepo
+                    .getBoardPostSummaryList(boardListType, page, forceUpdate)
                     .subscribeOn(backgroundThreadScheduler)
                     .observeOn(mainThreadScheduler);
 
-            BaseObserver<List<BoardPost>, BoardPostListUi> getboardPostListObserver =
-                    new BaseObserver<List<BoardPost>, BoardPostListUi>(uiId) {
+            BaseObserver<List<BoardPostSummary>, BoardPostListUi> getboardPostListObserver =
+                    new BaseObserver<List<BoardPostSummary>, BoardPostListUi>(uiId) {
                         @Override
                         public void onError(Throwable e) {
                             getUI().showLoadingProgress(false);
@@ -134,11 +134,11 @@ public class BoardPostListController extends BaseUIController {
                         }
 
                         @Override
-                        public void onNext(List<BoardPost> boardPostList) {
+                        public void onNext(List<BoardPostSummary> boardPostList) {
                             if (page == 1) {
-                                getUI().setBoardPosts(boardPostList);
+                                getUI().setBoardPostSummaries(boardPostList);
                             } else {
-                                getUI().appendBoardPosts(boardPostList);
+                                getUI().appendBoardPostSummaries(boardPostList);
                             }
                             getUI().showLoadingProgress(false);
                         }

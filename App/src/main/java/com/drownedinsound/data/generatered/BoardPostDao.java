@@ -67,7 +67,7 @@ public class BoardPostDao extends AbstractDao<BoardPost, String> {
                 "\"NUMBER_OF_TIMES_READ\" INTEGER," + // 11: numberOfTimesRead
                 "\"IS_FAVOURITE\" INTEGER NOT NULL ," + // 12: isFavourite
                 "\"IS_STICKY\" INTEGER NOT NULL ," + // 13: isSticky
-                "\"BOARD_LIST_TYPE_ID\" TEXT);"); // 14: boardListTypeID
+                "\"BOARD_LIST_TYPE_ID\" TEXT NOT NULL );"); // 14: boardListTypeID
     }
 
     /** Drops the underlying database table. */
@@ -130,11 +130,7 @@ public class BoardPostDao extends AbstractDao<BoardPost, String> {
         }
         stmt.bindLong(13, entity.getIsFavourite() ? 1L: 0L);
         stmt.bindLong(14, entity.getIsSticky() ? 1L: 0L);
- 
-        String boardListTypeID = entity.getBoardListTypeID();
-        if (boardListTypeID != null) {
-            stmt.bindString(15, boardListTypeID);
-        }
+        stmt.bindString(15, entity.getBoardListTypeID());
     }
 
     /** @inheritdoc */
@@ -161,7 +157,7 @@ public class BoardPostDao extends AbstractDao<BoardPost, String> {
             cursor.isNull(offset + 11) ? null : cursor.getInt(offset + 11), // numberOfTimesRead
             cursor.getShort(offset + 12) != 0, // isFavourite
             cursor.getShort(offset + 13) != 0, // isSticky
-            cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14) // boardListTypeID
+            cursor.getString(offset + 14) // boardListTypeID
         );
         return entity;
     }
@@ -183,7 +179,7 @@ public class BoardPostDao extends AbstractDao<BoardPost, String> {
         entity.setNumberOfTimesRead(cursor.isNull(offset + 11) ? null : cursor.getInt(offset + 11));
         entity.setIsFavourite(cursor.getShort(offset + 12) != 0);
         entity.setIsSticky(cursor.getShort(offset + 13) != 0);
-        entity.setBoardListTypeID(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
+        entity.setBoardListTypeID(cursor.getString(offset + 14));
      }
     
     /** @inheritdoc */

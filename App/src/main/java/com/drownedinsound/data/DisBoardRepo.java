@@ -2,6 +2,7 @@ package com.drownedinsound.data;
 
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.network.LoginResponse;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface DisBoardRepo {
 
     Observable<List<BoardPostList>> getAllBoardPostLists();
 
-    Observable<List<BoardPost>> getBoardPostList(@BoardPostList.BoardPostListType String boardListType, int pageNumber,boolean forceUpdate);
+    Observable<List<BoardPostSummary>> getBoardPostSummaryList(@BoardPostList.BoardPostListType String boardListType, int pageNumber,boolean forceUpdate);
 
     Observable<Void> thisAComment(String boardPostUrl, String boardPostId, String commentId,
             @BoardPostList.BoardPostListType String boardListType);

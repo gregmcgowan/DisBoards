@@ -29,7 +29,6 @@ public class BoardPostComment {
     private boolean doHighlightedAnimation;
 
     private BoardPost boardPost;
-
     // KEEP FIELDS END
 
     public BoardPostComment() {
@@ -156,7 +155,6 @@ public class BoardPostComment {
     public void setBoardPost(BoardPost boardPost) {
         this.boardPost = boardPost;
     }
-
     // KEEP METHODS END
 
 }

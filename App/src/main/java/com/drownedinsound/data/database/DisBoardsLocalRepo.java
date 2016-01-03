@@ -2,6 +2,8 @@ package com.drownedinsound.data.database;
 
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.generatered.BoardPostSummary;
+
 import java.util.List;
 
 import rx.Observable;
@@ -15,9 +17,9 @@ public interface DisBoardsLocalRepo {
 
     Observable<Void> setBoardPost(BoardPost boardPost);
 
-    Observable<List<BoardPost>> getBoardPostsObservable(@BoardPostList.BoardPostListType String boardListType);
+    Observable<List<BoardPostSummary>> getBoardPostSummaryListObservable(@BoardPostList.BoardPostListType String boardListType);
 
-    List<BoardPost> getBoardPosts(@BoardPostList.BoardPostListType String boardListType);
+    List<BoardPostSummary> getBoardPostSummaryList(@BoardPostList.BoardPostListType String boardListType);
 
     //Observable<Void> set(List<BoardPost> boardPosts);
 
@@ -26,7 +28,7 @@ public interface DisBoardsLocalRepo {
      *
      * @param boardPosts
      */
-    void setBoardPosts(List<BoardPost> boardPosts);
+    void setBoardPostSummaries(List<BoardPostSummary> boardPosts);
 
     Observable<BoardPostList> getBoardPostList(@BoardPostList.BoardPostListType String boardListType);
 

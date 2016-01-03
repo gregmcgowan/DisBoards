@@ -5,6 +5,8 @@ import com.drownedinsound.data.generatered.BoardPostCommentDao;
 import com.drownedinsound.data.generatered.BoardPostDao;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostListDao;
+import com.drownedinsound.data.generatered.BoardPostSummary;
+import com.drownedinsound.data.generatered.BoardPostSummaryDao;
 import com.drownedinsound.data.generatered.DaoSession;
 import com.drownedinsound.utils.AssertUtils;
 
@@ -28,11 +30,14 @@ public class DisBoardsLocalRepoImpl implements DisBoardsLocalRepo {
 
     private BoardPostCommentDao boardPostCommentDao;
 
+    private BoardPostSummaryDao boardPostSummaryDao;
+
     @Inject
     public DisBoardsLocalRepoImpl(DaoSession daoSession) {
         this.boardPostDao = daoSession.getBoardPostDao();
         this.boardPostListDao = daoSession.getBoardPostListDao();
         this.boardPostCommentDao = daoSession.getBoardPostCommentDao();
+        this.boardPostSummaryDao = daoSession.getBoardPostSummaryDao();
     }
 
     @Override
@@ -46,52 +51,56 @@ public class DisBoardsLocalRepoImpl implements DisBoardsLocalRepo {
     }
 
     @Override
-    public Observable<List<BoardPost>> getBoardPostsObservable(
+    public Observable<List<BoardPostSummary>> getBoardPostSummaryListObservable(
             @BoardPostList.BoardPostListType final String boardListType) {
-        return Observable.create(new Observable.OnSubscribe<List<BoardPost>>() {
+        return Observable.create(new Observable.OnSubscribe<List<BoardPostSummary>>() {
             @Override
-            public void call(Subscriber<? super List<BoardPost>> subscriber) {
-                subscriber.onNext(getBoardPosts(boardListType));
+            public void call(Subscriber<? super List<BoardPostSummary>> subscriber) {
+                subscriber.onNext(getBoardPostSummaryList(boardListType));
                 subscriber.onCompleted();
             }
         });
     }
 
     @Override
-    public void setBoardPosts(List<BoardPost> boardPosts) {
+    public void setBoardPostSummaries(List<BoardPostSummary> boardPostSummaries) {
         AssertUtils.checkMainThread();
 
-        boardPostDao.insertOrReplaceInTx(boardPosts);
-    }
+        if(boardPostSummaries.size() > 0) {
+            @BoardPostList.BoardPostListType String type = boardPostSummaries.get(0).getBoardListTypeID();
 
-    public List<BoardPost> getBoardPosts(@BoardPostList.BoardPostListType String boardListType) {
-        AssertUtils.checkMainThread();
+            List<BoardPostSummary> existingSummaries = getBoardPostSummaryList(type);
+            for(BoardPostSummary existingSummary: existingSummaries) {
+                int index = boardPostSummaries.indexOf(existingSummary);
+                if(index != -1) {
+                    BoardPostSummary matchingNewSummary = boardPostSummaries.get(index);
+                    //We don't want to overrite this
+                    if(matchingNewSummary != null) {
+                        existingSummary.setLastViewedTime(matchingNewSummary.getLastViewedTime());
+                    }
+                }
 
-        List<BoardPost> boardPosts = new ArrayList<>();
-        BoardPostList boardPostList = boardPostListDao.load(boardListType);
-        if (boardPostList != null) {
-            boardPosts = getBoardPostsforTypeId(boardPostList.getBoardListTypeID());
+            }
+            boardPostSummaryDao.insertOrReplaceInTx(boardPostSummaries);
         }
-
-        return boardPosts;
-    }
-
-    private List<BoardPost> getBoardPostsforTypeId(String boardListTypeId) {
-        List<BoardPost> boardPosts = boardPostDao.queryBuilder().where(
-                BoardPostDao.Properties.BoardListTypeID.eq(boardListTypeId))
-                .list();
-        Collections.sort(boardPosts,BoardPost.COMPARATOR);
-        return boardPosts;
     }
 
     @Override
-    public Observable<BoardPostList> getBoardPostList(
-            @BoardPostList.BoardPostListType final String boardListType) {
+    public List<BoardPostSummary> getBoardPostSummaryList(
+            @BoardPostList.BoardPostListType String boardListType) {
+        AssertUtils.checkMainThread();
+
+        return boardPostSummaryDao.queryBuilder().where(
+                BoardPostSummaryDao.Properties.BoardListTypeID.eq(boardListType)).list();
+    }
+
+    @Override
+    public Observable<BoardPostList> getBoardPostList(@BoardPostList.BoardPostListType final String boardListType) {
         return Observable.create(new Observable.OnSubscribe<BoardPostList>() {
             @Override
             public void call(Subscriber<? super BoardPostList> subscriber) {
                 BoardPostList boardPostList = boardPostListDao.load(boardListType);
-                boardPostList.setBoardPostSummaries(getBoardPostsforTypeId(boardListType));
+                boardPostList.setBoardPostSummaries(getBoardPostSummaryList(boardListType));
                 subscriber.onNext(boardPostList);
                 subscriber.onCompleted();
             }

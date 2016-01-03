@@ -2,9 +2,8 @@ package com.drownedinsound.data.parser.streaming;
 
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.UserSessionRepo;
-import com.drownedinsound.data.database.DisBoardsLocalRepo;
-import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.utils.DateUtils;
 import com.drownedinsound.utils.StringUtils;
 
@@ -42,7 +41,6 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private static final boolean DEBUG_PARSER = false;
 
-
     private boolean inBoardPostTable;
 
     private int tableRowCell;
@@ -53,24 +51,21 @@ public class BoardPostSummaryListParser extends StreamingParser {
 
     private int anchorNumber;
 
-    private List<BoardPost> boardPosts;
+    private List<BoardPostSummary> boardPostSummaries;
 
-    private BoardPost currentBoardPost;
+    private BoardPostSummary currentBoardPostSummary;
 
     private StringBuilder buffer;
 
-    private DisBoardsLocalRepo disBoardsLocalRepo;
-
     private UserSessionRepo userSessionRepo;
 
-    public BoardPostSummaryListParser(UserSessionRepo userSessionRepo, DisBoardsLocalRepo databaseHelper) {
-        this.boardPosts = new ArrayList<>();
+    public BoardPostSummaryListParser(UserSessionRepo userSessionRepo) {
+        this.boardPostSummaries = new ArrayList<>();
         this.buffer = new StringBuilder(1024);
-        this.disBoardsLocalRepo = databaseHelper;
         this.userSessionRepo = userSessionRepo;
     }
 
-    public  List<BoardPost> parse(@BoardPostList.BoardPostListType String boardListType,InputStream inputStream) {
+    public  List<BoardPostSummary> parse(@BoardPostList.BoardPostListType String boardListType,InputStream inputStream) {
         long start = System.currentTimeMillis();
         try {
             StreamedSource streamedSource = new StreamedSource(inputStream);
@@ -93,33 +88,14 @@ public class BoardPostSummaryListParser extends StreamingParser {
                         if (tag instanceof StartTag) {
                             String trString = tag.toString();
                             if (isStartOfNewPostTr(trString)) {
-                                currentBoardPost = new BoardPost();
-                                currentBoardPost.setBoardListTypeID(boardListType);
+                                currentBoardPostSummary = new BoardPostSummary();
+                                currentBoardPostSummary.setBoardListTypeID(boardListType);
                             }
                             tableRowCell = 0;
                         } else {
-                            if (currentBoardPost != null) {
-                                // TODO we need to get the last viewed time and
-                                // set it here
-                                if (disBoardsLocalRepo != null) {
-                                    BoardPost existingPost = null;
-//                                    databaseHelper
-//                                            .getBoardPost(currentBoardPost
-//                                                    .getId());
-                                    // We don't want to overwrite certain values
-                                    if (existingPost != null) {
-                                        currentBoardPost
-                                                .setLastViewedTime(existingPost
-                                                        .getLastViewedTime());
-                                        currentBoardPost
-                                                .setNumberOfTimesRead(existingPost
-                                                        .getNumberOfTimesRead());
-                                        currentBoardPost.setIsFavourite(
-                                                existingPost.getIsFavourite());
-                                    }
-                                }
-                                boardPosts.add(currentBoardPost);
-                                currentBoardPost = null;
+                            if (currentBoardPostSummary != null) {
+                                boardPostSummaries.add(currentBoardPostSummary);
+                                currentBoardPostSummary = null;
                             }
                         }
                     } else if (tagName.equals(HtmlConstants.TABLE_CELL)) {
@@ -152,7 +128,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                                             long timestamp = parseDate(value,
                                                     DateUtils.DIS_BOARD_LAST_COMMENT_DATE_FORMAT);
                                             if (timestamp != -1) {
-                                                currentBoardPost.setLastUpdatedTime(timestamp);
+                                                currentBoardPostSummary.setLastUpdatedTime(timestamp);
                                             }
                                         }
                                     }
@@ -162,8 +138,6 @@ public class BoardPostSummaryListParser extends StreamingParser {
                         } else {
                             if (inBoardPostTable
                                     && tableRowCell == DESCRIPTION_TABLE_ROW_INDEX) {
-//                                String bufferOutput = Html.fromHtml(
-//                                        buffer.toString().trim()).toString();
                                 String bufferOutput = buffer.toString().trim();
                                 parseDescriptionRowAnchorText(bufferOutput);
                             }
@@ -205,13 +179,13 @@ public class BoardPostSummaryListParser extends StreamingParser {
             }
         }
         if (DisBoardsConstants.DEBUG && DEBUG_PARSER) {
-            Timber.d( "Parsed " + boardPosts.size() + " board posts in "
+            Timber.d( "Parsed " + boardPostSummaries.size() + " board posts in "
                     + (System.currentTimeMillis() - start) + " ms");
-            for (BoardPost boardPost : boardPosts) {
+            for (BoardPostSummary boardPost : boardPostSummaries) {
                 Timber.d(boardPost.toString());
             }
         }
-        return boardPosts;
+        return boardPostSummaries;
     }
 
     private void parseStartSpanSegment(Segment segment) {
@@ -231,7 +205,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
         }
 
         if (spanNumber == 1 && STICKY_CLASS.equals(spanClass)) {
-            currentBoardPost
+            currentBoardPostSummary
                     .setIsSticky(HtmlConstants.STICKY.equalsIgnoreCase(buffer.toString().trim()));
         }
     }
@@ -272,7 +246,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                 }
             }
         }
-        currentBoardPost.setNumberOfReplies(numberOfReplies);
+        currentBoardPostSummary.setNumberOfReplies(numberOfReplies);
     }
 
     private boolean isStartOfNewPostTr(String trString) {
@@ -285,13 +259,13 @@ public class BoardPostSummaryListParser extends StreamingParser {
         if (anchorNumber == 1) {
             String title = bufferOutput;
             // Log.d(TAG, "Title [" + title + "]");
-            currentBoardPost.setTitle(title);
+            currentBoardPostSummary.setTitle(title);
         } else if (anchorNumber == 2) {
             String[] authorTokens = bufferOutput.split("\\s");
             if (authorTokens != null && authorTokens.length > 1) {
                 String author = authorTokens[1];
                 // Log.d(TAG, "Author [" + author + "]");
-                currentBoardPost.setAuthorUsername(author);
+                currentBoardPostSummary.setAuthorUsername(author);
             }
         }
     }
@@ -310,7 +284,7 @@ public class BoardPostSummaryListParser extends StreamingParser {
                     } else if (postId.contains("#")) {
                         postId = postId.replace("#", "");
                     }
-                    currentBoardPost.setBoardPostID(postId);
+                    currentBoardPostSummary.setBoardPostID(postId);
                 }
             }
         }

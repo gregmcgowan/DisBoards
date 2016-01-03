@@ -2,6 +2,7 @@ package com.drownedinsound.test;
 
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.UrlConstants;
@@ -46,7 +47,7 @@ public class BoardPostListPostListControllerTest {
 
     private @BoardPostList.BoardPostListType String boardListType;
 
-    private List<BoardPost> boardPosts;
+    private List<BoardPostSummary> boardPosts;
 
     @Before
     public void setup() {
@@ -58,12 +59,10 @@ public class BoardPostListPostListControllerTest {
         boardPostListInfo = new BoardPostList(BoardListTypes.MUSIC,
                 BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 0, 19,0);
 
-        BoardPost boardPost = new BoardPost();
+        BoardPostSummary boardPost = new BoardPostSummary();
         boardPost.setAuthorUsername(BoardPostTestData.BOARD_POST_AUTHOR);
-        boardPost.setDateOfPost(BoardPostTestData.BOARD_POST_DATE_TIME);
         boardPost.setTitle(BoardPostTestData.BOARD_POST_TITLE);
         boardPost.setNumberOfReplies(BoardPostTestData.BOARD_POST_NUMBER_OF_COMMENTS);
-        boardPost.setContent(BoardPostTestData.BOARD_POST_CONTENT);
 
         boardPosts = new ArrayList<>();
         boardPosts.add(boardPost);
@@ -75,7 +74,7 @@ public class BoardPostListPostListControllerTest {
     public void testGetListFirstPageSuccessfully() {
         when(boardPostListUi.getBoardListType()).thenReturn(BoardListTypes.MUSIC);
 
-        when(fakeDisRepo.getBoardPostList(BoardListTypes.MUSIC, 1 , true))
+        when(fakeDisRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 1, true))
                 .thenReturn(Observable.just(boardPosts));
 
         boardPostController.attachUi(boardPostListUi);
@@ -83,7 +82,7 @@ public class BoardPostListPostListControllerTest {
         boardPostController.requestBoardSummaryPage(boardPostListUi, boardListType, 1, true);
 
         verify(boardPostListUi).showLoadingProgress(true);
-        verify(boardPostListUi).setBoardPosts(boardPosts);
+        verify(boardPostListUi).setBoardPostSummaries(boardPosts);
         verify(boardPostListUi).showLoadingProgress(false);
 
         boardPostController.detachUi(boardPostListUi);
@@ -94,14 +93,14 @@ public class BoardPostListPostListControllerTest {
     public void testGetListSecondPageSuccessfully() {
         when(boardPostListUi.getBoardListType()).thenReturn(BoardListTypes.MUSIC);
 
-        when(fakeDisRepo.getBoardPostList(BoardListTypes.MUSIC, 2, true))
+        when(fakeDisRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 2, true))
                 .thenReturn(Observable.just(boardPosts));
 
         boardPostController.attachUi(boardPostListUi);
 
         boardPostController.requestBoardSummaryPage(boardPostListUi, boardListType, 2, true);
 
-        verify(boardPostListUi).appendBoardPosts(boardPosts);
+        verify(boardPostListUi).appendBoardPostSummaries(boardPosts);
 
         boardPostController.detachUi(boardPostListUi);
     }
@@ -110,10 +109,10 @@ public class BoardPostListPostListControllerTest {
     public void testGetListFirstPageError() {
         when(boardPostListUi.getBoardListType()).thenReturn(BoardListTypes.MUSIC);
 
-        when(fakeDisRepo.getBoardPostList(BoardListTypes.MUSIC, 1 , true))
-                .thenReturn(Observable.create(new Observable.OnSubscribe<List<BoardPost>>() {
+        when(fakeDisRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 1 , true))
+                .thenReturn(Observable.create(new Observable.OnSubscribe<List<BoardPostSummary>>() {
                     @Override
-                    public void call(Subscriber<? super List<BoardPost>> subscriber) {
+                    public void call(Subscriber<? super List<BoardPostSummary>> subscriber) {
                         subscriber.onError(new Exception());
                     }
                 }));
@@ -147,7 +146,7 @@ public class BoardPostListPostListControllerTest {
         when(boardPostListUi.getID()).thenReturn(1);
         when(boardPostListParentUi.getID()).thenReturn(2);
 
-        when(fakeDisRepo.getBoardPostList(BoardListTypes.MUSIC, 1, false))
+        when(fakeDisRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 1, false))
                 .thenReturn(Observable.just(boardPosts));
 
         List<BoardPostList> boardPostListInfos = new ArrayList<>();
@@ -160,7 +159,7 @@ public class BoardPostListPostListControllerTest {
         boardPostController.attachUi(boardPostListUi);
 
         verify(boardPostListUi).showLoadingProgress(true);
-        verify(boardPostListUi).setBoardPosts(boardPosts);
+        verify(boardPostListUi).setBoardPostSummaries(boardPosts);
         verify(boardPostListUi).showLoadingProgress(false);
 
         boardPostController.detachUi(boardPostListUi);

@@ -3,6 +3,7 @@ package com.drownedinsound.data;
 import com.drownedinsound.data.database.DisBoardsLocalRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.network.DisBoardsApi;
 import com.drownedinsound.data.network.LoginResponse;
 
@@ -48,34 +49,33 @@ public class DisBoardRepoImpl implements DisBoardRepo {
     }
 
     @Override
-    public Observable<List<BoardPost>> getBoardPostList(final @BoardPostList.BoardPostListType String boardListType,
+    public Observable<List<BoardPostSummary>> getBoardPostSummaryList(final @BoardPostList.BoardPostListType String boardListType,
             final int pageNumber, final boolean forceUpdate) {
 
         return disBoardsLocalRepo.getBoardPostList(boardListType).flatMap(
-                new Func1<BoardPostList, Observable<List<BoardPost>>>() {
+                new Func1<BoardPostList, Observable<List<BoardPostSummary>>>() {
                     @Override
-                    public Observable<List<BoardPost>> call(final BoardPostList boardPostList) {
+                    public Observable<List<BoardPostSummary>> call(final BoardPostList boardPostList) {
                         long lastFetchedTime = boardPostList.getLastFetchedMs();
                         long fiveMinutesAgo = System.currentTimeMillis()
                                 - (DateUtils.MINUTE_IN_MILLIS
                                 * MAX_BOARD_POST_LIST_AGE_MINUTES);
 
                         boolean recentlyFetched = lastFetchedTime > fiveMinutesAgo;
-                        List<BoardPost> posts = boardPostList.getBoardPostSummaries();
-                        Timber.d("recentlyFetched "+recentlyFetched + " posts "+posts.size() + " forceUpdate "+forceUpdate);
+                        List<BoardPostSummary> posts = boardPostList.getBoardPostSummaries();
+
                         if (recentlyFetched && posts.size() > 0 && !forceUpdate) {
-                            Timber.d("Return cached");
                             return Observable.just(posts);
                         } else {
                             return disApi
                                     .getBoardPostSummaryList(boardListType, boardPostList.getUrl(),
                                             pageNumber)
-                                    .flatMap(new Func1<List<BoardPost>, Observable<List<BoardPost>>>() {
+                                    .flatMap(new Func1<List<BoardPostSummary>, Observable<List<BoardPostSummary>>>() {
                                         @Override
-                                        public Observable<List<BoardPost>> call(List<BoardPost> boardPosts) {
+                                        public Observable<List<BoardPostSummary>> call(List<BoardPostSummary> boardPosts) {
                                             boardPostList.setLastFetchedMs(System.currentTimeMillis());
                                             disBoardsLocalRepo.setBoardPostList(boardPostList);
-                                            disBoardsLocalRepo.setBoardPosts(boardPosts);
+                                            disBoardsLocalRepo.setBoardPostSummaries(boardPosts);
 
                                             return Observable.just(boardPosts);
                                         }

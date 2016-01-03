@@ -9,6 +9,7 @@ import de.greenrobot.dao.AbstractDaoMaster;
 import de.greenrobot.dao.identityscope.IdentityScopeType;
 
 import com.drownedinsound.data.generatered.BoardPostListDao;
+import com.drownedinsound.data.generatered.BoardPostSummaryDao;
 import com.drownedinsound.data.generatered.BoardPostDao;
 import com.drownedinsound.data.generatered.BoardPostCommentDao;
 
@@ -22,6 +23,7 @@ public class DaoMaster extends AbstractDaoMaster {
     /** Creates underlying database table using DAOs. */
     public static void createAllTables(SQLiteDatabase db, boolean ifNotExists) {
         BoardPostListDao.createTable(db, ifNotExists);
+        BoardPostSummaryDao.createTable(db, ifNotExists);
         BoardPostDao.createTable(db, ifNotExists);
         BoardPostCommentDao.createTable(db, ifNotExists);
     }
@@ -29,6 +31,7 @@ public class DaoMaster extends AbstractDaoMaster {
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(SQLiteDatabase db, boolean ifExists) {
         BoardPostListDao.dropTable(db, ifExists);
+        BoardPostSummaryDao.dropTable(db, ifExists);
         BoardPostDao.dropTable(db, ifExists);
         BoardPostCommentDao.dropTable(db, ifExists);
     }
@@ -63,6 +66,7 @@ public class DaoMaster extends AbstractDaoMaster {
     public DaoMaster(SQLiteDatabase db) {
         super(db, SCHEMA_VERSION);
         registerDaoClass(BoardPostListDao.class);
+        registerDaoClass(BoardPostSummaryDao.class);
         registerDaoClass(BoardPostDao.class);
         registerDaoClass(BoardPostCommentDao.class);
     }

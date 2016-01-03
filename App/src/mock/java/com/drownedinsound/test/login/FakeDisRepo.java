@@ -3,6 +3,7 @@ package com.drownedinsound.test.login;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.network.LoginResponse;
 
 import java.util.List;
@@ -15,11 +16,11 @@ import rx.Observable;
 public class FakeDisRepo implements DisBoardRepo {
 
 
-    private static List<BoardPost> boardPosts;
+    private static List<BoardPostSummary> boardPosts;
 
     private static boolean loginSuccess;
 
-    public static void setBoardPostSummariesToReturn(List<BoardPost> boardPostSummariesToReturn) {
+    public static void setBoardPostSummariesToReturn(List<BoardPostSummary> boardPostSummariesToReturn) {
         boardPosts = boardPostSummariesToReturn;
     }
 
@@ -48,10 +49,10 @@ public class FakeDisRepo implements DisBoardRepo {
     }
 
     @Override
-    public Observable<List<BoardPost>> getBoardPostList(
-             String boardListType, int pageNumber,
+    public Observable<List<BoardPostSummary>> getBoardPostSummaryList(
+            @BoardPostList.BoardPostListType String boardListType, int pageNumber,
             boolean forceUpdate) {
-         return Observable.just(boardPosts);
+        return Observable.just(boardPosts);
     }
 
     @Override

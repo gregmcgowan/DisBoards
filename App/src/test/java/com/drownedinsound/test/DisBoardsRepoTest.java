@@ -5,6 +5,7 @@ import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.database.DisBoardsLocalRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.DisApiClient;
@@ -45,7 +46,7 @@ public class DisBoardsRepoTest {
 
     DisBoardRepoImpl disBoardRepo;
 
-    private List<BoardPost> testBoardPosts;
+    private List<BoardPostSummary> testBoardPostSummaries;
 
     private CountDownLatch countDownLatch;
 
@@ -61,15 +62,13 @@ public class DisBoardsRepoTest {
         boardPostListInfo = new BoardPostList(BoardListTypes.MUSIC,
                 BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 0, 19,0);
 
-        BoardPost boardPost = new BoardPost();
+        BoardPostSummary boardPost = new BoardPostSummary();
         boardPost.setAuthorUsername(BoardPostTestData.BOARD_POST_AUTHOR);
-        boardPost.setDateOfPost(BoardPostTestData.BOARD_POST_DATE_TIME);
         boardPost.setTitle(BoardPostTestData.BOARD_POST_TITLE);
         boardPost.setNumberOfReplies(BoardPostTestData.BOARD_POST_NUMBER_OF_COMMENTS);
-        boardPost.setContent(BoardPostTestData.BOARD_POST_CONTENT);
 
-        testBoardPosts = new ArrayList<>();
-        testBoardPosts.add(boardPost);
+        testBoardPostSummaries = new ArrayList<>();
+        testBoardPostSummaries.add(boardPost);
     }
 
     @Test
@@ -97,24 +96,24 @@ public class DisBoardsRepoTest {
     public void testGetListFromNetwork() throws Exception {
         int page = 1;
 
-        when(disBoardsLocalRepo.getBoardPostList(eq(BoardListTypes.MUSIC)))
+        when(disBoardsLocalRepo.getBoardPostList(BoardListTypes.MUSIC))
                 .thenReturn(Observable.just(boardPostListInfo));
 
         when(disApiClient.getBoardPostSummaryList(BoardListTypes.MUSIC,
                 boardPostListInfo.getUrl(), 1))
-                .thenReturn(Observable.just(testBoardPosts));
+                .thenReturn(Observable.just(testBoardPostSummaries));
 
         countDownLatch = new CountDownLatch(1);
 
-        disBoardRepo.getBoardPostList(BoardListTypes.MUSIC, page, true)
+        disBoardRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, page, true)
                 .subscribeOn(Schedulers.immediate())
                 .observeOn(Schedulers.immediate())
-                .subscribe(new Action1<List<BoardPost>>() {
+                .subscribe(new Action1<List<BoardPostSummary>>() {
                     @Override
-                    public void call(List<BoardPost> boardPosts) {
-                        BoardPost expected = testBoardPosts.get(0);
-                        BoardPost actual = boardPosts.get(0);
-                        AssertUtils.assertBoardPost(expected, actual);
+                    public void call(List<BoardPostSummary> boardPosts) {
+                        BoardPostSummary expected = testBoardPostSummaries.get(0);
+                        BoardPostSummary actual = boardPosts.get(0);
+                        AssertUtils.assertBoardPostSummary(expected, actual);
                         countDownLatch.countDown();
                     }
                 });
@@ -128,22 +127,22 @@ public class DisBoardsRepoTest {
         int page = 1;
 
         boardPostListInfo.setLastFetchedMs(System.currentTimeMillis() - (60 * 1000));
-        boardPostListInfo.setBoardPostSummaries(testBoardPosts);
+        boardPostListInfo.setBoardPostSummaries(testBoardPostSummaries);
 
         when(disBoardsLocalRepo.getBoardPostList(BoardListTypes.MUSIC))
                 .thenReturn(Observable.just(boardPostListInfo));
 
         countDownLatch = new CountDownLatch(1);
 
-        disBoardRepo.getBoardPostList(BoardListTypes.MUSIC, page, false)
+        disBoardRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, page, false)
                 .subscribeOn(Schedulers.immediate())
                 .observeOn(Schedulers.immediate())
-                .subscribe(new Action1<List<BoardPost>>() {
+                .subscribe(new Action1<List<BoardPostSummary>>() {
                     @Override
-                    public void call(List<BoardPost> boardPosts) {
-                        BoardPost expected = testBoardPosts.get(0);
-                        BoardPost actual = boardPosts.get(0);
-                        AssertUtils.assertBoardPost(expected, actual);
+                    public void call(List<BoardPostSummary> boardPosts) {
+                        BoardPostSummary expected = testBoardPostSummaries.get(0);
+                        BoardPostSummary actual = boardPosts.get(0);
+                        AssertUtils.assertBoardPostSummary(expected, actual);
                         countDownLatch.countDown();
                     }
                 });
@@ -153,13 +152,13 @@ public class DisBoardsRepoTest {
     @Test
     public void testGetListNetworkError() throws Exception{
         int page = 1;
-        boardPostListInfo.setBoardPostSummaries(testBoardPosts);
+        boardPostListInfo.setBoardPostSummaries(testBoardPostSummaries);
 
         when(disApiClient.getBoardPostSummaryList(BoardListTypes.MUSIC,
                 boardPostListInfo.getUrl(), 1)).thenReturn(Observable.create(
-                new Observable.OnSubscribe<List<BoardPost>>() {
+                new Observable.OnSubscribe<List<BoardPostSummary>>() {
                     @Override
-                    public void call(Subscriber<? super List<BoardPost>> subscriber) {
+                    public void call(Subscriber<? super List<BoardPostSummary>> subscriber) {
                         subscriber.onError(new Exception());
                     }
                 }));
@@ -170,15 +169,15 @@ public class DisBoardsRepoTest {
 
         countDownLatch = new CountDownLatch(1);
 
-        disBoardRepo.getBoardPostList(BoardListTypes.MUSIC, page, false)
+        disBoardRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, page, false)
                 .subscribeOn(Schedulers.immediate())
                 .observeOn(Schedulers.immediate())
-                .subscribe(new Action1<List<BoardPost>>() {
+                .subscribe(new Action1<List<BoardPostSummary>>() {
                     @Override
-                    public void call(List<BoardPost> boardPosts) {
-                        BoardPost expected = testBoardPosts.get(0);
-                        BoardPost actual = boardPosts.get(0);
-                        AssertUtils.assertBoardPost(expected, actual);
+                    public void call(List<BoardPostSummary> boardPosts) {
+                        BoardPostSummary expected = testBoardPostSummaries.get(0);
+                        BoardPostSummary actual = boardPosts.get(0);
+                        AssertUtils.assertBoardPostSummary(expected, actual);
                         countDownLatch.countDown();
                     }
                 });

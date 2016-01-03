@@ -35,7 +35,7 @@ public class BoardPostList {
 
     }
 
-    private List<BoardPost> boardPostSummaries = new ArrayList<>();
+    private List<BoardPostSummary> boardPostSummaries = new ArrayList<>();
     // KEEP FIELDS END
 
     public BoardPostList() {
@@ -110,12 +110,12 @@ public class BoardPostList {
 
     // KEEP METHODS - put your custom methods here
 
-    public List<BoardPost> getBoardPostSummaries() {
+    public List<BoardPostSummary> getBoardPostSummaries() {
         return boardPostSummaries;
     }
 
     public void setBoardPostSummaries(
-            List<BoardPost> boardPostSummaries) {
+            List<BoardPostSummary> boardPostSummaries) {
         this.boardPostSummaries = boardPostSummaries;
     }
     // KEEP METHODS END

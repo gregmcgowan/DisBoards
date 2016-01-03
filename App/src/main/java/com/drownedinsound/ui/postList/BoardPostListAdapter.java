@@ -2,6 +2,7 @@ package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
 import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.utils.CollectionUtils;
 import com.drownedinsound.utils.UiUtils;
 
@@ -22,7 +23,7 @@ import java.util.List;
  */
 public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryHolder> {
 
-    private List<BoardPost> boardPosts;
+    private List<BoardPostSummary> boardPosts;
 
     private Context context;
 
@@ -54,7 +55,7 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
         return position;
     }
 
-    public void setBoardPosts(List<BoardPost> newPosts) {
+    public void setBoardPosts(List<BoardPostSummary> newPosts) {
         if (!CollectionUtils.equals(newPosts, boardPosts)) {
             boardPosts = newPosts;
             notifyDataSetChanged();
@@ -66,7 +67,7 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
         this.boardPostListListner = boardPostListListner;
     }
 
-    public void appendSummaries(List<BoardPost> boardPosts) {
+    public void appendSummaries(List<BoardPostSummary> boardPosts) {
         this.boardPosts.addAll(boardPosts);
     }
 
@@ -96,11 +97,11 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
 
     @Override
     public void onBindViewHolder(final BoardPostSummaryHolder holder, final int position) {
-        final BoardPost boardPost = (BoardPost) getItem(position);
-        if (boardPost != null) {
-            String title = boardPost.getTitle();
-            String authorusername = "by " + boardPost.getAuthorUsername();
-            int numberOfReplies = boardPost.getNumberOfReplies();
+        final BoardPostSummary boardPostSummary = (BoardPostSummary) getItem(position);
+        if (boardPostSummary != null) {
+            String title = boardPostSummary.getTitle();
+            String authorusername = "by " + boardPostSummary.getAuthorUsername();
+            int numberOfReplies = boardPostSummary.getNumberOfReplies();
             String numberOfRepliesText;
             if (numberOfReplies > 0) {
                 numberOfRepliesText = numberOfReplies
@@ -108,16 +109,16 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
             } else {
                 numberOfRepliesText = "No replies";
             }
-            String lastUpdatedText = boardPost
+            String lastUpdatedText = boardPostSummary
                     .getLastUpdatedInReadableString();
-            int stickyVisible = boardPost.getIsSticky() ? View.VISIBLE
+            int stickyVisible = boardPostSummary.getIsSticky() ? View.VISIBLE
                     : View.GONE;
 
-            long lastViewedTime = boardPost.getLastViewedTime();
-            long lastUpdatedTime = boardPost.getLastUpdatedTime();
+            long lastViewedTime = boardPostSummary.getLastViewedTime();
+            long lastUpdatedTime = boardPostSummary.getLastUpdatedTime();
             boolean markAsRead = lastViewedTime > 0
                     && lastViewedTime >= lastUpdatedTime;
-            holder.boardPost = boardPost;
+            holder.boardPost = boardPostSummary;
             holder.titleTextView.setText(Html.fromHtml(title));
             holder.authorTextView.setText(authorusername);
             holder.numberOfRepliesTextView.setText(numberOfRepliesText);
@@ -146,7 +147,7 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
                 public void onClick(View v) {
                     UiUtils.setBackgroundDrawable(holder.postReadMarkerView, readDrawable);
                     if (boardPostListListner != null) {
-                        boardPostListListner.boardPostSelected(position, boardPost);
+                        boardPostListListner.boardPostSelected(position, boardPostSummary.getBoardPostID());
                     }
                 }
             });
@@ -169,7 +170,7 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
 
     public interface BoardPostListListener {
 
-        void boardPostSelected(int position, BoardPost boardPost);
+        void boardPostSelected(int position, String boardPostID);
     }
 
 }

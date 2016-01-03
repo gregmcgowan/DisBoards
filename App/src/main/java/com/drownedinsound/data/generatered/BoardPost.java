@@ -31,6 +31,7 @@ public class BoardPost {
     private Integer numberOfTimesRead;
     private boolean isFavourite;
     private boolean isSticky;
+    /** Not-null value. */
     private String boardListTypeID;
 
     // KEEP FIELDS - put your custom fields here
@@ -176,10 +177,12 @@ public class BoardPost {
         this.isSticky = isSticky;
     }
 
+    /** Not-null value. */
     public String getBoardListTypeID() {
         return boardListTypeID;
     }
 
+    /** Not-null value; ensure this value is available before it is saved to the database. */
     public void setBoardListTypeID(String boardListTypeID) {
         this.boardListTypeID = boardListTypeID;
     }
@@ -263,19 +266,6 @@ public class BoardPost {
 
             return 0;
         }
-    }
-
-    public String getLastUpdatedInReadableString() {
-        StringBuilder lastUpdatedBuilder = new StringBuilder();
-        if (lastUpdatedTime > 0) {
-            CharSequence friendlyTime = DateUtils.getRelativeTimeSpanString(
-                    lastUpdatedTime, System.currentTimeMillis(),
-                    DateUtils.SECOND_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL);
-            lastUpdatedBuilder.append("Last updated ");
-            lastUpdatedBuilder.append(friendlyTime.toString());
-
-        }
-        return lastUpdatedBuilder.toString();
     }
 
     @Override
