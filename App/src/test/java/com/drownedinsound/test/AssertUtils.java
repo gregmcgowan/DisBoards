@@ -29,8 +29,6 @@ public class AssertUtils {
         	actual.getAuthorUsername());
         Assert.assertEquals(expected.getContent(), actual.getContent());
         Assert.assertEquals(expected.getDateOfPost(), actual.getDateOfPost());
-        Assert.assertEquals(expected.getLastViewedTime(),
-                actual.getLastViewedTime());
         Assert.assertEquals(expected.getNumberOfReplies(),
                 actual.getNumberOfReplies());
         Assert.assertEquals(expected.getSummary(), actual.getSummary());

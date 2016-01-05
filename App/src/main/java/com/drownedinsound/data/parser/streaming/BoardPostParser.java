@@ -1,11 +1,12 @@
 package com.drownedinsound.data.parser.streaming;
 
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.UserSessionManager;
+import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostComment;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.utils.DateUtils;
+import com.drownedinsound.utils.StringUtils;
 
 import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.EndTag;
@@ -14,15 +15,13 @@ import net.htmlparser.jericho.StartTag;
 import net.htmlparser.jericho.StreamedSource;
 import net.htmlparser.jericho.Tag;
 
-import android.text.Html;
-import android.text.TextUtils;
-import android.util.Log;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.StringTokenizer;
+
+import timber.log.Timber;
 
 public class BoardPostParser {
 
@@ -79,9 +78,9 @@ public class BoardPostParser {
 
     private String latestCommentId;
 
-    private UserSessionManager userSessionManager;
+    private UserSessionRepo userSessionManager;
 
-    public BoardPostParser(UserSessionManager userSessionManager, String boardPostId,
+    public BoardPostParser(UserSessionRepo userSessionManager, String boardPostId,
             @BoardPostList.BoardPostListType String boardListType) {
         this.boardPostId = boardPostId;
         this.boardListType = boardListType;
@@ -135,6 +134,7 @@ public class BoardPostParser {
                                     comments.add(currentBoardPostComment);
                                 }
                                 currentBoardPostComment = new BoardPostComment();
+                                currentBoardPostComment.setBoardPostID(boardPostId);
                                 currentBoardPostComment
                                         .setCommentLevel(boardPostCommentLevel);
                                 String id = ((StartTag) tag)
@@ -182,7 +182,7 @@ public class BoardPostParser {
                             } else if (isInPageState(PageState.EDITIORIAL_DIV)) {
                                 consumingHtmlTags = false;
                                 setPageState(null);
-                                String content = readFromBuffer(false);
+                                String content = readFromBuffer();
                                 currentBoardPost.setContent(content);
                                 // Add the initial post as the first content
                                 BoardPostComment boardPostComment = new BoardPostComment();
@@ -202,11 +202,13 @@ public class BoardPostParser {
                             } else if (isInPageState(PageState.COMMENT_CONTENT_DIV)) {
                                 setPageState(null);
                                 consumingHtmlTags = false;
-                                String content = readFromBuffer(false);
+                                String content = readFromBuffer();
                                 currentBoardPostComment.setContent(content);
                             } else if (isInPageState(PageState.COMMENT_THIS_DIV)) {
                                 setPageState(null);
                                 String usersWhoThisd = readFromBuffer();
+                                usersWhoThisd = usersWhoThisd.replace("\n","");
+                                usersWhoThisd = usersWhoThisd.replaceAll("[ ]{2,}"," ");
                                 currentBoardPostComment
                                         .setUsersWhoHaveThissed(usersWhoThisd);
                                 clearBuffer();
@@ -216,9 +218,7 @@ public class BoardPostParser {
                                 if (commentFooterDivLevel == 0) {
                                     setPageState(null);
                                     String footerText = readFromBuffer();
-                                    // Log.d(TAG,
-                                    // "Comment footer text  ="+footerText);
-                                    if (!TextUtils.isEmpty(footerText)) {
+                                    if (!StringUtils.isEmpty(footerText)) {
                                         String[] combinedDateAndTimeBits = footerText
                                                 .split("\\Q|\\E");
                                         if (combinedDateAndTimeBits != null
@@ -226,7 +226,7 @@ public class BoardPostParser {
                                             String author = combinedDateAndTimeBits[0]
                                                     .trim();
                                             String replyToAuthor = null;
-                                            if (!TextUtils.isEmpty(author)) {
+                                            if (!StringUtils.isEmpty(author)) {
                                                 String[] split = author
                                                         .split("@");
                                                 if (split != null
@@ -286,7 +286,7 @@ public class BoardPostParser {
                                     currentBoardPost.setAuthorUsername(author);
                                 } else if (initialContentAnchorNumber == 5) {
                                     String numberOfReplies = readFromBuffer();
-                                    if (!TextUtils.isEmpty(numberOfReplies)) {
+                                    if (!StringUtils.isEmpty(numberOfReplies)) {
                                         StringTokenizer tokeniser = new StringTokenizer(
                                                 numberOfReplies, " ");
                                         String replyAmountString = tokeniser
@@ -327,7 +327,7 @@ public class BoardPostParser {
                                 if (dateAndTime != null) {
                                     dateAndTime = dateAndTime.replace(",", "");
                                     dateAndTime = dateAndTime.replace("'", "");
-                                    Log.d(TAG, "Date and time " + dateAndTime);
+                                    Timber.d(TAG, "Date and time " + dateAndTime);
                                     Date parsedDate = DateUtils
                                             .parseDate(
                                                     dateAndTime,
@@ -335,11 +335,11 @@ public class BoardPostParser {
                                     if (parsedDate != null) {
                                         long parsedDateLongValue = parsedDate
                                                 .getTime();
-                                        Log.d(TAG, "Date of post"
+                                        Timber.d(TAG, "Date of post"
                                                 + parsedDateLongValue);
                                         latestCommentTime = parsedDateLongValue;
                                     } else {
-                                        Log.d(TAG, "Parsed date is null");
+                                        Timber.d(TAG, "Parsed date is null");
                                     }
                                 }
                             }
@@ -376,8 +376,6 @@ public class BoardPostParser {
                     }
                 } else {
                     if (consumeText()) {
-                        // Log.d(TAG, "adding to buffer = " +
-                        // segment.toString());
                         buffer.append(segment.toString());
                     }
                 }
@@ -401,12 +399,12 @@ public class BoardPostParser {
             }
         }
         if (DisBoardsConstants.DEBUG) {
-            Log.d(TAG, "Parsed board post in "
+            Timber.d(TAG, "Parsed board post in "
                     + (System.currentTimeMillis() - start) + " ms");
             if (DEBUG_PARSER) {
-                Log.d(TAG, currentBoardPost.toString());
+                Timber.d(TAG, currentBoardPost.toString());
                 for (BoardPostComment boardPostComment : comments) {
-                    Log.d(TAG, boardPostComment.toString());
+                    Timber.d(TAG, boardPostComment.toString());
                 }
             }
 
@@ -430,14 +428,7 @@ public class BoardPostParser {
     }
 
     private String readFromBuffer() {
-        return readFromBuffer(true);
-    }
-
-    private String readFromBuffer(boolean convertFromHtml) {
         String content = buffer.toString().trim();
-        if (convertFromHtml) {
-            content = Html.fromHtml(content).toString();
-        }
         return content;
     }
 }
