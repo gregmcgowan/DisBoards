@@ -55,7 +55,6 @@ public class DisApiClient implements DisBoardsApi {
         NEW_POST
     }
 
-    private Context applicationContext;
 
     private OkHttpClient httpClient;;
 
@@ -66,10 +65,9 @@ public class DisApiClient implements DisBoardsApi {
     private DisWebPageParser disWebPageParser;
 
     @Inject
-    public DisApiClient(Application applicationContext, OkHttpClient httpClient,
+    public DisApiClient(OkHttpClient httpClient,
             DisWebPageParser disWebPageParser) {
 
-        this.applicationContext = applicationContext;
         this.httpClient = httpClient;
         this.inProgressRequests = new CopyOnWriteArrayList<>();
         this.disWebPageParser = disWebPageParser;
@@ -127,9 +125,21 @@ public class DisApiClient implements DisBoardsApi {
     }
 
     @Override
-    public Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType String boardListType,
-            String boardPostUrl, String boardPostId) {
-        return null;
+    public Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType String boardListType, String boardPostId) {
+        String url = UrlConstants.getBoardPostUrl(baseUrl,boardListType,boardPostId);
+        return makeRequest(RequestMethod.GET,url,url)
+                .flatMap(new Func1<Response, Observable<BoardPost>>() {
+            @Override
+            public Observable<BoardPost> call(Response response) {
+                try {
+                    BoardPost boardPost
+                            = disWebPageParser.parseBoardPost(getInputStreamFromResponse(response));
+                    return Observable.just(boardPost);
+                } catch (IOException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
     }
 
     @Override

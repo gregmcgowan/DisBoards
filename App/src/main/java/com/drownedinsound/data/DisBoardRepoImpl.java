@@ -98,7 +98,7 @@ public class DisBoardRepoImpl implements DisBoardRepo {
 
 
     @Override
-    public Observable<Void> thisAComment(String boardPostUrl, String boardPostId, String commentId,
+    public Observable<Void> thisAComment(String boardPostId, String commentId,
             @BoardPostList.BoardPostListType String boardListType) {
         return null;
     }

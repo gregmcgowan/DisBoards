@@ -16,7 +16,7 @@ public interface DisBoardsApi {
 
         Observable<LoginResponse> loginUser(String username, String password);
 
-        Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType String boardListType, String boardPostUrl, String boardPostId);
+        Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType String boardListType, String boardPostId);
 
         Observable<List<BoardPostSummary>> getBoardPostSummaryList(@BoardPostList.BoardPostListType String boardListType, String boardPostUrl, int pageNumber);
 

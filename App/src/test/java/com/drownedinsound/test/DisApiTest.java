@@ -1,6 +1,8 @@
 package com.drownedinsound.test;
 
 import com.drownedinsound.data.UserSessionRepo;
+import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostComment;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
@@ -13,6 +15,7 @@ import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
+import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import junit.framework.Assert;
 
@@ -44,9 +47,6 @@ public class DisApiTest {
     private DisApiClient disApiClient;
 
     @Mock
-    Application application;
-
-    @Mock
     UserSessionRepo userSessionRepo;
 
     @Mock
@@ -63,7 +63,7 @@ public class DisApiTest {
         MockitoAnnotations.initMocks(this);
 
         OkHttpClient okHttpClient = new OkHttpClient();
-        disApiClient = new DisApiClient(application,okHttpClient,disWebPageParser);
+        disApiClient = new DisApiClient(okHttpClient,disWebPageParser);
 
         boardPostListInfo = new BoardPostList(BoardListTypes.MUSIC,
                 BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 0, 19,0);
@@ -140,5 +140,101 @@ public class DisApiTest {
                 });
         countDownLatch.await();
         mockWebServer.shutdown();
+    }
+
+    @Test
+    public void testGetBoardPost () throws Exception {
+        final BoardPost expectedBoardPost = new BoardPost();
+        expectedBoardPost.setBoardPostID("4471118");
+        expectedBoardPost.setAuthorUsername("shitty_zombies");
+        expectedBoardPost.setTitle("Charlie Brooker&#x27;s 2015 Wipe");
+        expectedBoardPost.setContent("<p>Christ, that was bleak, wasn&#x27;t it?</p>");
+        expectedBoardPost.setDateOfPost("22:55, 30 December '15");
+        expectedBoardPost.setBoardListTypeID(BoardListTypes.SOCIAL);
+        expectedBoardPost.setNumberOfReplies(5);
+
+        BoardPostComment initialComment = new BoardPostComment();
+        initialComment.setBoardPostID("4471118");
+        initialComment.setAuthorUsername("shitty_zombies");
+        initialComment.setTitle("Charlie Brooker&#x27;s 2015 Wipe");
+        initialComment.setContent("<p>Christ, that was bleak, wasn&#x27;t it?</p>");
+        initialComment.setDateAndTime("22:55, 30 December '15");
+
+        BoardPostComment firstComment = new BoardPostComment();
+        firstComment.setBoardPostID("4471118");
+        firstComment.setDateAndTime("30 Dec '15, 23:01");
+        firstComment.setAuthorUsername("-dan-");
+        firstComment.setTitle("Cheers, hadn&#x27;t even realised it was on.");
+        firstComment.setCommentLevel(0);
+        firstComment.setCommentID("8823245");
+
+        BoardPostComment secondComment = new BoardPostComment();
+        secondComment.setBoardPostID("4471118");
+        secondComment.setDateAndTime("30 Dec '15, 23:01");
+        secondComment.setAuthorUsername("BMS1");
+        secondComment.setTitle("I&#x27;ve got it taped. I&#x27;ll watch it tomorrow.");
+        secondComment.setContent(
+                "<p>Usually it's good fun. Hopefully, Barry Shitpeas has some good lines.</p>");
+        secondComment.setCommentID("8823246");
+
+        BoardPostComment thirdComment = new BoardPostComment();
+        thirdComment.setBoardPostID("4471118");
+        thirdComment.setTitle("Had a feeling it would be");
+        thirdComment.setContent("<p>Hence why I didn't watch it this time!</p>");
+        thirdComment.setAuthorUsername("kiyonemakibi");
+        thirdComment.setDateAndTime("30 Dec '15, 23:19");
+        thirdComment.setCommentID("8823251");
+
+        BoardPostComment fourthComment = new BoardPostComment();
+        fourthComment.setBoardPostID("4471118");
+        fourthComment.setTitle("i think he&#x27;s phoning it in now");
+        fourthComment.setAuthorUsername("bluto");
+        fourthComment.setDateAndTime("31 Dec '15, 03:13");
+        fourthComment.setCommentID("8823285");
+
+        BoardPostComment fifthComment = new BoardPostComment();
+        fifthComment.setBoardPostID("4471118");
+        fifthComment.setTitle("Autofill?");
+        fifthComment.setAuthorUsername("Pentago");
+        fifthComment.setDateAndTime("31 Dec '15, 09:56");
+        fifthComment.setUsersWhoHaveThissed("bluto and ericthethird this'd this");
+        fifthComment.setCommentID("8823351");
+        fifthComment.setCommentLevel(1);
+
+        List<BoardPostComment> boardPostComments = new ArrayList<>();
+        boardPostComments.add(initialComment);
+        boardPostComments.add(firstComment);
+        boardPostComments.add(secondComment);
+        boardPostComments.add(thirdComment);
+        boardPostComments.add(fourthComment);
+        boardPostComments.add(fifthComment);
+
+        expectedBoardPost.setComments(boardPostComments);
+
+        when(disWebPageParser.parseBoardPost(any(InputStream.class))).thenReturn(expectedBoardPost);
+
+        final MockWebServer mockWebServer = new MockWebServer();
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("gewgewgewgew"));
+        mockWebServer.start();
+
+        HttpUrl base = mockWebServer.url("");
+        disApiClient.setBaseUrl(base.toString());
+
+        countDownLatch = new CountDownLatch(1);
+        disApiClient.getBoardPost(BoardListTypes.SOCIAL,"4471118")
+                .subscribeOn(Schedulers.immediate())
+                .subscribe(new Action1<BoardPost>() {
+                    @Override
+                    public void call(BoardPost boardPost) {
+                        AssertUtils.assertBoardPost(expectedBoardPost, boardPost);
+                        countDownLatch.countDown();
+                    }
+                });
+        countDownLatch.await();
+        RecordedRequest lastRequest = mockWebServer.takeRequest();
+
+        Assert.assertEquals(lastRequest.getPath(),"/community/boards/social/4471118");
+        mockWebServer.shutdown();
+
     }
 }

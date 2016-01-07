@@ -22,7 +22,7 @@ public interface DisBoardRepo {
 
     Observable<List<BoardPostSummary>> getBoardPostSummaryList(@BoardPostList.BoardPostListType String boardListType, int pageNumber,boolean forceUpdate);
 
-    Observable<Void> thisAComment(String boardPostUrl, String boardPostId, String commentId,
+    Observable<Void> thisAComment(String boardPostId, String commentId,
             @BoardPostList.BoardPostListType String boardListType);
 
     boolean isUserLoggedIn();

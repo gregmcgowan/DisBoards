@@ -2,6 +2,7 @@ package com.drownedinsound.data.network;
 
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.model.BoardListTypes;
+import com.drownedinsound.utils.StringUtils;
 
 import android.text.TextUtils;
 
@@ -76,5 +77,42 @@ public class UrlConstants {
             }
         }
         return boardListType;
+    }
+
+    public static String getBoardPostListUrl(String baseUrl, @BoardPostList.BoardPostListType String boardListType) {
+        StringBuilder urlBuilder =  new StringBuilder();
+        urlBuilder.append(baseUrl);
+        urlBuilder.append(BOARD_BASE_PATH);
+
+        if(BoardListTypes.MUSIC.equals(boardListType)) {
+            urlBuilder.append(MUSIC_BOARD_NAME);
+            urlBuilder.append("/");
+        } else if (BoardListTypes.SOCIAL.equals(boardListType)) {
+            urlBuilder.append(SOCIAL_BOARD_NAME);
+            urlBuilder.append("/");
+        } else if (BoardListTypes.ANNOUNCEMENTS_CLASSIFIEDS.equals(boardListType)) {
+            urlBuilder.append(ANNOUNCEMENTS_BOARD_NAME);
+            urlBuilder.append("/");
+        } else if (BoardListTypes.MUSICIANS.equals(boardListType)) {
+            urlBuilder.append(MUSIC_BOARD_NAME);
+            urlBuilder.append("/");
+        } else if (BoardListTypes.FESTIVALS.equals(boardListType)) {
+            urlBuilder.append(MUSIC_BOARD_NAME);
+            urlBuilder.append("/");
+        } else if (BoardListTypes.ERRORS_SUGGESTIONS.equals(boardListType)) {
+            urlBuilder.append(MUSIC_BOARD_NAME);
+            urlBuilder.append("/");
+        }
+
+        return urlBuilder.toString();
+    }
+
+    public static String getBoardPostUrl(String baseUrl, @BoardPostList.BoardPostListType String boardListType,
+            String boardPostId) {
+        String boardPostUrl = getBoardPostListUrl(baseUrl,boardListType);
+        if(!StringUtils.isEmpty(baseUrl)) {
+            boardPostUrl += boardPostId;
+        }
+        return boardPostUrl;
     }
 }
