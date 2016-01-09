@@ -207,7 +207,7 @@ public class DisBoardsRepoTest {
 
         countDownLatch = new CountDownLatch(1);
 
-        disBoardRepo.getBoardPost (BoardListTypes.SOCIAL, BOARD_POST_ID, true)
+        disBoardRepo.getBoardPost(BoardListTypes.SOCIAL, BOARD_POST_ID, true)
                 .subscribeOn(Schedulers.immediate())
                 .observeOn(Schedulers.immediate())
                 .subscribe(new Action1<BoardPost>() {
@@ -308,6 +308,39 @@ public class DisBoardsRepoTest {
 
         verify(disApiClient, times(1)).getBoardPost(BoardListTypes.SOCIAL, BOARD_POST_ID);
         verify(disBoardsLocalRepo, times(2)).getBoardPost(BOARD_POST_ID);
+    }
+
+    @Test
+    public void testNoCachedValue() throws Exception {
+        when(disBoardsLocalRepo.getBoardPost(BOARD_POST_ID))
+                .thenReturn(Observable.create(new Observable.OnSubscribe<BoardPost>() {
+                    @Override
+                    public void call(Subscriber<? super BoardPost> subscriber) {
+                        BoardPost nullPost = null;
+                        subscriber.onNext(nullPost);
+                        subscriber.onCompleted();
+                    }
+                }));
+
+        when(disApiClient.getBoardPost(BoardListTypes.SOCIAL,BOARD_POST_ID))
+                .thenReturn(Observable.just(expectedBoardPost));
+
+        countDownLatch = new CountDownLatch(1);
+
+        disBoardRepo.getBoardPost(BoardListTypes.SOCIAL, BOARD_POST_ID, false)
+                .subscribeOn(Schedulers.immediate())
+                .observeOn(Schedulers.immediate())
+                .subscribe(new Action1<BoardPost>() {
+                    @Override
+                    public void call(BoardPost boardPost) {
+                        AssertUtils.assertBoardPost(expectedBoardPost, boardPost);
+                        countDownLatch.countDown();
+                    }
+                });
+        countDownLatch.await();
+        verify(disApiClient, times(1)).getBoardPost(BoardListTypes.SOCIAL, BOARD_POST_ID);
+        verify(disBoardsLocalRepo, times(2)).getBoardPost(BOARD_POST_ID);
+
     }
 
 }

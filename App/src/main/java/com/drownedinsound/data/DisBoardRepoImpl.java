@@ -107,7 +107,8 @@ public class DisBoardRepoImpl implements DisBoardRepo {
                     new Func1<BoardPost, Observable<BoardPost>>() {
                         @Override
                         public Observable<BoardPost> call(BoardPost boardPost) {
-                            long lastFetchedTime = boardPost.getLastFetchedTime();
+                                     long lastFetchedTime = boardPost != null ? boardPost.getLastFetchedTime()
+                                    : 0l;
                             long fiveMinutesAgo = System.currentTimeMillis()
                                     - (DateUtils.MINUTE_IN_MILLIS
                                     * MAX_BOARD_POST_AGE_MINUTES);
@@ -134,7 +135,7 @@ public class DisBoardRepoImpl implements DisBoardRepo {
                         try {
                             disBoardsLocalRepo.setBoardPost(boardPost);
                         } catch (Exception e) {
-                            Timber.d("Could not cache board post "+boardPostId);
+                            Timber.d("Could not cache board post "+boardPostId + " exception "+e.getMessage());
                         }
                     }
                 });
