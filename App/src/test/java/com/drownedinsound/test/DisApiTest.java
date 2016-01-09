@@ -35,6 +35,7 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.eq;
 
@@ -211,7 +212,9 @@ public class DisApiTest {
 
         expectedBoardPost.setComments(boardPostComments);
 
-        when(disWebPageParser.parseBoardPost(any(InputStream.class))).thenReturn(expectedBoardPost);
+        when(disWebPageParser.parseBoardPost(eq(BoardListTypes.SOCIAL),anyString(),
+                any(InputStream.class))).thenReturn(
+                expectedBoardPost);
 
         final MockWebServer mockWebServer = new MockWebServer();
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("gewgewgewgew"));
