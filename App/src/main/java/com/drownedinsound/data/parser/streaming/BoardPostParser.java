@@ -111,6 +111,7 @@ public class BoardPostParser {
         currentBoardPost = new BoardPost();
         currentBoardPost.setBoardListTypeID(boardListType);
         currentBoardPost.setBoardPostID(boardPostId);
+        currentBoardPost.setLastFetchedTime(System.currentTimeMillis());
         try {
             StreamedSource streamedSource = new StreamedSource(inputStream);
             for (Segment segment : streamedSource) {

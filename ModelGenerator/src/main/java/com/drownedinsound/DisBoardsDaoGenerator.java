@@ -60,6 +60,7 @@ public class DisBoardsDaoGenerator {
         boardPostEntity.addLongProperty("lastViewedTime").notNull();
         boardPostEntity.addLongProperty("createdTime").notNull();
         boardPostEntity.addLongProperty("lastUpdatedTime").notNull();
+        boardPostEntity.addLongProperty("lastFetchedTime").notNull();
         boardPostEntity.addStringProperty("latestCommentID");
         boardPostEntity.addIntProperty("numberOfTimesRead");
         boardPostEntity.addBooleanProperty("isFavourite").notNull();

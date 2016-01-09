@@ -27,6 +27,7 @@ public class BoardPost {
     private long lastViewedTime;
     private long createdTime;
     private long lastUpdatedTime;
+    private long lastFetchedTime;
     private String latestCommentID;
     private Integer numberOfTimesRead;
     private boolean isFavourite;
@@ -47,7 +48,7 @@ public class BoardPost {
         this.boardPostID = boardPostID;
     }
 
-    public BoardPost(String boardPostID, String title, String summary, String content, String authorUsername, String dateOfPost, Integer numberOfReplies, long lastViewedTime, long createdTime, long lastUpdatedTime, String latestCommentID, Integer numberOfTimesRead, boolean isFavourite, boolean isSticky, String boardListTypeID) {
+    public BoardPost(String boardPostID, String title, String summary, String content, String authorUsername, String dateOfPost, Integer numberOfReplies, long lastViewedTime, long createdTime, long lastUpdatedTime, long lastFetchedTime, String latestCommentID, Integer numberOfTimesRead, boolean isFavourite, boolean isSticky, String boardListTypeID) {
         this.boardPostID = boardPostID;
         this.title = title;
         this.summary = summary;
@@ -58,6 +59,7 @@ public class BoardPost {
         this.lastViewedTime = lastViewedTime;
         this.createdTime = createdTime;
         this.lastUpdatedTime = lastUpdatedTime;
+        this.lastFetchedTime = lastFetchedTime;
         this.latestCommentID = latestCommentID;
         this.numberOfTimesRead = numberOfTimesRead;
         this.isFavourite = isFavourite;
@@ -143,6 +145,14 @@ public class BoardPost {
 
     public void setLastUpdatedTime(long lastUpdatedTime) {
         this.lastUpdatedTime = lastUpdatedTime;
+    }
+
+    public long getLastFetchedTime() {
+        return lastFetchedTime;
+    }
+
+    public void setLastFetchedTime(long lastFetchedTime) {
+        this.lastFetchedTime = lastFetchedTime;
     }
 
     public String getLatestCommentID() {

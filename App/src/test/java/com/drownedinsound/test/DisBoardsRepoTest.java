@@ -26,14 +26,17 @@ import rx.Subscriber;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.eq;
 
 /**
  * Created by gregmcgowan on 09/12/15.
  */
 public class DisBoardsRepoTest {
+
+    public static final String BOARD_POST_ID = "4471118";
 
     @Mock
     DisApiClient disApiClient;
@@ -50,7 +53,9 @@ public class DisBoardsRepoTest {
 
     private CountDownLatch countDownLatch;
 
-    private BoardPostList boardPostListInfo;
+    private BoardPostList boardPostList;
+
+    private BoardPost expectedBoardPost;
 
     @Before
     public void setup() {
@@ -59,17 +64,27 @@ public class DisBoardsRepoTest {
         disBoardRepo = new DisBoardRepoImpl(disApiClient, disBoardsLocalRepo,
                 userSessionRepo);
 
-        boardPostListInfo = new BoardPostList(BoardListTypes.MUSIC,
-                BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 0, 19,0);
+        boardPostList = new BoardPostList(BoardListTypes.MUSIC,
+                BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 0, 19, 0);
 
-        BoardPostSummary boardPost = new BoardPostSummary();
-        boardPost.setAuthorUsername(BoardPostTestData.BOARD_POST_AUTHOR);
-        boardPost.setTitle(BoardPostTestData.BOARD_POST_TITLE);
-        boardPost.setNumberOfReplies(BoardPostTestData.BOARD_POST_NUMBER_OF_COMMENTS);
+        BoardPostSummary boardPostSummary = new BoardPostSummary();
+        boardPostSummary.setAuthorUsername(BoardPostTestData.BOARD_POST_AUTHOR);
+        boardPostSummary.setTitle(BoardPostTestData.BOARD_POST_TITLE);
+        boardPostSummary.setNumberOfReplies(BoardPostTestData.BOARD_POST_NUMBER_OF_COMMENTS);
 
         testBoardPostSummaries = new ArrayList<>();
-        testBoardPostSummaries.add(boardPost);
+        testBoardPostSummaries.add(boardPostSummary);
+
+        expectedBoardPost = new BoardPost();
+        expectedBoardPost.setBoardPostID("4471118");
+        expectedBoardPost.setAuthorUsername("shitty_zombies");
+        expectedBoardPost.setTitle("Charlie Brooker&#x27;s 2015 Wipe");
+        expectedBoardPost.setContent("<p>Christ, that was bleak, wasn&#x27;t it?</p>");
+        expectedBoardPost.setDateOfPost("22:55, 30 December '15");
+        expectedBoardPost.setBoardListTypeID(BoardListTypes.SOCIAL);
+        expectedBoardPost.setNumberOfReplies(5);
     }
+
 
     @Test
     public void testLogin() throws Exception {
@@ -97,10 +112,10 @@ public class DisBoardsRepoTest {
         int page = 1;
 
         when(disBoardsLocalRepo.getBoardPostList(BoardListTypes.MUSIC))
-                .thenReturn(Observable.just(boardPostListInfo));
+                .thenReturn(Observable.just(boardPostList));
 
         when(disApiClient.getBoardPostSummaryList(BoardListTypes.MUSIC,
-                boardPostListInfo.getUrl(), 1))
+                boardPostList.getUrl(), 1))
                 .thenReturn(Observable.just(testBoardPostSummaries));
 
         countDownLatch = new CountDownLatch(1);
@@ -118,7 +133,7 @@ public class DisBoardsRepoTest {
                     }
                 });
         verify(disApiClient).getBoardPostSummaryList(BoardListTypes.MUSIC,
-                boardPostListInfo.getUrl(), page);
+                boardPostList.getUrl(), page);
         countDownLatch.await();
     }
 
@@ -126,11 +141,11 @@ public class DisBoardsRepoTest {
     public void testGetListCached() throws Exception {
         int page = 1;
 
-        boardPostListInfo.setLastFetchedMs(System.currentTimeMillis() - (60 * 1000));
-        boardPostListInfo.setBoardPostSummaries(testBoardPostSummaries);
+        boardPostList.setLastFetchedMs(System.currentTimeMillis() - (60 * 1000));
+        boardPostList.setBoardPostSummaries(testBoardPostSummaries);
 
         when(disBoardsLocalRepo.getBoardPostList(BoardListTypes.MUSIC))
-                .thenReturn(Observable.just(boardPostListInfo));
+                .thenReturn(Observable.just(boardPostList));
 
         countDownLatch = new CountDownLatch(1);
 
@@ -150,12 +165,12 @@ public class DisBoardsRepoTest {
     }
 
     @Test
-    public void testGetListNetworkError() throws Exception{
+    public void testGetListNetworkError() throws Exception {
         int page = 1;
-        boardPostListInfo.setBoardPostSummaries(testBoardPostSummaries);
+        boardPostList.setBoardPostSummaries(testBoardPostSummaries);
 
         when(disApiClient.getBoardPostSummaryList(BoardListTypes.MUSIC,
-                boardPostListInfo.getUrl(), 1)).thenReturn(Observable.create(
+                boardPostList.getUrl(), 1)).thenReturn(Observable.create(
                 new Observable.OnSubscribe<List<BoardPostSummary>>() {
                     @Override
                     public void call(Subscriber<? super List<BoardPostSummary>> subscriber) {
@@ -164,8 +179,7 @@ public class DisBoardsRepoTest {
                 }));
 
         when(disBoardsLocalRepo.getBoardPostList(BoardListTypes.MUSIC)).thenReturn(Observable.just(
-                boardPostListInfo));
-
+                boardPostList));
 
         countDownLatch = new CountDownLatch(1);
 
@@ -182,8 +196,118 @@ public class DisBoardsRepoTest {
                     }
                 });
         verify(disApiClient).getBoardPostSummaryList(BoardListTypes.MUSIC,
-                boardPostListInfo.getUrl(), page);
+                boardPostList.getUrl(), page);
         countDownLatch.await();
+    }
+
+    @Test
+    public void testGetBoardPostForce() throws Exception {
+        when(disApiClient.getBoardPost(BoardListTypes.SOCIAL, BOARD_POST_ID))
+                .thenReturn(Observable.just(expectedBoardPost));
+
+        countDownLatch = new CountDownLatch(1);
+
+        disBoardRepo.getBoardPost (BoardListTypes.SOCIAL, BOARD_POST_ID, true)
+                .subscribeOn(Schedulers.immediate())
+                .observeOn(Schedulers.immediate())
+                .subscribe(new Action1<BoardPost>() {
+                    @Override
+                    public void call(BoardPost boardPost) {
+                        AssertUtils.assertBoardPost(expectedBoardPost, boardPost);
+                        countDownLatch.countDown();
+                    }
+                });
+        countDownLatch.await();
+
+        verify(disApiClient, times(1)).getBoardPost(BoardListTypes.SOCIAL, BOARD_POST_ID);
+       // verify(disBoardsLocalRepo, never()).getBoardPost(BOARD_POST_ID);
+    }
+
+    @Test
+    public void testGetBoardPostCached() throws Exception {
+        expectedBoardPost.setLastFetchedTime(System.currentTimeMillis());
+        when(disBoardsLocalRepo.getBoardPost(BOARD_POST_ID))
+                .thenReturn(Observable.just(expectedBoardPost));
+
+        countDownLatch = new CountDownLatch(1);
+
+        disBoardRepo.getBoardPost(BoardListTypes.SOCIAL, BOARD_POST_ID, false)
+                .subscribeOn(Schedulers.immediate())
+                .observeOn(Schedulers.immediate())
+                .subscribe(new Action1<BoardPost>() {
+                    @Override
+                    public void call(BoardPost boardPost) {
+                        AssertUtils.assertBoardPost(expectedBoardPost, boardPost);
+                        countDownLatch.countDown();
+                    }
+                });
+        countDownLatch.await();
+
+        verify(disApiClient, never()).getBoardPost(BoardListTypes.SOCIAL, BOARD_POST_ID);
+        verify(disBoardsLocalRepo, times(1)).getBoardPost(BOARD_POST_ID);
+    }
+
+    @Test
+    public void testGetBoardPostStaleData() throws Exception {
+        expectedBoardPost.setLastFetchedTime(System.currentTimeMillis()
+                - (20L * 60L * 1000L));
+
+        when(disBoardsLocalRepo.getBoardPost(BOARD_POST_ID))
+                .thenReturn(Observable.just(expectedBoardPost));
+
+        when(disApiClient.getBoardPost(BoardListTypes.SOCIAL, BOARD_POST_ID))
+                .thenReturn(Observable.just(expectedBoardPost));
+
+        countDownLatch = new CountDownLatch(1);
+
+        disBoardRepo.getBoardPost(BoardListTypes.SOCIAL, BOARD_POST_ID, false)
+                .subscribeOn(Schedulers.immediate())
+                .observeOn(Schedulers.immediate())
+                .subscribe(new Action1<BoardPost>() {
+                    @Override
+                    public void call(BoardPost boardPost) {
+                        AssertUtils.assertBoardPost(expectedBoardPost, boardPost);
+                        countDownLatch.countDown();
+                    }
+                });
+        countDownLatch.await();
+
+        verify(disApiClient, times(1)).getBoardPost(BoardListTypes.SOCIAL, BOARD_POST_ID);
+        verify(disBoardsLocalRepo, times(2)).getBoardPost(BOARD_POST_ID);
+    }
+
+
+    @Test
+    public void testGetBoardNetworkError() throws Exception {
+        expectedBoardPost.setLastFetchedTime(System.currentTimeMillis()
+                - (20L * 60L * 1000L));
+
+        when(disBoardsLocalRepo.getBoardPost(BOARD_POST_ID))
+                .thenReturn(Observable.just(expectedBoardPost));
+
+        when(disApiClient.getBoardPost(BoardListTypes.SOCIAL, BOARD_POST_ID))
+                .thenReturn(Observable.create(new Observable.OnSubscribe<BoardPost>() {
+                    @Override
+                    public void call(Subscriber<? super BoardPost> subscriber) {
+                        subscriber.onError(new Exception("Exception"));
+                    }
+                }));
+        countDownLatch = new CountDownLatch(1);
+
+        disBoardRepo.getBoardPost(BoardListTypes.SOCIAL, BOARD_POST_ID, false)
+                .subscribeOn(Schedulers.immediate())
+                .observeOn(Schedulers.immediate())
+                .subscribe(new Action1<BoardPost>() {
+                    @Override
+                    public void call(BoardPost boardPost) {
+                        AssertUtils.assertBoardPost(expectedBoardPost, boardPost);
+                        countDownLatch.countDown();
+                    }
+                });
+        countDownLatch.await();
+
+        verify(disApiClient, times(1)).getBoardPost(BoardListTypes.SOCIAL, BOARD_POST_ID);
+        verify(disBoardsLocalRepo, times(2)).getBoardPost(BOARD_POST_ID);
     }
 
 }

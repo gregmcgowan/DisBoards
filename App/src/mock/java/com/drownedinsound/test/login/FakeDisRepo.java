@@ -39,7 +39,7 @@ public class FakeDisRepo implements DisBoardRepo {
 
     @Override
     public Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType String boardListType,
-            String boardPostId) {
+            String boardPostId, boolean forceUpdate) {
         return null;
     }
 

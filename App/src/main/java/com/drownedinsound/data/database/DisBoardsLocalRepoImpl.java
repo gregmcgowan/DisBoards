@@ -1,6 +1,7 @@
 package com.drownedinsound.data.database;
 
 import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostComment;
 import com.drownedinsound.data.generatered.BoardPostCommentDao;
 import com.drownedinsound.data.generatered.BoardPostDao;
 import com.drownedinsound.data.generatered.BoardPostList;
@@ -10,9 +11,8 @@ import com.drownedinsound.data.generatered.BoardPostSummaryDao;
 import com.drownedinsound.data.generatered.DaoSession;
 import com.drownedinsound.utils.AssertUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
@@ -24,6 +24,8 @@ import rx.Subscriber;
  */
 public class DisBoardsLocalRepoImpl implements DisBoardsLocalRepo {
 
+    private DaoSession daoSession;
+
     private BoardPostDao boardPostDao;
 
     private BoardPostListDao boardPostListDao;
@@ -34,6 +36,7 @@ public class DisBoardsLocalRepoImpl implements DisBoardsLocalRepo {
 
     @Inject
     public DisBoardsLocalRepoImpl(DaoSession daoSession) {
+        this.daoSession = daoSession;
         this.boardPostDao = daoSession.getBoardPostDao();
         this.boardPostListDao = daoSession.getBoardPostListDao();
         this.boardPostCommentDao = daoSession.getBoardPostCommentDao();
@@ -41,13 +44,51 @@ public class DisBoardsLocalRepoImpl implements DisBoardsLocalRepo {
     }
 
     @Override
-    public Observable<BoardPost> getBoardPost(String postId) {
-        return null;
+    public Observable<BoardPost> getBoardPost(final String postId) {
+        return Observable.create(new Observable.OnSubscribe<BoardPost>() {
+            @Override
+            public void call(Subscriber<? super BoardPost> subscriber) {
+                BoardPost boardPost = boardPostDao.load(postId);
+                if(boardPost != null) {
+                    List<BoardPostComment> comments
+                            = boardPostCommentDao.queryBuilder()
+                            .where(BoardPostCommentDao.Properties.BoardPostID.eq(postId)).list();
+                    boardPost.setComments(comments);
+                }
+                subscriber.onNext(boardPost);
+                subscriber.onCompleted();
+            }
+        });
     }
 
     @Override
-    public Observable<Void> setBoardPost(BoardPost boardPost) {
-        return null;
+    public void setBoardPost(final BoardPost boardPost) throws Exception {
+        AssertUtils.checkMainThread();
+            daoSession.callInTx(new Callable<Boolean>() {
+                @Override
+                public Boolean call() throws Exception {
+                    boardPostDao.insertOrReplace(boardPost);
+                    List<BoardPostComment> boardPostComments = boardPost.getComments();
+                    boardPostCommentDao.insertOrReplaceInTx(boardPostComments);
+                    return true;
+                }
+            });
+
+    }
+
+    @Override
+    public Observable<Void> setBoardPostObservable(final BoardPost boardPost) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                try {
+                    setBoardPost(boardPost);
+                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
     }
 
     @Override

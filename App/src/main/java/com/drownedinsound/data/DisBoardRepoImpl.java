@@ -22,7 +22,8 @@ import timber.log.Timber;
  */
 public class DisBoardRepoImpl implements DisBoardRepo {
 
-    private static final long MAX_BOARD_POST_LIST_AGE_MINUTES = 5;
+    private static final long MAX_BOARD_POST_LIST_AGE_MINUTES = 15;
+    private static final long MAX_BOARD_POST_AGE_MINUTES = 15;
 
     private DisBoardsApi disApi;
     private DisBoardsLocalRepo disBoardsLocalRepo;
@@ -55,7 +56,8 @@ public class DisBoardRepoImpl implements DisBoardRepo {
         return disBoardsLocalRepo.getBoardPostList(boardListType).flatMap(
                 new Func1<BoardPostList, Observable<List<BoardPostSummary>>>() {
                     @Override
-                    public Observable<List<BoardPostSummary>> call(final BoardPostList boardPostList) {
+                    public Observable<List<BoardPostSummary>> call(
+                            final BoardPostList boardPostList) {
                         long lastFetchedTime = boardPostList.getLastFetchedMs();
                         long fiveMinutesAgo = System.currentTimeMillis()
                                 - (DateUtils.MINUTE_IN_MILLIS
@@ -70,16 +72,21 @@ public class DisBoardRepoImpl implements DisBoardRepo {
                             return disApi
                                     .getBoardPostSummaryList(boardListType, boardPostList.getUrl(),
                                             pageNumber)
-                                    .flatMap(new Func1<List<BoardPostSummary>, Observable<List<BoardPostSummary>>>() {
-                                        @Override
-                                        public Observable<List<BoardPostSummary>> call(List<BoardPostSummary> boardPosts) {
-                                            boardPostList.setLastFetchedMs(System.currentTimeMillis());
-                                            disBoardsLocalRepo.setBoardPostList(boardPostList);
-                                            disBoardsLocalRepo.setBoardPostSummaries(boardPosts);
+                                    .flatMap(
+                                            new Func1<List<BoardPostSummary>, Observable<List<BoardPostSummary>>>() {
+                                                @Override
+                                                public Observable<List<BoardPostSummary>> call(
+                                                        List<BoardPostSummary> boardPosts) {
+                                                    boardPostList.setLastFetchedMs(
+                                                            System.currentTimeMillis());
+                                                    disBoardsLocalRepo
+                                                            .setBoardPostList(boardPostList);
+                                                    disBoardsLocalRepo
+                                                            .setBoardPostSummaries(boardPosts);
 
-                                            return Observable.just(boardPosts);
-                                        }
-                                    }).onErrorResumeNext(Observable.just(posts));
+                                                    return Observable.just(boardPosts);
+                                                }
+                                            }).onErrorResumeNext(Observable.just(posts));
                         }
                     }
                 });
@@ -91,9 +98,46 @@ public class DisBoardRepoImpl implements DisBoardRepo {
     }
 
     @Override
-    public Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType String boardListType,
-            String boardPostId) {
-        return null;
+    public Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType final String boardListType,
+            final String boardPostId,boolean forceUpdate) {
+        if(forceUpdate) {
+            return getBoardPostFromNetwork(boardListType,boardPostId);
+        } else  {
+            return disBoardsLocalRepo.getBoardPost(boardPostId).flatMap(
+                    new Func1<BoardPost, Observable<BoardPost>>() {
+                        @Override
+                        public Observable<BoardPost> call(BoardPost boardPost) {
+                            long lastFetchedTime = boardPost.getLastFetchedTime();
+                            long fiveMinutesAgo = System.currentTimeMillis()
+                                    - (DateUtils.MINUTE_IN_MILLIS
+                                    * MAX_BOARD_POST_AGE_MINUTES);
+
+                            boolean recentlyFetched = lastFetchedTime > fiveMinutesAgo;
+                            if(recentlyFetched) {
+                                return Observable.just(boardPost);
+                            } else {
+                                return getBoardPostFromNetwork(boardListType,boardPostId);
+                            }
+                        }
+                    });
+        }
+    }
+
+    private Observable<BoardPost> getBoardPostFromNetwork(@BoardPostList.BoardPostListType final String
+            boardListType, final String boardPostId) {
+        return disApi.getBoardPost(boardListType,boardPostId)
+                .onErrorResumeNext(disBoardsLocalRepo.getBoardPost(boardPostId))
+                .doOnNext(new Action1<BoardPost>() {
+                    @Override
+                    public void call(BoardPost boardPost) {
+
+                        try {
+                            disBoardsLocalRepo.setBoardPost(boardPost);
+                        } catch (Exception e) {
+                            Timber.d("Could not cache board post "+boardPostId);
+                        }
+                    }
+                });
     }
 
 

@@ -16,11 +16,14 @@ public interface DisBoardRepo {
 
     Observable<LoginResponse> loginUser(String username, String password);
 
-    Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType String boardListType, String boardPostId);
+    Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType String boardListType,
+            String boardPostId, boolean forceUpdate);
 
     Observable<List<BoardPostList>> getAllBoardPostLists();
 
-    Observable<List<BoardPostSummary>> getBoardPostSummaryList(@BoardPostList.BoardPostListType String boardListType, int pageNumber,boolean forceUpdate);
+    Observable<List<BoardPostSummary>> getBoardPostSummaryList(
+            @BoardPostList.BoardPostListType String boardListType, int pageNumber,
+            boolean forceUpdate);
 
     Observable<Void> thisAComment(String boardPostId, String commentId,
             @BoardPostList.BoardPostListType String boardListType);

@@ -33,11 +33,12 @@ public class BoardPostDao extends AbstractDao<BoardPost, String> {
         public final static Property LastViewedTime = new Property(7, long.class, "lastViewedTime", false, "LAST_VIEWED_TIME");
         public final static Property CreatedTime = new Property(8, long.class, "createdTime", false, "CREATED_TIME");
         public final static Property LastUpdatedTime = new Property(9, long.class, "lastUpdatedTime", false, "LAST_UPDATED_TIME");
-        public final static Property LatestCommentID = new Property(10, String.class, "latestCommentID", false, "LATEST_COMMENT_ID");
-        public final static Property NumberOfTimesRead = new Property(11, Integer.class, "numberOfTimesRead", false, "NUMBER_OF_TIMES_READ");
-        public final static Property IsFavourite = new Property(12, boolean.class, "isFavourite", false, "IS_FAVOURITE");
-        public final static Property IsSticky = new Property(13, boolean.class, "isSticky", false, "IS_STICKY");
-        public final static Property BoardListTypeID = new Property(14, String.class, "boardListTypeID", false, "BOARD_LIST_TYPE_ID");
+        public final static Property LastFetchedTime = new Property(10, long.class, "lastFetchedTime", false, "LAST_FETCHED_TIME");
+        public final static Property LatestCommentID = new Property(11, String.class, "latestCommentID", false, "LATEST_COMMENT_ID");
+        public final static Property NumberOfTimesRead = new Property(12, Integer.class, "numberOfTimesRead", false, "NUMBER_OF_TIMES_READ");
+        public final static Property IsFavourite = new Property(13, boolean.class, "isFavourite", false, "IS_FAVOURITE");
+        public final static Property IsSticky = new Property(14, boolean.class, "isSticky", false, "IS_STICKY");
+        public final static Property BoardListTypeID = new Property(15, String.class, "boardListTypeID", false, "BOARD_LIST_TYPE_ID");
     };
 
 
@@ -63,11 +64,12 @@ public class BoardPostDao extends AbstractDao<BoardPost, String> {
                 "\"LAST_VIEWED_TIME\" INTEGER NOT NULL ," + // 7: lastViewedTime
                 "\"CREATED_TIME\" INTEGER NOT NULL ," + // 8: createdTime
                 "\"LAST_UPDATED_TIME\" INTEGER NOT NULL ," + // 9: lastUpdatedTime
-                "\"LATEST_COMMENT_ID\" TEXT," + // 10: latestCommentID
-                "\"NUMBER_OF_TIMES_READ\" INTEGER," + // 11: numberOfTimesRead
-                "\"IS_FAVOURITE\" INTEGER NOT NULL ," + // 12: isFavourite
-                "\"IS_STICKY\" INTEGER NOT NULL ," + // 13: isSticky
-                "\"BOARD_LIST_TYPE_ID\" TEXT NOT NULL );"); // 14: boardListTypeID
+                "\"LAST_FETCHED_TIME\" INTEGER NOT NULL ," + // 10: lastFetchedTime
+                "\"LATEST_COMMENT_ID\" TEXT," + // 11: latestCommentID
+                "\"NUMBER_OF_TIMES_READ\" INTEGER," + // 12: numberOfTimesRead
+                "\"IS_FAVOURITE\" INTEGER NOT NULL ," + // 13: isFavourite
+                "\"IS_STICKY\" INTEGER NOT NULL ," + // 14: isSticky
+                "\"BOARD_LIST_TYPE_ID\" TEXT NOT NULL );"); // 15: boardListTypeID
     }
 
     /** Drops the underlying database table. */
@@ -118,19 +120,20 @@ public class BoardPostDao extends AbstractDao<BoardPost, String> {
         stmt.bindLong(8, entity.getLastViewedTime());
         stmt.bindLong(9, entity.getCreatedTime());
         stmt.bindLong(10, entity.getLastUpdatedTime());
+        stmt.bindLong(11, entity.getLastFetchedTime());
  
         String latestCommentID = entity.getLatestCommentID();
         if (latestCommentID != null) {
-            stmt.bindString(11, latestCommentID);
+            stmt.bindString(12, latestCommentID);
         }
  
         Integer numberOfTimesRead = entity.getNumberOfTimesRead();
         if (numberOfTimesRead != null) {
-            stmt.bindLong(12, numberOfTimesRead);
+            stmt.bindLong(13, numberOfTimesRead);
         }
-        stmt.bindLong(13, entity.getIsFavourite() ? 1L: 0L);
-        stmt.bindLong(14, entity.getIsSticky() ? 1L: 0L);
-        stmt.bindString(15, entity.getBoardListTypeID());
+        stmt.bindLong(14, entity.getIsFavourite() ? 1L: 0L);
+        stmt.bindLong(15, entity.getIsSticky() ? 1L: 0L);
+        stmt.bindString(16, entity.getBoardListTypeID());
     }
 
     /** @inheritdoc */
@@ -153,11 +156,12 @@ public class BoardPostDao extends AbstractDao<BoardPost, String> {
             cursor.getLong(offset + 7), // lastViewedTime
             cursor.getLong(offset + 8), // createdTime
             cursor.getLong(offset + 9), // lastUpdatedTime
-            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // latestCommentID
-            cursor.isNull(offset + 11) ? null : cursor.getInt(offset + 11), // numberOfTimesRead
-            cursor.getShort(offset + 12) != 0, // isFavourite
-            cursor.getShort(offset + 13) != 0, // isSticky
-            cursor.getString(offset + 14) // boardListTypeID
+            cursor.getLong(offset + 10), // lastFetchedTime
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // latestCommentID
+            cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12), // numberOfTimesRead
+            cursor.getShort(offset + 13) != 0, // isFavourite
+            cursor.getShort(offset + 14) != 0, // isSticky
+            cursor.getString(offset + 15) // boardListTypeID
         );
         return entity;
     }
@@ -175,11 +179,12 @@ public class BoardPostDao extends AbstractDao<BoardPost, String> {
         entity.setLastViewedTime(cursor.getLong(offset + 7));
         entity.setCreatedTime(cursor.getLong(offset + 8));
         entity.setLastUpdatedTime(cursor.getLong(offset + 9));
-        entity.setLatestCommentID(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
-        entity.setNumberOfTimesRead(cursor.isNull(offset + 11) ? null : cursor.getInt(offset + 11));
-        entity.setIsFavourite(cursor.getShort(offset + 12) != 0);
-        entity.setIsSticky(cursor.getShort(offset + 13) != 0);
-        entity.setBoardListTypeID(cursor.getString(offset + 14));
+        entity.setLastFetchedTime(cursor.getLong(offset + 10));
+        entity.setLatestCommentID(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
+        entity.setNumberOfTimesRead(cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12));
+        entity.setIsFavourite(cursor.getShort(offset + 13) != 0);
+        entity.setIsSticky(cursor.getShort(offset + 14) != 0);
+        entity.setBoardListTypeID(cursor.getString(offset + 15));
      }
     
     /** @inheritdoc */
