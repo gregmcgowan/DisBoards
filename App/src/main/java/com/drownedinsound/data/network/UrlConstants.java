@@ -94,13 +94,13 @@ public class UrlConstants {
             urlBuilder.append(ANNOUNCEMENTS_BOARD_NAME);
             urlBuilder.append("/");
         } else if (BoardListTypes.MUSICIANS.equals(boardListType)) {
-            urlBuilder.append(MUSIC_BOARD_NAME);
+            urlBuilder.append(MUSICIANS_BOARD_NAME);
             urlBuilder.append("/");
         } else if (BoardListTypes.FESTIVALS.equals(boardListType)) {
-            urlBuilder.append(MUSIC_BOARD_NAME);
+            urlBuilder.append(FESTIVALS_BOARD_NAME);
             urlBuilder.append("/");
         } else if (BoardListTypes.ERRORS_SUGGESTIONS.equals(boardListType)) {
-            urlBuilder.append(MUSIC_BOARD_NAME);
+            urlBuilder.append(ERRORS_SUGGESTIONS_BOARD_NAME);
             urlBuilder.append("/");
         }
 
@@ -110,7 +110,7 @@ public class UrlConstants {
     public static String getBoardPostUrl(String baseUrl, @BoardPostList.BoardPostListType String boardListType,
             String boardPostId) {
         String boardPostUrl = getBoardPostListUrl(baseUrl,boardListType);
-        if(!StringUtils.isEmpty(baseUrl)) {
+        if(!StringUtils.isEmpty(boardPostUrl)) {
             boardPostUrl += boardPostId;
         }
         return boardPostUrl;
