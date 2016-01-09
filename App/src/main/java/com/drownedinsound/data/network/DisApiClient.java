@@ -125,15 +125,17 @@ public class DisApiClient implements DisBoardsApi {
     }
 
     @Override
-    public Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType String boardListType, String boardPostId) {
+    public Observable<BoardPost> getBoardPost(final @BoardPostList.BoardPostListType String boardListType,final String boardPostId) {
         String url = UrlConstants.getBoardPostUrl(baseUrl,boardListType,boardPostId);
         return makeRequest(RequestMethod.GET,url,url)
                 .flatMap(new Func1<Response, Observable<BoardPost>>() {
             @Override
             public Observable<BoardPost> call(Response response) {
                 try {
+                    InputStream inputStream = getInputStreamFromResponse(response);
                     BoardPost boardPost
-                            = disWebPageParser.parseBoardPost(getInputStreamFromResponse(response));
+                            = disWebPageParser.parseBoardPost(boardListType,boardPostId,inputStream);
+                    inputStream.close();
                     return Observable.just(boardPost);
                 } catch (IOException e) {
                     return Observable.error(e);

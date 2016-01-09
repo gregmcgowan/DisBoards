@@ -34,23 +34,23 @@ public class RetrieveBoardPostHandler extends ResponseHandler {
 
     @Override
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
-        BoardPost boardPost = null;
-        if (inputStream != null) {
-            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,
-                    boardPostId, boardListType);
-            boardPost = boardPostParser.parse(inputStream);
-            BoardPost exisitingBoardPost = null;//databaseHelper.getBoardPost(boardPostId);
-            int numberOfTimesRead = 0;
-            if (exisitingBoardPost != null) {
-                numberOfTimesRead = exisitingBoardPost.getNumberOfTimesRead() + 1;
-               // boardPost.setFavourited(exisitingBoardPost.isFavourited());
-            }
-            boardPost.setNumberOfTimesRead(numberOfTimesRead);
-            //databaseHelper.setBoardPost(boardPost);
-        }
-        if (isUpdateUI()) {
-            //eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true, getUiID()));
-        }
+//        BoardPost boardPost = null;
+//        if (inputStream != null) {
+//            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,
+//                    boardPostId, boardListType);
+//            boardPost = boardPostParser.parse(inputStream);
+//            BoardPost exisitingBoardPost = null;//databaseHelper.getBoardPost(boardPostId);
+//            int numberOfTimesRead = 0;
+//            if (exisitingBoardPost != null) {
+//                numberOfTimesRead = exisitingBoardPost.getNumberOfTimesRead() + 1;
+//               // boardPost.setFavourited(exisitingBoardPost.isFavourited());
+//            }
+//            boardPost.setNumberOfTimesRead(numberOfTimesRead);
+//            //databaseHelper.setBoardPost(boardPost);
+//        }
+//        if (isUpdateUI()) {
+//            //eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true, getUiID()));
+//        }
     }
 
     @Override

@@ -15,7 +15,8 @@ public interface DisWebPageParser {
 
      String getAuthenticationToken(InputStream inputStream) throws IOException;
 
-     BoardPost parseBoardPost(InputStream inputStream) throws IOException;
+     BoardPost parseBoardPost(@BoardPostList.BoardPostListType String boardListType, String boardPostId,
+             InputStream inputStream) throws IOException;
 
      List<BoardPostSummary> parseBoardPostSummaryList(@BoardPostList.BoardPostListType String boardListType,
              InputStream inputStream) throws IOException;

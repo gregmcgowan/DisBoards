@@ -46,72 +46,52 @@ public class BoardPostParser {
 
     private static final String THIS_CLASS = "this";
 
-    private String boardPostId;
-
-    private @BoardPostList.BoardPostListType String boardListType;
-
-    private StringBuilder buffer;
-
-    private boolean consumingHtmlTags;
-
-    private int initialContentDivLevel;
-
-    private int initialContentAnchorNumber;
-
-    private int commentFooterDivLevel;
-
-    private BoardPost currentBoardPost;
-
-    private PageState pageState;
-
-    private PageState baseDivState;
-
-    private SpanClass spanClass;
-
-    private ArrayList<BoardPostComment> comments;
-
-    private BoardPostComment currentBoardPostComment;
-
-    private int boardPostCommentLevel;
-
-    private long latestCommentTime;
-
-    private String latestCommentId;
-
     private UserSessionRepo userSessionManager;
 
-    public BoardPostParser(UserSessionRepo userSessionManager, String boardPostId,
-            @BoardPostList.BoardPostListType String boardListType) {
-        this.boardPostId = boardPostId;
-        this.boardListType = boardListType;
+    public BoardPostParser(UserSessionRepo userSessionManager) {
         this.userSessionManager = userSessionManager;
-        this.buffer = new StringBuilder(1024);
-        comments = new ArrayList<>();
-        boardPostCommentLevel = -1;
+
     }
 
-    private static enum PageState {
+    private enum PageState {
         INITIAL_CONTENT_DIV, EDITIORIAL_DIV, COMMENT_DIV, COMMENT_CONTENT_DIV, COMMENT_FOOTER_DIV, COMMENT_THIS_DIV, COMMENT_LIST_DIV
     }
 
-    private static enum SpanClass {
+    private enum SpanClass {
         DATE
     }
 
-    private void setPageState(PageState pageState) {
-        this.pageState = pageState;
+
+    private boolean isInPageState(PageState currentPageState,PageState requiredPageState) {
+        return currentPageState != null && currentPageState.equals(requiredPageState);
     }
 
-    private boolean isInPageState(PageState requiredPageState) {
-        return pageState != null && pageState.equals(requiredPageState);
-    }
+    public BoardPost parse(@BoardPostList.BoardPostListType String boardListType,
+            String boardPostId, InputStream inputStream) {
+        boolean consumingHtmlTags = false;
+        int initialContentDivLevel = 0;
+        int initialContentAnchorNumber = 0;
+        int commentFooterDivLevel = 0;
 
-    public BoardPost parse(InputStream inputStream) {
+        PageState currentPageState = null;
+        PageState baseDivState = null;
+        SpanClass spanClass = null;
+
+        StringBuilder buffer = new StringBuilder(1024);
+
+        int boardPostCommentLevel = -1;
+        String latestCommentId = null;
+        long latestCommentTime = 0;
         long start = System.currentTimeMillis();
-        currentBoardPost = new BoardPost();
+
+        BoardPost currentBoardPost = new BoardPost();
         currentBoardPost.setBoardListTypeID(boardListType);
         currentBoardPost.setBoardPostID(boardPostId);
         currentBoardPost.setLastFetchedTime(System.currentTimeMillis());
+
+        ArrayList<BoardPostComment> comments = new ArrayList<>();
+        BoardPostComment currentBoardPostComment = null;
+
         try {
             StreamedSource streamedSource = new StreamedSource(inputStream);
             for (Segment segment : streamedSource) {
@@ -123,12 +103,12 @@ public class BoardPostParser {
                             String className = ((StartTag) tag)
                                     .getAttributeValue(HtmlConstants.CLASS);
                             if (MAIN_CONTENT_CLASS.equals(className)) {
-                                setPageState(PageState.INITIAL_CONTENT_DIV);
+                                currentPageState = PageState.INITIAL_CONTENT_DIV;
                             } else if (EDITORIAL_CLASS.equals(className)) {
-                                setPageState(PageState.EDITIORIAL_DIV);
+                                currentPageState = PageState.EDITIORIAL_DIV;
                                 consumingHtmlTags = true;
                             } else if (COMMENT_CLASS.equals(className)) {
-                                setPageState(PageState.COMMENT_DIV);
+                                currentPageState = PageState.COMMENT_DIV;
                                 if (currentBoardPostComment != null) {
                                     currentBoardPostComment
                                             .setBoardPost(currentBoardPost);
@@ -146,22 +126,22 @@ public class BoardPostParser {
                                 }
                             } else if (COMMENT_CONTENT_CLASS.equals(className)) {
                                 consumingHtmlTags = true;
-                                setPageState(PageState.COMMENT_CONTENT_DIV);
+                                currentPageState = PageState.COMMENT_CONTENT_DIV;
                             } else if (COMMENT_FOOTER_CLASS.equals(className)) {
-                                setPageState(PageState.COMMENT_FOOTER_DIV);
+                                currentPageState = PageState.COMMENT_FOOTER_DIV;
                             } else if (COMMENT_LIST_CLASS.equals(className)) {
-                                setPageState(PageState.COMMENT_LIST_DIV);
+                                currentPageState = PageState.COMMENT_LIST_DIV;
                                 baseDivState = PageState.COMMENT_LIST_DIV;
                             } else if ("reply_form".equals(className)) {
-                                setPageState(null);
+                                currentPageState = null;
                             } else if ("this".equals(className)) {
-                                setPageState(PageState.COMMENT_THIS_DIV);
+                                currentPageState = PageState.COMMENT_THIS_DIV;
                             }
-                            if (isInPageState(PageState.COMMENT_FOOTER_DIV)) {
+                            if (isInPageState(currentPageState,PageState.COMMENT_FOOTER_DIV)) {
                                 commentFooterDivLevel++;
                             }
 
-                            if (isInPageState(PageState.INITIAL_CONTENT_DIV)) {
+                            if (isInPageState(currentPageState, PageState.INITIAL_CONTENT_DIV)) {
                                 initialContentDivLevel++;
                             }
                         } else if (HtmlConstants.META.equals(tagName)) {
@@ -174,51 +154,36 @@ public class BoardPostParser {
                                 }
                             }
                         } else {
-                            if (isInPageState(PageState.INITIAL_CONTENT_DIV)) {
+                            if (isInPageState(currentPageState,PageState.INITIAL_CONTENT_DIV)) {
                                 initialContentDivLevel--;
                                 if (initialContentDivLevel == 0) {
-                                    setPageState(null);
+                                    currentPageState = null;
                                     initialContentAnchorNumber = 0;
                                 }
-                            } else if (isInPageState(PageState.EDITIORIAL_DIV)) {
+                            } else if (isInPageState(currentPageState, PageState.EDITIORIAL_DIV)) {
                                 consumingHtmlTags = false;
-                                setPageState(null);
-                                String content = readFromBuffer();
+                                currentPageState = null;
+                                String content = buffer.toString().trim();
                                 currentBoardPost.setContent(content);
-                                // Add the initial post as the first content
-                                BoardPostComment boardPostComment = new BoardPostComment();
-                                boardPostComment.setBoardPostID(boardPostId);
-                                boardPostComment
-                                        .setAuthorUsername(currentBoardPost
-                                                .getAuthorUsername());
-                                boardPostComment
-                                        .setDateAndTime(currentBoardPost
-                                                .getDateOfPost());
-                                boardPostComment.setContent(content);
-                                boardPostComment.setTitle(currentBoardPost
-                                        .getTitle());
-                                boardPostComment.setBoardPost(currentBoardPost);
-
-                                comments.add(boardPostComment);
-                            } else if (isInPageState(PageState.COMMENT_CONTENT_DIV)) {
-                                setPageState(null);
+                            } else if (isInPageState(currentPageState,PageState.COMMENT_CONTENT_DIV)) {
+                                currentPageState = null;
                                 consumingHtmlTags = false;
-                                String content = readFromBuffer();
+                                String content = buffer.toString().trim();
                                 currentBoardPostComment.setContent(content);
-                            } else if (isInPageState(PageState.COMMENT_THIS_DIV)) {
-                                setPageState(null);
-                                String usersWhoThisd = readFromBuffer();
-                                usersWhoThisd = usersWhoThisd.replace("\n","");
-                                usersWhoThisd = usersWhoThisd.replaceAll("[ ]{2,}"," ");
+                            } else if (isInPageState(currentPageState, PageState.COMMENT_THIS_DIV)) {
+                                currentPageState = null;
+                                String usersWhoThisd = buffer.toString().trim();
+                                usersWhoThisd = usersWhoThisd.replace("\n", "");
+                                usersWhoThisd = usersWhoThisd.replaceAll("[ ]{2,}", " ");
                                 currentBoardPostComment
                                         .setUsersWhoHaveThissed(usersWhoThisd);
-                                clearBuffer();
+                                buffer.setLength(0);
                             }
-                            if (isInPageState(PageState.COMMENT_FOOTER_DIV)) {
+                            if (isInPageState(currentPageState,PageState.COMMENT_FOOTER_DIV)) {
                                 commentFooterDivLevel--;
                                 if (commentFooterDivLevel == 0) {
-                                    setPageState(null);
-                                    String footerText = readFromBuffer();
+                                    currentPageState = null;
+                                    String footerText = buffer.toString().trim();
                                     if (!StringUtils.isEmpty(footerText)) {
                                         String[] combinedDateAndTimeBits = footerText
                                                 .split("\\Q|\\E");
@@ -266,27 +231,27 @@ public class BoardPostParser {
 
                                         }
                                     }
-                                    clearBuffer();
+                                    buffer.setLength(0);
                                 }
                             }
 
                         }
                     } else if (HtmlConstants.ANCHOR.equals(tagName)) {
                         if (tag instanceof StartTag) {
-                            if (isInPageState(PageState.INITIAL_CONTENT_DIV)) {
+                            if (isInPageState(currentPageState,PageState.INITIAL_CONTENT_DIV)) {
                                 initialContentAnchorNumber++;
                             }
                         } else {
-                            // Log.d(TAG, "in content div"+inInitialContentDiv);
-                            if (isInPageState(PageState.INITIAL_CONTENT_DIV)) {
+                            Timber.d(TAG, "in content div"+initialContentAnchorNumber);
+                            if (isInPageState(currentPageState,PageState.INITIAL_CONTENT_DIV)) {
                                 if (initialContentAnchorNumber == 1) {
-                                    String title = readFromBuffer();
+                                    String title = buffer.toString().trim();
                                     currentBoardPost.setTitle(title);
                                 } else if (initialContentAnchorNumber == 2) {
-                                    String author = readFromBuffer();
+                                    String author = buffer.toString().trim();
                                     currentBoardPost.setAuthorUsername(author);
                                 } else if (initialContentAnchorNumber == 5) {
-                                    String numberOfReplies = readFromBuffer();
+                                    String numberOfReplies = buffer.toString().trim();
                                     if (!StringUtils.isEmpty(numberOfReplies)) {
                                         StringTokenizer tokeniser = new StringTokenizer(
                                                 numberOfReplies, " ");
@@ -304,15 +269,15 @@ public class BoardPostParser {
                                 }
                             }
 
-                            if (isInPageState(PageState.COMMENT_DIV)) {
-                                String title = readFromBuffer();
+                            if (isInPageState(currentPageState,PageState.COMMENT_DIV)) {
+                                String title = buffer.toString().trim();
                                 currentBoardPostComment.setTitle(title);
                             }
 
                         }
                     } else if (HtmlConstants.SPAN.equals(tagName)) {
                         if (tag instanceof StartTag) {
-                            if (isInPageState(PageState.INITIAL_CONTENT_DIV)) {
+                            if (isInPageState(currentPageState,PageState.INITIAL_CONTENT_DIV)) {
                                 String className = ((StartTag) tag)
                                         .getAttributeValue(HtmlConstants.CLASS);
                                 if (HtmlConstants.DATE_CLASS.equals(className)) {
@@ -322,7 +287,7 @@ public class BoardPostParser {
                         }
                         if (tag instanceof EndTag) {
                             if (SpanClass.DATE.equals(spanClass)) {
-                                String dateAndTime = readFromBuffer();
+                                String dateAndTime = buffer.toString().trim();
                                 currentBoardPost.setDateOfPost(dateAndTime);
                                 spanClass = null;
                                 if (dateAndTime != null) {
@@ -370,13 +335,13 @@ public class BoardPostParser {
 
                     if (tag instanceof EndTag) {
                         if (!consumingHtmlTags
-                                && !isInPageState(PageState.COMMENT_FOOTER_DIV)
-                                && !isInPageState(PageState.COMMENT_THIS_DIV)) {
-                            clearBuffer();
+                                && !isInPageState(currentPageState,PageState.COMMENT_FOOTER_DIV)
+                                && !isInPageState(currentPageState,PageState.COMMENT_THIS_DIV)) {
+                            buffer.setLength(0);
                         }
                     }
                 } else {
-                    if (consumeText()) {
+                    if (consumeText(currentPageState)) {
                         buffer.append(segment.toString());
                     }
                 }
@@ -414,22 +379,13 @@ public class BoardPostParser {
         return currentBoardPost;
     }
 
-    private boolean consumeText() {
-        return isInPageState(PageState.INITIAL_CONTENT_DIV)
-                || isInPageState(PageState.EDITIORIAL_DIV)
-                || isInPageState(PageState.COMMENT_DIV)
-                || isInPageState(PageState.COMMENT_CONTENT_DIV)
-                || isInPageState(PageState.COMMENT_FOOTER_DIV)
-                || isInPageState(PageState.COMMENT_THIS_DIV)
-                || isInPageState(PageState.COMMENT_LIST_DIV);
-    }
-
-    private void clearBuffer() {
-        buffer.setLength(0);
-    }
-
-    private String readFromBuffer() {
-        String content = buffer.toString().trim();
-        return content;
+    private boolean consumeText(PageState currentPageState) {
+        return isInPageState(currentPageState,PageState.INITIAL_CONTENT_DIV)
+                || isInPageState(currentPageState,PageState.EDITIORIAL_DIV)
+                || isInPageState(currentPageState,PageState.COMMENT_DIV)
+                || isInPageState(currentPageState,PageState.COMMENT_CONTENT_DIV)
+                || isInPageState(currentPageState,PageState.COMMENT_FOOTER_DIV)
+                || isInPageState(currentPageState,PageState.COMMENT_THIS_DIV)
+                || isInPageState(currentPageState,PageState.COMMENT_LIST_DIV);
     }
 }

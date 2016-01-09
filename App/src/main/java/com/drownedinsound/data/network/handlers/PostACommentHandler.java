@@ -27,12 +27,11 @@ public class PostACommentHandler extends ResponseHandler {
     @Override
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
         if (inputStream != null) {
-            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,
-                    postID, boardListType);
-            BoardPost boardPost = boardPostParser.parse(inputStream);
-            if (boardPost != null) {
+            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager);
+            //BoardPost boardPost = boardPostParser.parse(inputStream);
+            //if (boardPost != null) {
                 //databaseHelper.setBoardPost(boardPost);
-            }
+            //}
         }
         if (isUpdateUI()) {
             eventBus.postSticky(new PostCommentEvent(getUiID(), true));

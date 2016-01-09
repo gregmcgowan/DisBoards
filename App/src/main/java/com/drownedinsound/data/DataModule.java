@@ -9,6 +9,7 @@ import com.drownedinsound.data.network.handlers.NewPostHandler;
 import com.drownedinsound.data.network.handlers.PostACommentHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
+import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.data.parser.streaming.BoardPostSummaryListParser;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
 import com.drownedinsound.data.parser.streaming.DisWebPagerParserImpl;
@@ -120,10 +121,17 @@ public class DataModule {
         return new BoardPostSummaryListParser(userSessionRepo);
     }
 
+
+    @Singleton
+    @Provides
+    BoardPostParser provideBoardPostParser(UserSessionRepo userSessionRepo) {
+        return new BoardPostParser(userSessionRepo);
+    }
+
     @Provides
     @Singleton
-    DisWebPageParser disWebPageParser(BoardPostSummaryListParser boardPostSummaryListParser) {
-        return new DisWebPagerParserImpl(null, boardPostSummaryListParser);
+    DisWebPageParser disWebPageParser(BoardPostParser boardPostParser, BoardPostSummaryListParser boardPostSummaryListParser) {
+        return new DisWebPagerParserImpl(boardPostParser, boardPostSummaryListParser);
     }
 
     @Provides

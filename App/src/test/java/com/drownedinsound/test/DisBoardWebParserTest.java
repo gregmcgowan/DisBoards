@@ -38,7 +38,7 @@ public class DisBoardWebParserTest {
         MockitoAnnotations.initMocks(this);
 
         BoardPostSummaryListParser boardPostSummaryListParser = new BoardPostSummaryListParser(userSessionRepo);
-        BoardPostParser boardPostParser = new BoardPostParser(userSessionRepo,"4471118",BoardListTypes.SOCIAL);
+        BoardPostParser boardPostParser = new BoardPostParser(userSessionRepo);
         disWebPageParser = new DisWebPagerParserImpl(boardPostParser, boardPostSummaryListParser);
     }
 
@@ -91,13 +91,6 @@ public class DisBoardWebParserTest {
         expectedBoardPost.setBoardListTypeID(BoardListTypes.SOCIAL);
         expectedBoardPost.setNumberOfReplies(5);
 
-        BoardPostComment initialComment = new BoardPostComment();
-        initialComment.setBoardPostID("4471118");
-        initialComment.setAuthorUsername("shitty_zombies");
-        initialComment.setTitle("Charlie Brooker&#x27;s 2015 Wipe");
-        initialComment.setContent("<p>Christ, that was bleak, wasn&#x27;t it?</p>");
-        initialComment.setDateAndTime("22:55, 30 December '15");
-
         BoardPostComment firstComment = new BoardPostComment();
         firstComment.setBoardPostID("4471118");
         firstComment.setDateAndTime("30 Dec '15, 23:01");
@@ -139,7 +132,6 @@ public class DisBoardWebParserTest {
         fifthComment.setCommentLevel(1);
 
         List<BoardPostComment> boardPostComments = new ArrayList<>();
-        boardPostComments.add(initialComment);
         boardPostComments.add(firstComment);
         boardPostComments.add(secondComment);
         boardPostComments.add(thirdComment);
@@ -150,7 +142,7 @@ public class DisBoardWebParserTest {
 
         InputStream inputStream = getInputStream("board_post.html");
 
-        BoardPost actual = disWebPageParser.parseBoardPost(inputStream);
+        BoardPost actual = disWebPageParser.parseBoardPost(BoardListTypes.SOCIAL, "4471118", inputStream);
 
         AssertUtils.assertBoardPost(expectedBoardPost,actual);
     }

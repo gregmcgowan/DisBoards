@@ -26,20 +26,20 @@ public class ThisACommentHandler extends ResponseHandler {
 
     @Override
     public void handleSuccess(Response response, InputStream inputStream) throws IOException {
-        BoardPost boardPost;
-        if (inputStream != null) {
-            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,
-                    postID, boardListType);
-            boardPost = boardPostParser.parse(inputStream);
-            if (boardPost != null) {
-                //databaseHelper.setBoardPost(boardPost);
-                if (isUpdateUI()) {
-                    //eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true, getUiID()));
-                }
-            }
-        } else {
-            eventBus.post(new UserIsNotLoggedInEvent());
-        }
+//        BoardPost boardPost;
+//        if (inputStream != null) {
+//            BoardPostParser boardPostParser = new BoardPostParser(userSessionManager,
+//                    postID, boardListType);
+//            boardPost = boardPostParser.parse(inputStream);
+//            if (boardPost != null) {
+//                //databaseHelper.setBoardPost(boardPost);
+//                if (isUpdateUI()) {
+//                    //eventBus.post(new RetrievedBoardPostEvent(boardPost, false, true, getUiID()));
+//                }
+//            }
+//        } else {
+//            eventBus.post(new UserIsNotLoggedInEvent());
+//        }
     }
 
     @Override
