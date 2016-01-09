@@ -41,32 +41,26 @@ public class BoardPostSummaryListParser  {
 
     private static final boolean DEBUG_PARSER = false;
 
-    private boolean inBoardPostTable;
-
-    private int tableRowCell;
-
-    private int spanNumber;
-
-    private String spanClass;
-
-    private int anchorNumber;
-
-    private List<BoardPostSummary> boardPostSummaries;
-
-    private BoardPostSummary currentBoardPostSummary;
-
-    private StringBuilder buffer;
-
     private UserSessionRepo userSessionRepo;
 
     public BoardPostSummaryListParser(UserSessionRepo userSessionRepo) {
-        this.boardPostSummaries = new ArrayList<>();
-        this.buffer = new StringBuilder(1024);
         this.userSessionRepo = userSessionRepo;
     }
 
     public  List<BoardPostSummary> parse(@BoardPostList.BoardPostListType String boardListType,InputStream inputStream) {
+        boolean inBoardPostTable = false;
+        int tableRowCell= 0;
+        int spanNumber = 0;
+        int anchorNumber = 0;
+
+        String spanClass= null;
+
+        List<BoardPostSummary> boardPostSummaries = new ArrayList<>();
+        BoardPostSummary currentBoardPostSummary = null;
+
+        StringBuilder buffer = new StringBuilder(1024);
         long start = System.currentTimeMillis();
+
         try {
             StreamedSource streamedSource = new StreamedSource(inputStream);
             for (Segment segment : streamedSource) {
@@ -106,7 +100,20 @@ public class BoardPostSummaryListParser  {
                         } else {
                             if (inBoardPostTable
                                     && tableRowCell == REPLIES_TABLE_ROW_INDEX) {
-                                setNumberOfReplies();
+                                int numberOfReplies = 0;
+                                String repliesText = buffer.toString().trim();
+                                if (!StringUtils.isEmpty(repliesText)) {
+                                    repliesText = repliesText.replace("&nbsp;"," ");
+                                    String[] repliesTokens = repliesText.split("\\s");
+                                    if (repliesTokens.length > 0) {
+                                        try {
+                                            numberOfReplies = Integer.parseInt(repliesTokens[0]);
+                                        } catch (NumberFormatException nfe) {
+
+                                        }
+                                    }
+                                }
+                                currentBoardPostSummary.setNumberOfReplies(numberOfReplies);
                             }
                         }
                     } else if (tagName.endsWith(HtmlConstants.ANCHOR)) {
@@ -116,7 +123,7 @@ public class BoardPostSummaryListParser  {
                                 String tagString = tag.toString();
                                 if (anchorNumber == POST_URL_ANCHOR_INDEX
                                         && tableRowCell == DESCRIPTION_TABLE_ROW_INDEX) {
-                                    extractPostId(tagString);
+                                    extractPostId(tagString,currentBoardPostSummary);
                                 } else if (tableRowCell == LAST_POST_TABLE_ROW_INDEX) {
                                     int titleIndex = tagString.indexOf(HtmlConstants.TITLE);
                                     if (titleIndex != -1) {
@@ -132,23 +139,49 @@ public class BoardPostSummaryListParser  {
                                             }
                                         }
                                     }
-                                    extractPostId(tagString);
+                                    extractPostId(tagString,currentBoardPostSummary);
                                 }
                             }
                         } else {
                             if (inBoardPostTable
                                     && tableRowCell == DESCRIPTION_TABLE_ROW_INDEX) {
                                 String bufferOutput = buffer.toString().trim();
-                                parseDescriptionRowAnchorText(bufferOutput);
+                                if (anchorNumber == 1) {
+                                    String title = bufferOutput;
+                                    // Log.d(TAG, "Title [" + title + "]");
+                                    currentBoardPostSummary.setTitle(title);
+                                } else if (anchorNumber == 2) {
+                                    String[] authorTokens = bufferOutput.split("\\s");
+                                    if (authorTokens != null && authorTokens.length > 1) {
+                                        String author = authorTokens[1];
+                                        // Log.d(TAG, "Author [" + author + "]");
+                                        currentBoardPostSummary.setAuthorUsername(author);
+                                    }
+                                }
                             }
                         }
                     } else if (tagName.endsWith(HtmlConstants.SPAN)) {
                         if (inBoardPostTable) {
                             if (tag instanceof StartTag) {
-                                parseStartSpanSegment(segment);
+                                spanNumber++;
+                                String spanString = segment.toString();
+                                if (spanNumber == 1) {
+                                    HashMap<String, String> parameters = ParsingUtils.createAttributeMapFromStartTag(
+                                            spanString);
+                                    spanClass = parameters.get(HtmlConstants.CLASS);
+
+                                }
                             }
                             if (tag instanceof EndTag) {
-                                parseEndSpanSegment(segment);
+                                if (DEBUG_PARSER) {
+                                    Timber.d("SpanNumber [" + spanNumber + "] content [" + buffer.toString().trim()
+                                            + "] class " + spanClass);
+                                }
+
+                                if (spanNumber == 1 && STICKY_CLASS.equals(spanClass)) {
+                                    currentBoardPostSummary
+                                            .setIsSticky(HtmlConstants.STICKY.equalsIgnoreCase(buffer.toString().trim()));
+                                }
                             }
                         }
                     } else if (HtmlConstants.META.equals(tagName)) {
@@ -163,7 +196,7 @@ public class BoardPostSummaryListParser  {
                     }
 
                     if (tag instanceof EndTag) {
-                        clearBuffer();
+                        buffer.setLength(0);
                     }
                 } else {
                     if (inBoardPostTable) {
@@ -188,28 +221,6 @@ public class BoardPostSummaryListParser  {
         return boardPostSummaries;
     }
 
-    private void parseStartSpanSegment(Segment segment) {
-        spanNumber++;
-        String spanString = segment.toString();
-        if (spanNumber == 1) {
-            HashMap<String, String> parameters = ParsingUtils.createAttributeMapFromStartTag(
-                    spanString);
-            spanClass = parameters.get(HtmlConstants.CLASS);
-
-        }
-    }
-
-    private void parseEndSpanSegment(Segment segment) {
-        if (DEBUG_PARSER) {
-            Timber.d("SpanNumber [" + spanNumber + "] content [" + buffer.toString().trim()
-                    + "] class " + spanClass);
-        }
-
-        if (spanNumber == 1 && STICKY_CLASS.equals(spanClass)) {
-            currentBoardPostSummary
-                    .setIsSticky(HtmlConstants.STICKY.equalsIgnoreCase(buffer.toString().trim()));
-        }
-    }
 
     private long parseDate(String dateString, String format) {
         long timeStamp = -1;
@@ -233,45 +244,13 @@ public class BoardPostSummaryListParser  {
         return timeStamp;
     }
 
-    private void setNumberOfReplies() {
-        int numberOfReplies = 0;
-        String repliesText = buffer.toString().trim();
-        if (!StringUtils.isEmpty(repliesText)) {
-            repliesText = repliesText.replace("&nbsp;"," ");
-            String[] repliesTokens = repliesText.split("\\s");
-            if (repliesTokens.length > 0) {
-                try {
-                    numberOfReplies = Integer.parseInt(repliesTokens[0]);
-                } catch (NumberFormatException nfe) {
-
-                }
-            }
-        }
-        currentBoardPostSummary.setNumberOfReplies(numberOfReplies);
-    }
-
     private boolean isStartOfNewPostTr(String trString) {
         // TODO better way to do this
         return trString != null
                 && trString.startsWith("<tr style='background-color");
     }
 
-    private void parseDescriptionRowAnchorText(String bufferOutput) {
-        if (anchorNumber == 1) {
-            String title = bufferOutput;
-            // Log.d(TAG, "Title [" + title + "]");
-            currentBoardPostSummary.setTitle(title);
-        } else if (anchorNumber == 2) {
-            String[] authorTokens = bufferOutput.split("\\s");
-            if (authorTokens != null && authorTokens.length > 1) {
-                String author = authorTokens[1];
-                // Log.d(TAG, "Author [" + author + "]");
-                currentBoardPostSummary.setAuthorUsername(author);
-            }
-        }
-    }
-
-    private void extractPostId(String tagString) {
+    private void extractPostId(String tagString, BoardPostSummary currentBoardPostSummary) {
         String postId;
         HashMap<String, String> parameters = ParsingUtils.createAttributeMapFromStartTag(tagString);
         if (parameters != null) {
@@ -289,10 +268,6 @@ public class BoardPostSummaryListParser  {
                 }
             }
         }
-    }
-
-    private void clearBuffer() {
-        buffer.setLength(0);
     }
 
 }
