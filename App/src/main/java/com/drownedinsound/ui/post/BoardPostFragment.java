@@ -238,7 +238,25 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         this.boardPost = boardPost;
         connectionErrorTextView.setVisibility(View.GONE);
         adapter.setBoardPost(boardPost);
-        adapter.setComments(new ArrayList<>(boardPost.getComments()));
+
+        BoardPostComment initialPost = new BoardPostComment();
+        initialPost.setBoardPostID(boardPostId);
+        initialPost
+                .setAuthorUsername(boardPost
+                        .getAuthorUsername());
+        initialPost
+                .setDateAndTime(boardPost
+                        .getDateOfPost());
+        initialPost.setContent(boardPost.getContent());
+        initialPost.setTitle(boardPost
+                .getTitle());
+        initialPost.setBoardPost(boardPost);
+
+        ArrayList<BoardPostComment> commentList = new ArrayList<>();
+        commentList.add(initialPost);
+        commentList.addAll(boardPost.getComments());
+
+        adapter.setComments(commentList);
     }
 
     @Override
@@ -299,7 +317,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     @Override
     public void onResume() {
         super.onResume();
-        boardPostController.loadBoardPost(this, boardPostId, boardListType);
+        boardPostController.loadBoardPost(this, boardListType, boardPostId, false);
     }
 
     @Override
@@ -356,7 +374,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
 
     public void doRefreshAction() {
-        Log.d(DisBoardsConstants.LOG_TAG_PREFIX, "Refresh  post");
+        boardPostController.loadBoardPost(this, boardListType, boardPostId, true);
     }
 
 

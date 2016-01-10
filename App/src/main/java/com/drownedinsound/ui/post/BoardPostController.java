@@ -1,21 +1,22 @@
 package com.drownedinsound.ui.post;
 
+import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
-import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.events.FailedToGetBoardPostEvent;
 import com.drownedinsound.events.PostCommentEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
-import com.drownedinsound.qualifiers.ForDatabase;
+import com.drownedinsound.qualifiers.ForIoScheduler;
+import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.ui.base.BaseUIController;
 import com.drownedinsound.ui.base.Ui;
 
-import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.greenrobot.event.EventBus;
+import rx.Observable;
+import rx.Scheduler;
 
 /**
  * Created by gregmcgowan on 02/10/15.
@@ -23,36 +24,46 @@ import de.greenrobot.event.EventBus;
 @Singleton
 public class BoardPostController extends BaseUIController {
 
-    private DisApiClient disApiClient;
+    private DisBoardRepo disBoardRepo;
 
-    private EventBus eventBus;
+    private Scheduler mainThreadScheduler;
 
-    private ExecutorService databaseExecutorService;
+    private Scheduler backgroundThreadScheduler;
 
     @Inject
-    public BoardPostController(EventBus eventBus,
-            DisApiClient disApiClient, @ForDatabase ExecutorService dbExecutorService) {
-        this.eventBus = eventBus;
-        this.disApiClient = disApiClient;
-        this.databaseExecutorService = dbExecutorService;
+    public BoardPostController(DisBoardRepo disBoardRepo,
+            @ForMainThreadScheduler Scheduler mainThreadScheduler,
+            @ForIoScheduler Scheduler backgroundThreadScheduler) {
+        this.disBoardRepo = disBoardRepo;
+        this.mainThreadScheduler = mainThreadScheduler;
+        this.backgroundThreadScheduler = backgroundThreadScheduler;
     }
 
+    public void loadBoardPost(BoardPostUI boardPostUI, @BoardPostList.BoardPostListType String boardListType,
+            String boardPostId, boolean force) {
+        int uiID = getId(boardPostUI);
+        if(!hasSubscription(boardPostUI,boardPostId)) {
+            boardPostUI.showLoadingProgress(true);
 
-    @Override
-    public void onUiAttached(Ui ui) {
-        if (ui instanceof BoardPostParentUi) {
-            if (!eventBus.isRegistered(this)) {
-                eventBus.registerSticky(this);
-            }
-        }
-    }
+            Observable<BoardPost> getBoardPostObservable = disBoardRepo
+                    .getBoardPost(boardListType,boardPostId,force)
+                    .subscribeOn(backgroundThreadScheduler)
+                    .observeOn(mainThreadScheduler);
 
-    @Override
-    public void onUiDetached(Ui ui) {
-        if (ui instanceof BoardPostParentUi) {
-            if (eventBus.isRegistered(this)) {
-                eventBus.unregister(this);
-            }
+            BaseObserver<BoardPost,BoardPostUI> getBoardPostObserver = new BaseObserver<BoardPost,BoardPostUI>(uiID) {
+                @Override
+                public void onError(Throwable e) {
+                    getUI().showErrorView();
+                    getUI().showLoadingProgress(false);
+                }
+
+                @Override
+                public void onNext(BoardPost boardPost) {
+                    getUI().showBoardPost(boardPost,-1);
+                    getUI().showLoadingProgress(false);
+                }
+            };
+            subscribeAndCache(boardPostUI,boardPostId,getBoardPostObserver,getBoardPostObservable);
         }
     }
 
@@ -61,13 +72,6 @@ public class BoardPostController extends BaseUIController {
         boardPostUI.showLoadingProgress(true);
         int id = getId(boardPostUI);
         //disApiClient.thisAComment(postUrl, postID, commentID, boardType,id  );
-    }
-
-    public void loadBoardPost(BoardPostUI boardPostUI, String boardPostId,
-            @BoardPostList.BoardPostListType String boardListType) {
-        boardPostUI.showLoadingProgress(true);
-        int uiID = getId(boardPostUI);
-        //disApiClient.getBoardPost(boardPostUrl, boardPostId, boardType, uiID);
     }
 
     @SuppressWarnings("unused")
@@ -127,7 +131,7 @@ public class BoardPostController extends BaseUIController {
 
     @SuppressWarnings("unused")
     public void onEventMainThread(PostCommentEvent postCommentEvent) {
-        eventBus.removeStickyEvent(postCommentEvent);
+       // eventBus.removeStickyEvent(postCommentEvent);
         ReplyToCommentUi replyToCommentUi = (ReplyToCommentUi) findUi(postCommentEvent.getUiID());
         if(replyToCommentUi != null) {
             if(postCommentEvent.isSuccess()) {
