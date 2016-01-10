@@ -80,6 +80,7 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 currentSelectedPage = tab.getPosition();
+                viewPager.setCurrentItem(tab.getPosition());
             }
 
             @Override
