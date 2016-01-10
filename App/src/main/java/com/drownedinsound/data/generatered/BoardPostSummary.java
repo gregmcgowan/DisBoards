@@ -118,7 +118,6 @@ public class BoardPostSummary {
             CharSequence friendlyTime = DateUtils.getRelativeTimeSpanString(
                     lastUpdatedTime, System.currentTimeMillis(),
                     DateUtils.SECOND_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL);
-            lastUpdatedBuilder.append("Last updated ");
             lastUpdatedBuilder.append(friendlyTime.toString());
 
         }
