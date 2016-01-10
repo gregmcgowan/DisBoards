@@ -41,6 +41,34 @@ public class BoardPostListController extends BaseUIController {
         this.backgroundThreadScheduler = backgroundThreadScheduler;
     }
 
+    @Override
+    public void onUiCreated(Ui ui) {
+        if (ui instanceof BoardPostListParentUi) {
+            BoardPostListParentUi boardPostListParentUi
+                    = (BoardPostListParentUi) ui;
+            int id = getId(boardPostListParentUi);
+            Observable<List<BoardPostList>>
+                    getBoardPostListInfoObservable = disBoardRepo.getAllBoardPostLists()
+                    .subscribeOn(backgroundThreadScheduler)
+                    .observeOn(mainThreadScheduler);
+
+            BaseObserver<List<BoardPostList>, BoardPostListParentUi>
+                    getBoardPostListInfoObserever
+                    = new BaseObserver<List<BoardPostList>, BoardPostListParentUi>(id) {
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onNext(List<BoardPostList> boardPostListInfos) {
+                    getUI().setBoardPostLists(boardPostListInfos);
+                }
+            };
+            subscribeAndCache(boardPostListParentUi, "INFO", getBoardPostListInfoObserever,
+                    getBoardPostListInfoObservable);
+        }
+    }
 
     @Override
     public void onUiAttached(Ui ui) {
@@ -49,32 +77,9 @@ public class BoardPostListController extends BaseUIController {
             if (boardPostCurrentShow(boardPostListUi)) {
                 requestBoardSummaryPage(boardPostListUi,
                         boardPostListUi.getBoardListType(), 1, false);
-            }
-        }
-
-        if(ui instanceof  BoardPostListParentUi) {
-            BoardPostListParentUi boardPostListParentUi
-                    = (BoardPostListParentUi) ui;
-            if(boardPostListParentUi.getNoOfBoardListShown() == 0) {
-                int id = getId(boardPostListParentUi);
-                Observable<List<BoardPostList>>
-                    getBoardPostListInfoObservable = disBoardRepo.getAllBoardPostLists()
-                        .subscribeOn(backgroundThreadScheduler)
-                        .observeOn(mainThreadScheduler);
-
-                BaseObserver<List<BoardPostList>,BoardPostListParentUi>
-                        getBoardPostListInfoObserever = new BaseObserver<List<BoardPostList>, BoardPostListParentUi>(id) {
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(List<BoardPostList> boardPostListInfos) {
-                        getUI().setBoardPostLists(boardPostListInfos);
-                    }
-                };
-                subscribeAndCache(boardPostListParentUi,"INFO",getBoardPostListInfoObserever,getBoardPostListInfoObservable);
+            } else {
+                Timber.d(boardPostListUi.getBoardListType() + " is not currently shown so not "
+                        + "upadting");
             }
         }
     }
@@ -82,7 +87,12 @@ public class BoardPostListController extends BaseUIController {
     private boolean boardPostCurrentShow(BoardPostListUi boardPostListUi) {
         BoardPostListParentUi boardPostListParentUi = findUi(BoardPostListParentUi.class);
         if (boardPostListParentUi != null) {
-            return boardPostListParentUi.boardPostListShown(boardPostListUi);
+            int currentPage = boardPostListParentUi.getCurrentPageShow();
+            Timber.d("Current page "+currentPage + " list page index "+
+                    boardPostListUi.getPageIndex());
+            return currentPage == boardPostListUi.getPageIndex();
+        } else {
+            Timber.d("Current board post list parent UI is not attached");
         }
         return false;
     }

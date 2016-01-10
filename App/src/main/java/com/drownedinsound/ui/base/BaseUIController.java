@@ -31,6 +31,16 @@ public abstract class BaseUIController {
         mUis = new CopyOnWriteArraySet<>();
     }
 
+
+    public synchronized final void uiCreated(@NonNull Ui ui) {
+        mUis.add(ui);
+        onUiCreated(ui);
+    }
+
+    public void onUiCreated(Ui ui) {
+
+    }
+
     /**
      * Attaches the UI to this controller and resumes any unfinished subscriptions previously
      * added by {@see subscribeAndCache}

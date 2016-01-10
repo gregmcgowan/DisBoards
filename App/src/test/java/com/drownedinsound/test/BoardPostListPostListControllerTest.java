@@ -1,6 +1,5 @@
 package com.drownedinsound.test;
 
-import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
@@ -24,6 +23,7 @@ import rx.Subscriber;
 import rx.schedulers.Schedulers;
 
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +41,7 @@ public class BoardPostListPostListControllerTest {
     @Mock
     FakeDisRepo fakeDisRepo;
 
-    private BoardPostListController boardPostController;
+    private BoardPostListController boardPostListController;
 
     private BoardPostList boardPostListInfo;
 
@@ -52,7 +52,7 @@ public class BoardPostListPostListControllerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        boardPostController = new BoardPostListController(fakeDisRepo, Schedulers.immediate(),
+        boardPostListController = new BoardPostListController(fakeDisRepo, Schedulers.immediate(),
                 Schedulers.immediate());
         boardListType = BoardListTypes.MUSIC;
 
@@ -77,15 +77,15 @@ public class BoardPostListPostListControllerTest {
         when(fakeDisRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 1, true))
                 .thenReturn(Observable.just(boardPosts));
 
-        boardPostController.attachUi(boardPostListUi);
+        boardPostListController.attachUi(boardPostListUi);
 
-        boardPostController.requestBoardSummaryPage(boardPostListUi, boardListType, 1, true);
+        boardPostListController.requestBoardSummaryPage(boardPostListUi, boardListType, 1, true);
 
         verify(boardPostListUi).showLoadingProgress(true);
         verify(boardPostListUi).setBoardPostSummaries(boardPosts);
         verify(boardPostListUi).showLoadingProgress(false);
 
-        boardPostController.detachUi(boardPostListUi);
+        boardPostListController.detachUi(boardPostListUi);
     }
 
 
@@ -96,13 +96,13 @@ public class BoardPostListPostListControllerTest {
         when(fakeDisRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 2, true))
                 .thenReturn(Observable.just(boardPosts));
 
-        boardPostController.attachUi(boardPostListUi);
+        boardPostListController.attachUi(boardPostListUi);
 
-        boardPostController.requestBoardSummaryPage(boardPostListUi, boardListType, 2, true);
+        boardPostListController.requestBoardSummaryPage(boardPostListUi, boardListType, 2, true);
 
         verify(boardPostListUi).appendBoardPostSummaries(boardPosts);
 
-        boardPostController.detachUi(boardPostListUi);
+        boardPostListController.detachUi(boardPostListUi);
     }
 
     @Test
@@ -117,30 +117,31 @@ public class BoardPostListPostListControllerTest {
                     }
                 }));
 
-        boardPostController.attachUi(boardPostListUi);
+        boardPostListController.attachUi(boardPostListUi);
 
-        boardPostController.requestBoardSummaryPage(boardPostListUi, BoardListTypes.MUSIC, 1, true);
+        boardPostListController.requestBoardSummaryPage(boardPostListUi, BoardListTypes.MUSIC, 1, true);
 
         verify(boardPostListUi).showLoadingProgress(true);
         verify(boardPostListUi).showErrorView();
         verify(boardPostListUi).showLoadingProgress(false);
 
-        boardPostController.detachUi(boardPostListUi);
+        boardPostListController.detachUi(boardPostListUi);
     }
 
     @Test
     public void testStopLoadingOnDetach() {
         when(boardPostListUi.getBoardListType()).thenReturn(BoardListTypes.MUSIC);
 
-        boardPostController.attachUi(boardPostListUi);
-        boardPostController.detachUi(boardPostListUi);
+        boardPostListController.attachUi(boardPostListUi);
+        boardPostListController.detachUi(boardPostListUi);
 
         verify(boardPostListUi).showLoadingProgress(false);
     }
 
     @Test
     public void testLoadListOnAttachToParent() {
-        when(boardPostListParentUi.boardPostListShown(boardPostListUi)).thenReturn(true);
+        when(boardPostListParentUi.getCurrentPageShow()).thenReturn(1);
+        when(boardPostListUi.getPageIndex()).thenReturn(1);
         when(boardPostListUi.getBoardListType()).thenReturn(BoardListTypes.MUSIC);
 
         when(boardPostListUi.getID()).thenReturn(1);
@@ -155,15 +156,15 @@ public class BoardPostListPostListControllerTest {
         when(fakeDisRepo.getAllBoardPostLists())
                 .thenReturn(Observable.just(boardPostListInfos));
 
-        boardPostController.attachUi(boardPostListParentUi);
-        boardPostController.attachUi(boardPostListUi);
+        boardPostListController.attachUi(boardPostListParentUi);
+        boardPostListController.attachUi(boardPostListUi);
 
         verify(boardPostListUi).showLoadingProgress(true);
         verify(boardPostListUi).setBoardPostSummaries(boardPosts);
         verify(boardPostListUi).showLoadingProgress(false);
 
-        boardPostController.detachUi(boardPostListUi);
-        boardPostController.detachUi(boardPostListParentUi);
+        boardPostListController.detachUi(boardPostListUi);
+        boardPostListController.detachUi(boardPostListParentUi);
     }
 
     @Test
@@ -174,17 +175,15 @@ public class BoardPostListPostListControllerTest {
         when(fakeDisRepo.getAllBoardPostLists())
                 .thenReturn(Observable.just(boardPostListInfos));
 
-        when(boardPostListParentUi.getNoOfBoardListShown()).thenReturn(0);
+        when(boardPostListParentUi.getID()).thenReturn(1);
 
-        boardPostController.attachUi(boardPostListParentUi);
+        boardPostListController.uiCreated(boardPostListParentUi);
+        boardPostListController.attachUi(boardPostListParentUi);
+        boardPostListController.detachUi(boardPostListParentUi);
+        boardPostListController.attachUi(boardPostListParentUi);
 
         verify(fakeDisRepo).getAllBoardPostLists();
-        verify(boardPostListParentUi).setBoardPostLists(boardPostListInfos);
-
-        boardPostController.detachUi(boardPostListParentUi);
-        boardPostController.attachUi(boardPostListParentUi);
-
-        when(boardPostListParentUi.getNoOfBoardListShown()).thenReturn(1);
+        verify(boardPostListParentUi,times(1)).setBoardPostLists(boardPostListInfos);
 
     }
 

@@ -37,10 +37,11 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
 
     private static final String LOGOUT_DIALOG = "LOGOUT_DIALOG";
 
-    private BoardPostListFragmentAdapter mAdapter;
+    private static final String SAVED_TAB = "SAVED_TAB";
+
 
     @InjectView(R.id.boards_pager)
-    ViewPager mPager;
+    ViewPager viewPager;
 
     @InjectView(R.id.board_tabs)
     TabLayout tabLayout;
@@ -54,15 +55,17 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
     @Inject
     BoardPostListController boardPostListController;
 
-    BoardPostList boardPostListInfo;
+    private BoardPostListFragmentAdapter boardPostListFragmentAdapter;
+
+    private int currentSelectedPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if(savedInstanceState != null) {
+            currentSelectedPage = savedInstanceState.getInt(SAVED_TAB,-1);
+        }
         ButterKnife.inject(this);
-
-        mAdapter = new BoardPostListFragmentAdapter(getFragmentManager());
     }
 
     @Override
@@ -71,10 +74,25 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
     }
 
     private void initialiseViewPager() {
-        tabLayout.setupWithViewPager(mPager);
+        tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                currentSelectedPage = tab.getPosition();
+            }
 
-        mPager.addOnPageChangeListener(new OnPageChangeListener() {
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        viewPager.addOnPageChangeListener(new OnPageChangeListener() {
 
             public void onPageScrollStateChanged(int state) {
 
@@ -82,8 +100,8 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
 
             public void onPageScrolled(int state, float positionOffset, int positionPixels) {
                 if (state == ViewPager.SCROLL_STATE_DRAGGING) {
-                    int currentPage = mPager.getCurrentItem();
-                    int maxPages = mAdapter.getCount();
+                    int currentPage = viewPager.getCurrentItem();
+                    int maxPages = boardPostListFragmentAdapter.getCount();
                     int pageToLeft = currentPage - 1;
                     int pageToRight = currentPage + 1;
 
@@ -97,7 +115,7 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
             }
 
             public void onPageSelected(int position) {
-                boardPostListInfo = mAdapter.getBoard(position);
+                currentSelectedPage = position;
                 boardPostListController.loadListAt(position);
             }
 
@@ -135,16 +153,12 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
 
     @Override
     public void setBoardPostLists(List<BoardPostList> boardPostListInfos) {
-        mAdapter.setBoardPostListInfos(boardPostListInfos);
-        mPager.setAdapter(mAdapter);
+        boardPostListFragmentAdapter = new BoardPostListFragmentAdapter(getFragmentManager());
+        boardPostListFragmentAdapter.setBoardPostListInfos(boardPostListInfos);
+        viewPager.setAdapter(boardPostListFragmentAdapter);
         initialiseViewPager();
-        boardPostListInfo = mAdapter.getBoard(0);
     }
 
-    @Override
-    public int getNoOfBoardListShown() {
-        return mAdapter.getCount();
-    }
 
     public void doLogoutAction() {
         //TODO Might need to do a proper logout
@@ -171,7 +185,28 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
     }
 
     @Override
-    public boolean boardPostListShown(BoardPostListUi boardPostListUi) {
-        return mPager.getCurrentItem() == boardPostListUi.getPageIndex();
+    public int getCurrentPageShow() {
+        return currentSelectedPage;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        currentSelectedPage = viewPager.getCurrentItem();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (currentSelectedPage != -1 && viewPager.getCurrentItem() != currentSelectedPage) {
+            viewPager.setCurrentItem(currentSelectedPage);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(SAVED_TAB, currentSelectedPage);
+
     }
 }

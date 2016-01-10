@@ -1,11 +1,19 @@
 package com.drownedinsound.ui.base;
 
+import android.os.Bundle;
+
 /**
  * Created by gregmcgowan on 14/06/15.
  */
 public abstract class BaseControllerActivity<C extends BaseUIController> extends BaseActivity {
 
     protected abstract C getController();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getController().onUiCreated(this);
+    }
 
     @Override
     public void onPause() {

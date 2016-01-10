@@ -10,10 +10,8 @@ import java.util.List;
  */
 public interface BoardPostListParentUi extends Ui {
 
-    boolean boardPostListShown(BoardPostListUi boardPostListUi);
+    int getCurrentPageShow();
 
     void setBoardPostLists(List<BoardPostList> boardPostListInfos);
-
-    int getNoOfBoardListShown();
 
 }
