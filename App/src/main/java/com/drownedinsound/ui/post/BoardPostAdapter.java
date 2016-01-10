@@ -4,6 +4,7 @@ import com.drownedinsound.R;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostComment;
 import com.drownedinsound.ui.controls.ActiveTextView;
+import com.drownedinsound.utils.StringUtils;
 import com.drownedinsound.utils.UiUtils;
 
 import android.content.Context;
@@ -142,6 +143,9 @@ public class BoardPostAdapter extends BaseAdapter {
 
         if (comment != null) {
             String title = comment.getTitle();
+            if(!StringUtils.isEmpty(title)) {
+                title = Html.fromHtml(title).toString();
+            }
             String author = comment.getAuthorUsername();
             String replyTo = comment.getReplyToUsername();
             if (!TextUtils.isEmpty(replyTo)) {
