@@ -10,6 +10,7 @@ import com.drownedinsound.data.network.LoginResponse;
 import android.text.format.DateUtils;
 
 
+import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
@@ -89,7 +90,16 @@ public class DisBoardRepoImpl implements DisBoardRepo {
                                             }).onErrorResumeNext(Observable.just(posts));
                         }
                     }
-                });
+                }).map(new Func1<List<BoardPostSummary>, List<BoardPostSummary>>() {
+            @Override
+            public List<BoardPostSummary> call(List<BoardPostSummary> boardPostSummaries) {
+                if(pageNumber == 1) {
+                    Collections.sort(boardPostSummaries,BoardPostSummary.COMPARATOR);
+                }
+
+                return boardPostSummaries;
+            }
+        });
     }
 
     @Override
