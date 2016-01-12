@@ -36,7 +36,6 @@ public class BoardPost {
     private String boardListTypeID;
 
     // KEEP FIELDS - put your custom fields here
-    public static final BoardPostComparator COMPARATOR = new BoardPostComparator();
 
     private List<BoardPostCommentTreeNode> boardPostTreeNodes;
     // KEEP FIELDS END
@@ -238,44 +237,6 @@ public class BoardPost {
             node.addChild(makeTreeNode(childComment, allCommentsList));
         }
         return node;
-    }
-
-    public static class BoardPostComparator implements Comparator<BoardPost> {
-
-        @Override
-        public int compare(BoardPost leftHandSideBoardPost,
-                BoardPost rightHandSidePost) {
-            if (leftHandSideBoardPost == null) {
-                return 1;
-            }
-            if (rightHandSidePost == null) {
-                return -1;
-            }
-
-            boolean lhsIsSticky = leftHandSideBoardPost.getIsSticky();
-            boolean rhsIsSticky = rightHandSidePost.getIsSticky();
-
-            if (!lhsIsSticky && rhsIsSticky) {
-                return 1;
-            }
-            if (lhsIsSticky && !rhsIsSticky) {
-                return -1;
-            }
-
-            long leftHandsideLastUpdatedTime = leftHandSideBoardPost
-                    .getLastUpdatedTime();
-            long rightHandsideLastUpdatedTime = rightHandSidePost
-                    .getLastUpdatedTime();
-
-            if (rightHandsideLastUpdatedTime > leftHandsideLastUpdatedTime) {
-                return 1;
-            }
-            if (leftHandsideLastUpdatedTime > rightHandsideLastUpdatedTime) {
-                return -1;
-            }
-
-            return 0;
-        }
     }
 
     @Override

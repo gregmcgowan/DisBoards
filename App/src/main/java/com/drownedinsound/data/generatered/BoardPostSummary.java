@@ -6,6 +6,8 @@ package com.drownedinsound.data.generatered;
 
 import android.text.format.DateUtils;
 
+import java.util.Comparator;
+
 // KEEP INCLUDES END
 
 /**
@@ -24,6 +26,9 @@ public class BoardPostSummary {
     private String boardListTypeID;
 
     // KEEP FIELDS - put your custom fields here
+
+    public static final BoardPostSummaryComparator COMPARATOR = new BoardPostSummaryComparator();
+
     // KEEP FIELDS END
 
     public BoardPostSummary() {
@@ -138,6 +143,44 @@ public class BoardPostSummary {
         return !(boardPostID != null ? !boardPostID.equals(that.boardPostID)
                 : that.boardPostID != null);
 
+    }
+
+    public static class BoardPostSummaryComparator implements Comparator<BoardPostSummary> {
+
+        @Override
+        public int compare(BoardPostSummary leftHandSideBoardPost,
+                BoardPostSummary rightHandSidePost) {
+            if (leftHandSideBoardPost == null) {
+                return 1;
+            }
+            if (rightHandSidePost == null) {
+                return -1;
+            }
+
+            boolean lhsIsSticky = leftHandSideBoardPost.getIsSticky();
+            boolean rhsIsSticky = rightHandSidePost.getIsSticky();
+
+            if (!lhsIsSticky && rhsIsSticky) {
+                return 1;
+            }
+            if (lhsIsSticky && !rhsIsSticky) {
+                return -1;
+            }
+
+            long leftHandsideLastUpdatedTime = leftHandSideBoardPost
+                    .getLastUpdatedTime();
+            long rightHandsideLastUpdatedTime = rightHandSidePost
+                    .getLastUpdatedTime();
+
+            if (rightHandsideLastUpdatedTime > leftHandsideLastUpdatedTime) {
+                return 1;
+            }
+            if (leftHandsideLastUpdatedTime > rightHandsideLastUpdatedTime) {
+                return -1;
+            }
+
+            return 0;
+        }
     }
 
     @Override
