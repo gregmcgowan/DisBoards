@@ -25,8 +25,14 @@ public interface DisBoardRepo {
             @BoardPostList.BoardPostListType String boardListType, int pageNumber,
             boolean forceUpdate);
 
-    Observable<Void> thisAComment(String boardPostId, String commentId,
-            @BoardPostList.BoardPostListType String boardListType);
+    Observable<BoardPost> postComment(@BoardPostList.BoardPostListType String boardListType,
+            String boardPostId, String commentId, String title, String content);
+
+    Observable<BoardPost> addNewPost(@BoardPostList.BoardPostListType String boardListType,
+            String title, String content);
+
+    Observable<BoardPost> thisAComment(@BoardPostList.BoardPostListType String boardListType,
+            String boardPostId, String commentId);
 
     boolean isUserLoggedIn();
 

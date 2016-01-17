@@ -9,7 +9,6 @@ import com.drownedinsound.data.network.LoginResponse;
 
 import android.text.format.DateUtils;
 
-
 import java.util.Collections;
 import java.util.List;
 
@@ -93,8 +92,8 @@ public class DisBoardRepoImpl implements DisBoardRepo {
                 }).map(new Func1<List<BoardPostSummary>, List<BoardPostSummary>>() {
             @Override
             public List<BoardPostSummary> call(List<BoardPostSummary> boardPostSummaries) {
-                if(pageNumber == 1) {
-                    Collections.sort(boardPostSummaries,BoardPostSummary.COMPARATOR);
+                if (pageNumber == 1) {
+                    Collections.sort(boardPostSummaries, BoardPostSummary.COMPARATOR);
                 }
 
                 return boardPostSummaries;
@@ -153,8 +152,30 @@ public class DisBoardRepoImpl implements DisBoardRepo {
 
 
     @Override
-    public Observable<Void> thisAComment(String boardPostId, String commentId,
-            @BoardPostList.BoardPostListType String boardListType) {
+    public Observable<BoardPost> postComment(@BoardPostList.BoardPostListType String boardListType,
+            final String boardPostId, String commentId, String title, String content) {
+        return disApi.postComment(boardListType, boardPostId, commentId, title, content,
+                userSessionRepo.getAuthenticityToken()).doOnNext(new Action1<BoardPost>() {
+            @Override
+            public void call(BoardPost boardPost) {
+                try {
+                    disBoardsLocalRepo.setBoardPost(boardPost);
+                } catch (Exception e) {
+                    Timber.d("Could not cache board post "+boardPostId + " exception "+e.getMessage());
+                }
+            }
+        });
+    }
+
+    @Override
+    public Observable<BoardPost> addNewPost(@BoardPostList.BoardPostListType String boardListType,
+            String title, String content) {
+        return null;
+    }
+
+    @Override
+    public Observable<BoardPost> thisAComment(@BoardPostList.BoardPostListType String boardListType,
+            String boardPostId, String commentId) {
         return null;
     }
 

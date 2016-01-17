@@ -3,19 +3,22 @@ package com.drownedinsound.test;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.model.BoardListTypes;
+import com.drownedinsound.ui.base.Display;
 import com.drownedinsound.ui.post.BoardPostController;
 import com.drownedinsound.ui.post.BoardPostUI;
+import com.drownedinsound.ui.post.ReplyToCommentUi;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by gregmcgowan on 09/01/16.
@@ -27,6 +30,12 @@ public class BoardPostControllerTest {
 
     @Mock
     DisBoardRepo disBoardRepo;
+
+    @Mock
+    Display display;
+
+    @Mock
+    ReplyToCommentUi replyToCommentUi;
 
     BoardPostController boardPostController;
 
@@ -80,5 +89,60 @@ public class BoardPostControllerTest {
 
         verify(boardPostUI).showLoadingProgress(true);
         verify(boardPostUI).showErrorView();
+    }
+
+    @Test
+    public void testShowReplyUiLoggedIn() {
+        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
+
+        boardPostController.attachDisplay(display);
+        boardPostController.showReplyUI(BoardListTypes.SOCIAL, "Author", "12345", "1224");
+
+        verify(display).showReplyUI(BoardListTypes.SOCIAL, "Author", "12345", "1224");
+    }
+
+    @Test
+    public void testShowReplyUiNotLoggedIn() {
+        when(disBoardRepo.isUserLoggedIn()).thenReturn(false);
+
+        boardPostController.attachDisplay(display);
+        boardPostController.showReplyUI(BoardListTypes.SOCIAL, "Author", "12345", "1224");
+
+        verify(display).showNotLoggedInUI();
+    }
+
+    @Test
+    public void testReplyToCommentSucceeds() {
+        when(disBoardRepo.postComment(BoardListTypes.SOCIAL,"12345","12345", "Title", "Content"))
+                .thenReturn(Observable.just(expectedBoardPost));
+
+        boardPostController.attachDisplay(display);
+        boardPostController.attachUi(replyToCommentUi);
+        boardPostController.replyToComment(replyToCommentUi,
+                BoardListTypes.SOCIAL, "12345", "12345", "Title", "Content");
+
+        verify(replyToCommentUi).showLoadingProgress(true);
+        verify(display).hideCurrentScreen();
+    }
+
+
+    @Test
+    public void testReplyToCommentFails() {
+        when(disBoardRepo.postComment(BoardListTypes.SOCIAL,"12345","12345", "Title", "Content"))
+                .thenReturn(Observable.create(new Observable.OnSubscribe<BoardPost>() {
+                    @Override
+                    public void call(Subscriber<? super BoardPost> subscriber) {
+                        subscriber.onError(new Exception());
+                    }
+                }));
+
+        boardPostController.attachDisplay(display);
+        boardPostController.attachUi(replyToCommentUi);
+        boardPostController.replyToComment(replyToCommentUi,
+                BoardListTypes.SOCIAL, "12345", "12345", "Title", "Content");
+
+        verify(replyToCommentUi).showLoadingProgress(true);
+        verify(replyToCommentUi).showLoadingProgress(false);
+        verify(replyToCommentUi).handlePostCommentFailure();
     }
 }

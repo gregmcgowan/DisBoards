@@ -3,7 +3,6 @@ package com.drownedinsound.data.network;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
-import com.drownedinsound.data.network.handlers.ResponseHandler;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
 import com.drownedinsound.data.parser.streaming.LoginException;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -13,8 +12,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
-import android.app.Application;
-import android.content.Context;
+import android.text.TextUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -126,23 +124,34 @@ public class DisApiClient implements DisBoardsApi {
 
     @Override
     public Observable<BoardPost> getBoardPost(final @BoardPostList.BoardPostListType String boardListType,final String boardPostId) {
-        String url = UrlConstants.getBoardPostUrl(baseUrl,boardListType,boardPostId);
+        String url = UrlConstants.getBoardPostUrl(baseUrl, boardListType, boardPostId);
         return makeRequest(RequestMethod.GET,url,url)
                 .flatMap(new Func1<Response, Observable<BoardPost>>() {
             @Override
             public Observable<BoardPost> call(Response response) {
+                return parseBoardPost(boardListType,boardPostId,response);
+            }
+        });
+    }
+
+    public Observable<BoardPost> parseBoardPost(final @BoardPostList.BoardPostListType String boardListType,final String boardPostId, final Response response) {
+        return Observable.create(new Observable.OnSubscribe<BoardPost>() {
+            @Override
+            public void call(Subscriber<? super BoardPost> subscriber) {
                 try {
                     InputStream inputStream = getInputStreamFromResponse(response);
                     BoardPost boardPost
                             = disWebPageParser.parseBoardPost(boardListType,boardPostId,inputStream);
                     inputStream.close();
-                    return Observable.just(boardPost);
+                    subscriber.onNext(boardPost);
+                    subscriber.onCompleted();
                 } catch (IOException e) {
-                    return Observable.error(e);
+                    subscriber.onError(e);
                 }
             }
         });
     }
+
 
     @Override
     public Observable<List<BoardPostSummary>> getBoardPostSummaryList(final @BoardPostList.BoardPostListType String boardListType,
@@ -170,20 +179,52 @@ public class DisApiClient implements DisBoardsApi {
     }
 
     @Override
-    public Observable<Void> thisAComment(@BoardPostList.BoardPostListType String boardListType,
-            String boardPostUrl, String boardPostId, String commentId) {
+    public Observable<BoardPost> postComment(
+            @BoardPostList.BoardPostListType final String boardListType,
+            final String boardPostId, String commentId, String title, String content,
+            String authToken) {
+        if (TextUtils.isEmpty(authToken)) {
+            throw new IllegalArgumentException("Auth token cannot be null");
+        }
+
+        if (TextUtils.isEmpty(boardPostId)) {
+            throw new IllegalArgumentException("BoardPostId cannot be null");
+        }
+
+        if (commentId == null) {
+            commentId = "";
+        }
+
+        RequestBody requestBody = new FormEncodingBuilder()
+                .add("comment[commentable_id]", boardPostId)
+                .add("comment[title]", title)
+                .add("comment[commentable_type]", "Topic")
+                .add("comment[content_raw]", content)
+                .add("parent_id", commentId)
+                .add("authenticity_token", authToken)
+                .add("commit", "Post reply").build();
+
+        String tag = boardPostId + "COMMENT" + commentId;
+        return makeRequest(RequestMethod.POST, UrlConstants.COMMENTS_URL, requestBody, null, tag)
+                .flatMap(
+                        new Func1<Response, Observable<BoardPost>>() {
+                            @Override
+                            public Observable<BoardPost> call(Response response) {
+                                return parseBoardPost(boardListType, boardPostId, response);
+                            }
+                        });
+    }
+
+
+    @Override
+    public Observable<BoardPost> addNewPost(@BoardPostList.BoardPostListType String boardListType,
+            String title, String content, String authToken) {
         return null;
     }
 
     @Override
-    public Observable<Void> addNewPost(@BoardPostList.BoardPostListType String boardListType,
-            String title, String content, ResponseHandler responseHandler) {
-        return null;
-    }
-
-    @Override
-    public Observable<Void> postComment(@BoardPostList.BoardPostListType String boardListType,
-            String boardPostId, String commentId, String title, String content) {
+    public Observable<BoardPost> thisAComment(@BoardPostList.BoardPostListType String boardListType,
+            String boardPostUrl, String boardPostId, String commentId, String authToken) {
         return null;
     }
 
@@ -326,37 +367,7 @@ public class DisApiClient implements DisBoardsApi {
 //                UrlConstants.NEW_POST_URL, requestBody, extraHeaders,REQUEST_TYPE.NEW_POST);
 //    }
 //
-//    public void postComment(String boardPostId, String commentId, String title, String content,
-//            BoardListType boardListType, String authToken) {
-//        if (TextUtils.isEmpty(authToken)) {
-//            throw new IllegalArgumentException("Auth token cannot be null");
-//        }
-//
-//        if (TextUtils.isEmpty(boardPostId)) {
-//            throw new IllegalArgumentException("BoardPostId cannot be null");
-//        }
-//
-////        PostACommentHandler postACommentHandler = new PostACommentHandler(boardPostId, boardType,
-////                callingUiId);
-//       // inject(postACommentHandler);
-//
-//        if (commentId == null) {
-//            commentId = "";
-//        }
-//
-//        RequestBody requestBody = new FormEncodingBuilder()
-//                .add("comment[commentable_id]", boardPostId)
-//                .add("comment[title]", title)
-//                .add("comment[commentable_type]", "Topic")
-//                .add("comment[content_raw]", content)
-//                .add("parent_id", commentId)
-//                .add("authenticity_token", authToken)
-//                .add("commit", "Post reply").build();
-//
-//        String tag = boardPostId + "COMMENT" + commentId;
-//
-//        makeRequest(RequestMethod.POST, UrlConstants.COMMENTS_URL, requestBody, null, tag);
-//    }
+
 
 
     @Override

@@ -9,8 +9,6 @@ import com.drownedinsound.events.RetrievedBoardPostEvent;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.ui.base.BaseUIController;
-import com.drownedinsound.ui.base.Ui;
-
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -63,8 +61,49 @@ public class BoardPostController extends BaseUIController {
                     getUI().showLoadingProgress(false);
                 }
             };
-            subscribeAndCache(boardPostUI,boardPostId,getBoardPostObserver,getBoardPostObservable);
+            subscribeAndCache(boardPostUI, boardPostId, getBoardPostObserver,
+                    getBoardPostObservable);
         }
+    }
+
+
+    public void showReplyUI(@BoardPostList.BoardPostListType String boardListType,
+            String postId, String replyToAuthor, String replyToCommentId) {
+        if(disBoardRepo.isUserLoggedIn()) {
+            getDisplay().showReplyUI(boardListType, postId, replyToAuthor, replyToCommentId);
+        } else {
+            getDisplay().showNotLoggedInUI();
+        }
+    }
+
+    public void replyToComment(ReplyToCommentUi replyToCommentUi,
+            @BoardPostList.BoardPostListType String boardListType,
+            String boardPostId, String commentId, String title, String content) {
+        int uiID = getId(replyToCommentUi);
+        replyToCommentUi.showLoadingProgress(true);
+
+        Observable<BoardPost> postCommentObservable = disBoardRepo.
+                postComment(boardListType, boardPostId, commentId, title, content)
+                .subscribeOn(backgroundThreadScheduler)
+                .observeOn(mainThreadScheduler);
+
+        BaseObserver<BoardPost, ReplyToCommentUi> postCommentObserver
+                = new BaseObserver<BoardPost, ReplyToCommentUi>(uiID) {
+            @Override
+            public void onError(Throwable e) {
+                getUI().showLoadingProgress(false);
+                getUI().handlePostCommentFailure();
+            }
+
+            @Override
+            public void onNext(BoardPost boardPost) {
+                if(getDisplay() != null) {
+                    getDisplay().hideCurrentScreen();
+                }
+            }
+        };
+        subscribeAndCache(replyToCommentUi, boardPostId, postCommentObserver,
+                postCommentObservable);
     }
 
     public void thisAComment(BoardPostUI boardPostUI, @BoardPostList.BoardPostListType String boardListType,
@@ -120,14 +159,6 @@ public class BoardPostController extends BaseUIController {
         }
     }
 
-    public void replyToComment(ReplyToCommentUi replyToCommentUi,String boardPostId, String replyToCommentID, String commentTitle,
-            String commentContent, @BoardPostList.BoardPostListType String boardListType) {
-        replyToCommentUi.showLoadingProgress(true);
-
-        int uiID = getId(replyToCommentUi);
-
-        //disApiClient.postComment(boardPostId,replyToCommentID,commentTitle,commentContent,boardType);
-    }
 
     @SuppressWarnings("unused")
     public void onEventMainThread(PostCommentEvent postCommentEvent) {

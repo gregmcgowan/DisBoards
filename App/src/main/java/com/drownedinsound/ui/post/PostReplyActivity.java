@@ -4,19 +4,22 @@ import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.BaseActivity;
+import com.drownedinsound.ui.base.BaseControllerActivity;
 
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 
-public class PostReplyActivity extends BaseActivity {
+public class PostReplyActivity extends BaseControllerActivity<BoardPostController> {
 
 
-    public static Intent getIntent(Context context, String replyToAuthor,
-            String replyToCommentId, String postId, @BoardPostList.BoardPostListType String boardListType) {
+    public static Intent getIntent(Context context, @BoardPostList.BoardPostListType String boardListType,
+            String postId, String replyToAuthor, String replyToCommentId) {
 
         Intent intent = new Intent(context,PostReplyActivity.class);
 
@@ -32,6 +35,8 @@ public class PostReplyActivity extends BaseActivity {
         return intent;
     }
 
+    @Inject
+    BoardPostController boardPostController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +51,8 @@ public class PostReplyActivity extends BaseActivity {
         String boardPostId = intent.getStringExtra(DisBoardsConstants.BOARD_POST_ID);
         String replyToAuthor = intent.getStringExtra(DisBoardsConstants.REPLY_TO_AUTHOR);
 
-        PostReplyFragment postReplyFragment = PostReplyFragment.newInstance(replyToAuthor,replyToCommentID,boardPostId,
-                boardListType);
+        PostReplyFragment postReplyFragment = PostReplyFragment.newInstance(boardListType,boardPostId,
+                replyToAuthor,replyToCommentID);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.container,postReplyFragment);
         fragmentTransaction.commit();
@@ -56,5 +61,10 @@ public class PostReplyActivity extends BaseActivity {
     @Override
     protected int getLayoutResource() {
         return R.layout.board_post_reply_container;
+    }
+
+    @Override
+    protected BoardPostController getController() {
+        return boardPostController;
     }
 }

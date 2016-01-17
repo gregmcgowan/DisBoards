@@ -31,6 +31,7 @@ public abstract class BaseUIController {
         mUis = new CopyOnWriteArraySet<>();
     }
 
+    private Display display;
 
     public synchronized final void uiCreated(@NonNull Ui ui) {
         mUis.add(ui);
@@ -239,6 +240,19 @@ public abstract class BaseUIController {
         boolean removed = idObservables.remove(tag) != null;
         Timber.d((removed ? "Removed" : "Did not remove") + " observable for " +tag);
     }
+
+    public void attachDisplay(Display display) {
+        this.display = display;
+    }
+
+    public void detachDisplay(Display display){
+        this.display = null;
+    }
+
+    public Display getDisplay() {
+        return display;
+    }
+
     /**
      * Base class for UI observers. Provides method to get the UI element it is
      * associated with

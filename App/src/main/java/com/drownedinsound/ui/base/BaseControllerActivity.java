@@ -9,9 +9,12 @@ public abstract class BaseControllerActivity<C extends BaseUIController> extends
 
     protected abstract C getController();
 
+    private AndroidDisplay display;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        display = new AndroidDisplay(this);
         getController().onUiCreated(this);
     }
 
@@ -19,13 +22,14 @@ public abstract class BaseControllerActivity<C extends BaseUIController> extends
     public void onPause() {
         getController().onPause();
         getController().detachUi(this);
-
+        getController().detachDisplay(display);
         super.onPause();
     }
 
     @Override
     public void onResume() {
         getController().attachUi(this);
+        getController().attachDisplay(display);
         super.onResume();
     }
 

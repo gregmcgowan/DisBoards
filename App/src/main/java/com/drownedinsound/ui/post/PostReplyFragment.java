@@ -53,8 +53,8 @@ public class PostReplyFragment extends BaseControllerFragment<BoardPostControlle
     @Inject
     BoardPostController boardPostController;
 
-    public static PostReplyFragment newInstance(String replyToAuthor,
-            String replyToCommentId, String postId, @BoardPostList.BoardPostListType String boardListType ) {
+    public static PostReplyFragment newInstance(@BoardPostList.BoardPostListType String boardListType,
+            String postId, String replyToAuthor, String replyToCommentId ) {
         Bundle arguments = new Bundle();
         arguments.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
                 replyToAuthor);
@@ -131,8 +131,7 @@ public class PostReplyFragment extends BaseControllerFragment<BoardPostControlle
         //TODO validation
 
         boardPostController
-                .replyToComment(this, boardPostId, replyToCommentID, commentTitle, commentContent,
-                        boardListType);
+                .replyToComment(this, boardListType, boardPostId, replyToCommentID, commentTitle, commentContent);
     }
 
     @OnClick(R.id.back_button)

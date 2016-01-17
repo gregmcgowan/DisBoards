@@ -162,8 +162,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     private void displayReplyDialog(BoardPostComment boardPostComment) {
         String replyToAuthor = boardPostComment.getReplyToUsername();
         String commentId = boardPostComment.getCommentID();
-        startActivity(PostReplyActivity
-                .getIntent(getActivity(), replyToAuthor, commentId, boardPostId, boardListType));
+        boardPostController.showReplyUI(boardListType, boardPostId, replyToAuthor, commentId);
     }
 
     private void thisAComment(BoardPostComment boardPostComment) {
@@ -368,8 +367,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     @OnClick(R.id.floating_reply_button)
     public void doReplyAction() {
         String replyToAuthor = boardPost.getAuthorUsername();
-        startActivity(PostReplyActivity
-                .getIntent(getActivity(), replyToAuthor, null, boardPostId, boardListType));
+        boardPostController.showReplyUI(boardListType, boardPostId, replyToAuthor, null);
     }
 
 
