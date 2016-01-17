@@ -15,6 +15,9 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 
 
@@ -74,6 +77,9 @@ public class DisBoardWebParserTest {
 
         List<BoardPostSummary> actualBoardPosts = disWebPageParser.parseBoardPostSummaryList(BoardListTypes.SOCIAL,
                 inputStream);
+
+        verify(userSessionRepo, atLeastOnce()).setAuthenticityToken(anyString());;
+
         Assert.assertEquals(42, actualBoardPosts.size());
 
         AssertUtils.assertBoardPostSummary(expectedBoardPostOne, actualBoardPosts.get(0));
@@ -142,7 +148,9 @@ public class DisBoardWebParserTest {
 
         InputStream inputStream = getInputStream("board_post.html");
 
-        BoardPost actual = disWebPageParser.parseBoardPost(BoardListTypes.SOCIAL, "4471118", inputStream);
+        BoardPost actual = disWebPageParser.parseBoardPost(BoardListTypes.SOCIAL, "4471118",
+                inputStream);
+        verify(userSessionRepo, atLeastOnce()).setAuthenticityToken(anyString());;
 
         AssertUtils.assertBoardPost(expectedBoardPost,actual);
     }

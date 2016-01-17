@@ -144,16 +144,7 @@ public class BoardPostParser {
                             if (isInPageState(currentPageState, PageState.INITIAL_CONTENT_DIV)) {
                                 initialContentDivLevel++;
                             }
-                        } else if (HtmlConstants.META.equals(tagName)) {
-                            String metaString = tag.toString();
-                            if (metaString.contains(HtmlConstants.AUTHENTICITY_TOKEN_NAME)) {
-                                Attributes attributes = tag.parseAttributes();
-                                if (attributes != null) {
-                                    String authToken = attributes.getValue("content");
-                                    userSessionManager.setAuthenticityToken(authToken);
-                                }
-                            }
-                        } else {
+                        }  else {
                             if (isInPageState(currentPageState,PageState.INITIAL_CONTENT_DIV)) {
                                 initialContentDivLevel--;
                                 if (initialContentDivLevel == 0) {
@@ -330,6 +321,15 @@ public class BoardPostParser {
                                 && PageState.COMMENT_LIST_DIV
                                 .equals(baseDivState)) {
                             boardPostCommentLevel--;
+                        }
+                    } else if (HtmlConstants.META.equals(tagName)) {
+                        String metaString = tag.toString();
+                        if (metaString.contains(HtmlConstants.AUTHENTICITY_TOKEN_NAME)) {
+                            Attributes attributes = tag.parseAttributes();
+                            if (attributes != null) {
+                                String authToken = attributes.getValue("content");
+                                userSessionManager.setAuthenticityToken(authToken);
+                            }
                         }
                     }
 
