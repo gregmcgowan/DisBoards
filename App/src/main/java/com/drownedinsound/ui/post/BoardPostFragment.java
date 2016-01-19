@@ -7,9 +7,6 @@ import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostComment;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.network.UrlConstants;
-import com.drownedinsound.events.FailedToThisThisEvent;
-import com.drownedinsound.events.SetBoardPostFavouriteStatusResultEvent;
-import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 import com.drownedinsound.ui.controls.AutoScrollListView;
@@ -147,14 +144,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
                     }
 
                 });
-//        floatingReplyButton
-//                .attachToListView(commentsList, new FloatingActionButton.FabOnScrollListener() {
-//                    @Override
-//                    public void onScrollStateChanged(AbsListView view, int scrollState) {
-//                        super.onScrollStateChanged(view, scrollState);
-//                        displayScrollToHiddenCommentOption(false);
-//                    }
-//                });
 
         return rootView;
     }
@@ -278,39 +267,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         return boardPostId;
     }
 
-
-    public void onEventMainThread(FailedToThisThisEvent event) {
-        Toast.makeText(getActivity(),
-                "Failed to this this. You could try again", Toast.LENGTH_SHORT)
-                .show();
-    }
-
-    public void onEventMainThread(UserIsNotLoggedInEvent event) {
-        if (DisBoardsConstants.DEBUG) {
-            Log.d(TAG, "recieved  not logged in ");
-        }
-
-        Toast.makeText(getActivity(),
-                "User is not logged in", Toast.LENGTH_SHORT)
-                .show();
-    }
-
-
-    public void onEventMainThread(SetBoardPostFavouriteStatusResultEvent event) {
-        if (event.isSuccess()) {
-            //boardPost.setFavourited(event.isNewStatus());
-            updateFavouriteMenuItemStatus();
-        } else {
-            Toast.makeText(getActivity(), "Could not save to favourites",
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
-    private void displayIsCachedPopup() {
-        Toast.makeText(getActivity(), "This is an cached version",
-                Toast.LENGTH_SHORT).show();
-    }
 
 
     @Override
@@ -465,9 +421,13 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
             @BoardPostList.BoardPostListType String boardListType = UrlConstants.getBoardType(url);
             startActivity(BoardPostActivity.getIntent(getActivity(), postId, boardListType));
         }
-
-
     }
 
 
+    @Override
+    public void showThisACommentFailed() {
+        Toast.makeText(getActivity(),
+                "Failed to this this. You could try again", Toast.LENGTH_SHORT)
+                .show();
+    }
 }

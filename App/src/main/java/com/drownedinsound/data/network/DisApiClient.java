@@ -26,6 +26,8 @@ import javax.inject.Singleton;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
+import timber.log.Timber;
+
 /**
  * A service that will handle all the requests to the website
  *
@@ -141,7 +143,8 @@ public class DisApiClient implements DisBoardsApi {
                 try {
                     InputStream inputStream = getInputStreamFromResponse(response);
                     BoardPost boardPost
-                            = disWebPageParser.parseBoardPost(boardListType,boardPostId,inputStream);
+                            = disWebPageParser
+                            .parseBoardPost(boardListType, boardPostId, inputStream);
                     inputStream.close();
                     subscriber.onNext(boardPost);
                     subscriber.onCompleted();
@@ -206,8 +209,7 @@ public class DisApiClient implements DisBoardsApi {
 
         String tag = boardPostId + "COMMENT" + commentId;
         return makeRequest(RequestMethod.POST, UrlConstants.COMMENTS_URL, requestBody, null, tag)
-                .flatMap(
-                        new Func1<Response, Observable<BoardPost>>() {
+                .flatMap(new Func1<Response, Observable<BoardPost>>() {
                             @Override
                             public Observable<BoardPost> call(Response response) {
                                 return parseBoardPost(boardListType, boardPostId, response);
@@ -215,16 +217,39 @@ public class DisApiClient implements DisBoardsApi {
                         });
     }
 
+    @Override
+    public Observable<BoardPost> thisAComment(@BoardPostList.BoardPostListType final String boardListType,
+            final String boardPostId, String commentId, String authToken) {
+        if (TextUtils.isEmpty(authToken)) {
+            throw new IllegalArgumentException("Auth token cannot be null");
+        }
+
+        if (TextUtils.isEmpty(boardPostId)) {
+            throw new IllegalArgumentException("BoardPostId cannot be null");
+        }
+
+        if (TextUtils.isEmpty(commentId)) {
+            throw new IllegalArgumentException("CommentID cannot be null");
+        }
+
+        String boardPostUrl = UrlConstants.getBoardPostUrl(baseUrl, boardListType, boardPostId);
+        String fullUrl = boardPostUrl + "/" + commentId + "/this";
+        Timber.d("Going to this with  =" + fullUrl);
+
+        String tag = "THIS" + boardPostId;
+        return makeRequest(RequestMethod.GET, fullUrl, tag)
+                .flatMap(new Func1<Response, Observable<BoardPost>>() {
+                    @Override
+                    public Observable<BoardPost> call(Response response) {
+                        return parseBoardPost(boardListType, boardPostId, response);
+                    }
+                });
+    }
+
 
     @Override
     public Observable<BoardPost> addNewPost(@BoardPostList.BoardPostListType String boardListType,
             String title, String content, String authToken) {
-        return null;
-    }
-
-    @Override
-    public Observable<BoardPost> thisAComment(@BoardPostList.BoardPostListType String boardListType,
-            String boardPostUrl, String boardPostId, String commentId, String authToken) {
         return null;
     }
 
@@ -335,18 +360,6 @@ public class DisApiClient implements DisBoardsApi {
 ////            });
 //        }
 //
-//    }
-//
-//    public void thisAComment(String boardPostUrl, String boardPostId, String commentId,
-//            BoardListType boardListType, int callingId) {
-//        ThisACommentHandler thisACommentHandler = new ThisACommentHandler(callingId, boardPostId,
-//                boardListType);
-//
-//        String fullUrl = boardPostUrl + "/" + commentId + "/this";
-//        Timber.d("Going to this with  =" + fullUrl);
-//
-//        String tag = "THIS" + boardPostId;
-//        makeRequest(RequestMethod.GET, tag, fullUrl);
 //    }
 //
 //

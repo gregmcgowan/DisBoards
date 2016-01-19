@@ -343,4 +343,36 @@ public class DisBoardsRepoTest {
 
     }
 
+    //TODO test post a comment
+
+
+    @Test
+    public void testThisAComment() throws Exception {
+        when(disApiClient
+                .thisAComment(BoardListTypes.SOCIAL, BOARD_POST_ID, "COMMENTID", "authToken"))
+                .thenReturn(Observable.just(expectedBoardPost));
+        when(userSessionRepo.getAuthenticityToken()).thenReturn("authToken");
+
+        countDownLatch = new CountDownLatch(1);
+
+        disBoardRepo.thisAComment(BoardListTypes.SOCIAL, BOARD_POST_ID, "COMMENTID")
+                .subscribeOn(Schedulers.immediate())
+                .observeOn(Schedulers.immediate())
+                .subscribe(new Action1<BoardPost>() {
+                    @Override
+                    public void call(BoardPost boardPost) {
+                        AssertUtils.assertBoardPost(expectedBoardPost, boardPost);
+                        countDownLatch.countDown();
+                    }
+                });
+        countDownLatch.await();
+
+        verify(disApiClient, times(1)).thisAComment(BoardListTypes.SOCIAL, BOARD_POST_ID,
+                "COMMENTID", "authToken");
+        verify(userSessionRepo, times(1)).getAuthenticityToken();
+        verify(disBoardsLocalRepo, times(1)).setBoardPost(expectedBoardPost);
+
+    }
+
+
 }

@@ -15,4 +15,7 @@ public interface BoardPostUI extends Ui {
     void showCachedPopup();
 
     void showErrorView();
+
+    void showThisACommentFailed();
+
 }

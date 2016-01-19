@@ -25,11 +25,12 @@ public interface DisBoardsApi {
     Observable<BoardPost> postComment(@BoardPostList.BoardPostListType String boardListType,
             String boardPostId, String commentId, String title, String content, String authToken);
 
+    Observable<BoardPost> thisAComment(@BoardPostList.BoardPostListType String boardListType,
+            String boardPostId, String commentId, String authToken);
+
     Observable<BoardPost> addNewPost(@BoardPostList.BoardPostListType String boardListType,
             String title, String content, String authToken);
 
-    Observable<BoardPost> thisAComment(@BoardPostList.BoardPostListType String boardListType,
-            String boardPostUrl, String boardPostId, String commentId, String authToken);
 
     boolean requestInProgress(Object tag);
 }

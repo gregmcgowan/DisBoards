@@ -145,4 +145,51 @@ public class BoardPostControllerTest {
         verify(replyToCommentUi).showLoadingProgress(false);
         verify(replyToCommentUi).handlePostCommentFailure();
     }
+
+    @Test
+    public void testThisACommentNotLoggedIn() {
+        when(disBoardRepo.isUserLoggedIn()).thenReturn(false);
+
+        boardPostController.attachDisplay(display);
+        boardPostController.thisAComment(boardPostUI, BoardListTypes.SOCIAL, "Author", "12345");
+
+        verify(display).showNotLoggedInUI();
+    }
+
+    @Test
+    public void testThisACommentFails() {
+        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
+        when(disBoardRepo.thisAComment(BoardListTypes.SOCIAL, "postID", "commentID"))
+                .thenReturn(Observable.create(new Observable.OnSubscribe<BoardPost>() {
+                    @Override
+                    public void call(Subscriber<? super BoardPost> subscriber) {
+                        subscriber.onError(new Exception());
+                    }
+                }));
+
+
+        boardPostController.attachDisplay(display);
+        boardPostController.attachUi(boardPostUI);
+        boardPostController.thisAComment(boardPostUI, BoardListTypes.SOCIAL, "postID", "commentID");
+
+
+        verify(boardPostUI).showLoadingProgress(true);
+        verify(boardPostUI).showLoadingProgress(false);
+        verify(boardPostUI).showThisACommentFailed();
+    }
+
+    @Test
+    public void testThisACommentSucceeds(){
+        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
+        when(disBoardRepo.thisAComment(BoardListTypes.SOCIAL, "Author", "12345"))
+                .thenReturn(Observable.just(expectedBoardPost));
+
+        boardPostController.attachDisplay(display);
+        boardPostController.attachUi(boardPostUI);
+        boardPostController.thisAComment(boardPostUI, BoardListTypes.SOCIAL, "Author", "12345");
+
+        verify(boardPostUI).showLoadingProgress(true);
+        verify(boardPostUI).showLoadingProgress(false);
+    }
+
 }

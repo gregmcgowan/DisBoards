@@ -155,17 +155,38 @@ public class DisBoardRepoImpl implements DisBoardRepo {
     public Observable<BoardPost> postComment(@BoardPostList.BoardPostListType String boardListType,
             final String boardPostId, String commentId, String title, String content) {
         return disApi.postComment(boardListType, boardPostId, commentId, title, content,
-                userSessionRepo.getAuthenticityToken()).doOnNext(new Action1<BoardPost>() {
-            @Override
-            public void call(BoardPost boardPost) {
-                try {
-                    disBoardsLocalRepo.setBoardPost(boardPost);
-                } catch (Exception e) {
-                    Timber.d("Could not cache board post "+boardPostId + " exception "+e.getMessage());
-                }
-            }
-        });
+                userSessionRepo.getAuthenticityToken())
+                .doOnNext(new Action1<BoardPost>() {
+                    @Override
+                    public void call(BoardPost boardPost) {
+                        try {
+                            disBoardsLocalRepo.setBoardPost(boardPost);
+                        } catch (Exception e) {
+                            Timber.d("Could not cache board post " + boardPostId + " exception " + e
+                                    .getMessage());
+                        }
+                    }
+                });
     }
+
+    @Override
+    public Observable<BoardPost> thisAComment(@BoardPostList.BoardPostListType String boardListType,
+            final String boardPostId, String commentId) {
+        return disApi.thisAComment(boardListType, boardPostId, commentId,
+                userSessionRepo.getAuthenticityToken())
+                .doOnNext(new Action1<BoardPost>() {
+                    @Override
+                    public void call(BoardPost boardPost) {
+                        try {
+                            disBoardsLocalRepo.setBoardPost(boardPost);
+                        } catch (Exception e) {
+                            Timber.d("Could not cache board post " + boardPostId + " exception " + e
+                                    .getMessage());
+                        }
+                    }
+                });
+    }
+
 
     @Override
     public Observable<BoardPost> addNewPost(@BoardPostList.BoardPostListType String boardListType,
@@ -173,11 +194,6 @@ public class DisBoardRepoImpl implements DisBoardRepo {
         return null;
     }
 
-    @Override
-    public Observable<BoardPost> thisAComment(@BoardPostList.BoardPostListType String boardListType,
-            String boardPostId, String commentId) {
-        return null;
-    }
 
     @Override
     public boolean isUserLoggedIn() {

@@ -107,9 +107,35 @@ public class BoardPostController extends BaseUIController {
 
     public void thisAComment(BoardPostUI boardPostUI, @BoardPostList.BoardPostListType String boardListType,
             String postID, String commentID) {
-        boardPostUI.showLoadingProgress(true);
-        int id = getId(boardPostUI);
-        //disApiClient.thisAComment(postUrl, postID, commentID, boardType,id  );
+        if(disBoardRepo.isUserLoggedIn()) {
+            boardPostUI.showLoadingProgress(true);
+            int id = getId(boardPostUI);
+
+            Observable<BoardPost> thisACommentObservable = disBoardRepo
+                    .thisAComment(boardListType,postID, commentID)
+                    .subscribeOn(backgroundThreadScheduler)
+                    .observeOn(mainThreadScheduler);
+
+            BaseObserver<BoardPost,BoardPostUI> thisACommentObserver
+                    = new BaseObserver<BoardPost, BoardPostUI>(id) {
+                @Override
+                public void onError(Throwable e) {
+                    getUI().showLoadingProgress(false);
+                    getUI().showThisACommentFailed();
+                }
+
+                @Override
+                public void onNext(BoardPost boardPost) {
+                    getUI().showBoardPost(boardPost,-1);
+                    getUI().showLoadingProgress(false);
+                }
+            };
+            subscribeAndCache(boardPostUI,"THIS"+commentID,thisACommentObserver,thisACommentObservable);
+        } else {
+            if(getDisplay() != null) {
+                getDisplay().showNotLoggedInUI();
+            }
+        }
     }
 
     @SuppressWarnings("unused")
