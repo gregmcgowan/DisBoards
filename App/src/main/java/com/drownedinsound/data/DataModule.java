@@ -6,7 +6,6 @@ import com.drownedinsound.data.database.DisBoardsLocalRepoImpl;
 import com.drownedinsound.data.generatered.DaoMaster;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.handlers.NewPostHandler;
-import com.drownedinsound.data.network.handlers.PostACommentHandler;
 import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.data.network.handlers.ThisACommentHandler;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
@@ -50,7 +49,6 @@ import static android.content.Context.MODE_PRIVATE;
         injects = {
                 NewPostHandler.class,
                 RetrieveBoardPostHandler.class,
-                PostACommentHandler.class,
                 ThisACommentHandler.class,
                 DisApiClient.class,
                 StartActivity.class,

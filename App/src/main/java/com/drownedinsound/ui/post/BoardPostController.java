@@ -4,7 +4,6 @@ import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.events.FailedToGetBoardPostEvent;
-import com.drownedinsound.events.PostCommentEvent;
 import com.drownedinsound.events.RetrievedBoardPostEvent;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
@@ -159,19 +158,4 @@ public class BoardPostController extends BaseUIController {
         }
     }
 
-
-    @SuppressWarnings("unused")
-    public void onEventMainThread(PostCommentEvent postCommentEvent) {
-       // eventBus.removeStickyEvent(postCommentEvent);
-        ReplyToCommentUi replyToCommentUi = (ReplyToCommentUi) findUi(postCommentEvent.getUiID());
-        if(replyToCommentUi != null) {
-            if(postCommentEvent.isSuccess()) {
-                replyToCommentUi.hidePostCommentUi();
-            } else {
-                replyToCommentUi.handlePostCommentFailure();
-            }
-
-        }
-
-    }
 }
