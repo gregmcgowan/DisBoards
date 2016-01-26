@@ -1,11 +1,11 @@
 package com.drownedinsound.test;
 
+import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.UrlConstants;
-import com.drownedinsound.test.login.FakeDisRepo;
 import com.drownedinsound.ui.postList.BoardPostListController;
 import com.drownedinsound.ui.postList.BoardPostListParentUi;
 import com.drownedinsound.ui.postList.BoardPostListUi;
@@ -39,7 +39,7 @@ public class BoardPostListPostListControllerTest {
     BoardPostListParentUi boardPostListParentUi;
 
     @Mock
-    FakeDisRepo fakeDisRepo;
+    DisBoardRepo fakeDisRepo;
 
     private BoardPostListController boardPostListController;
 

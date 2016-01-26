@@ -3,8 +3,8 @@ package com.drownedinsound.test;
 /**
  * Created by gregmcgowan on 08/12/15.
  */
+import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.network.LoginResponse;
-import com.drownedinsound.test.login.FakeDisRepo;
 import com.drownedinsound.ui.start.LoginController;
 import com.drownedinsound.ui.start.LoginUi;
 
@@ -28,7 +28,7 @@ public class LoginControllerTest {
     LoginUi loginUi;
 
     @Mock
-    FakeDisRepo disBoardRepo;
+    DisBoardRepo disBoardRepo;
 
     private LoginController loginController;
 
