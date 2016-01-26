@@ -334,33 +334,6 @@ public class DisApiClient implements DisBoardsApi {
         }
     }
 
-//    public void getBoardPost(String boardPostUrl, final String boardPostId, BoardListType boardListType,
-//            final int callerUiId) {
-//        if (NetworkUtils.isConnected(applicationContext)) {
-//            String tag = "GET_BOARD_POST_" + boardPostId;
-//
-//            boolean requestIsInProgress = inProgressRequests.contains(tag);
-//            if (!requestIsInProgress) {
-//                RetrieveBoardPostHandler retrieveBoardPostHandler = new
-//                        RetrieveBoardPostHandler(boardPostId, boardListType, true, callerUiId);
-//                makeRequest(RequestMethod.GET, boardPostUrl, tag);
-//
-//            } else {
-//                Timber.d("Board post " + boardPostId + " has already been requested");
-//            }
-//
-//        } else {
-////            dbExecutorService.execute(new DatabaseRunnable(databaseHelper) {
-////                @Override
-////                public void run() {
-////                    BoardPost cachedPost = dbHelper.getBoardPost(boardPostId);
-////                    eventBus.post(
-////                            new RetrievedBoardPostEvent(cachedPost, true, true, callerUiId));
-////                }
-////            });
-//        }
-//
-//    }
 //
 //
 //    public void addNewPost(BoardPostListInfo boardPostListInfo, String title, String content, String authToken) {

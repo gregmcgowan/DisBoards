@@ -3,8 +3,6 @@ package com.drownedinsound.ui.post;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
-import com.drownedinsound.events.FailedToGetBoardPostEvent;
-import com.drownedinsound.events.RetrievedBoardPostEvent;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.ui.base.BaseUIController;
@@ -138,50 +136,5 @@ public class BoardPostController extends BaseUIController {
         }
     }
 
-    @SuppressWarnings("unused")
-    public void onEventMainThread(RetrievedBoardPostEvent event) {
-        int callingID = event.getUiId();
-
-        BoardPostUI boardPostUI = (BoardPostUI) findUi(callingID);
-        if (boardPostUI != null) {
-            BoardPost boardPost = event.getBoardPost();
-
-//            boolean showGoToLastCommentOption = event
-//                    .isDisplayGotToLatestCommentOption()
-//                    && boardPost.();
-
-            boardPostUI.showBoardPost(boardPost, -1);
-
-            if (event.isCached()) {
-                boardPostUI.showCachedPopup();
-            }
-            boardPostUI.showLoadingProgress(false);
-//            if (showGoToLastCommentOption) {
-//                hideAnimatedLogoAndShowList(new OnListShownHandler() {
-//                    @Override
-//                    public void doOnListShownAction() {
-//                        displayScrollToHiddenCommentOption(true);
-//                    }
-//                });
-//
-//            } else {
-//                hideAnimatedLogoAndShowList(new OnListShownHandler() {
-//                    @Override
-//                    public void doOnListShownAction() {
-//                        //floatingReplyButton.show(true);
-//                    }
-//                });
-//            }
-
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public void onEventMainThread(FailedToGetBoardPostEvent failedToGetBoardPostEvent) {
-        BoardPostUI boardPostUI = (BoardPostUI) findUi(failedToGetBoardPostEvent.getCallingId());
-        if (boardPostUI != null) {
-            boardPostUI.showErrorView();
-        }
-    }
 
 }

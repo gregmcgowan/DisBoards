@@ -7,9 +7,6 @@ import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.events.FailedToPostNewThreadEvent;
-import com.drownedinsound.events.SentNewPostEvent;
-import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
-import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 import com.drownedinsound.ui.post.BoardPostActivity;
@@ -224,26 +221,6 @@ public class BoardPostListFragment
     public void requestBoardSummaryPage(int page, boolean forceUpdate) {
         boardPostListController
                 .requestBoardSummaryPage(this, boardListType, page, forceUpdate);
-    }
-
-    public void onEventMainThread(SentNewPostEvent event) {
-        SentNewPostState state = event.getState();
-        if (state.equals(SentNewPostState.SENT)) {
-            //showAnimatedLogoAndHideList();
-        } else if (state.equals(SentNewPostState.CONFIRMED)) {
-            //Refresh the current list
-            //requestBoardSummaryPage(1, true, true);
-        }
-    }
-
-    public void onEventMainThread(UserIsNotLoggedInEvent event) {
-        if (DisBoardsConstants.DEBUG) {
-            Log.d(TAG, "recieved  not logged in ");
-        }
-
-        Toast.makeText(getActivity(),
-                "User is not logged in", Toast.LENGTH_SHORT)
-                .show();
     }
 
 

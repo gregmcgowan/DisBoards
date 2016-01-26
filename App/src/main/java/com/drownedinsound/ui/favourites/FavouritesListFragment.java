@@ -5,7 +5,6 @@ import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.events.RetrievedFavouritesEvent;
-import com.drownedinsound.events.UserIsNotLoggedInEvent;
 import com.drownedinsound.ui.base.BaseFragment;
 import com.drownedinsound.ui.post.BoardPostActivity;
 import com.drownedinsound.ui.postList.BoardPostListAdapter;
@@ -215,18 +214,6 @@ public class FavouritesListFragment extends BaseFragment {
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    public void onEventMainThread(UserIsNotLoggedInEvent event) {
-        if (DisBoardsConstants.DEBUG) {
-            Timber.d("recieved  not logged in ");
-        }
-
-        setProgressBarVisiblity(false);
-        Toast.makeText(getActivity(),
-                "User is not logged in", Toast.LENGTH_SHORT)
-                .show();
-    }
-
 
     private void displayIsCachedPopup() {
         Toast.makeText(getActivity(), "This is an cached version",

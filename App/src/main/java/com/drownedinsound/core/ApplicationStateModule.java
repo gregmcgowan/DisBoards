@@ -4,7 +4,6 @@ import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.network.CookieManager;
 import com.drownedinsound.data.network.DisApiClient;
-import com.drownedinsound.data.network.handlers.RetrieveBoardPostHandler;
 import com.drownedinsound.ui.favourites.FavouritesListFragment;
 import com.drownedinsound.ui.post.BoardPostFragment;
 import com.drownedinsound.ui.post.PostReplyFragment;
@@ -29,7 +28,6 @@ import de.greenrobot.event.EventBus;
  */
 @Module(
         injects = {
-                RetrieveBoardPostHandler.class,
                 FavouritesListFragment.class,
                 DisApiClient.class,
                 BoardPostFragment.class,
