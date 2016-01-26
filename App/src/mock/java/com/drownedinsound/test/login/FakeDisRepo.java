@@ -56,8 +56,20 @@ public class FakeDisRepo implements DisBoardRepo {
     }
 
     @Override
-    public Observable<Void> thisAComment(String boardPostId, String commentId,
-            @BoardPostList.BoardPostListType String boardListType) {
+    public Observable<BoardPost> postComment(@BoardPostList.BoardPostListType String boardListType,
+            String boardPostId, String commentId, String title, String content) {
+        return null;
+    }
+
+    @Override
+    public Observable<BoardPost> addNewPost(@BoardPostList.BoardPostListType String boardListType,
+            String title, String content) {
+        return null;
+    }
+
+    @Override
+    public Observable<BoardPost> thisAComment(@BoardPostList.BoardPostListType String boardListType,
+            String boardPostId, String commentId) {
         return null;
     }
 
