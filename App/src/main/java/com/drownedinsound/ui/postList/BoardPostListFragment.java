@@ -1,6 +1,5 @@
 package com.drownedinsound.ui.postList;
 
-import com.commonsware.cwac.endless.EndlessAdapter;
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.generatered.BoardPost;
@@ -322,61 +321,6 @@ public class BoardPostListFragment
         return boardListType;
     }
 
-    private class BoardPostSummaryListEndlessAdapter extends EndlessAdapter {
-
-        public BoardPostSummaryListEndlessAdapter(ListAdapter wrapped) {
-            super(wrapped, false);
-            super.setRunInBackground(false);
-        }
-
-        @Override
-        protected void appendCachedData() {
-            // Don't think we need this
-
-        }
-
-        @Override
-        protected boolean cacheInBackground() throws Exception {
-            int pageToFetch = lastPageFetched + 1;
-            requestBoardSummaryPage(pageToFetch, false);
-            return true;
-        }
-
-        @Override
-        protected View getPendingView(ViewGroup parent) {
-            LayoutInflater vi = (LayoutInflater) getActivity()
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View pendingRow = vi.inflate(R.layout.board_list_row, null);
-
-            RelativeLayout detail = (RelativeLayout) pendingRow
-                    .findViewById(R.id.board_list_row_detail);
-            detail.setVisibility(View.INVISIBLE);
-
-            ProgressBar progressBar = (ProgressBar) pendingRow
-                    .findViewById(R.id.board_list_row_progress_bar);
-            progressBar.setVisibility(View.VISIBLE);
-            return pendingRow;
-        }
-
-        public void setBoardPosts(List<BoardPostSummary> summaries) {
-            ((BoardPostListAdapter) getWrappedAdapter()).setBoardPosts(summaries);
-        }
-
-        public void appendBoardPosts(List<BoardPostSummary> summaries) {
-            ((BoardPostListAdapter) getWrappedAdapter()).appendSummaries(summaries);
-            onDataReady();
-        }
-
-        public int getNumberOfPosts() {
-            return ((BoardPostListAdapter) getWrappedAdapter()).getNumberOfPosts();
-        }
-
-        public BoardPost getBoardPost(int position) {
-            return (BoardPost) ((BoardPostListAdapter) getWrappedAdapter())
-                    .getItem(position);
-        }
-
-    }
 
 
 }
