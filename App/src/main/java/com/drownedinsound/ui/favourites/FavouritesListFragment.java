@@ -4,7 +4,6 @@ package com.drownedinsound.ui.favourites;
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.generatered.BoardPost;
-import com.drownedinsound.events.RetrievedFavouritesEvent;
 import com.drownedinsound.ui.base.BaseFragment;
 import com.drownedinsound.ui.post.BoardPostActivity;
 import com.drownedinsound.ui.postList.BoardPostListAdapter;
@@ -28,7 +27,6 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import timber.log.Timber;
 
 /**
  * Created by gregmcgowan on 29/10/2013.
@@ -182,23 +180,6 @@ public class FavouritesListFragment extends BaseFragment {
         progressBar.setVisibility(progressBarVisiblity);
         boardPostList.setVisibility(listVisibility);
     }
-
-    public void onEventMainThread(RetrievedFavouritesEvent event) {
-        favouriteBoardPosts.addAll(event.getFavourites());
-        adapter.notifyDataSetChanged();
-        if (!favouritesLoaded()) {
-            connectionErrorTextView.setText("No favourites found");
-            connectionErrorTextView.setVisibility(View.VISIBLE);
-
-        }
-        boardPostList.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setProgressBarVisiblity(false);
-            }
-        }, 1500);
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

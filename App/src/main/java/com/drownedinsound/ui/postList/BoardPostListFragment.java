@@ -5,7 +5,6 @@ import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
-import com.drownedinsound.events.FailedToPostNewThreadEvent;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 import com.drownedinsound.ui.post.BoardPostActivity;
@@ -13,7 +12,6 @@ import com.drownedinsound.ui.post.BoardPostFragment;
 import com.drownedinsound.utils.UiUtils;
 
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
@@ -22,15 +20,10 @@ import android.os.IBinder;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -205,11 +198,6 @@ public class BoardPostListFragment
         outState.putString(DisBoardsConstants.BOARD_POST_ID, postId);
         outState.putSerializable(DisBoardsConstants.BOARD_TYPE, boardListType);
         outState.putString(DisBoardsConstants.BOARD_URL, boardUrl);
-    }
-
-    public void onEventMainThread(FailedToPostNewThreadEvent event) {
-        Toast.makeText(getActivity(), "Failed to create post",
-                Toast.LENGTH_SHORT).show();
     }
 
     public void doRefreshAction() {

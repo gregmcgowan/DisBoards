@@ -20,7 +20,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import de.greenrobot.event.EventBus;
+
 
 
 /**
@@ -57,10 +57,5 @@ public class ApplicationStateModule {
         return new CookieManager(okHttpClient, sharedPreferences);
     }
 
-    @Provides
-    @Singleton
-    EventBus provideEventBus() {
-        return new EventBus();
-    }
 
 }

@@ -3,8 +3,6 @@ package com.drownedinsound.ui.postList;
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.generatered.BoardPostList;
-import com.drownedinsound.events.SentNewPostEvent;
-import com.drownedinsound.events.SentNewPostEvent.SentNewPostState;
 import com.drownedinsound.ui.base.BaseDialogFragment;
 import com.drownedinsound.ui.controls.RobotoLightTextView;
 
@@ -152,7 +150,6 @@ public class NewPostFragment extends BaseDialogFragment {
         if (!TextUtils.isEmpty(title)) {
             //TODO make sure the text is not a ridiculous length
             //disApiClient.addNewPost(board, title, content);
-            eventBus.post(new SentNewPostEvent(SentNewPostState.SENT));
             dismiss();
         } else {
             Toast.makeText(getActivity(), "You must at least add a title",
