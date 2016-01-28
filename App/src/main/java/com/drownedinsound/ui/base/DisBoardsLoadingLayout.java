@@ -25,7 +25,6 @@ public class DisBoardsLoadingLayout extends FrameLayout {
 
     private ContentShownListener contentShownListener;
 
-    private View rootView;
 
     public DisBoardsLoadingLayout(Context context) {
         super(context);
@@ -128,7 +127,7 @@ public class DisBoardsLoadingLayout extends FrameLayout {
     }
 
 
-    public static interface ContentShownListener {
+    public interface ContentShownListener {
 
         void onContentShown();
     }
