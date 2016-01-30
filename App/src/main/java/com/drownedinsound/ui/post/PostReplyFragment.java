@@ -139,10 +139,6 @@ public class PostReplyFragment extends BaseControllerFragment<BoardPostControlle
         getActivity().finish();
     }
 
-    @Override
-    public void hidePostCommentUi() {
-        getActivity().finish();
-    }
 
     @Override
     public void handlePostCommentFailure() {

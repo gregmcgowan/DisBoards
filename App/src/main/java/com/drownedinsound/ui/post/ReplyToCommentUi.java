@@ -8,6 +8,5 @@ import com.drownedinsound.ui.base.Ui;
 public interface ReplyToCommentUi extends Ui {
 
     void showLoadingProgress(boolean show);
-    void hidePostCommentUi();
     void handlePostCommentFailure();
 }

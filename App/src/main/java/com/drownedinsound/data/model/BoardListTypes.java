@@ -22,11 +22,11 @@ package com.drownedinsound.data.model;
  */
 public class BoardListTypes {
 
-    public static final String MUSIC = "MUSIC";
-    public static final String SOCIAL = "SOCIAL";
-    public static final String ANNOUNCEMENTS_CLASSIFIEDS = "ANNOUNCEMENTS_CLASSIFIEDS";
-    public static final String MUSICIANS = "MUSICIANS";
-    public static final String FESTIVALS = "FESTIVALS";
-    public static final String YOUR_MUSIC = "YOUR_MUSIC";
-    public static final String ERRORS_SUGGESTIONS = "ERRORS_SUGGESTIONS";
+    public static final String MUSIC = "Music";
+    public static final String SOCIAL = "Social";
+    public static final String ANNOUNCEMENTS_CLASSIFIEDS = "Announcements / Classifieds";
+    public static final String MUSICIANS = "Musicians";
+    public static final String FESTIVALS = "Festivals";
+    public static final String YOUR_MUSIC = "Your Music";
+    public static final String ERRORS_SUGGESTIONS = "Errors & Suggestions";
 }

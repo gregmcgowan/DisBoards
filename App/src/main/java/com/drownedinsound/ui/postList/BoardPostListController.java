@@ -1,11 +1,13 @@
 package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.data.DisBoardRepo;
+import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.ui.base.BaseUIController;
+import com.drownedinsound.ui.base.Display;
 import com.drownedinsound.ui.base.Ui;
 
 import android.support.annotation.NonNull;
@@ -88,7 +90,7 @@ public class BoardPostListController extends BaseUIController {
         BoardPostListParentUi boardPostListParentUi = findUi(BoardPostListParentUi.class);
         if (boardPostListParentUi != null) {
             int currentPage = boardPostListParentUi.getCurrentPageShow();
-            Timber.d("Current page "+currentPage + " list page index "+
+            Timber.d("Current page " + currentPage + " list page index " +
                     boardPostListUi.getPageIndex());
             return currentPage == boardPostListUi.getPageIndex();
         } else {
@@ -122,7 +124,8 @@ public class BoardPostListController extends BaseUIController {
     }
 
     public void requestBoardSummaryPage(@NonNull BoardPostListUi boardPostListUi,
-            @NonNull @BoardPostList.BoardPostListType String boardListType, final int page, boolean forceUpdate) {
+            @NonNull @BoardPostList.BoardPostListType String boardListType, final int page,
+            boolean forceUpdate) {
         if (!hasSubscription(boardPostListUi, boardListType)) {
             if (page == 1) {
                 boardPostListUi.showLoadingProgress(true);
@@ -169,4 +172,50 @@ public class BoardPostListController extends BaseUIController {
     }
 
 
+    public void doNewNewPostAction(int currentSelectedPage) {
+        if (disBoardRepo.isUserLoggedIn()) {
+            BoardPostListUi boardPostListUi = findListAt(currentSelectedPage);
+            if (boardPostListUi != null) {
+                getDisplay().showNewPostUI(boardPostListUi.getBoardListType());
+            }
+        } else {
+            getDisplay().showNotLoggedInUI();
+        }
+    }
+
+    public void addNewPost(NewPostUI newPostUI,
+            @BoardPostList.BoardPostListType String boardListType,
+            String title, String content) {
+        if (!hasSubscription(newPostUI)) {
+            int uiID = getId(newPostUI);
+            newPostUI.showLoadingProgress(true);
+
+            Observable<BoardPost> addPostObservable = disBoardRepo
+                    .addNewPost(boardListType, title, content)
+                    .subscribeOn(backgroundThreadScheduler)
+                    .observeOn(backgroundThreadScheduler);
+
+            BaseObserver<BoardPost, NewPostUI> addNewPostObserver
+                    = new BaseObserver<BoardPost, NewPostUI>(uiID) {
+                @Override
+                public void onError(Throwable e) {
+                    getUI().showLoadingProgress(false);
+                    getUI().handleNewPostFailure();
+                }
+
+                @Override
+                public void onNext(BoardPost boardPost) {
+                    Display display = getDisplay();
+                    if (display != null) {
+                        display.hideCurrentScreen();
+                        @BoardPostList.BoardPostListType String boardListType
+                                = boardPost.getBoardListTypeID();
+                        display.showBoardPost(boardListType,
+                                boardPost.getBoardPostID());
+                    }
+                }
+            };
+            subscribeAndCache(newPostUI, "NEW_POST", addNewPostObserver, addPostObservable);
+        }
+    }
 }

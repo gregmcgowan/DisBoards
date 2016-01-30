@@ -1,14 +1,17 @@
 package com.drownedinsound.test;
 
 import com.drownedinsound.data.DisBoardRepo;
+import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.UrlConstants;
+import com.drownedinsound.ui.base.Display;
 import com.drownedinsound.ui.postList.BoardPostListController;
 import com.drownedinsound.ui.postList.BoardPostListParentUi;
 import com.drownedinsound.ui.postList.BoardPostListUi;
+import com.drownedinsound.ui.postList.NewPostUI;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +42,13 @@ public class BoardPostListPostListControllerTest {
     BoardPostListParentUi boardPostListParentUi;
 
     @Mock
-    DisBoardRepo fakeDisRepo;
+    DisBoardRepo disBoardRepo;
+
+    @Mock
+    Display display;
+
+    @Mock
+    NewPostUI newPostUI;
 
     private BoardPostListController boardPostListController;
 
@@ -49,10 +58,12 @@ public class BoardPostListPostListControllerTest {
 
     private List<BoardPostSummary> boardPosts;
 
+    private BoardPost expectedBoardPost;
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        boardPostListController = new BoardPostListController(fakeDisRepo, Schedulers.immediate(),
+        boardPostListController = new BoardPostListController(disBoardRepo, Schedulers.immediate(),
                 Schedulers.immediate());
         boardListType = BoardListTypes.MUSIC;
 
@@ -68,13 +79,22 @@ public class BoardPostListPostListControllerTest {
         boardPosts.add(boardPost);
 
         boardPostListInfo.setBoardPostSummaries(boardPosts);
+
+        expectedBoardPost = new BoardPost();
+        expectedBoardPost.setBoardPostID("4471118");
+        expectedBoardPost.setAuthorUsername("shitty_zombies");
+        expectedBoardPost.setTitle("Charlie Brooker&#x27;s 2015 Wipe");
+        expectedBoardPost.setContent("<p>Christ, that was bleak, wasn&#x27;t it?</p>");
+        expectedBoardPost.setDateOfPost("22:55, 30 December '15");
+        expectedBoardPost.setBoardListTypeID(BoardListTypes.SOCIAL);
+        expectedBoardPost.setNumberOfReplies(5);
     }
 
     @Test
     public void testGetListFirstPageSuccessfully() {
         when(boardPostListUi.getBoardListType()).thenReturn(BoardListTypes.MUSIC);
 
-        when(fakeDisRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 1, true))
+        when(disBoardRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 1, true))
                 .thenReturn(Observable.just(boardPosts));
 
         boardPostListController.attachUi(boardPostListUi);
@@ -93,7 +113,7 @@ public class BoardPostListPostListControllerTest {
     public void testGetListSecondPageSuccessfully() {
         when(boardPostListUi.getBoardListType()).thenReturn(BoardListTypes.MUSIC);
 
-        when(fakeDisRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 2, true))
+        when(disBoardRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 2, true))
                 .thenReturn(Observable.just(boardPosts));
 
         boardPostListController.attachUi(boardPostListUi);
@@ -109,7 +129,7 @@ public class BoardPostListPostListControllerTest {
     public void testGetListFirstPageError() {
         when(boardPostListUi.getBoardListType()).thenReturn(BoardListTypes.MUSIC);
 
-        when(fakeDisRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 1 , true))
+        when(disBoardRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 1 , true))
                 .thenReturn(Observable.create(new Observable.OnSubscribe<List<BoardPostSummary>>() {
                     @Override
                     public void call(Subscriber<? super List<BoardPostSummary>> subscriber) {
@@ -119,7 +139,8 @@ public class BoardPostListPostListControllerTest {
 
         boardPostListController.attachUi(boardPostListUi);
 
-        boardPostListController.requestBoardSummaryPage(boardPostListUi, BoardListTypes.MUSIC, 1, true);
+        boardPostListController.requestBoardSummaryPage(boardPostListUi, BoardListTypes.MUSIC, 1,
+                true);
 
         verify(boardPostListUi).showLoadingProgress(true);
         verify(boardPostListUi).showErrorView();
@@ -147,13 +168,13 @@ public class BoardPostListPostListControllerTest {
         when(boardPostListUi.getID()).thenReturn(1);
         when(boardPostListParentUi.getID()).thenReturn(2);
 
-        when(fakeDisRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 1, false))
+        when(disBoardRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 1, false))
                 .thenReturn(Observable.just(boardPosts));
 
         List<BoardPostList> boardPostListInfos = new ArrayList<>();
         boardPostListInfos.add(boardPostListInfo);
 
-        when(fakeDisRepo.getAllBoardPostLists())
+        when(disBoardRepo.getAllBoardPostLists())
                 .thenReturn(Observable.just(boardPostListInfos));
 
         boardPostListController.attachUi(boardPostListParentUi);
@@ -172,7 +193,7 @@ public class BoardPostListPostListControllerTest {
         List<BoardPostList> boardPostListInfos = new ArrayList<>();
         boardPostListInfos.add(boardPostListInfo);
 
-        when(fakeDisRepo.getAllBoardPostLists())
+        when(disBoardRepo.getAllBoardPostLists())
                 .thenReturn(Observable.just(boardPostListInfos));
 
         when(boardPostListParentUi.getID()).thenReturn(1);
@@ -182,9 +203,73 @@ public class BoardPostListPostListControllerTest {
         boardPostListController.detachUi(boardPostListParentUi);
         boardPostListController.attachUi(boardPostListParentUi);
 
-        verify(fakeDisRepo).getAllBoardPostLists();
+        verify(disBoardRepo).getAllBoardPostLists();
         verify(boardPostListParentUi,times(1)).setBoardPostLists(boardPostListInfos);
 
+    }
+    @Test
+    public void testAddNewPostNotLoggedIn() {
+        when(disBoardRepo.isUserLoggedIn()).thenReturn(false);
+
+        when(boardPostListParentUi.getID()).thenReturn(1);
+        when(boardPostListUi.getPageIndex()).thenReturn(1);
+
+        boardPostListController.attachDisplay(display);
+        boardPostListController.attachUi(boardPostListUi);
+        boardPostListController.doNewNewPostAction(1);
+
+        verify(display).showNotLoggedInUI();
+    }
+
+    @Test
+    public void testAddNewPostLoggedIn() {
+        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
+
+        when(boardPostListParentUi.getID()).thenReturn(1);
+        when(boardPostListUi.getPageIndex()).thenReturn(1);
+
+        boardPostListController.attachDisplay(display);
+        boardPostListController.attachUi(boardPostListUi);
+        boardPostListController.doNewNewPostAction(1);
+
+        verify(display).showNewPostUI(boardPostListUi.getBoardListType());
+    }
+
+    @Test
+    public void testNewPostFails() {
+        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
+        when(disBoardRepo.addNewPost(BoardListTypes.SOCIAL, "New title", "New content"))
+                .thenReturn(Observable.create(new Observable.OnSubscribe<BoardPost>() {
+                    @Override
+                    public void call(Subscriber<? super BoardPost> subscriber) {
+                        subscriber.onError(new Exception());
+                    }
+                }));
+
+        boardPostListController.attachDisplay(display);
+        boardPostListController.attachUi(newPostUI);
+        boardPostListController.addNewPost(newPostUI,BoardListTypes.SOCIAL,
+                "New title", "New content");
+
+        verify(newPostUI).showLoadingProgress(true);
+        verify(newPostUI).showLoadingProgress(false);
+        verify(newPostUI).handleNewPostFailure();
+    }
+
+    @Test
+    public void testNewPostSucceeds(){
+        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
+        when(disBoardRepo.addNewPost(BoardListTypes.SOCIAL, "New title", "New content"))
+                .thenReturn(Observable.just(expectedBoardPost));
+
+        boardPostListController.attachDisplay(display);
+        boardPostListController.attachUi(newPostUI);
+        boardPostListController.addNewPost(newPostUI, BoardListTypes.SOCIAL, "New title",
+                "New content");
+
+        verify(newPostUI).showLoadingProgress(true);
+        verify(display).hideCurrentScreen();
+        verify(display).showBoardPost(BoardListTypes.SOCIAL, expectedBoardPost.getBoardPostID());
     }
 
 

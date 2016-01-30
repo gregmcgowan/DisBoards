@@ -173,11 +173,7 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
 
     @OnClick(R.id.floating_add_button)
     public void doNewPostAction() {
-        Bundle newPostDetails = new Bundle();
-        //newPostDetails.putParcelable(DisBoardsConstants.BOARD, board);
-
-        NewPostFragment.newInstance(newPostDetails).show(getFragmentManager(),
-                "NEW_POST_DIALOG");
+        boardPostListController.doNewNewPostAction(currentSelectedPage);
     }
 
     @Override

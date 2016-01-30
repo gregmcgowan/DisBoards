@@ -18,6 +18,18 @@ public class AndroidDisplay implements Display {
         this.activity = activity;
     }
 
+
+    @Override
+    public void showNewPostUI(@BoardPostList.BoardPostListType String boardListType) {
+
+    }
+
+    @Override
+    public void showBoardPost(@BoardPostList.BoardPostListType String boardListType,
+            String boardPostId) {
+
+    }
+
     @Override
     public void showReplyUI(@BoardPostList.BoardPostListType String boardListType,
             String postId, String replyToAuthor, String replyToCommentId) {
