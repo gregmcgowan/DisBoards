@@ -31,7 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import rx.Observer;
 import rx.functions.Action1;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 import static org.mockito.Matchers.any;
@@ -44,20 +46,17 @@ import static org.mockito.Matchers.eq;
  */
 public class DisApiTest {
 
-
-    private DisApiClient disApiClient;
-
     @Mock
     UserSessionRepo userSessionRepo;
 
     @Mock
     DisWebPageParser disWebPageParser;
 
-    CountDownLatch countDownLatch;
-
     private List<BoardPostSummary> testBoardPostSummaires;
 
     private BoardPostList boardPostListInfo;
+
+    private DisApiClient disApiClient;
 
     @Before
     public void setup() {
@@ -96,19 +95,14 @@ public class DisApiTest {
         mockWebServer.enqueue(new MockResponse().setBody("blah blah"));
 
         disApiClient.setBaseUrl(base.toString());
-
-        countDownLatch = new CountDownLatch(1);
-
         disApiClient.loginUser("username","password")
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(new Action1<LoginResponse>() {
                     @Override
                     public void call(LoginResponse loginResponse) {
                         Assert.assertEquals(token, loginResponse.getAuthenticationToken());
-                        countDownLatch.countDown();
                     }
                 });
-        countDownLatch.await();
         mockWebServer.shutdown();
     }
 
@@ -125,7 +119,6 @@ public class DisApiTest {
         HttpUrl base = mockWebServer.url("");
         disApiClient.setBaseUrl(base.toString());
 
-        countDownLatch = new CountDownLatch(1);
 
         disApiClient.getBoardPostSummaryList(BoardListTypes.MUSIC,
                 boardPostListInfo.getUrl(),1)
@@ -136,10 +129,9 @@ public class DisApiTest {
                         BoardPostSummary expected = testBoardPostSummaires.get(0);
                         BoardPostSummary actual = boardPosts.get(0);
                         AssertUtils.assertBoardPostSummary(expected, actual);
-                        countDownLatch.countDown();
                     }
                 });
-        countDownLatch.await();
+
         mockWebServer.shutdown();
     }
 
@@ -223,17 +215,31 @@ public class DisApiTest {
         HttpUrl base = mockWebServer.url("");
         disApiClient.setBaseUrl(base.toString());
 
-        countDownLatch = new CountDownLatch(1);
+        TestSubscriber<BoardPost> testSubscriber = new TestSubscriber<>(
+                new Observer<BoardPost>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(BoardPost actual) {
+                        AssertUtils.assertBoardPost(expectedBoardPost, actual);
+                    }
+                }
+        );
         disApiClient.getBoardPost(BoardListTypes.SOCIAL,"4471118")
                 .subscribeOn(Schedulers.immediate())
-                .subscribe(new Action1<BoardPost>() {
-                    @Override
-                    public void call(BoardPost boardPost) {
-                        AssertUtils.assertBoardPost(expectedBoardPost, boardPost);
-                        countDownLatch.countDown();
-                    }
-                });
-        countDownLatch.await();
+                .observeOn(Schedulers.immediate())
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertCompleted();
+
         RecordedRequest lastRequest = mockWebServer.takeRequest();
 
         Assert.assertEquals(lastRequest.getPath(),"/community/boards/social/4471118");
