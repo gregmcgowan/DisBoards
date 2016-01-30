@@ -148,9 +148,8 @@ public class DisBoardWebParserTest {
 
         InputStream inputStream = getInputStream("board_post.html");
 
-        BoardPost actual = disWebPageParser.parseBoardPost(BoardListTypes.SOCIAL, "4471118",
-                inputStream);
-        verify(userSessionRepo, atLeastOnce()).setAuthenticityToken(anyString());;
+        BoardPost actual = disWebPageParser.parseBoardPost(BoardListTypes.SOCIAL,inputStream);
+        verify(userSessionRepo, atLeastOnce()).setAuthenticityToken(anyString());
 
         AssertUtils.assertBoardPost(expectedBoardPost,actual);
     }

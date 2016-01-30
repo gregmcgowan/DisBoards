@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import timber.log.Timber;
@@ -66,8 +67,7 @@ public class BoardPostParser {
         return currentPageState != null && currentPageState.equals(requiredPageState);
     }
 
-    public BoardPost parse(@BoardPostList.BoardPostListType String boardListType,
-            String boardPostId, InputStream inputStream) {
+    public BoardPost parse(@BoardPostList.BoardPostListType String boardListType, InputStream inputStream) {
         boolean consumingHtmlTags = false;
         int initialContentDivLevel = 0;
         int initialContentAnchorNumber = 0;
@@ -83,6 +83,7 @@ public class BoardPostParser {
         String latestCommentId = null;
         long latestCommentTime = 0;
         long start = System.currentTimeMillis();
+        String boardPostId = null;
 
         BoardPost currentBoardPost = new BoardPost();
         currentBoardPost.setBoardListTypeID(boardListType);
@@ -230,6 +231,19 @@ public class BoardPostParser {
                     } else if (HtmlConstants.ANCHOR.equals(tagName)) {
                         if (tag instanceof StartTag) {
                             if (isInPageState(currentPageState,PageState.INITIAL_CONTENT_DIV)) {
+                                if (initialContentAnchorNumber == 0) {
+                                    HashMap<String, String> parameters = ParsingUtils
+                                            .createAttributeMapFromStartTag(tag.toString());
+                                    if (parameters != null) {
+                                        String href = parameters.get(HtmlConstants.HREF);
+                                        int indexOfLastForwardSlash = href.lastIndexOf("/");
+                                        if (indexOfLastForwardSlash != -1) {
+                                            boardPostId = href
+                                                    .substring(indexOfLastForwardSlash + 1);
+                                            currentBoardPost.setBoardPostID(boardPostId);
+                                        }
+                                    }
+                                }
                                 initialContentAnchorNumber++;
                             }
                         } else {

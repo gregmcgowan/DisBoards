@@ -131,12 +131,12 @@ public class DisApiClient implements DisBoardsApi {
                 .flatMap(new Func1<Response, Observable<BoardPost>>() {
             @Override
             public Observable<BoardPost> call(Response response) {
-                return parseBoardPost(boardListType,boardPostId,response);
+                return parseBoardPost(boardListType,response);
             }
         });
     }
 
-    public Observable<BoardPost> parseBoardPost(final @BoardPostList.BoardPostListType String boardListType,final String boardPostId, final Response response) {
+    public Observable<BoardPost> parseBoardPost(final @BoardPostList.BoardPostListType String boardListType, final Response response) {
         return Observable.create(new Observable.OnSubscribe<BoardPost>() {
             @Override
             public void call(Subscriber<? super BoardPost> subscriber) {
@@ -144,7 +144,7 @@ public class DisApiClient implements DisBoardsApi {
                     InputStream inputStream = getInputStreamFromResponse(response);
                     BoardPost boardPost
                             = disWebPageParser
-                            .parseBoardPost(boardListType, boardPostId, inputStream);
+                            .parseBoardPost(boardListType, inputStream);
                     inputStream.close();
                     subscriber.onNext(boardPost);
                     subscriber.onCompleted();
@@ -212,7 +212,7 @@ public class DisApiClient implements DisBoardsApi {
                 .flatMap(new Func1<Response, Observable<BoardPost>>() {
                             @Override
                             public Observable<BoardPost> call(Response response) {
-                                return parseBoardPost(boardListType, boardPostId, response);
+                                return parseBoardPost(boardListType, response);
                             }
                         });
     }
@@ -241,7 +241,7 @@ public class DisApiClient implements DisBoardsApi {
                 .flatMap(new Func1<Response, Observable<BoardPost>>() {
                     @Override
                     public Observable<BoardPost> call(Response response) {
-                        return parseBoardPost(boardListType, boardPostId, response);
+                        return parseBoardPost(boardListType, response);
                     }
                 });
     }

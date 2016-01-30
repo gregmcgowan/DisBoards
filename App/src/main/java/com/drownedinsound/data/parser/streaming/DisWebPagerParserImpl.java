@@ -52,8 +52,8 @@ public class DisWebPagerParserImpl implements DisWebPageParser {
 
     @Override
     public BoardPost parseBoardPost(@BoardPostList.BoardPostListType String boardListType,
-            String boardPostId, InputStream inputStream) throws IOException {
-        return boardPostParser.parse(boardListType,boardPostId,inputStream);
+            InputStream inputStream) throws IOException {
+        return boardPostParser.parse(boardListType,inputStream);
     }
 
 
