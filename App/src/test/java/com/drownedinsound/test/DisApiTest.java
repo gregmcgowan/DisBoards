@@ -24,8 +24,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import android.app.Application;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +35,8 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by gregmcgowan on 09/12/15.
@@ -58,12 +55,16 @@ public class DisApiTest {
 
     private DisApiClient disApiClient;
 
+    private BoardPost expectedBoardPost;
+
+    private CountDownLatch countDownLatch;
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
         OkHttpClient okHttpClient = new OkHttpClient();
-        disApiClient = new DisApiClient(okHttpClient,disWebPageParser);
+        disApiClient = new DisApiClient(okHttpClient, disWebPageParser);
 
         boardPostListInfo = new BoardPostList(BoardListTypes.MUSIC,
                 BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 0, 19,0);
@@ -75,69 +76,8 @@ public class DisApiTest {
 
         testBoardPostSummaires = new ArrayList<>();
         testBoardPostSummaires.add(boardPost);
-    }
 
-    @Test
-    public void testSuccessfulLogin() throws Exception {
-        final String token ="test";
-        when(disWebPageParser.getAuthenticationToken(any(InputStream.class))).thenReturn(token);
-
-        MockWebServer mockWebServer = new MockWebServer();
-
-        mockWebServer.start();
-
-        HttpUrl base = mockWebServer.url("");
-
-        mockWebServer.enqueue(new MockResponse().setBody("blah blah").addHeader("Location",
-                base + UrlConstants.BOARD_BASE_PATH
-                        + UrlConstants.SOCIAL_BOARD_NAME).setResponseCode(302));
-
-        mockWebServer.enqueue(new MockResponse().setBody("blah blah"));
-
-        disApiClient.setBaseUrl(base.toString());
-        disApiClient.loginUser("username","password")
-                .subscribeOn(Schedulers.immediate())
-                .subscribe(new Action1<LoginResponse>() {
-                    @Override
-                    public void call(LoginResponse loginResponse) {
-                        Assert.assertEquals(token, loginResponse.getAuthenticationToken());
-                    }
-                });
-        mockWebServer.shutdown();
-    }
-
-    @Test
-    public void testGetList() throws Exception {
-        when(disWebPageParser.parseBoardPostSummaryList(eq(BoardListTypes.MUSIC),
-                any(InputStream.class))).thenReturn(
-                testBoardPostSummaires);
-
-        MockWebServer mockWebServer = new MockWebServer();
-        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("gewgewgewgew"));
-        mockWebServer.start();
-
-        HttpUrl base = mockWebServer.url("");
-        disApiClient.setBaseUrl(base.toString());
-
-
-        disApiClient.getBoardPostSummaryList(BoardListTypes.MUSIC,
-                boardPostListInfo.getUrl(),1)
-                .subscribeOn(Schedulers.immediate())
-                .subscribe(new Action1<List<BoardPostSummary>>() {
-                    @Override
-                    public void call(List<BoardPostSummary> boardPosts) {
-                        BoardPostSummary expected = testBoardPostSummaires.get(0);
-                        BoardPostSummary actual = boardPosts.get(0);
-                        AssertUtils.assertBoardPostSummary(expected, actual);
-                    }
-                });
-
-        mockWebServer.shutdown();
-    }
-
-    @Test
-    public void testGetBoardPost () throws Exception {
-        final BoardPost expectedBoardPost = new BoardPost();
+        expectedBoardPost = new BoardPost();
         expectedBoardPost.setBoardPostID("4471118");
         expectedBoardPost.setAuthorUsername("shitty_zombies");
         expectedBoardPost.setTitle("Charlie Brooker&#x27;s 2015 Wipe");
@@ -191,7 +131,7 @@ public class DisApiTest {
         fifthComment.setAuthorUsername("Pentago");
         fifthComment.setDateAndTime("31 Dec '15, 09:56");
         fifthComment.setUsersWhoHaveThissed("bluto and ericthethird this'd this");
-        fifthComment.setCommentID("8823351");
+        fifthComment.setCommentID("88233511");
         fifthComment.setCommentLevel(1);
 
         List<BoardPostComment> boardPostComments = new ArrayList<>();
@@ -203,10 +143,78 @@ public class DisApiTest {
         boardPostComments.add(fifthComment);
 
         expectedBoardPost.setComments(boardPostComments);
+    }
 
-        when(disWebPageParser.parseBoardPost(eq(BoardListTypes.SOCIAL),anyString(),
+    @Test
+    public void testSuccessfulLogin() throws Exception {
+        final String token = "test";
+        when(disWebPageParser.getAuthenticationToken(any(InputStream.class))).thenReturn(token);
+
+        MockWebServer mockWebServer = new MockWebServer();
+        mockWebServer.start();
+
+        HttpUrl base = mockWebServer.url("");
+
+        mockWebServer.enqueue(new MockResponse().setBody("blah blah").addHeader("Location",
+                base + UrlConstants.BOARD_BASE_PATH
+                        + UrlConstants.SOCIAL_BOARD_NAME).setResponseCode(302));
+
+        mockWebServer.enqueue(new MockResponse().setBody("blah blah"));
+
+        disApiClient.setBaseUrl(base.toString());
+
+        countDownLatch = new CountDownLatch(1);
+
+        disApiClient.loginUser("username", "password")
+                .subscribeOn(Schedulers.immediate())
+                .subscribe(new Action1<LoginResponse>() {
+                    @Override
+                    public void call(LoginResponse loginResponse) {
+                        Assert.assertEquals(token, loginResponse.getAuthenticationToken());
+                        countDownLatch.countDown();
+                    }
+                });
+        countDownLatch.await();
+        mockWebServer.shutdown();
+    }
+
+    @Test
+    public void testGetList() throws Exception {
+        when(disWebPageParser.parseBoardPostSummaryList(eq(BoardListTypes.MUSIC),
+                any(InputStream.class))).thenReturn(
+                testBoardPostSummaires);
+
+        MockWebServer mockWebServer = new MockWebServer();
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("gewgewgewgew"));
+        mockWebServer.start();
+
+        HttpUrl base = mockWebServer.url("");
+        disApiClient.setBaseUrl(base.toString());
+
+        countDownLatch = new CountDownLatch(1);
+
+        disApiClient.getBoardPostSummaryList(BoardListTypes.MUSIC,
+                boardPostListInfo.getUrl(), 1)
+                .subscribeOn(Schedulers.immediate())
+                .subscribe(new Action1<List<BoardPostSummary>>() {
+                    @Override
+                    public void call(List<BoardPostSummary> boardPosts) {
+                        BoardPostSummary expected = testBoardPostSummaires.get(0);
+                        BoardPostSummary actual = boardPosts.get(0);
+                        AssertUtils.assertBoardPostSummary(expected, actual);
+                        countDownLatch.countDown();
+                    }
+                });
+        countDownLatch.await();
+        mockWebServer.shutdown();
+    }
+
+    @Test
+    public void testGetBoardPost () throws Exception {
+        when(disWebPageParser.parseBoardPost(eq(BoardListTypes.SOCIAL),
                 any(InputStream.class))).thenReturn(
                 expectedBoardPost);
+
 
         final MockWebServer mockWebServer = new MockWebServer();
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("gewgewgewgew"));
@@ -214,6 +222,8 @@ public class DisApiTest {
 
         HttpUrl base = mockWebServer.url("");
         disApiClient.setBaseUrl(base.toString());
+
+        countDownLatch = new CountDownLatch(1);
 
         TestSubscriber<BoardPost> testSubscriber = new TestSubscriber<>(
                 new Observer<BoardPost>() {
@@ -230,6 +240,7 @@ public class DisApiTest {
                     @Override
                     public void onNext(BoardPost actual) {
                         AssertUtils.assertBoardPost(expectedBoardPost, actual);
+                        countDownLatch.countDown();
                     }
                 }
         );
@@ -237,13 +248,61 @@ public class DisApiTest {
                 .subscribeOn(Schedulers.immediate())
                 .observeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
-
+        countDownLatch.await();
         testSubscriber.assertCompleted();
+        testSubscriber.assertNoErrors();
 
         RecordedRequest lastRequest = mockWebServer.takeRequest();
-
-        Assert.assertEquals(lastRequest.getPath(),"/community/boards/social/4471118");
+        Assert.assertEquals(lastRequest.getPath(), "/community/boards/social/4471118");
         mockWebServer.shutdown();
 
+    }
+
+    @Test
+    public void addNewPost()  throws Exception {
+        when(disWebPageParser.parseBoardPost(eq(BoardListTypes.SOCIAL),
+                any(InputStream.class))).thenReturn(
+                expectedBoardPost);
+
+        MockWebServer mockWebServer = new MockWebServer();
+        mockWebServer.enqueue(new MockResponse().setBody("blah blah").setResponseCode(302));
+        mockWebServer.enqueue(new MockResponse().setBody("blah blah").setResponseCode(200));
+        mockWebServer.start();
+
+        HttpUrl base = mockWebServer.url("");
+
+        countDownLatch = new CountDownLatch(1);
+
+        TestSubscriber<BoardPost> testSubscriber = new TestSubscriber<>(
+                new Observer<BoardPost>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(BoardPost actual) {
+                        AssertUtils.assertBoardPost(expectedBoardPost, actual);
+                        countDownLatch.countDown();
+                    }
+                }
+        );
+
+        disApiClient.setBaseUrl(base.toString());
+        disApiClient.addNewPost(BoardListTypes.SOCIAL, "Test New Post", "A really interesting post",
+                "authtoken", "1")
+                .subscribeOn(Schedulers.immediate())
+                .observeOn(Schedulers.immediate())
+                .subscribe(testSubscriber);
+        countDownLatch.await();
+        testSubscriber.assertCompleted();
+        testSubscriber.assertNoErrors();
+
+        mockWebServer.shutdown();
     }
 }

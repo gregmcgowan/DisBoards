@@ -5,6 +5,7 @@ import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
 import com.drownedinsound.data.parser.streaming.LoginException;
+import com.drownedinsound.utils.StringUtils;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.OkHttpClient;
@@ -186,11 +187,11 @@ public class DisApiClient implements DisBoardsApi {
             @BoardPostList.BoardPostListType final String boardListType,
             final String boardPostId, String commentId, String title, String content,
             String authToken) {
-        if (TextUtils.isEmpty(authToken)) {
+        if (StringUtils.isEmpty(authToken)) {
             throw new IllegalArgumentException("Auth token cannot be null");
         }
 
-        if (TextUtils.isEmpty(boardPostId)) {
+        if (StringUtils.isEmpty(boardPostId)) {
             throw new IllegalArgumentException("BoardPostId cannot be null");
         }
 
@@ -220,15 +221,15 @@ public class DisApiClient implements DisBoardsApi {
     @Override
     public Observable<BoardPost> thisAComment(@BoardPostList.BoardPostListType final String boardListType,
             final String boardPostId, String commentId, String authToken) {
-        if (TextUtils.isEmpty(authToken)) {
+        if (StringUtils.isEmpty(authToken)) {
             throw new IllegalArgumentException("Auth token cannot be null");
         }
 
-        if (TextUtils.isEmpty(boardPostId)) {
+        if (StringUtils.isEmpty(boardPostId)) {
             throw new IllegalArgumentException("BoardPostId cannot be null");
         }
 
-        if (TextUtils.isEmpty(commentId)) {
+        if (StringUtils.isEmpty(commentId)) {
             throw new IllegalArgumentException("CommentID cannot be null");
         }
 
@@ -248,9 +249,35 @@ public class DisApiClient implements DisBoardsApi {
 
 
     @Override
-    public Observable<BoardPost> addNewPost(@BoardPostList.BoardPostListType String boardListType,
-            String title, String content, String authToken) {
-        return null;
+    public Observable<BoardPost> addNewPost(@BoardPostList.BoardPostListType final String boardListType,
+            String title, String content, String authToken, String sectionId) {
+
+        if (StringUtils.isEmpty(authToken)) {
+            throw new IllegalArgumentException("Auth token cannot be null");
+        }
+
+        if (StringUtils.isEmpty(sectionId)) {
+            throw new IllegalArgumentException("sectionId cannot be null");
+        }
+
+        String boardPostUrl = UrlConstants.getBoardPostListUrl(baseUrl,boardListType);
+
+        Headers.Builder extraHeaders = new Headers.Builder();
+        extraHeaders.add("Referer", boardPostUrl);
+
+        RequestBody requestBody = new FormEncodingBuilder().add("section_id", sectionId)
+                .add("topic[title]", title)
+                .add("topic[content_raw]", content)
+                .add("topic[sticky]", "0")
+                .add("authenticity_token", authToken).build();
+
+        return makeRequest(RequestMethod.POST, UrlConstants.NEW_POST_URL, requestBody, extraHeaders,REQUEST_TYPE.NEW_POST)
+                .flatMap(new Func1<Response, Observable<BoardPost>>() {
+                    @Override
+                    public Observable<BoardPost> call(Response response) {
+                        return parseBoardPost(boardListType, response);
+                    }
+                });
     }
 
     private Observable<Response> makeRequest(RequestMethod requestMethod, String url, Object tag) {
@@ -333,28 +360,6 @@ public class DisApiClient implements DisBoardsApi {
             return response.body().byteStream();
         }
     }
-
-//
-//
-//    public void addNewPost(BoardPostListInfo boardPostListInfo, String title, String content, String authToken) {
-//        Headers.Builder extraHeaders = new Headers.Builder();
-//        extraHeaders.add("Referer", boardPostListInfo.getUrl());
-//        RequestBody requestBody = new FormEncodingBuilder().add("section_id", String.valueOf(
-//                boardPostListInfo
-//                .getSectionId()))
-//                .add("topic[title]", title)
-//                .add("topic[content_raw]", content)
-//                .add("topic[sticky]", "0")
-//                .add("authenticity_token", authToken).build();
-//
-//        NewPostHandler newPostHandler = new NewPostHandler(boardPostListInfo);
-//
-//        makeRequest(RequestMethod.POST,
-//                UrlConstants.NEW_POST_URL, requestBody, extraHeaders,REQUEST_TYPE.NEW_POST);
-//    }
-//
-
-
 
     @Override
     public boolean requestInProgress(Object tag) {

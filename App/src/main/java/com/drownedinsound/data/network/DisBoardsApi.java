@@ -29,7 +29,7 @@ public interface DisBoardsApi {
             String boardPostId, String commentId, String authToken);
 
     Observable<BoardPost> addNewPost(@BoardPostList.BoardPostListType String boardListType,
-            String title, String content, String authToken);
+            String title, String content, String authToken, String sectionID);
 
 
     boolean requestInProgress(Object tag);
