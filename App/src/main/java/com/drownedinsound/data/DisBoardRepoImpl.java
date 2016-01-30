@@ -189,9 +189,36 @@ public class DisBoardRepoImpl implements DisBoardRepo {
 
 
     @Override
-    public Observable<BoardPost> addNewPost(@BoardPostList.BoardPostListType String boardListType,
-            String title, String content) {
-        return null;
+    public Observable<BoardPost> addNewPost(
+            @BoardPostList.BoardPostListType final String boardListType,
+            final String title, final String content) {
+        return disBoardsLocalRepo.getBoardPostList(boardListType)
+                .flatMap(new Func1<BoardPostList, Observable<BoardPost>>() {
+                    @Override
+                    public Observable<BoardPost> call(final BoardPostList boardPostList) {
+                        String sectionId = String.valueOf(boardPostList.getSectionId());
+                        String authToken = userSessionRepo.getAuthenticityToken();
+
+                        return disApi
+                                .addNewPost(boardListType, title, content, authToken, sectionId)
+                                .doOnNext(new Action1<BoardPost>() {
+                                    @Override
+                                    public void call(BoardPost boardPost) {
+
+                                        boardPostList.setLastFetchedMs(0);
+                                        disBoardsLocalRepo.setBoardPostList(boardPostList);
+
+                                        try {
+                                            disBoardsLocalRepo.setBoardPost(boardPost);
+                                        } catch (Exception e) {
+                                            Timber.d("Could not cache board post " + boardPost
+                                                    .getBoardPostID() + " exception " + e
+                                                    .getMessage());
+                                        }
+                                    }
+                                });
+                    }
+                });
     }
 
 

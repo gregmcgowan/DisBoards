@@ -38,6 +38,8 @@ public class DisBoardsRepoTest {
 
     public static final String BOARD_POST_ID = "4471118";
 
+    public static final String AUTH_TOKEN = "authToken";
+
     @Mock
     DisApiClient disApiClient;
 
@@ -349,9 +351,9 @@ public class DisBoardsRepoTest {
     @Test
     public void testThisAComment() throws Exception {
         when(disApiClient
-                .thisAComment(BoardListTypes.SOCIAL, BOARD_POST_ID, "COMMENTID", "authToken"))
+                .thisAComment(BoardListTypes.SOCIAL, BOARD_POST_ID, "COMMENTID", AUTH_TOKEN))
                 .thenReturn(Observable.just(expectedBoardPost));
-        when(userSessionRepo.getAuthenticityToken()).thenReturn("authToken");
+        when(userSessionRepo.getAuthenticityToken()).thenReturn(AUTH_TOKEN);
 
         countDownLatch = new CountDownLatch(1);
 
@@ -368,9 +370,41 @@ public class DisBoardsRepoTest {
         countDownLatch.await();
 
         verify(disApiClient, times(1)).thisAComment(BoardListTypes.SOCIAL, BOARD_POST_ID,
-                "COMMENTID", "authToken");
+                "COMMENTID", AUTH_TOKEN);
         verify(userSessionRepo, times(1)).getAuthenticityToken();
         verify(disBoardsLocalRepo, times(1)).setBoardPost(expectedBoardPost);
+
+    }
+
+    @Test
+    public void testAddANewPost() throws Exception {
+        when(disApiClient.addNewPost(BoardListTypes.MUSIC, "New title", "New Content", AUTH_TOKEN,
+                String.valueOf(boardPostList.getSectionId())))
+                .thenReturn(Observable.just(expectedBoardPost));
+        when(disBoardsLocalRepo.getBoardPostList(BoardListTypes.MUSIC))
+                .thenReturn(Observable.just(boardPostList));
+        when(userSessionRepo.getAuthenticityToken()).thenReturn(AUTH_TOKEN);
+
+        countDownLatch = new CountDownLatch(1);
+
+        disBoardRepo.addNewPost(BoardListTypes.MUSIC, "New title", "New Content")
+                .subscribeOn(Schedulers.immediate())
+                .observeOn(Schedulers.immediate())
+                .subscribe(new Action1<BoardPost>() {
+                    @Override
+                    public void call(BoardPost boardPost) {
+                        AssertUtils.assertBoardPost(expectedBoardPost, boardPost);
+                        countDownLatch.countDown();
+                    }
+                });
+        countDownLatch.await();
+
+        verify(disApiClient,times(1)).addNewPost(BoardListTypes.MUSIC, "New title", "New Content",
+                AUTH_TOKEN, String.valueOf(boardPostList.getSectionId()));
+        verify(userSessionRepo, times(1)).getAuthenticityToken();
+        verify(disBoardsLocalRepo, times(1)).getBoardPostList(BoardListTypes.MUSIC);
+        verify(disBoardsLocalRepo, times(1)).setBoardPost(expectedBoardPost);
+        verify(disBoardsLocalRepo, times(1)).setBoardPostList(boardPostList);
 
     }
 
