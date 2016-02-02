@@ -28,4 +28,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="account">Your profile</string>
     <string name="not_logged_in">You need to log in to use this feature</string>
+    <string name="new_post_title">New %s post</string>
+    <string name="post_reply_title">In reply to %s</string>
+
 </resources>

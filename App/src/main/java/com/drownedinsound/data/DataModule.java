@@ -12,12 +12,14 @@ import com.drownedinsound.data.parser.streaming.DisWebPagerParserImpl;
 import com.drownedinsound.qualifiers.ForDatabase;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.qualifiers.ForIoScheduler;
+import com.drownedinsound.ui.post.AddCommentFragment;
 import com.drownedinsound.ui.post.BoardPostActivity;
 import com.drownedinsound.ui.post.BoardPostFragment;
-import com.drownedinsound.ui.post.PostReplyActivity;
+import com.drownedinsound.ui.post.AddCommentActivity;
+import com.drownedinsound.ui.postList.AddPostActivity;
 import com.drownedinsound.ui.postList.BoardPostListFragment;
 import com.drownedinsound.ui.postList.BoardPostListParentActivity;
-import com.drownedinsound.ui.postList.NewPostFragment;
+import com.drownedinsound.ui.postList.AddPostFragment;
 import com.drownedinsound.ui.start.LoginActivity;
 import com.drownedinsound.ui.start.StartActivity;
 import com.facebook.stetho.okhttp.StethoInterceptor;
@@ -51,8 +53,10 @@ import static android.content.Context.MODE_PRIVATE;
                 BoardPostActivity.class,
                 BoardPostFragment.class,
                 BoardPostListFragment.class,
-                PostReplyActivity.class,
-                NewPostFragment.class
+                AddCommentFragment.class,
+                AddCommentActivity.class,
+                AddPostFragment.class,
+                AddPostActivity.class
         },
         complete = false,
         library = true

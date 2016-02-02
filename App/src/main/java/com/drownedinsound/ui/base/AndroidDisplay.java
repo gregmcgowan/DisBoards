@@ -2,7 +2,9 @@ package com.drownedinsound.ui.base;
 
 import com.drownedinsound.R;
 import com.drownedinsound.data.generatered.BoardPostList;
-import com.drownedinsound.ui.post.PostReplyActivity;
+import com.drownedinsound.ui.post.BoardPostActivity;
+import com.drownedinsound.ui.post.AddCommentActivity;
+import com.drownedinsound.ui.postList.AddPostActivity;
 
 import android.app.Activity;
 import android.widget.Toast;
@@ -18,22 +20,21 @@ public class AndroidDisplay implements Display {
         this.activity = activity;
     }
 
-
     @Override
     public void showNewPostUI(@BoardPostList.BoardPostListType String boardListType) {
-
+        activity.startActivity(AddPostActivity.getIntent(activity, boardListType));
     }
 
     @Override
     public void showBoardPost(@BoardPostList.BoardPostListType String boardListType,
             String boardPostId) {
-
+        activity.startActivity(BoardPostActivity.getIntent(activity,boardPostId,boardListType));
     }
 
     @Override
     public void showReplyUI(@BoardPostList.BoardPostListType String boardListType,
             String postId, String replyToAuthor, String replyToCommentId) {
-        activity.startActivity(PostReplyActivity
+        activity.startActivity(AddCommentActivity
                 .getIntent(activity, boardListType, postId, replyToAuthor, replyToCommentId));
     }
 

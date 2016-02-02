@@ -6,10 +6,8 @@ import com.drownedinsound.data.network.CookieManager;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.ui.favourites.FavouritesListFragment;
 import com.drownedinsound.ui.post.BoardPostFragment;
-import com.drownedinsound.ui.post.PostReplyFragment;
 import com.drownedinsound.ui.postList.BoardPostListFragment;
 import com.drownedinsound.ui.postList.BoardPostListParentActivity;
-import com.drownedinsound.ui.postList.NewPostFragment;
 import com.drownedinsound.ui.start.LoginActivity;
 import com.drownedinsound.ui.start.StartActivity;
 import com.squareup.okhttp.OkHttpClient;
@@ -35,8 +33,6 @@ import dagger.Provides;
                 BoardPostListParentActivity.class,
                 LoginActivity.class,
                 StartActivity.class,
-                PostReplyFragment.class,
-                NewPostFragment.class
 
         },
         complete = false,

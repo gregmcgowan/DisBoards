@@ -9,6 +9,7 @@ import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,12 +21,11 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 
 /**
  * Created by gregmcgowan on 14/11/15.
  */
-public class PostReplyFragment extends BaseControllerFragment<BoardPostController> implements ReplyToCommentUi {
+public class AddCommentFragment extends BaseControllerFragment<BoardPostController> implements ReplyToCommentUi {
 
     @InjectView(R.id.loading_layout)
     DisBoardsLoadingLayout loadingLayout;
@@ -33,13 +33,13 @@ public class PostReplyFragment extends BaseControllerFragment<BoardPostControlle
     @InjectView(R.id.content_container)
     ViewGroup contentConatiner;
 
-    @InjectView(R.id.board_post_reply_original_comment)
+    @InjectView(R.id.heading)
     TextView replyToTextView;
 
-    @InjectView(R.id.board_post_reply_subject)
+    @InjectView(R.id.add_content_title)
     EditText commentTitleEditView;
 
-    @InjectView(R.id.board_post_reply_content)
+    @InjectView(R.id.add_content_main)
     EditText commentContentEditView;
 
     private String boardPostId;
@@ -53,7 +53,7 @@ public class PostReplyFragment extends BaseControllerFragment<BoardPostControlle
     @Inject
     BoardPostController boardPostController;
 
-    public static PostReplyFragment newInstance(@BoardPostList.BoardPostListType String boardListType,
+    public static AddCommentFragment newInstance(@BoardPostList.BoardPostListType String boardListType,
             String postId, String replyToAuthor, String replyToCommentId ) {
         Bundle arguments = new Bundle();
         arguments.putString(DisBoardsConstants.REPLY_TO_AUTHOR,
@@ -64,7 +64,7 @@ public class PostReplyFragment extends BaseControllerFragment<BoardPostControlle
                 postId);
         arguments.putSerializable(DisBoardsConstants.BOARD_TYPE,
                 boardListType);
-        PostReplyFragment postReplyFragment = new PostReplyFragment();
+        AddCommentFragment postReplyFragment = new AddCommentFragment();
         postReplyFragment.setArguments(arguments);
 
         return postReplyFragment;
@@ -91,15 +91,18 @@ public class PostReplyFragment extends BaseControllerFragment<BoardPostControlle
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.board_post_reply,container,false);
+        View view = inflater.inflate(R.layout.add_content_layout, container, false);
 
-        ButterKnife.inject(this,view);
+        ButterKnife.inject(this, view);
 
         loadingLayout.setContentView(contentConatiner);
 
-
-        String replyToText = "In reply to " + replyToAuthor;
-        replyToTextView.setText(replyToText);
+        if (!TextUtils.isEmpty(replyToAuthor)) {
+            replyToTextView.setText(getString(R.string.post_reply_title, replyToAuthor));
+            replyToTextView.setVisibility(View.VISIBLE);
+        } else {
+            replyToTextView.setVisibility(View.GONE);
+        }
 
         return view;
     }
@@ -123,22 +126,14 @@ public class PostReplyFragment extends BaseControllerFragment<BoardPostControlle
         loadingLayout.showAnimatedViewAndHideContent();
     }
 
-    @OnClick(R.id.reply_send_button)
-    protected void doReplyAction() {
+    public void doReplyAction() {
         String commentTitle = commentTitleEditView.getText().toString();
         String commentContent = commentContentEditView.getText().toString();
 
-        //TODO validation
-
         boardPostController
-                .replyToComment(this, boardListType, boardPostId, replyToCommentID, commentTitle, commentContent);
+                .replyToComment(this, boardListType, boardPostId, replyToCommentID, commentTitle,
+                        commentContent);
     }
-
-    @OnClick(R.id.back_button)
-    protected void doBackAction() {
-        getActivity().finish();
-    }
-
 
     @Override
     public void handlePostCommentFailure() {

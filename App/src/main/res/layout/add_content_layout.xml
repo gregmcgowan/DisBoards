@@ -1,0 +1,63 @@
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/main_container"
+        android:background="@color/background_colour_light"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <com.drownedinsound.ui.base.DisBoardsLoadingLayout
+            android:id="@+id/loading_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"/>
+
+    <LinearLayout
+            android:id="@+id/content_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_medium">
+
+            <com.drownedinsound.ui.controls.RobotoLightTextView
+                    android:id="@+id/heading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingLeft="8dp"
+                    android:textSize="18sp"
+                    android:gravity="center_vertical"
+                    android:text="Reply @someusername"/>
+
+        </LinearLayout>
+
+        <EditText
+                android:id="@+id/add_content_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_medium"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_medium"
+                android:background="@drawable/comment_background_normal"
+                android:padding="10dip"
+                android:singleLine="true"/>
+
+        <EditText
+                android:id="@+id/add_content_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_medium"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_medium"
+                android:background="@drawable/comment_background_normal"
+                android:lines="@integer/reply_dialog_min_lines"
+                android:padding="10dip"
+                android:gravity="top"
+                android:scrollbars="vertical"/>
+    </LinearLayout>
+
+
+</FrameLayout>
+

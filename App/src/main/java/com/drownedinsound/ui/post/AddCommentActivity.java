@@ -3,8 +3,8 @@ package com.drownedinsound.ui.post;
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.generatered.BoardPostList;
-import com.drownedinsound.ui.base.BaseActivity;
 import com.drownedinsound.ui.base.BaseControllerActivity;
+import com.drownedinsound.ui.postList.BoardPostListController;
 
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -14,14 +14,16 @@ import android.os.Bundle;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class PostReplyActivity extends BaseControllerActivity<BoardPostController> {
+public class AddCommentActivity extends BaseControllerActivity<BoardPostListController> {
 
 
-    public static Intent getIntent(Context context, @BoardPostList.BoardPostListType String boardListType,
+    public static Intent getIntent(Context context,
+            @BoardPostList.BoardPostListType String boardListType,
             String postId, String replyToAuthor, String replyToCommentId) {
 
-        Intent intent = new Intent(context,PostReplyActivity.class);
+        Intent intent = new Intent(context, AddCommentActivity.class);
 
         intent.putExtra(DisBoardsConstants.REPLY_TO_AUTHOR,
                 replyToAuthor);
@@ -36,7 +38,7 @@ public class PostReplyActivity extends BaseControllerActivity<BoardPostControlle
     }
 
     @Inject
-    BoardPostController boardPostController;
+    BoardPostListController boardPostListController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,24 +49,42 @@ public class PostReplyActivity extends BaseControllerActivity<BoardPostControlle
         Intent intent = getIntent();
 
         String replyToCommentID = intent.getStringExtra(DisBoardsConstants.BOARD_COMMENT_ID);
-        @BoardPostList.BoardPostListType String boardListType = intent.getStringExtra(DisBoardsConstants.BOARD_TYPE);
+        @BoardPostList.BoardPostListType String boardListType = intent
+                .getStringExtra(DisBoardsConstants.BOARD_TYPE);
         String boardPostId = intent.getStringExtra(DisBoardsConstants.BOARD_POST_ID);
         String replyToAuthor = intent.getStringExtra(DisBoardsConstants.REPLY_TO_AUTHOR);
 
-        PostReplyFragment postReplyFragment = PostReplyFragment.newInstance(boardListType,boardPostId,
-                replyToAuthor,replyToCommentID);
+        AddCommentFragment postReplyFragment = AddCommentFragment
+                .newInstance(boardListType, boardPostId,
+                        replyToAuthor, replyToCommentID);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.container,postReplyFragment);
+        fragmentTransaction.add(R.id.container, postReplyFragment, "POST_REPLY_FRAGMENT");
         fragmentTransaction.commit();
     }
 
     @Override
     protected int getLayoutResource() {
-        return R.layout.board_post_reply_container;
+        return R.layout.add_content_container_layout;
     }
 
+
+    @OnClick(R.id.send_button)
+    public void handleSendButtonPressed() {
+        AddCommentFragment postReplyFragment =
+                (AddCommentFragment) getFragmentManager().findFragmentByTag("POST_REPLY_FRAGMENT");
+        if (postReplyFragment != null) {
+            postReplyFragment.doReplyAction();
+        }
+    }
+
+    @OnClick(R.id.back_button)
+    protected void doBackAction() {
+        finish();
+    }
+
+
     @Override
-    protected BoardPostController getController() {
-        return boardPostController;
+    protected BoardPostListController getController() {
+        return boardPostListController;
     }
 }
