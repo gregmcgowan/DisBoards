@@ -183,7 +183,7 @@ public class BoardPostListController extends BaseUIController {
         }
     }
 
-    public void addNewPost(NewPostUI newPostUI,
+    public void addNewPost(AddPostUI newPostUI,
             @BoardPostList.BoardPostListType String boardListType,
             String title, String content) {
         if (!hasSubscription(newPostUI)) {
@@ -193,10 +193,10 @@ public class BoardPostListController extends BaseUIController {
             Observable<BoardPost> addPostObservable = disBoardRepo
                     .addNewPost(boardListType, title, content)
                     .subscribeOn(backgroundThreadScheduler)
-                    .observeOn(backgroundThreadScheduler);
+                    .observeOn(mainThreadScheduler);
 
-            BaseObserver<BoardPost, NewPostUI> addNewPostObserver
-                    = new BaseObserver<BoardPost, NewPostUI>(uiID) {
+            BaseObserver<BoardPost, AddPostUI> addNewPostObserver
+                    = new BaseObserver<BoardPost, AddPostUI>(uiID) {
                 @Override
                 public void onError(Throwable e) {
                     getUI().showLoadingProgress(false);
