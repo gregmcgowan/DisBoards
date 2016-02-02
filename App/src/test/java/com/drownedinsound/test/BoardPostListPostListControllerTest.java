@@ -11,7 +11,7 @@ import com.drownedinsound.ui.base.Display;
 import com.drownedinsound.ui.postList.BoardPostListController;
 import com.drownedinsound.ui.postList.BoardPostListParentUi;
 import com.drownedinsound.ui.postList.BoardPostListUi;
-import com.drownedinsound.ui.postList.NewPostUI;
+import com.drownedinsound.ui.postList.AddPostUI;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class BoardPostListPostListControllerTest {
     Display display;
 
     @Mock
-    NewPostUI newPostUI;
+    AddPostUI newPostUI;
 
     private BoardPostListController boardPostListController;
 
