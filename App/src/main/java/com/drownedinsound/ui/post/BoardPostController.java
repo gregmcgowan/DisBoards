@@ -109,7 +109,7 @@ public class BoardPostController extends BaseUIController {
             subscribeAndCache(replyToCommentUi, boardPostId, postCommentObserver,
                     postCommentObservable);
         } else {
-            getDisplay().showErrorMessageDialog(R.string.pleaese_enter_some_content);
+            getDisplay().showErrorMessageDialog(R.string.please_enter_some_content);
         }
     }
 

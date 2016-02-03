@@ -1,5 +1,6 @@
 package com.drownedinsound.test;
 
+import com.drownedinsound.R;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
@@ -234,6 +235,43 @@ public class BoardPostListPostListControllerTest {
 
         verify(display).showNewPostUI(boardPostListUi.getBoardListType());
     }
+
+    @Test
+    public void testNewPostValidationEmptyStrings() {
+        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
+
+        boardPostListController.attachDisplay(display);
+        boardPostListController.attachUi(newPostUI);
+        boardPostListController.addNewPost(newPostUI, BoardListTypes.SOCIAL,
+                "", "");
+
+        verify(display).showErrorMessageDialog(R.string.please_enter_both_some_content_and_subject);
+    }
+
+    @Test
+    public void testNewPostValidationEmptyTitle() {
+        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
+
+        boardPostListController.attachDisplay(display);
+        boardPostListController.attachUi(newPostUI);
+        boardPostListController.addNewPost(newPostUI, BoardListTypes.SOCIAL,
+                "", "Some content");
+
+        verify(display).showErrorMessageDialog(R.string.please_enter_a_subject);
+    }
+
+    @Test
+    public void testNewPostValidationEmptyContent() {
+        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
+
+        boardPostListController.attachDisplay(display);
+        boardPostListController.attachUi(newPostUI);
+        boardPostListController.addNewPost(newPostUI, BoardListTypes.SOCIAL,
+                "Title", "");
+
+        verify(display).showErrorMessageDialog(R.string.please_enter_some_content);
+    }
+
 
     @Test
     public void testNewPostFails() {

@@ -123,7 +123,7 @@ public class BoardPostControllerTest {
         boardPostController.replyToComment(replyToCommentUi, BoardListTypes.SOCIAL, "12345", null,
                 "", "");
 
-        verify(display).showErrorMessageDialog(R.string.pleaese_enter_some_content);
+        verify(display).showErrorMessageDialog(R.string.please_enter_some_content);
     }
 
     @Test
