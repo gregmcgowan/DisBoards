@@ -26,15 +26,15 @@ public class FakeDisWebPageParser implements DisWebPageParser {
     }
 
     @Override
-    public BoardPost parseBoardPost(@BoardPostList.BoardPostListType String boardListType,
-            String boardPostId, InputStream inputStream) throws IOException {
+    public List<BoardPostSummary> parseBoardPostSummaryList(
+            @BoardPostList.BoardPostListType String boardListType, InputStream inputStream)
+            throws IOException {
         return null;
     }
 
     @Override
-    public List<BoardPostSummary> parseBoardPostSummaryList(
-            @BoardPostList.BoardPostListType String boardListType, InputStream inputStream)
-            throws IOException {
+    public BoardPost parseBoardPost(@BoardPostList.BoardPostListType String boardListType,
+            InputStream inputStream) throws IOException {
         return null;
     }
 }
