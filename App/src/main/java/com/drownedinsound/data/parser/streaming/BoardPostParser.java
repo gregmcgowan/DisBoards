@@ -26,8 +26,6 @@ import timber.log.Timber;
 
 public class BoardPostParser {
 
-    private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
-            + "BoardPostParser";
 
     private static final String MAIN_CONTENT_CLASS = "content no-border";
 
@@ -247,7 +245,6 @@ public class BoardPostParser {
                                 initialContentAnchorNumber++;
                             }
                         } else {
-                            Timber.d(TAG, "in content div"+initialContentAnchorNumber);
                             if (isInPageState(currentPageState,PageState.INITIAL_CONTENT_DIV)) {
                                 if (initialContentAnchorNumber == 1) {
                                     String title = buffer.toString().trim();
@@ -298,7 +295,7 @@ public class BoardPostParser {
                                 if (dateAndTime != null) {
                                     dateAndTime = dateAndTime.replace(",", "");
                                     dateAndTime = dateAndTime.replace("'", "");
-                                    Timber.d(TAG, "Date and time " + dateAndTime);
+                                    Timber.d("Date and time " + dateAndTime);
                                     Date parsedDate = DateUtils
                                             .parseDate(
                                                     dateAndTime,
@@ -306,11 +303,11 @@ public class BoardPostParser {
                                     if (parsedDate != null) {
                                         long parsedDateLongValue = parsedDate
                                                 .getTime();
-                                        Timber.d(TAG, "Date of post"
+                                        Timber.d( "Date of post"
                                                 + parsedDateLongValue);
                                         latestCommentTime = parsedDateLongValue;
                                     } else {
-                                        Timber.d(TAG, "Parsed date is null");
+                                        Timber.d( "Parsed date is null");
                                     }
                                 }
                             }
@@ -379,12 +376,12 @@ public class BoardPostParser {
             }
         }
         if (DisBoardsConstants.DEBUG) {
-            Timber.d(TAG, "Parsed board post in "
+            Timber.d( "Parsed board post in "
                     + (System.currentTimeMillis() - start) + " ms");
             if (DEBUG_PARSER) {
-                Timber.d(TAG, currentBoardPost.toString());
+                Timber.d( currentBoardPost.toString());
                 for (BoardPostComment boardPostComment : comments) {
-                    Timber.d(TAG, boardPostComment.toString());
+                    Timber.d(boardPostComment.toString());
                 }
             }
 
