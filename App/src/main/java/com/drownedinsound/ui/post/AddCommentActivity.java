@@ -16,7 +16,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class AddCommentActivity extends BaseControllerActivity<BoardPostListController> {
+public class AddCommentActivity extends BaseControllerActivity<BoardPostController> {
 
 
     public static Intent getIntent(Context context,
@@ -38,7 +38,7 @@ public class AddCommentActivity extends BaseControllerActivity<BoardPostListCont
     }
 
     @Inject
-    BoardPostListController boardPostListController;
+    BoardPostController boardPostController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +84,7 @@ public class AddCommentActivity extends BaseControllerActivity<BoardPostListCont
 
 
     @Override
-    protected BoardPostListController getController() {
-        return boardPostListController;
+    protected BoardPostController getController() {
+        return boardPostController;
     }
 }
