@@ -149,7 +149,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     }
 
     private void displayReplyDialog(BoardPostComment boardPostComment) {
-        String replyToAuthor = boardPostComment.getReplyToUsername();
+        String replyToAuthor = boardPostComment.getAuthorUsername();
         String commentId = boardPostComment.getCommentID();
         boardPostController.showReplyUI(boardListType, boardPostId, replyToAuthor, commentId);
     }
