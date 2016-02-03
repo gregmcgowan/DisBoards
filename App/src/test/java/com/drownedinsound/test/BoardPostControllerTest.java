@@ -127,6 +127,36 @@ public class BoardPostControllerTest {
     }
 
     @Test
+    public void testEmptyTitleReply() {
+        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
+        when(disBoardRepo.postComment(BoardListTypes.SOCIAL, "12345", "12345", "", "Content"))
+                .thenReturn(Observable.just(expectedBoardPost));
+
+        boardPostController.attachDisplay(display);
+        boardPostController.attachUi(replyToCommentUi);
+        boardPostController.replyToComment(replyToCommentUi, BoardListTypes.SOCIAL, "12345", "12345",
+                "", "Content");
+
+        verify(replyToCommentUi).showLoadingProgress(true);
+        verify(display).hideCurrentScreen();
+    }
+
+    @Test
+    public void testEmptyContentReply() {
+        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
+        when(disBoardRepo.postComment(BoardListTypes.SOCIAL, "12345", "12345", "Title", ""))
+                .thenReturn(Observable.just(expectedBoardPost));
+
+        boardPostController.attachDisplay(display);
+        boardPostController.attachUi(replyToCommentUi);
+        boardPostController.replyToComment(replyToCommentUi, BoardListTypes.SOCIAL, "12345", "12345",
+                "Title", "");
+
+        verify(replyToCommentUi).showLoadingProgress(true);
+        verify(display).hideCurrentScreen();
+    }
+
+    @Test
     public void testReplyToCommentSucceeds() {
         when(disBoardRepo.postComment(BoardListTypes.SOCIAL,"12345","12345", "Title", "Content"))
                 .thenReturn(Observable.just(expectedBoardPost));
