@@ -67,9 +67,11 @@ public class DisBoardsLocalRepoImpl implements DisBoardsLocalRepo {
             daoSession.callInTx(new Callable<Boolean>() {
                 @Override
                 public Boolean call() throws Exception {
-                    boardPostDao.insertOrReplace(boardPost);
-                    List<BoardPostComment> boardPostComments = boardPost.getComments();
-                    boardPostCommentDao.insertOrReplaceInTx(boardPostComments);
+                    if(boardPost != null) {
+                        boardPostDao.insertOrReplace(boardPost);
+                        List<BoardPostComment> boardPostComments = boardPost.getComments();
+                        boardPostCommentDao.insertOrReplaceInTx(boardPostComments);
+                    }
                     return true;
                 }
             });
