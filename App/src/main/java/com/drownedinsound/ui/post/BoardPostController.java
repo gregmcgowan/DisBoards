@@ -1,11 +1,13 @@
 package com.drownedinsound.ui.post;
 
+import com.drownedinsound.R;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.ui.base.BaseUIController;
+import com.drownedinsound.utils.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -76,31 +78,39 @@ public class BoardPostController extends BaseUIController {
     public void replyToComment(ReplyToCommentUi replyToCommentUi,
             @BoardPostList.BoardPostListType String boardListType,
             String boardPostId, String commentId, String title, String content) {
-        int uiID = getId(replyToCommentUi);
-        replyToCommentUi.showLoadingProgress(true);
 
-        Observable<BoardPost> postCommentObservable = disBoardRepo.
-                postComment(boardListType, boardPostId, commentId, title, content)
-                .subscribeOn(backgroundThreadScheduler)
-                .observeOn(mainThreadScheduler);
+        //TODO validation. Max lengths
+        //Cannot be empty
+        boolean valid = !StringUtils.isEmpty(title) || !StringUtils.isEmpty(content);
+        if(valid) {
+            int uiID = getId(replyToCommentUi);
+            replyToCommentUi.showLoadingProgress(true);
 
-        BaseObserver<BoardPost, ReplyToCommentUi> postCommentObserver
-                = new BaseObserver<BoardPost, ReplyToCommentUi>(uiID) {
-            @Override
-            public void onError(Throwable e) {
-                getUI().showLoadingProgress(false);
-                getUI().handlePostCommentFailure();
-            }
+            Observable<BoardPost> postCommentObservable = disBoardRepo.
+                    postComment(boardListType, boardPostId, commentId, title, content)
+                    .subscribeOn(backgroundThreadScheduler)
+                    .observeOn(mainThreadScheduler);
 
-            @Override
-            public void onNext(BoardPost boardPost) {
-                if(getDisplay() != null) {
-                    getDisplay().hideCurrentScreen();
+            BaseObserver<BoardPost, ReplyToCommentUi> postCommentObserver
+                    = new BaseObserver<BoardPost, ReplyToCommentUi>(uiID) {
+                @Override
+                public void onError(Throwable e) {
+                    getUI().showLoadingProgress(false);
+                    getUI().handlePostCommentFailure();
                 }
-            }
-        };
-        subscribeAndCache(replyToCommentUi, boardPostId, postCommentObserver,
-                postCommentObservable);
+
+                @Override
+                public void onNext(BoardPost boardPost) {
+                    if(getDisplay() != null) {
+                        getDisplay().hideCurrentScreen();
+                    }
+                }
+            };
+            subscribeAndCache(replyToCommentUi, boardPostId, postCommentObserver,
+                    postCommentObservable);
+        } else {
+            getDisplay().showErrorMessageDialog(R.string.pleaese_enter_some_content);
+        }
     }
 
     public void thisAComment(BoardPostUI boardPostUI, @BoardPostList.BoardPostListType String boardListType,

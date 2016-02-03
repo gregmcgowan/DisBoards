@@ -17,4 +17,6 @@ public interface Display {
     void showNotLoggedInUI();
 
     void hideCurrentScreen();
+
+    void showErrorMessageDialog(int stringID);
 }

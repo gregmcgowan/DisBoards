@@ -30,5 +30,8 @@
     <string name="not_logged_in">You need to log in to use this feature</string>
     <string name="new_post_title">New %s post</string>
     <string name="post_reply_title">In reply to %s</string>
+    <string name="please_enter_a_reply">Please enter a reply</string>
+    <string name="please_enter_a_subject">Please enter a subject</string>
+    <string name="pleaese_enter_some_content">Please enter some content</string>
 
 </resources>

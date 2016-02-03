@@ -1,5 +1,6 @@
 package com.drownedinsound.test;
 
+import com.drownedinsound.R;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.model.BoardListTypes;
@@ -17,6 +18,8 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
 
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -109,6 +112,18 @@ public class BoardPostControllerTest {
         boardPostController.showReplyUI(BoardListTypes.SOCIAL, "Author", "12345", "1224");
 
         verify(display).showNotLoggedInUI();
+    }
+
+    @Test
+    public void testEmptyTitleAndContentReply() {
+        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
+
+        boardPostController.attachDisplay(display);
+        boardPostController.attachUi(replyToCommentUi);
+        boardPostController.replyToComment(replyToCommentUi, BoardListTypes.SOCIAL, "12345", null,
+                "", "");
+
+        verify(display).showErrorMessageDialog(R.string.pleaese_enter_some_content);
     }
 
     @Test

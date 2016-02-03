@@ -47,4 +47,11 @@ public class AndroidDisplay implements Display {
     public void hideCurrentScreen() {
         activity.finish();
     }
+
+    @Override
+    public void showErrorMessageDialog(int stringID) {
+        if(activity != null) {
+            Toast.makeText(activity, stringID, Toast.LENGTH_SHORT).show();
+        }
+    }
 }
