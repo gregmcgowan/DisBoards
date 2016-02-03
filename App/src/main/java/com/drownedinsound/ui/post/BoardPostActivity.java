@@ -26,9 +26,6 @@ import butterknife.OnClick;
 public class BoardPostActivity extends BaseControllerActivity<BoardPostController>
         implements BoardPostParentUi {
 
-    private static final String TAG = DisBoardsConstants.LOG_TAG_PREFIX
-            + "BoardPostActivity";
-
     private BoardPostFragment boardPostFragment;
 
     @Inject
@@ -51,17 +48,6 @@ public class BoardPostActivity extends BaseControllerActivity<BoardPostControlle
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        int screenWidthPixels = getResources().getDisplayMetrics().widthPixels;
-        int screenWidthDp = UiUtils.convertPixelsToDp(getResources(), screenWidthPixels);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE &&
-                screenWidthDp >= UiUtils.MIN_WIDTH_DP_FOR_DUAL_MODE) {
-            // If the screen is now in landscape mode, we can show the
-            // dialog in-line with the list so we don't need this activity.
-            finish();
-            return;
-        }
 
         ButterKnife.inject(this);
 
@@ -92,9 +78,7 @@ public class BoardPostActivity extends BaseControllerActivity<BoardPostControlle
 
     @OnClick(R.id.back_button)
     public void backAction() {
-        if (!UiUtils.isDualPaneMode(this)) {
-            finish();
-        }
+        finish();
     }
 
     @OnClick(R.id.refresh_board_posts_button)

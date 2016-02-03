@@ -267,8 +267,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         return boardPostId;
     }
 
-
-
     @Override
     public void onResume() {
         super.onResume();
@@ -286,17 +284,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         outState.putString(DisBoardsConstants.BOARD_POST_ID, boardPostId);
         outState.putBoolean(DisBoardsConstants.DUAL_PANE_MODE, inDualPaneMode);
         outState.putSerializable(DisBoardsConstants.BOARD_TYPE, boardListType);
-    }
-
-    private void findAndUpdateFavouritesMenuItem(Menu menu) {
-//        MenuItem favouriteMenuItem = menu.findItem(R.id.menu_favourite);
-//        if (favouriteMenuItem != null) {
-//            if (boardPost != null && boardPost.isFavourited()) {
-//                //favouriteMenuItem.setIcon(R.drawable.favourite_selected);
-//            } else {
-//                //favouriteMenuItem.setIcon(R.drawable.favourite_not_selected);
-//            }
-//        }
     }
 
     @Override

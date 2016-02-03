@@ -1,7 +1,6 @@
 package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
-import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.utils.CollectionUtils;
 import com.drownedinsound.utils.UiUtils;

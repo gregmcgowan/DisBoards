@@ -2,18 +2,13 @@ package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 import com.drownedinsound.ui.post.BoardPostActivity;
-import com.drownedinsound.ui.post.BoardPostFragment;
 import com.drownedinsound.utils.UiUtils;
 
-import android.app.FragmentTransaction;
-import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -72,8 +67,6 @@ public class BoardPostListFragment
 
     private Drawable unreadDrawable;
 
-    private String boardUrl;
-
     private BoardPostListAdapter adapter;
 
     private String boardListType;
@@ -112,13 +105,6 @@ public class BoardPostListFragment
         pageIndex = getArguments().getInt("pageIndex");
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (loadingLayout != null) {
-            loadingLayout.stopAnimation();
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -170,24 +156,8 @@ public class BoardPostListFragment
                     .getString(DisBoardsConstants.BOARD_POST_ID);
             boardListType =  savedInstanceState
                     .getString(DisBoardsConstants.BOARD_TYPE);
-            boardUrl = savedInstanceState
-                    .getString(DisBoardsConstants.BOARD_URL);
         }
 
-        if (dualPaneMode && currentlySelectedPost != -1) {
-            BoardPost boardPost = (BoardPost) adapter.getItem(currentlySelectedPost);
-            boardPostSelected(currentlySelectedPost, boardPost.getBoardPostID());
-        }
-
-        // TODO This does not work at the moment. SavedInstanceState always
-        // seems to be null
-        if (wasInDualPaneMode
-                && currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
-            Intent viewPostIntent = new Intent(getActivity(),
-                    BoardPostActivity.class);
-            viewPostIntent.putExtra(DisBoardsConstants.BOARD_POST_ID, postId);
-            startActivity(viewPostIntent);
-        }
     }
 
     @Override
@@ -197,7 +167,6 @@ public class BoardPostListFragment
         outState.putBoolean(WAS_IN_DUAL_PANE_MODE, dualPaneMode);
         outState.putString(DisBoardsConstants.BOARD_POST_ID, postId);
         outState.putSerializable(DisBoardsConstants.BOARD_TYPE, boardListType);
-        outState.putString(DisBoardsConstants.BOARD_URL, boardUrl);
     }
 
     public void doRefreshAction() {
@@ -216,27 +185,8 @@ public class BoardPostListFragment
         currentlySelectedPost = position;
         postId = boardPostId;
 
-        if (dualPaneMode) {
-            BoardPostFragment boardPostFragment = (BoardPostFragment) getFragmentManager()
-                    .findFragmentById(R.id.board_post_details);
-            if (boardPostFragment == null
-                    || !postId.equals(boardPostFragment.getBoardPostId())) {
-                boardPostFragment = BoardPostFragment
-                        .newInstance(postId, true, boardListType);
-                // Execute a transaction, replacing any existing fragment
-                // with this one inside the frame.x§
-                FragmentTransaction ft = getFragmentManager()
-                        .beginTransaction();
-                ft.replace(R.id.board_post_details, boardPostFragment);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.commit();
-            }
-
-        } else {
-            startActivity(BoardPostActivity
-                    .getIntent(getActivity(), postId, boardListType));
-        }
-
+        startActivity(BoardPostActivity
+                .getIntent(getActivity(), postId, boardListType));
     }
 
     @Override
@@ -246,17 +196,13 @@ public class BoardPostListFragment
         adapter.setBoardPosts(boardPosts);
 
         swipeRefreshLayout.setRefreshing(false);
-
-        //adapter.restartAppending();
-        //listView.requestPositionToScreen(0, true);
     }
 
     @Override
     public void appendBoardPostSummaries(List<BoardPostSummary> boardPosts) {
         currentlySelectedPost = -1;
         lastPageFetched++;
-        //adapter.appendBoardPostSummaries(boardPosts);
-        //adapter.restartAppending();
+        //TODO
     }
 
     @Override
@@ -265,9 +211,7 @@ public class BoardPostListFragment
         Timber.d("Board " + boardListType + " showLoadingProgress " + show);
         if (show) {
             requestToShowLoadingView();
-            // adapter.stopAppending();
         } else {
-            //adapter.restartAppending();
             requestToHideLoadingView();
         }
     }
