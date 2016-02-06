@@ -4,12 +4,12 @@ import com.drownedinsound.data.database.DisBoardsDataBaseHelper;
 import com.drownedinsound.data.database.DisBoardsLocalRepo;
 import com.drownedinsound.data.database.DisBoardsLocalRepoImpl;
 import com.drownedinsound.data.generatered.DaoMaster;
+import com.drownedinsound.data.network.CookieManager;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.data.parser.streaming.BoardPostSummaryListParser;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
 import com.drownedinsound.data.parser.streaming.DisWebPagerParserImpl;
-import com.drownedinsound.qualifiers.ForDatabase;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.ui.post.AddCommentFragment;
@@ -30,10 +30,9 @@ import android.app.Application;
 import android.content.SharedPreferences;
 
 import java.io.File;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -57,6 +56,7 @@ import static android.content.Context.MODE_PRIVATE;
                 AddCommentActivity.class,
                 AddPostFragment.class,
                 AddPostActivity.class
+
         },
         complete = false,
         library = true
@@ -68,27 +68,10 @@ public class DataModule {
     public static final String DIS_DB = "dis.db";
 
     @Provides
-    @Singleton
+    @Singleton @Named("Cookies")
     SharedPreferences provideSharedPreferences(Application app) {
-        return app.getSharedPreferences("DisBoards", MODE_PRIVATE);
+        return app.getSharedPreferences("DisBoardsCookies", MODE_PRIVATE);
     }
-
-
-    @Provides
-    @Singleton
-    @ForIoScheduler
-    public ExecutorService provideMultiThreadExecutor() {
-        final int numberCores = Runtime.getRuntime().availableProcessors();
-        return Executors.newFixedThreadPool(numberCores * 2 + 1);
-    }
-
-    @Provides
-    @Singleton
-    @ForDatabase
-    public ExecutorService provideDbExecutorService() {
-        return Executors.newSingleThreadExecutor();
-    }
-
 
     @Provides
     @Singleton
@@ -109,6 +92,20 @@ public class DataModule {
         client.setCache(cache);
 
         return client;
+    }
+
+
+    @Provides
+    @Singleton
+    UserSessionRepo provideUserSessionManager(CookieManager cookieManager) {
+        return new UserSessionManager(cookieManager);
+    }
+
+    @Provides
+    @Singleton
+    CookieManager provideCookieManager(OkHttpClient okHttpClient,
+            @Named("Cookies") SharedPreferences sharedPreferences) {
+        return new CookieManager(okHttpClient, sharedPreferences);
     }
 
     @Singleton
