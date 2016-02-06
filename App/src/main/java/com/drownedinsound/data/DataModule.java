@@ -69,9 +69,16 @@ public class DataModule {
 
     @Provides
     @Singleton @Named("Cookies")
-    SharedPreferences provideSharedPreferences(Application app) {
+    SharedPreferences provideCookieSharedPreference(Application app) {
         return app.getSharedPreferences("DisBoardsCookies", MODE_PRIVATE);
     }
+
+    @Provides
+    @Singleton @Named("AppState")
+    SharedPreferences provideAppSharedPreferences(Application app) {
+        return app.getSharedPreferences("DisBoardsAppPreferences", MODE_PRIVATE);
+    }
+
 
     @Provides
     @Singleton
@@ -97,8 +104,8 @@ public class DataModule {
 
     @Provides
     @Singleton
-    UserSessionRepo provideUserSessionManager(CookieManager cookieManager) {
-        return new UserSessionManager(cookieManager);
+    UserSessionRepo provideUserSessionManager(AppPreferences appPreferences,CookieManager cookieManager) {
+        return new UserSessionManager(appPreferences, cookieManager);
     }
 
     @Provides

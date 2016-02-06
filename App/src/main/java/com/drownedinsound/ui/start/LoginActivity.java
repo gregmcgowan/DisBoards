@@ -2,20 +2,16 @@ package com.drownedinsound.ui.start;
 
 import com.drownedinsound.R;
 import com.drownedinsound.ui.base.BaseControllerActivity;
-import com.drownedinsound.ui.postList.BoardPostListParentActivity;
-import com.drownedinsound.utils.EspressoIdlingResource;
+import com.drownedinsound.utils.StringUtils;
 import com.drownedinsound.utils.UiUtils;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.VisibleForTesting;
-import android.support.test.espresso.IdlingResource;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -51,6 +47,11 @@ public class LoginActivity extends BaseControllerActivity<LoginController> imple
     @InjectView(R.id.login_progress_bar)
     ProgressBar progressBar;
 
+    public static Intent getIntent(Context context) {
+        Intent intent = new Intent(context, LoginActivity.class);
+        return intent;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,21 +77,10 @@ public class LoginActivity extends BaseControllerActivity<LoginController> imple
         passwordField.setVisibility(otherFieldsVisibility);
         loginButton.setVisibility(otherFieldsVisibility);
         lurkButton.setVisibility(otherFieldsVisibility);
-    }
 
-    @Override
-    public void handleLoginSuccess() {
-        Intent startMainActivityIntent = new Intent(this,
-                BoardPostListParentActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(startMainActivityIntent);
-        finish();
-    }
-
-    @Override
-    public void handleLoginFailure() {
-        Toast.makeText(this, "Login failed", Toast.LENGTH_LONG).show();
-        passwordField.setText("");
-        passwordField.requestFocus();
+        if(visible) {
+            UiUtils.hideSoftKeyboard(this, loginButton.getApplicationWindowToken());
+        }
     }
 
     @OnClick(R.id.lurk_button)
@@ -103,25 +93,15 @@ public class LoginActivity extends BaseControllerActivity<LoginController> imple
         String username = usernameField.getText().toString();
         String password = passwordField.getText().toString();
 
-        boolean usernameEntered = !TextUtils.isEmpty(username);
-        boolean passwordEntered = !TextUtils.isEmpty(password);
-        if (usernameEntered && passwordEntered) {
-            attemptLogin(username, password);
+        loginController.loginButtonPressed(this,username, password);
+    }
+
+    @Override
+    public void handleLoginFailure() {
+        if (!StringUtils.isEmpty(usernameField.getText().toString())) {
+            usernameField.requestFocus();
         } else {
-            Toast.makeText(this, getString(R.string.please_enter_both_username_and_password),
-                    Toast.LENGTH_LONG).show();
-            if (!usernameEntered) {
-                usernameField.requestFocus();
-            } else {
-                passwordField.requestFocus();
-            }
+            passwordField.requestFocus();
         }
-
     }
-
-    private void attemptLogin(String username, String password) {
-        UiUtils.hideSoftKeyboard(this, loginButton.getApplicationWindowToken());
-        loginController.doLoginAction(this, username, password);
-    }
-
 }

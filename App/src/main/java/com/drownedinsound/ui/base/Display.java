@@ -7,6 +7,8 @@ import com.drownedinsound.data.generatered.BoardPostList;
  */
 public interface Display {
 
+    void showMainScreen();
+
     void showBoardPost(@BoardPostList.BoardPostListType String boardListType , String boardPostId);
 
     void showNewPostUI(@BoardPostList.BoardPostListType String boardListType);
@@ -19,4 +21,6 @@ public interface Display {
     void hideCurrentScreen();
 
     void showErrorMessageDialog(int stringID);
+
+    void showLoginUi();
 }

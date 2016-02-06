@@ -9,8 +9,6 @@ public interface LoginUi extends Ui {
 
     void showLoadingProgress(boolean visible);
 
-    void handleLoginSuccess();
-
     void handleLoginFailure();
 
 }

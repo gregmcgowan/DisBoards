@@ -36,5 +36,9 @@ public interface DisBoardRepo {
 
     boolean isUserLoggedIn();
 
+    boolean userSelectedLurk();
+
+    void setUserSelectedLurk(boolean lurk);
+
     void clearUserSession();
 }

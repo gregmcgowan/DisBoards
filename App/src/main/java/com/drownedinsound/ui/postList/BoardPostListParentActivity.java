@@ -9,6 +9,7 @@ import com.drownedinsound.ui.favourites.FavouritesActivity;
 import com.drownedinsound.ui.start.LoginActivity;
 
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -58,6 +59,11 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
     private BoardPostListFragmentAdapter boardPostListFragmentAdapter;
 
     private int currentSelectedPage;
+
+    public static Intent getIntent(Context context) {
+        Intent intent = new Intent(context,BoardPostListParentActivity.class);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

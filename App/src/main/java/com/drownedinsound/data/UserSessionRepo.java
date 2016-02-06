@@ -12,5 +12,9 @@ public interface UserSessionRepo {
 
     boolean isUserLoggedIn();
 
+    boolean userSelectedLurk();
+
+    void setUserSelectedLurk(boolean lurk);
+
     void clearSession();
 }

@@ -2,11 +2,16 @@ package com.drownedinsound.ui.base;
 
 import com.drownedinsound.R;
 import com.drownedinsound.data.generatered.BoardPostList;
-import com.drownedinsound.ui.post.BoardPostActivity;
 import com.drownedinsound.ui.post.AddCommentActivity;
+import com.drownedinsound.ui.post.BoardPostActivity;
 import com.drownedinsound.ui.postList.AddPostActivity;
+import com.drownedinsound.ui.postList.BoardPostListParentActivity;
+import com.drownedinsound.ui.start.LoginActivity;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 import android.widget.Toast;
 
 /**
@@ -40,7 +45,37 @@ public class AndroidDisplay implements Display {
 
     @Override
     public void showNotLoggedInUI() {
-        Toast.makeText(activity,R.string.not_logged_in,Toast.LENGTH_SHORT).show();
+        if (activity != null) {
+            //TODO improve this. Maybe only have a single activity
+            View parentView = activity.findViewById(R.id.parent_layout);
+            if (parentView == null) {
+                parentView = activity.findViewById(R.id.board_post_container);
+            }
+
+            if (parentView != null) {
+                Snackbar snackbar = Snackbar
+                        .make(parentView, R.string.not_logged_in,
+                                Snackbar.LENGTH_LONG);
+
+                snackbar.getView().setBackgroundColor(
+                        activity.getResources().getColor(R.color.yellow_1));
+                snackbar.setAction(R.string.login, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showLoginUi();
+                    }
+                });
+                snackbar.show();
+            }
+
+        }
+    }
+
+    @Override
+    public void showLoginUi() {
+        if(activity != null) {
+            activity.startActivity(LoginActivity.getIntent(activity));
+        }
     }
 
     @Override
@@ -52,6 +87,15 @@ public class AndroidDisplay implements Display {
     public void showErrorMessageDialog(int stringID) {
         if(activity != null) {
             Toast.makeText(activity, stringID, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void showMainScreen() {
+        if(activity != null) {
+            Intent intent = BoardPostListParentActivity.getIntent(activity);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            activity.startActivity(intent);
         }
     }
 }

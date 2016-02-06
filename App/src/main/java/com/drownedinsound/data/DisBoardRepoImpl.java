@@ -228,6 +228,16 @@ public class DisBoardRepoImpl implements DisBoardRepo {
     }
 
     @Override
+    public boolean userSelectedLurk() {
+        return userSessionRepo.userSelectedLurk();
+    }
+
+    @Override
+    public void setUserSelectedLurk(boolean lurk) {
+        userSessionRepo.setUserSelectedLurk(lurk);
+    }
+
+    @Override
     public void clearUserSession() {
         userSessionRepo.clearSession();
     }
