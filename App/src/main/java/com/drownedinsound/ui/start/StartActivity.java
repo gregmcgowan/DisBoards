@@ -19,7 +19,8 @@ public class StartActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (userSessionManager.isUserLoggedIn()) {
+        if (userSessionManager.isUserLoggedIn()
+                || userSessionManager.userSelectedLurk()) {
             goToMainActivity();
         } else {
             goToLoginActivity();
