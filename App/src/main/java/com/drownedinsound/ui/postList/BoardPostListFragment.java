@@ -6,7 +6,6 @@ import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
-import com.drownedinsound.ui.post.BoardPostActivity;
 import com.drownedinsound.utils.UiUtils;
 
 import android.graphics.drawable.Drawable;
@@ -181,12 +180,10 @@ public class BoardPostListFragment
 
 
     @Override
-    public void boardPostSelected(int position, String boardPostId) {
+    public void boardPostSelected(int position, BoardPostSummary boardPostSummary) {
         currentlySelectedPost = position;
-        postId = boardPostId;
-
-        startActivity(BoardPostActivity
-                .getIntent(getActivity(), postId, boardListType));
+        postId = boardPostSummary.getBoardPostID();
+        boardPostListController.handleBoardPostSummarySelected(this, boardPostSummary);
     }
 
     @Override

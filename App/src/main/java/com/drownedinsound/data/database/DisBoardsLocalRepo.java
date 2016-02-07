@@ -19,6 +19,8 @@ public interface DisBoardsLocalRepo {
 
     Observable<Void> setBoardPostObservable(BoardPost boardPost);
 
+    Observable<Void> setBoardPostSummary(BoardPostSummary boardPostSummary);
+
     Observable<List<BoardPostSummary>> getBoardPostSummaryListObservable(@BoardPostList.BoardPostListType String boardListType);
 
     List<BoardPostSummary> getBoardPostSummaryList(@BoardPostList.BoardPostListType String boardListType);

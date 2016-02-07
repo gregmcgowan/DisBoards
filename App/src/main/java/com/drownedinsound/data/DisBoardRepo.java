@@ -34,6 +34,8 @@ public interface DisBoardRepo {
     Observable<BoardPost> thisAComment(@BoardPostList.BoardPostListType String boardListType,
             String boardPostId, String commentId);
 
+    Observable<Void> setBoardPostSummary(BoardPostSummary boardPostSummary);
+
     boolean isUserLoggedIn();
 
     boolean userSelectedLurk();

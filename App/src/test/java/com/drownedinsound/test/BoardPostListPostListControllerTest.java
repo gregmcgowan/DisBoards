@@ -9,10 +9,10 @@ import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.UrlConstants;
 import com.drownedinsound.ui.base.Display;
+import com.drownedinsound.ui.postList.AddPostUI;
 import com.drownedinsound.ui.postList.BoardPostListController;
 import com.drownedinsound.ui.postList.BoardPostListParentUi;
 import com.drownedinsound.ui.postList.BoardPostListUi;
-import com.drownedinsound.ui.postList.AddPostUI;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +25,6 @@ import java.util.List;
 import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
-
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -286,7 +285,7 @@ public class BoardPostListPostListControllerTest {
 
         boardPostListController.attachDisplay(display);
         boardPostListController.attachUi(newPostUI);
-        boardPostListController.addNewPost(newPostUI,BoardListTypes.SOCIAL,
+        boardPostListController.addNewPost(newPostUI, BoardListTypes.SOCIAL,
                 "New title", "New content");
 
         verify(newPostUI).showLoadingProgress(true);
@@ -308,6 +307,29 @@ public class BoardPostListPostListControllerTest {
         verify(newPostUI).showLoadingProgress(true);
         verify(display).hideCurrentScreen();
         verify(display).showBoardPost(BoardListTypes.SOCIAL, expectedBoardPost.getBoardPostID());
+    }
+
+    @Test
+    public void testBoardPostSelected() {
+        BoardPostSummary boardPostSummary = boardPosts.get(0);
+
+        when(disBoardRepo.setBoardPostSummary(boardPostSummary))
+                .thenReturn(Observable.create(new Observable.OnSubscribe<Void>() {
+                    @Override
+                    public void call(Subscriber<? super Void> subscriber) {
+                        subscriber.onCompleted();
+                    }
+                }));
+        boardPostListController.attachDisplay(display);
+        boardPostListController.attachUi(boardPostListUi);
+
+
+        boardPostListController.handleBoardPostSummarySelected(boardPostListUi, boardPostSummary);
+
+        @BoardPostList.BoardPostListType String boardListType = boardPostSummary.getBoardListTypeID();
+        verify(display).showBoardPost(boardListType,
+                boardPostSummary.getBoardPostID());
+        verify(disBoardRepo).setBoardPostSummary(boardPostSummary);
     }
 
 

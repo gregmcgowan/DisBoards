@@ -14,6 +14,7 @@ import com.drownedinsound.utils.StringUtils;
 
 import android.support.annotation.NonNull;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -171,6 +172,34 @@ public class BoardPostListController extends BaseUIController {
             BoardPostListUi boardPostListUi = ((BoardPostListUi) ui);
             boardPostListUi.showLoadingProgress(false);
         }
+    }
+
+
+    public void handleBoardPostSummarySelected(BoardPostListUi boardPostListUi,
+            BoardPostSummary boardPostSummary) {
+        @BoardPostList.BoardPostListType String boardListType
+                = boardPostSummary.getBoardListTypeID();
+        boardPostSummary.setLastViewedTime(new Date().getTime());
+
+        Observable<Void> observable = disBoardRepo.setBoardPostSummary(boardPostSummary)
+                .subscribeOn(backgroundThreadScheduler);
+
+        BaseObserver<Void, BoardPostListUi> updateboardPostSummary
+                = new BaseObserver<Void, BoardPostListUi>(getId(boardPostListUi)) {
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Void aVoid) {
+
+            }
+        };
+
+        subscribeAndCache(boardPostListUi, "UPDATE_SUMMARY", updateboardPostSummary, observable);
+
+        getDisplay().showBoardPost(boardListType, boardPostSummary.getBoardPostID());
     }
 
 

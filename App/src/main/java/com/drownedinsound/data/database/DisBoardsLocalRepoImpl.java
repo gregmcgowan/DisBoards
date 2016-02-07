@@ -119,13 +119,23 @@ public class DisBoardsLocalRepoImpl implements DisBoardsLocalRepo {
                     BoardPostSummary matchingNewSummary = boardPostSummaries.get(index);
                     //We don't want to overrite this
                     if(matchingNewSummary != null) {
-                        existingSummary.setLastViewedTime(matchingNewSummary.getLastViewedTime());
+                        matchingNewSummary.setLastViewedTime(existingSummary.getLastViewedTime());
                     }
                 }
 
             }
             boardPostSummaryDao.insertOrReplaceInTx(boardPostSummaries);
         }
+    }
+
+    @Override
+    public Observable<Void> setBoardPostSummary(final BoardPostSummary boardPostSummary) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                boardPostSummaryDao.insertOrReplace(boardPostSummary);
+            }
+        });
     }
 
     @Override

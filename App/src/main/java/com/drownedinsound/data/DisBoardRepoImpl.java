@@ -77,6 +77,7 @@ public class DisBoardRepoImpl implements DisBoardRepo {
                                                 @Override
                                                 public Observable<List<BoardPostSummary>> call(
                                                         List<BoardPostSummary> boardPosts) {
+
                                                     boardPostList.setLastFetchedMs(
                                                             System.currentTimeMillis());
                                                     disBoardsLocalRepo
@@ -221,6 +222,10 @@ public class DisBoardRepoImpl implements DisBoardRepo {
                 });
     }
 
+    @Override
+    public Observable<Void> setBoardPostSummary(BoardPostSummary boardPostSummary) {
+        return disBoardsLocalRepo.setBoardPostSummary(boardPostSummary);
+    }
 
     @Override
     public boolean isUserLoggedIn() {

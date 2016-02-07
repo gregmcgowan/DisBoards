@@ -146,7 +146,7 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
                 public void onClick(View v) {
                     UiUtils.setBackgroundDrawable(holder.postReadMarkerView, readDrawable);
                     if (boardPostListListner != null) {
-                        boardPostListListner.boardPostSelected(position, boardPostSummary.getBoardPostID());
+                        boardPostListListner.boardPostSelected(position, boardPostSummary);
                     }
                 }
             });
@@ -169,7 +169,7 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
 
     public interface BoardPostListListener {
 
-        void boardPostSelected(int position, String boardPostID);
+        void boardPostSelected(int position, BoardPostSummary boardPostSummary);
     }
 
 }
