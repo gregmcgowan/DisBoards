@@ -70,7 +70,7 @@ public class BoardPostControllerTest {
         boardPostController.loadBoardPost(boardPostUI, BoardListTypes.SOCIAL, "12345", true);
 
         verify(boardPostUI).showLoadingProgress(true);
-        verify(boardPostUI).showBoardPost(expectedBoardPost, -1);
+        verify(boardPostUI).showBoardPost(expectedBoardPost);
         verify(boardPostUI).showLoadingProgress(false);
 
         boardPostController.detachUi(boardPostUI);
