@@ -19,7 +19,8 @@
     <string name="sticky_text">Sticky</string>
     <string name="subject">A really interesting subject</string>
     <string name="lurk">Lurk</string>
-    <string name="go_to_latest_comment">Go to latest comment</string>
+    <string name="go_to_latest_comment">Latest comment?</string>
+    <string name="go">Go!</string>
     <string name="content">Witty comments</string>
     <string name="new_post">New Post</string>
     <string name="drawer_open">open drawer</string>

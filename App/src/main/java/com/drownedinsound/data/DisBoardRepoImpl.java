@@ -111,7 +111,20 @@ public class DisBoardRepoImpl implements DisBoardRepo {
     public Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType final String boardListType,
             final String boardPostId,boolean forceUpdate) {
         if(forceUpdate) {
-            return getBoardPostFromNetwork(boardListType,boardPostId);
+            return getBoardPostFromNetwork(boardListType,boardPostId).doOnNext(
+                    new Action1<BoardPost>() {
+                        @Override
+                        public void call(BoardPost boardPost) {
+                            int numberOfTimesRead = boardPost.getNumberOfTimesRead() != null ?
+                                    boardPost.getNumberOfTimesRead() : 0;
+                            boardPost.setNumberOfTimesRead(++numberOfTimesRead);
+                            try {
+                                disBoardsLocalRepo.setBoardPost(boardPost);
+                            } catch (Exception e) {
+                                Timber.e(e,"Error saving board post");
+                            }
+                        }
+                    });
         } else  {
             return disBoardsLocalRepo.getBoardPost(boardPostId).flatMap(
                     new Func1<BoardPost, Observable<BoardPost>>() {
@@ -130,7 +143,19 @@ public class DisBoardRepoImpl implements DisBoardRepo {
                                 return getBoardPostFromNetwork(boardListType,boardPostId);
                             }
                         }
-                    });
+                    }).doOnNext(new Action1<BoardPost>() {
+                @Override
+                public void call(BoardPost boardPost) {
+                    int numberOfTimesRead =  boardPost.getNumberOfTimesRead() != null ?
+                            boardPost.getNumberOfTimesRead() : 0;
+                    boardPost.setNumberOfTimesRead(++numberOfTimesRead);
+                    try {
+                        disBoardsLocalRepo.setBoardPost(boardPost);
+                    } catch (Exception e) {
+                        Timber.e(e,"Error saving board post");
+                    }
+                }
+            });
         }
     }
 

@@ -43,24 +43,4 @@
             app:layout_anchorGravity="bottom|right"
             app:borderWidth="0dp"/>
 
-    <RelativeLayout
-            android:id="@+id/board_post_move_to_first_or_last_comment_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/yellow_start_colour"
-            android:layout_alignParentBottom="true"
-            android:visibility="gone">
-
-        <TextView
-                android:id="@+id/board_post_move_to_last_comment_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="16dip"
-                android:textColor="@color/darkest_grey"
-                android:text="@string/go_to_latest_comment"/>
-
-    </RelativeLayout>
-
-
 </android.support.design.widget.CoordinatorLayout>

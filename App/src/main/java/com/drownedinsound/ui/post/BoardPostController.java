@@ -7,6 +7,7 @@ import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.ui.base.BaseUIController;
+import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 import com.drownedinsound.utils.StringUtils;
 
 import javax.inject.Inject;
@@ -14,6 +15,7 @@ import javax.inject.Singleton;
 
 import rx.Observable;
 import rx.Scheduler;
+import timber.log.Timber;
 
 /**
  * Created by gregmcgowan on 02/10/15.
@@ -56,8 +58,26 @@ public class BoardPostController extends BaseUIController {
 
                 @Override
                 public void onNext(BoardPost boardPost) {
-                    getUI().showBoardPost(boardPost,-1);
-                    getUI().showLoadingProgress(false);
+                    final BoardPostUI postUI = getUI();
+                    postUI.showBoardPost(boardPost);
+
+                    Timber.d("Number of times read "+boardPost.getNumberOfTimesRead());
+                    if (boardPost.getNumberOfTimesRead() > 1
+                            && boardPost.getNumberOfReplies() > 0
+                            && !postUI.userHasInteractedWithUI()) {
+                        postUI.setOnContentShownListener(
+                                new DisBoardsLoadingLayout.ContentShownListener() {
+                                    @Override
+                                    public void onContentShown() {
+                                        if (!postUI.lastCommentIsVisible()) {
+                                            postUI.showGoToLatestCommentOption();
+                                        }
+                                        postUI.setOnContentShownListener(null);
+                                    }
+                                });
+                    }
+                    postUI.showLoadingProgress(false);
+
                 }
             };
             subscribeAndCache(boardPostUI, boardPostId, getBoardPostObserver,
@@ -134,11 +154,12 @@ public class BoardPostController extends BaseUIController {
 
                 @Override
                 public void onNext(BoardPost boardPost) {
-                    getUI().showBoardPost(boardPost,-1);
+                    getUI().showBoardPost(boardPost);
                     getUI().showLoadingProgress(false);
                 }
             };
-            subscribeAndCache(boardPostUI,"THIS"+commentID,thisACommentObserver,thisACommentObservable);
+            subscribeAndCache(boardPostUI, "THIS" + commentID, thisACommentObserver,
+                    thisACommentObservable);
         } else {
             if(getDisplay() != null) {
                 getDisplay().showNotLoggedInUI();

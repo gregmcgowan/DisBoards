@@ -12,20 +12,18 @@ import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 import com.drownedinsound.ui.controls.AutoScrollListView;
 import com.drownedinsound.utils.UiUtils;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +34,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 /**
  * Represents a board fragment. This will consist of the board post and all the
@@ -63,8 +62,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     private boolean inDualPaneMode;
 
-    private boolean animatingScrollToLastCommentView;
-
     protected
     @InjectView(R.id.loading_layout)
     DisBoardsLoadingLayout loadingLayout;
@@ -78,20 +75,18 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     AutoScrollListView commentsList;
 
     protected
-    @InjectView(R.id.board_post_move_to_first_or_last_comment_layout)
-    RelativeLayout moveToFirstOrLastCommentLayout;
-
-    protected
-    @InjectView(R.id.board_post_move_to_last_comment_text_view)
-    TextView scrollToLastCommentTextView;
-
-    protected
     @InjectView(R.id.floating_reply_button)
     FloatingActionButton floatingReplyButton;
 
     protected
     @Inject
     BoardPostController boardPostController;
+
+    private DisBoardsLoadingLayout.ContentShownListener onContentShownListener;
+
+    private int firstVisiblePosition;
+
+    private boolean userHasInteractedWithUI;
 
     public static BoardPostFragment newInstance(String boardPostID, boolean inDualPaneMode, @BoardPostList.BoardPostListType String boardListType) {
         BoardPostFragment boardPostFragment = new BoardPostFragment();
@@ -135,15 +130,13 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
             }
         });
         commentsList.setAdapter(adapter);
-        moveToFirstOrLastCommentLayout
-                .setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        scrollToLatestComment();
-                        displayScrollToHiddenCommentOption(false);
-                    }
-
-                });
+        commentsList.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                userHasInteractedWithUI = true;
+                return false;
+            }
+        });
 
         return rootView;
     }
@@ -167,6 +160,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     @Override
     public void onPause() {
+        saveListViewPosition();
         super.onPause();
 
         if (loadingLayout != null) {
@@ -213,6 +207,8 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     @Override
     public void hideLoadingView() {
+        moveListViewToSavedPosition();
+        loadingLayout.setContentShownListener(onContentShownListener);
         loadingLayout.hideAnimatedViewAndShowContent();
     }
 
@@ -222,7 +218,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     }
 
     @Override
-    public void showBoardPost(BoardPost boardPost, int commentIDToShow) {
+    public void showBoardPost(BoardPost boardPost) {
         this.boardPost = boardPost;
         connectionErrorTextView.setVisibility(View.GONE);
         adapter.setBoardPost(boardPost);
@@ -267,16 +263,14 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         return boardPostId;
     }
 
+
+
     @Override
     public void onResume() {
         super.onResume();
         boardPostController.loadBoardPost(this, boardListType, boardPostId, false);
     }
 
-    @Override
-    public void showCachedPopup() {
-
-    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -331,56 +325,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     }
 
-    private void displayScrollToHiddenCommentOption(final boolean display) {
-        boolean alreadyHidden = moveToFirstOrLastCommentLayout.getVisibility() != View.VISIBLE;
-        if (!display && alreadyHidden) {
-            return;
-        }
-        if (!animatingScrollToLastCommentView) {
-            animatingScrollToLastCommentView = true;
-            float[] offset = new float[3];
-            if (display) {
-                offset[0] = 100f;
-                offset[1] = 50f;
-                offset[2] = 0f;
-            } else {
-                offset[0] = 0f;
-                offset[1] = 50f;
-                offset[2] = 100f;
-            }
-            moveToFirstOrLastCommentLayout.setVisibility(View.VISIBLE);
-            ObjectAnimator animateScrollToLastCommentOption = ObjectAnimator
-                    .ofFloat(moveToFirstOrLastCommentLayout, "translationY",
-                            offset);
-            animateScrollToLastCommentOption.setDuration(1000);
-            animateScrollToLastCommentOption
-                    .addListener(new Animator.AnimatorListener() {
-
-                        public void onAnimationStart(Animator animation) {
-                        }
-
-                        public void onAnimationEnd(Animator animation) {
-                            if (display) {
-                                moveToFirstOrLastCommentLayout
-                                        .setVisibility(View.VISIBLE);
-                            } else {
-                                moveToFirstOrLastCommentLayout
-                                        .setVisibility(View.GONE);
-                            }
-                            animatingScrollToLastCommentView = false;
-                        }
-
-                        public void onAnimationCancel(Animator animation) {
-                        }
-
-                        public void onAnimationRepeat(Animator animation) {
-                        }
-
-                    });
-            animateScrollToLastCommentOption.start();
-        }
-    }
-
     private void updateFavouriteMenuItemStatus() {
         if (!UiUtils.isDualPaneMode(getActivity())) {
             ((BoardPostActivity) (getActivity())).refreshMenu();
@@ -417,4 +361,67 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
                 "Failed to this this. You could try again", Toast.LENGTH_SHORT)
                 .show();
     }
+
+    @Override
+    public void showGoToLatestCommentOption() {
+        if (getView() != null) {
+            View parentView = getView().findViewById(R.id.board_post_container);
+            if (parentView != null) {
+
+                Snackbar snackbar = Snackbar
+                        .make(parentView, R.string.go_to_latest_comment,
+                                Snackbar.LENGTH_LONG);
+
+                snackbar.getView().setBackgroundColor(
+                        getResources().getColor(R.color.yellow_1));
+                snackbar.setAction(R.string.go, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        scrollToLatestComment();
+                    }
+                });
+                snackbar.show();
+            }
+        }
+    }
+
+    @Override
+    public boolean lastCommentIsVisible() {
+        int lastVisiblePosition = commentsList.getLastVisiblePosition();
+        Timber.d("Last visible position "+lastVisiblePosition + " items "+adapter.getCount());
+        return lastVisiblePosition == (adapter.getCount() - 1);
+    }
+
+    @Override
+    public void setOnContentShownListener(
+            DisBoardsLoadingLayout.ContentShownListener contentShownListener) {
+        this.onContentShownListener = contentShownListener;
+    }
+
+    @Override
+    public boolean userHasInteractedWithUI() {
+        return userHasInteractedWithUI;
+    }
+
+    private void saveListViewPosition() {
+        firstVisiblePosition = commentsList.getFirstVisiblePosition();
+
+        if (firstVisiblePosition != AdapterView.INVALID_POSITION && commentsList.getChildCount() > 0) {
+            firstVisiblePosition = commentsList.getChildAt(0).getTop();
+        }
+    }
+
+    protected void moveListViewToSavedPosition() {
+        if (firstVisiblePosition != AdapterView.INVALID_POSITION
+                && commentsList.getFirstVisiblePosition() <= 0) {
+            commentsList.post(new Runnable() {
+                @Override
+                public void run() {
+                    commentsList.setSelection(firstVisiblePosition);
+                }
+            });
+        }
+    }
+
+
 }
