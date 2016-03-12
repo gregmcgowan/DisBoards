@@ -65,13 +65,17 @@ public class DisApiClient implements DisBoardsApi {
 
     private DisWebPageParser disWebPageParser;
 
+    private NetworkUtil networkUtil;
+
     @Inject
     public DisApiClient(OkHttpClient httpClient,
+            NetworkUtil networkUtil,
             DisWebPageParser disWebPageParser) {
 
         this.httpClient = httpClient;
         this.inProgressRequests = new CopyOnWriteArrayList<>();
         this.disWebPageParser = disWebPageParser;
+        this.networkUtil = networkUtil;
         this.baseUrl = UrlConstants.BASE_URL;
     }
 
@@ -320,16 +324,20 @@ public class DisApiClient implements DisBoardsApi {
         return Observable.create(new Observable.OnSubscribe<Response>() {
             @Override
             public void call(Subscriber<? super Response> subscriber) {
-                inProgressRequests.add(tag);
-                Request request = requestBuilder.url(url).build();
-                try {
-                    Response response = httpClient.newCall(request).execute();
-                    if (!subscriber.isUnsubscribed()) {
-                        subscriber.onNext(response);
-                        subscriber.onCompleted();
+                if(networkUtil.isConnected()) {
+                    inProgressRequests.add(tag);
+                    Request request = requestBuilder.url(url).build();
+                    try {
+                        Response response = httpClient.newCall(request).execute();
+                        if (!subscriber.isUnsubscribed()) {
+                            subscriber.onNext(response);
+                            subscriber.onCompleted();
+                        }
+                    } catch (IOException e) {
+                        subscriber.onError(e);
                     }
-                } catch (IOException e) {
-                    subscriber.onError(e);
+                } else {
+                    subscriber.onError(new NoInternetConnectionException());
                 }
             }
         });

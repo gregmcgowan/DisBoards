@@ -10,16 +10,16 @@ import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.data.parser.streaming.BoardPostSummaryListParser;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
 import com.drownedinsound.data.parser.streaming.DisWebPagerParserImpl;
-import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.qualifiers.ForIoScheduler;
+import com.drownedinsound.qualifiers.ForMainThreadScheduler;
+import com.drownedinsound.ui.post.AddCommentActivity;
 import com.drownedinsound.ui.post.AddCommentFragment;
 import com.drownedinsound.ui.post.BoardPostActivity;
 import com.drownedinsound.ui.post.BoardPostFragment;
-import com.drownedinsound.ui.post.AddCommentActivity;
 import com.drownedinsound.ui.postList.AddPostActivity;
+import com.drownedinsound.ui.postList.AddPostFragment;
 import com.drownedinsound.ui.postList.BoardPostListFragment;
 import com.drownedinsound.ui.postList.BoardPostListParentActivity;
-import com.drownedinsound.ui.postList.AddPostFragment;
 import com.drownedinsound.ui.start.LoginActivity;
 import com.drownedinsound.ui.start.StartActivity;
 import com.facebook.stetho.okhttp.StethoInterceptor;
@@ -27,7 +27,9 @@ import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -101,6 +103,13 @@ public class DataModule {
         return client;
     }
 
+    @Provides
+    @Singleton
+    ConnectivityManager provideConnectivityManager(Application application) {
+        return
+                (ConnectivityManager) application.getApplicationContext()
+                        .getSystemService(Context.CONNECTIVITY_SERVICE);
+    }
 
     @Provides
     @Singleton
