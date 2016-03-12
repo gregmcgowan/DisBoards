@@ -9,6 +9,8 @@ import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.LoginResponse;
+import com.drownedinsound.data.network.NetworkUtil;
+import com.drownedinsound.data.network.NoInternetConnectionException;
 import com.drownedinsound.data.network.UrlConstants;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
 import com.squareup.okhttp.HttpUrl;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import rx.Observer;
+import rx.Subscriber;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -49,6 +52,9 @@ public class DisApiTest {
     @Mock
     DisWebPageParser disWebPageParser;
 
+    @Mock
+    NetworkUtil networkUtil;
+
     private List<BoardPostSummary> testBoardPostSummaires;
 
     private BoardPostList boardPostListInfo;
@@ -64,7 +70,7 @@ public class DisApiTest {
         MockitoAnnotations.initMocks(this);
 
         OkHttpClient okHttpClient = new OkHttpClient();
-        disApiClient = new DisApiClient(okHttpClient, disWebPageParser);
+        disApiClient = new DisApiClient(okHttpClient, networkUtil, disWebPageParser);
 
         boardPostListInfo = new BoardPostList(BoardListTypes.MUSIC,
                 BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 0, 19,0);
@@ -149,6 +155,7 @@ public class DisApiTest {
     public void testSuccessfulLogin() throws Exception {
         final String token = "test";
         when(disWebPageParser.getAuthenticationToken(any(InputStream.class))).thenReturn(token);
+        when(networkUtil.isConnected()).thenReturn(true);
 
         MockWebServer mockWebServer = new MockWebServer();
         mockWebServer.start();
@@ -183,6 +190,7 @@ public class DisApiTest {
         when(disWebPageParser.parseBoardPostSummaryList(eq(BoardListTypes.MUSIC),
                 any(InputStream.class))).thenReturn(
                 testBoardPostSummaires);
+        when(networkUtil.isConnected()).thenReturn(true);
 
         MockWebServer mockWebServer = new MockWebServer();
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("gewgewgewgew"));
@@ -214,7 +222,7 @@ public class DisApiTest {
         when(disWebPageParser.parseBoardPost(eq(BoardListTypes.SOCIAL),
                 any(InputStream.class))).thenReturn(
                 expectedBoardPost);
-
+        when(networkUtil.isConnected()).thenReturn(true);
 
         final MockWebServer mockWebServer = new MockWebServer();
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("gewgewgewgew"));
@@ -263,6 +271,7 @@ public class DisApiTest {
         when(disWebPageParser.parseBoardPost(eq(BoardListTypes.SOCIAL),
                 any(InputStream.class))).thenReturn(
                 expectedBoardPost);
+        when(networkUtil.isConnected()).thenReturn(true);
 
         MockWebServer mockWebServer = new MockWebServer();
         mockWebServer.enqueue(new MockResponse().setBody("blah blah").setResponseCode(302));
@@ -305,4 +314,52 @@ public class DisApiTest {
 
         mockWebServer.shutdown();
     }
+
+    @Test
+    public void testNoConnectivity() throws Exception {
+        when(networkUtil.isConnected()).thenReturn(false);
+
+        MockWebServer mockWebServer = new MockWebServer();
+        mockWebServer.start();
+
+        HttpUrl base = mockWebServer.url("");
+
+        mockWebServer.enqueue(new MockResponse().setBody("blah blah").addHeader("Location",
+                base + UrlConstants.BOARD_BASE_PATH
+                        + UrlConstants.SOCIAL_BOARD_NAME).setResponseCode(302));
+
+        mockWebServer.enqueue(new MockResponse().setBody("blah blah"));
+
+        disApiClient.setBaseUrl(base.toString());
+
+        countDownLatch = new CountDownLatch(1);
+
+        disApiClient.loginUser("username", "password")
+                .subscribeOn(Schedulers.immediate())
+                .subscribe(new Subscriber<LoginResponse>() {
+                    @Override
+                    public void onCompleted() {
+                        countDownLatch.countDown();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if(e instanceof NoInternetConnectionException) {
+                            countDownLatch.countDown();
+                        } else {
+                            Assert.fail("Wrong exception");
+                        }
+                    }
+
+                    @Override
+                    public void onNext(LoginResponse loginResponse) {
+                        countDownLatch.countDown();
+                        Assert.fail("Call should have failed");
+                    }
+                });
+        countDownLatch.await();
+        mockWebServer.shutdown();
+    }
+
+
 }
