@@ -25,17 +25,12 @@ public class LoginController extends BaseUIController {
 
     private DisBoardRepo disBoardRepo;
 
-    private Scheduler mainThreadScheduler;
-
-    private Scheduler backgroundThreadScheduler;
-
     @Inject
     public LoginController(DisBoardRepo disBoardRepo,
             @ForMainThreadScheduler Scheduler mainThreadScheduler,
             @ForIoScheduler Scheduler backgroundThreadScheduler) {
+        super(mainThreadScheduler, backgroundThreadScheduler);
         this.disBoardRepo = disBoardRepo;
-        this.mainThreadScheduler = mainThreadScheduler;
-        this.backgroundThreadScheduler = backgroundThreadScheduler;
     }
 
 
@@ -85,8 +80,7 @@ public class LoginController extends BaseUIController {
 
         Observable<LoginResponse> loginResponseObservable = disBoardRepo
                 .loginUser(username, password)
-                .subscribeOn(backgroundThreadScheduler)
-                .observeOn(mainThreadScheduler);
+                .compose(this.<LoginResponse>defaultTransformer());
 
         Observer<LoginResponse> loginResponseObserver = new Subscriber<LoginResponse>() {
             @Override

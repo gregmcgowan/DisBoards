@@ -10,6 +10,7 @@ import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.ui.base.BaseUIController;
 import com.drownedinsound.ui.base.Display;
 import com.drownedinsound.ui.base.Ui;
+import com.drownedinsound.utils.EspressoIdlingResource;
 import com.drownedinsound.utils.StringUtils;
 
 import android.support.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.support.annotation.NonNull;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -33,17 +35,12 @@ public class BoardPostListController extends BaseUIController {
 
     private DisBoardRepo disBoardRepo;
 
-    private Scheduler mainThreadScheduler;
-
-    private Scheduler backgroundThreadScheduler;
-
     @Inject
     public BoardPostListController(DisBoardRepo disBoardRepo,
             @ForMainThreadScheduler Scheduler mainThreadScheduler,
             @ForIoScheduler Scheduler backgroundThreadScheduler) {
+        super(mainThreadScheduler, backgroundThreadScheduler);
         this.disBoardRepo = disBoardRepo;
-        this.mainThreadScheduler = mainThreadScheduler;
-        this.backgroundThreadScheduler = backgroundThreadScheduler;
     }
 
     @Override
@@ -54,8 +51,7 @@ public class BoardPostListController extends BaseUIController {
             int id = getId(boardPostListParentUi);
             Observable<List<BoardPostList>>
                     getBoardPostListInfoObservable = disBoardRepo.getAllBoardPostLists()
-                    .subscribeOn(backgroundThreadScheduler)
-                    .observeOn(mainThreadScheduler);
+                    .compose(this.<List<BoardPostList>>defaultTransformer());
 
             BaseObserver<List<BoardPostList>, BoardPostListParentUi>
                     getBoardPostListInfoObserever
@@ -138,8 +134,7 @@ public class BoardPostListController extends BaseUIController {
                     + " for board " + boardListType);
             Observable<List<BoardPostSummary>> getBoardPostListObservable = disBoardRepo
                     .getBoardPostSummaryList(boardListType, page, forceUpdate)
-                    .subscribeOn(backgroundThreadScheduler)
-                    .observeOn(mainThreadScheduler);
+                    .compose(this.<List<BoardPostSummary>>defaultTransformer());
 
             BaseObserver<List<BoardPostSummary>, BoardPostListUi> getboardPostListObserver =
                     new BaseObserver<List<BoardPostSummary>, BoardPostListUi>(uiId) {
@@ -151,6 +146,7 @@ public class BoardPostListController extends BaseUIController {
 
                         @Override
                         public void onNext(List<BoardPostSummary> boardPostList) {
+
                             if (page == 1) {
                                 getUI().setBoardPostSummaries(boardPostList);
                             } else {
@@ -182,7 +178,7 @@ public class BoardPostListController extends BaseUIController {
         boardPostSummary.setLastViewedTime(new Date().getTime());
 
         Observable<Void> observable = disBoardRepo.setBoardPostSummary(boardPostSummary)
-                .subscribeOn(backgroundThreadScheduler);
+                .subscribeOn(getBackgroundThreadScheduler());
 
         BaseObserver<Void, BoardPostListUi> updateboardPostSummary
                 = new BaseObserver<Void, BoardPostListUi>(getId(boardPostListUi)) {
@@ -224,8 +220,7 @@ public class BoardPostListController extends BaseUIController {
 
                 Observable<BoardPost> addPostObservable = disBoardRepo
                         .addNewPost(boardListType, title, content)
-                        .subscribeOn(backgroundThreadScheduler)
-                        .observeOn(mainThreadScheduler);
+                        .compose(this.<BoardPost>defaultTransformer());
 
                 BaseObserver<BoardPost, AddPostUI> addNewPostObserver
                         = new BaseObserver<BoardPost, AddPostUI>(uiID) {

@@ -10,9 +10,11 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
 import timber.log.Timber;
@@ -25,13 +27,43 @@ public abstract class BaseUIController {
     private final Set<Ui> mUis;
 
     private ConcurrentHashMap<Integer,HashMap<Object,CachedPair>> observablesCache = new ConcurrentHashMap<>();
+
     private ConcurrentHashMap<Integer,HashMap<Object,Subscription>> subscriptions = new ConcurrentHashMap<>();
 
-    public BaseUIController() {
-        mUis = new CopyOnWriteArraySet<>();
-    }
+    private Scheduler mainThreadScheduler;
+
+    private Scheduler backgroundThreadScheduler;
 
     private Display display;
+
+    private long observerableTimeoutSeconds = 10l;
+
+    public BaseUIController(Scheduler mainThreadScheduler, Scheduler backgroundThreadScheduler) {
+        mUis = new CopyOnWriteArraySet<>();
+        this.mainThreadScheduler = mainThreadScheduler;
+        this.backgroundThreadScheduler = backgroundThreadScheduler;
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> Observable.Transformer<T, T> defaultTransformer() {
+        return new Observable.Transformer<T, T>() {
+            @Override
+            public Observable<T> call(Observable<T> observable) {
+                return observable.subscribeOn(backgroundThreadScheduler)
+                        .observeOn(mainThreadScheduler)
+                        .timeout(observerableTimeoutSeconds, TimeUnit.SECONDS);
+            }
+        };
+    }
+
+    protected Scheduler getMainThreadScheduler() {
+        return mainThreadScheduler;
+    }
+
+    protected Scheduler getBackgroundThreadScheduler() {
+        return backgroundThreadScheduler;
+    }
 
     public synchronized final void uiCreated(@NonNull Ui ui) {
         mUis.add(ui);
@@ -40,6 +72,10 @@ public abstract class BaseUIController {
 
     public void onUiCreated(Ui ui) {
 
+    }
+
+    public void setObserverableTimeoutSeconds(long observerableTimeoutSeconds) {
+        this.observerableTimeoutSeconds = observerableTimeoutSeconds;
     }
 
     /**

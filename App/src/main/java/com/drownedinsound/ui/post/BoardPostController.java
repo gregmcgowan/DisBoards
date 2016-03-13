@@ -25,17 +25,12 @@ public class BoardPostController extends BaseUIController {
 
     private DisBoardRepo disBoardRepo;
 
-    private Scheduler mainThreadScheduler;
-
-    private Scheduler backgroundThreadScheduler;
-
     @Inject
     public BoardPostController(DisBoardRepo disBoardRepo,
             @ForMainThreadScheduler Scheduler mainThreadScheduler,
             @ForIoScheduler Scheduler backgroundThreadScheduler) {
+        super(mainThreadScheduler,backgroundThreadScheduler);
         this.disBoardRepo = disBoardRepo;
-        this.mainThreadScheduler = mainThreadScheduler;
-        this.backgroundThreadScheduler = backgroundThreadScheduler;
     }
 
     public void loadBoardPost(BoardPostUI boardPostUI, @BoardPostList.BoardPostListType String boardListType,
@@ -46,8 +41,7 @@ public class BoardPostController extends BaseUIController {
 
             Observable<BoardPost> getBoardPostObservable = disBoardRepo
                     .getBoardPost(boardListType,boardPostId,force)
-                    .subscribeOn(backgroundThreadScheduler)
-                    .observeOn(mainThreadScheduler);
+                    .compose(this.<BoardPost>defaultTransformer());
 
             BaseObserver<BoardPost,BoardPostUI> getBoardPostObserver = new BaseObserver<BoardPost,BoardPostUI>(uiID) {
                 @Override
@@ -108,8 +102,7 @@ public class BoardPostController extends BaseUIController {
 
             Observable<BoardPost> postCommentObservable = disBoardRepo.
                     postComment(boardListType, boardPostId, commentId, title, content)
-                    .subscribeOn(backgroundThreadScheduler)
-                    .observeOn(mainThreadScheduler);
+                    .compose(this.<BoardPost>defaultTransformer());
 
             BaseObserver<BoardPost, ReplyToCommentUi> postCommentObserver
                     = new BaseObserver<BoardPost, ReplyToCommentUi>(uiID) {
@@ -141,8 +134,7 @@ public class BoardPostController extends BaseUIController {
 
             Observable<BoardPost> thisACommentObservable = disBoardRepo
                     .thisAComment(boardListType,postID, commentID)
-                    .subscribeOn(backgroundThreadScheduler)
-                    .observeOn(mainThreadScheduler);
+                    .compose(this.<BoardPost>defaultTransformer());
 
             BaseObserver<BoardPost,BoardPostUI> thisACommentObserver
                     = new BaseObserver<BoardPost, BoardPostUI>(id) {
