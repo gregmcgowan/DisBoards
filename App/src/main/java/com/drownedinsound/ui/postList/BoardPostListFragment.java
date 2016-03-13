@@ -188,7 +188,6 @@ public class BoardPostListFragment
 
     @Override
     public void setBoardPostSummaries(List<BoardPostSummary> boardPosts) {
-        requestToHideLoadingView();
         currentlySelectedPost = -1;
         adapter.setBoardPosts(boardPosts);
 
@@ -216,7 +215,6 @@ public class BoardPostListFragment
     @Override
     public void showErrorView() {
         Timber.d("Show Error View");
-        requestToHideLoadingView();
         //connectionErrorTextView.setVisibility(View.VISIBLE);
     }
 
