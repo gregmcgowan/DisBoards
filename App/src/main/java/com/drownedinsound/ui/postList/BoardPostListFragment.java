@@ -6,6 +6,7 @@ import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
+import com.drownedinsound.utils.EspressoIdlingResource;
 import com.drownedinsound.utils.UiUtils;
 
 import android.graphics.drawable.Drawable;
@@ -17,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -82,6 +84,8 @@ public class BoardPostListFragment
 
     private int pageIndex;
 
+    private int firstVisiblePosition;
+
     public BoardPostListFragment() {
     }
 
@@ -104,6 +108,11 @@ public class BoardPostListFragment
         pageIndex = getArguments().getInt("pageIndex");
     }
 
+    @Override
+    public void onPause() {
+        saveListViewPosition();
+        super.onPause();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -192,6 +201,7 @@ public class BoardPostListFragment
         adapter.setBoardPosts(boardPosts);
 
         swipeRefreshLayout.setRefreshing(false);
+        moveListViewToSavedPosition();
     }
 
     @Override
@@ -231,6 +241,7 @@ public class BoardPostListFragment
     @Override
     public void showLoadingView(IBinder hideSoftKeyboardToken) {
         loadingLayout.showAnimatedViewAndHideContent();
+
     }
 
     @Override
@@ -246,6 +257,30 @@ public class BoardPostListFragment
     @Override
     public @BoardPostList.BoardPostListType String getBoardListType() {
         return boardListType;
+    }
+
+    private void saveListViewPosition() {
+        firstVisiblePosition = getLinearLayoutManager().findFirstVisibleItemPosition();
+
+        if (firstVisiblePosition != AdapterView.INVALID_POSITION && listView.getChildCount() > 0) {
+            firstVisiblePosition = listView.getChildAt(0).getTop();
+        }
+    }
+
+    LinearLayoutManager getLinearLayoutManager() {
+        return ((LinearLayoutManager) listView.getLayoutManager());
+    }
+
+    protected void moveListViewToSavedPosition() {
+        if (firstVisiblePosition != AdapterView.INVALID_POSITION
+                && ((getLinearLayoutManager().findFirstVisibleItemPosition() <= 0))) {
+            listView.post(new Runnable() {
+                @Override
+                public void run() {
+                    getLinearLayoutManager().scrollToPosition(firstVisiblePosition);
+                }
+            });
+        }
     }
 
 
