@@ -9,9 +9,12 @@ import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.network.UrlConstants;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
+import com.drownedinsound.ui.controls.ActiveTextView;
 import com.drownedinsound.ui.controls.AutoScrollListView;
 import com.drownedinsound.utils.UiUtils;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
@@ -127,6 +130,12 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
             @Override
             public void doReplyToCommentAction(BoardPostComment boardPostComment) {
                 displayReplyDialog(boardPostComment);
+            }
+        });
+        adapter.setOnLinkClickedListener(new ActiveTextView.OnLinkClickedListener() {
+            @Override
+            public void onClick(String url) {
+                handleLinkClicked(url);
             }
         });
         commentsList.setAdapter(adapter);
@@ -336,6 +345,10 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         if (!TextUtils.isEmpty(url)) {
             if (url.startsWith(UrlConstants.BOARD_BASE_URL)) {
                 handleBoardPostClicked(url);
+            } else {
+                Intent openBrowser = new Intent(Intent.ACTION_VIEW);
+                openBrowser.setData(Uri.parse(url));
+                startActivity(openBrowser);
             }
         }
     }

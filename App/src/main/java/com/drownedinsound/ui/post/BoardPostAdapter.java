@@ -8,7 +8,9 @@ import com.drownedinsound.utils.StringUtils;
 import com.drownedinsound.utils.UiUtils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.TransitionDrawable;
+import android.net.Uri;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -40,6 +42,8 @@ public class BoardPostAdapter extends BaseAdapter {
     private ThisACommentActionListener thisACommentActionListener;
 
     private ReplyToCommentActionListener replyToCommentActionListener;
+
+    private ActiveTextView.OnLinkClickedListener onLinkClickedListener;
 
     public BoardPostAdapter(Context context) {
         this.context = context;
@@ -91,6 +95,11 @@ public class BoardPostAdapter extends BaseAdapter {
     public void setReplyToCommentActionListener(
             ReplyToCommentActionListener replyToCommentActionListener) {
         this.replyToCommentActionListener = replyToCommentActionListener;
+    }
+
+    public void setOnLinkClickedListener(
+            ActiveTextView.OnLinkClickedListener onLinkClickedListener) {
+        this.onLinkClickedListener = onLinkClickedListener;
     }
 
     @Override
@@ -248,12 +257,7 @@ public class BoardPostAdapter extends BaseAdapter {
                     comment.setDoHighlightedAnimation(false);
                 }
                 boardPostCommentHolder.commentContentTextView
-                        .setLinkClickedListener(new ActiveTextView.OnLinkClickedListener() {
-                            @Override
-                            public void onClick(String url) {
-                                // handleLinkClicked(url);
-                            }
-                        });
+                        .setLinkClickedListener(onLinkClickedListener);
             } else {
                 dateAndTime = boardPost.getDateOfPost();
                 String numberOfReplies = boardPost.getNumberOfReplies()
@@ -267,12 +271,7 @@ public class BoardPostAdapter extends BaseAdapter {
                 boardPostInitialHolder.noOfCommentsTextView
                         .setText(numberOfReplies);
                 boardPostInitialHolder.commentContentTextView
-                        .setLinkClickedListener(new ActiveTextView.OnLinkClickedListener() {
-                            @Override
-                            public void onClick(String url) {
-                                // handleLinkClicked(url);
-                            }
-                        });
+                        .setLinkClickedListener(onLinkClickedListener);
             }
 
 
@@ -305,16 +304,9 @@ public class BoardPostAdapter extends BaseAdapter {
                 .findViewById(R.id.board_post_comment_this);
         boardPostCommentHolder.commentSection = (LinearLayout) rowView
                 .findViewById(R.id.board_post_comment_content_section);
-        LinearLayout commentLayout = (LinearLayout) rowView
-                .findViewById(R.id.board_post_comment_comment_section);
         rowView.setTag(boardPostCommentHolder);
         rowView.setOnClickListener(null);
-//        rowView.setOnClickListener(new CommentSectionClickListener(
-//                listPosition, new AllCommentClickListener(
-//                new WeakReference<>(
-//                        boardPostCommentHolder.actionRelativeLayout),
-//                new WeakReference<View>(commentLayout),
-//                new WeakReference<>(this))));
+
         return boardPostCommentHolder;
     }
 
