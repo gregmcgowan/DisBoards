@@ -332,5 +332,23 @@ public class BoardPostListPostListControllerTest {
         verify(disBoardRepo).setBoardPostSummary(boardPostSummary);
     }
 
+    @Test
+    public void testScrollCurrentListToPosition() {
+        boardPostListController.attachUi(boardPostListUi);
+        boardPostListController.attachUi(boardPostListParentUi);
+
+        when(boardPostListUi.getID()).thenReturn(1);
+        when(boardPostListParentUi.getID()).thenReturn(2);
+
+
+        when(boardPostListParentUi.getCurrentPageShow()).thenReturn(1);
+        when(boardPostListUi.getPageIndex()).thenReturn(1);
+        when(boardPostListUi.getBoardListType()).thenReturn(BoardListTypes.MUSIC);
+
+        boardPostListController.moveToTopOfCurrentList();
+
+        verify(boardPostListUi).scrollToPostAt(0);
+    }
+
 
 }

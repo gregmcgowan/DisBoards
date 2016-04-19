@@ -283,6 +283,8 @@ public class BoardPostListFragment
         }
     }
 
-
-
+    @Override
+    public void scrollToPostAt(int position) {
+        getLinearLayoutManager().smoothScrollToPosition(listView,null,position);
+    }
 }

@@ -252,4 +252,15 @@ public class BoardPostListController extends BaseUIController {
             getDisplay().showErrorMessageDialog(R.string.please_enter_both_some_content_and_subject);
         }
     }
+
+    public void moveToTopOfCurrentList() {
+        BoardPostListParentUi boardPostListParentUi = findUi(BoardPostListParentUi.class);
+        if (boardPostListParentUi != null) {
+            int currentPage = boardPostListParentUi.getCurrentPageShow();
+            BoardPostListUi boardPostListUi = findListAt(currentPage);
+            if (boardPostListUi != null) {
+                boardPostListUi.scrollToPostAt(0);
+            }
+        }
+    }
 }

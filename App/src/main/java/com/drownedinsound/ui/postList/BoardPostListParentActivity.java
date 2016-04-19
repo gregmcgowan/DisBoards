@@ -96,7 +96,7 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
+                boardPostListController.moveToTopOfCurrentList();
             }
         });
         viewPager.addOnPageChangeListener(new OnPageChangeListener() {
