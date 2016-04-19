@@ -6,7 +6,6 @@ import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
-import com.drownedinsound.utils.EspressoIdlingResource;
 import com.drownedinsound.utils.UiUtils;
 
 import android.graphics.drawable.Drawable;
@@ -29,7 +28,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import timber.log.Timber;
 
-;
+
 
 /**
  * A fragment that will represent a different section of the community board
@@ -224,8 +223,9 @@ public class BoardPostListFragment
 
     @Override
     public void showErrorView() {
-        Timber.d("Show Error View");
-        //connectionErrorTextView.setVisibility(View.VISIBLE);
+        connectionErrorTextView.setVisibility(View.VISIBLE);
+        listView.setVisibility(View.GONE);
+        loadingLayout.setVisibility(View.GONE);
     }
 
     @Override

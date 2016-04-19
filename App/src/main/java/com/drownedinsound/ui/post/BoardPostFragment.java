@@ -258,6 +258,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
             @Override
             public void onContentShown() {
                 loadingLayout.setContentShownListener(null);
+                commentsList.setVisibility(View.GONE);
                 connectionErrorTextView.setVisibility(View.VISIBLE);
             }
         });
