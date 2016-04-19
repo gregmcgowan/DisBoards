@@ -10,7 +10,6 @@ import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.ui.base.BaseUIController;
 import com.drownedinsound.ui.base.Display;
 import com.drownedinsound.ui.base.Ui;
-import com.drownedinsound.utils.EspressoIdlingResource;
 import com.drownedinsound.utils.StringUtils;
 
 import android.support.annotation.NonNull;
@@ -18,7 +17,6 @@ import android.support.annotation.NonNull;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
