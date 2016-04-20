@@ -24,6 +24,8 @@ import timber.log.Timber;
  */
 public abstract class BaseUIController {
 
+    private static final boolean DEBUG = false;
+
     private final Set<Ui> mUis;
 
     private ConcurrentHashMap<Integer,HashMap<Object,CachedPair>> observablesCache = new ConcurrentHashMap<>();
@@ -187,7 +189,8 @@ public abstract class BaseUIController {
         HashMap<Object,Subscription> subscriptionHashMap = getSubscriptions(ui);
         boolean hasSubscription =  subscriptionHashMap.containsKey(tag);
 
-        Timber.d(tag + " for " + ui + (hasSubscription ? " has " : " does not have ")
+        Timber.d(tag + " for " + ui.getClass().getName()
+                + (hasSubscription ? " has " : " does not have ")
                 + "a subscription");
 
         return hasSubscription;
@@ -351,7 +354,10 @@ public abstract class BaseUIController {
                 e.printStackTrace();
             }
 
-            Timber.d("OnError "+e + " for "+ ui);
+            if(DEBUG) {
+                Timber.d("OnError "+e + " for "+ ui);
+            }
+
             removeCached(ui,tag);
             removeSubscription(ui,tag);
 
@@ -364,7 +370,9 @@ public abstract class BaseUIController {
         public void onNext(T t) {
             Ui ui = findUi(uiID);
 
-            Timber.d("OnNext "+t + " for "+ ui);
+            if(DEBUG) {
+                Timber.d("OnNext "+t + " for "+ ui);
+            }
 
             removeCached(ui,tag);
             removeSubscription(ui,tag);
