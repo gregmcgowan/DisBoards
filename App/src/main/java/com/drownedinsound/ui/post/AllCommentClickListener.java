@@ -16,17 +16,13 @@ public class AllCommentClickListener  implements View.OnClickListener{
 
     private RelativeLayout actionLayout;
 
-    private View parentLayout;
-
     private BoardPostComment boardPostComment;
 
 
     public AllCommentClickListener(
             RelativeLayout actionLayout,
-            View parentLayout,
             BoardPostComment boardPostComment) {
         this.actionLayout = actionLayout;
-        this.parentLayout = parentLayout;
         this.boardPostComment = boardPostComment;
     }
 
@@ -38,8 +34,7 @@ public class AllCommentClickListener  implements View.OnClickListener{
                 : new float[]{1, 0.5f, 0};
 
         actionLayout.setVisibility(View.VISIBLE);
-        // parentLayoutWeakReference.get().bringToFront();
-        //parentLayoutWeakReference.get().requestLayout();
+
         ObjectAnimator removeObjectAnimator = ObjectAnimator.ofFloat(
                 actionLayout, "scaleY", offset);
         removeObjectAnimator.setDuration(500);
@@ -69,10 +64,4 @@ public class AllCommentClickListener  implements View.OnClickListener{
         removeObjectAnimator.start();
     }
 
-
-    private void animateActionLayout(final RelativeLayout actionLayout, final boolean setVisible) {
-
-
-
-    }
 }

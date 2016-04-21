@@ -2,6 +2,7 @@ package com.drownedinsound.ui.post;
 
 import com.drownedinsound.ui.controls.ActiveTextView;
 
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -9,7 +10,11 @@ import android.widget.TextView;
 /**
  * Created by gregmcgowan on 13/08/15.
  */
-class BoardPostCommentHolder {
+class BoardPostCommentHolder extends BaseBoardPostHolder{
+
+    public BoardPostCommentHolder(View itemView) {
+        super(itemView);
+    }
 
     public TextView commentTitleTextView;
 

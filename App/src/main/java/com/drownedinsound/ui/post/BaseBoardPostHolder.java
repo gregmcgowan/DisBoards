@@ -1,21 +1,16 @@
 package com.drownedinsound.ui.post;
 
-import com.drownedinsound.ui.controls.ActiveTextView;
-
-import android.widget.TextView;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 /**
  * Created by gregmcgowan on 18/08/15.
  */
-public class BaseBoardPostHolder {
+public class BaseBoardPostHolder extends RecyclerView.ViewHolder {
 
-    public TextView commentTitleTextView;
+    public BaseBoardPostHolder(View itemView) {
+        super(itemView);
+    }
 
-    public ActiveTextView commentContentTextView;
 
-    public TextView commentAuthorTextView;
-
-    public TextView commentDateTimeTextView;
-
-    public TextView noOfCommentsTextView;
 }

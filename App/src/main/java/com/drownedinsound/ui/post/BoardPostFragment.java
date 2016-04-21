@@ -19,6 +19,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +29,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -75,7 +78,10 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     protected
     @InjectView(R.id.board_post_comment_list)
-    AutoScrollListView commentsList;
+    RecyclerView commentsList;
+
+    protected
+    LinearLayoutManager commentsListLinearLayoutManager;
 
     protected
     @InjectView(R.id.floating_reply_button)
@@ -84,6 +90,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     protected
     @Inject
     BoardPostController boardPostController;
+
 
     private DisBoardsLoadingLayout.ContentShownListener onContentShownListener;
 
@@ -138,6 +145,10 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
                 handleLinkClicked(url);
             }
         });
+
+        commentsListLinearLayoutManager = new LinearLayoutManager(commentsList.getContext());
+        commentsList.setLayoutManager(commentsListLinearLayoutManager);
+
         commentsList.setAdapter(adapter);
         commentsList.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -326,10 +337,10 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     public void scrollToLatestComment() {
         String latestCommentId = boardPost.getLatestCommentID();
         if (!TextUtils.isEmpty(latestCommentId)) {
-            int index = adapter.getIndexOfCommentId(latestCommentId);
-            if (index > 0) {
-                adapter.getItem(index).setDoHighlightedAnimation(true);
-                commentsList.requestPositionToScreen(index, true);
+            int position = adapter.getIndexOfCommentId(latestCommentId);
+            if (position > 0) {
+                adapter.getItem(position).setDoHighlightedAnimation(true);
+                commentsListLinearLayoutManager.scrollToPosition(position);
             }
         }
 
@@ -401,9 +412,9 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     @Override
     public boolean lastCommentIsVisible() {
-        int lastVisiblePosition = commentsList.getLastVisiblePosition();
-        Timber.d("Last visible position "+lastVisiblePosition + " items "+adapter.getCount());
-        return lastVisiblePosition == (adapter.getCount() - 1);
+        int lastVisiblePosition = commentsListLinearLayoutManager.findLastVisibleItemPosition();
+        Timber.d("Last visible position "+lastVisiblePosition + " items "+adapter.getItemCount());
+        return lastVisiblePosition == (adapter.getItemCount() - 1);
     }
 
     @Override
@@ -418,7 +429,7 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
     }
 
     private void saveListViewPosition() {
-        firstVisiblePosition = commentsList.getFirstVisiblePosition();
+        firstVisiblePosition = commentsListLinearLayoutManager.findFirstVisibleItemPosition();
 
         if (firstVisiblePosition != AdapterView.INVALID_POSITION && commentsList.getChildCount() > 0) {
             firstVisiblePosition = commentsList.getChildAt(0).getTop();
@@ -427,11 +438,11 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     protected void moveListViewToSavedPosition() {
         if (firstVisiblePosition != AdapterView.INVALID_POSITION
-                && commentsList.getFirstVisiblePosition() <= 0) {
+                && commentsListLinearLayoutManager.findFirstVisibleItemPosition() <= 0) {
             commentsList.post(new Runnable() {
                 @Override
                 public void run() {
-                    commentsList.setSelection(firstVisiblePosition);
+                    commentsListLinearLayoutManager.scrollToPosition(firstVisiblePosition);
                 }
             });
         }

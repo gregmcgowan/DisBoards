@@ -117,12 +117,14 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
             long lastUpdatedTime = boardPostSummary.getLastUpdatedTime();
             boolean markAsRead = lastViewedTime > 0
                     && lastViewedTime >= lastUpdatedTime;
+
             holder.boardPost = boardPostSummary;
             holder.titleTextView.setText(Html.fromHtml(title));
             holder.authorTextView.setText(authorusername);
             holder.numberOfRepliesTextView.setText(numberOfRepliesText);
             holder.lastUpdatedTextView.setText(lastUpdatedText);
             holder.stickyTextView.setVisibility(stickyVisible);
+
             if (markAsRead) {
                 UiUtils.setBackgroundDrawable(holder.postReadMarkerView, readDrawable);
             } else {
