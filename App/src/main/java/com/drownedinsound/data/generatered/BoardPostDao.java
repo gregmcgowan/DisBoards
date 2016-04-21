@@ -35,7 +35,7 @@ public class BoardPostDao extends AbstractDao<BoardPost, String> {
         public final static Property LastUpdatedTime = new Property(9, long.class, "lastUpdatedTime", false, "LAST_UPDATED_TIME");
         public final static Property LastFetchedTime = new Property(10, long.class, "lastFetchedTime", false, "LAST_FETCHED_TIME");
         public final static Property LatestCommentID = new Property(11, String.class, "latestCommentID", false, "LATEST_COMMENT_ID");
-        public final static Property NumberOfTimesRead = new Property(12, Integer.class, "numberOfTimesRead", false, "NUMBER_OF_TIMES_READ");
+        public final static Property NumberOfTimesOpened = new Property(12, Integer.class, "numberOfTimesOpened", false, "NUMBER_OF_TIMES_OPENED");
         public final static Property IsFavourite = new Property(13, boolean.class, "isFavourite", false, "IS_FAVOURITE");
         public final static Property IsSticky = new Property(14, boolean.class, "isSticky", false, "IS_STICKY");
         public final static Property BoardListTypeID = new Property(15, String.class, "boardListTypeID", false, "BOARD_LIST_TYPE_ID");
@@ -66,7 +66,7 @@ public class BoardPostDao extends AbstractDao<BoardPost, String> {
                 "\"LAST_UPDATED_TIME\" INTEGER NOT NULL ," + // 9: lastUpdatedTime
                 "\"LAST_FETCHED_TIME\" INTEGER NOT NULL ," + // 10: lastFetchedTime
                 "\"LATEST_COMMENT_ID\" TEXT," + // 11: latestCommentID
-                "\"NUMBER_OF_TIMES_READ\" INTEGER," + // 12: numberOfTimesRead
+                "\"NUMBER_OF_TIMES_OPENED\" INTEGER," + // 12: numberOfTimesOpened
                 "\"IS_FAVOURITE\" INTEGER NOT NULL ," + // 13: isFavourite
                 "\"IS_STICKY\" INTEGER NOT NULL ," + // 14: isSticky
                 "\"BOARD_LIST_TYPE_ID\" TEXT NOT NULL );"); // 15: boardListTypeID
@@ -127,9 +127,9 @@ public class BoardPostDao extends AbstractDao<BoardPost, String> {
             stmt.bindString(12, latestCommentID);
         }
  
-        Integer numberOfTimesRead = entity.getNumberOfTimesRead();
-        if (numberOfTimesRead != null) {
-            stmt.bindLong(13, numberOfTimesRead);
+        Integer numberOfTimesOpened = entity.getNumberOfTimesOpened();
+        if (numberOfTimesOpened != null) {
+            stmt.bindLong(13, numberOfTimesOpened);
         }
         stmt.bindLong(14, entity.getIsFavourite() ? 1L: 0L);
         stmt.bindLong(15, entity.getIsSticky() ? 1L: 0L);
@@ -158,7 +158,7 @@ public class BoardPostDao extends AbstractDao<BoardPost, String> {
             cursor.getLong(offset + 9), // lastUpdatedTime
             cursor.getLong(offset + 10), // lastFetchedTime
             cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // latestCommentID
-            cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12), // numberOfTimesRead
+            cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12), // numberOfTimesOpened
             cursor.getShort(offset + 13) != 0, // isFavourite
             cursor.getShort(offset + 14) != 0, // isSticky
             cursor.getString(offset + 15) // boardListTypeID
@@ -181,7 +181,7 @@ public class BoardPostDao extends AbstractDao<BoardPost, String> {
         entity.setLastUpdatedTime(cursor.getLong(offset + 9));
         entity.setLastFetchedTime(cursor.getLong(offset + 10));
         entity.setLatestCommentID(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
-        entity.setNumberOfTimesRead(cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12));
+        entity.setNumberOfTimesOpened(cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12));
         entity.setIsFavourite(cursor.getShort(offset + 13) != 0);
         entity.setIsSticky(cursor.getShort(offset + 14) != 0);
         entity.setBoardListTypeID(cursor.getString(offset + 15));

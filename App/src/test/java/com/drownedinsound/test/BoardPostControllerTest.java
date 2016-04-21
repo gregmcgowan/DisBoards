@@ -3,7 +3,9 @@ package com.drownedinsound.test;
 import com.drownedinsound.R;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
+import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 import com.drownedinsound.ui.base.Display;
 import com.drownedinsound.ui.post.BoardPostController;
 import com.drownedinsound.ui.post.BoardPostUI;
@@ -11,6 +13,7 @@ import com.drownedinsound.ui.post.ReplyToCommentUi;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -18,8 +21,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
 
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -62,8 +64,13 @@ public class BoardPostControllerTest {
 
     @Test
     public void testGetPostSuccessfully() {
+        BoardPostSummary boardPostSummary = new BoardPostSummary();
+        boardPostSummary.setBoardPostID("12345");
+
         when(disBoardRepo.getBoardPost(BoardListTypes.SOCIAL, "12345",true)).thenReturn(
                 Observable.just(expectedBoardPost));
+        when(disBoardRepo.getBoardPostSummary(BoardListTypes.SOCIAL,"12345"))
+                .thenReturn(Observable.just(boardPostSummary));
 
         boardPostController.attachUi(boardPostUI);
 
@@ -75,6 +82,65 @@ public class BoardPostControllerTest {
 
         boardPostController.detachUi(boardPostUI);
     }
+
+    @Test
+    public void testBoardPostGoToLastCommentOptionShown() {
+        BoardPostSummary boardPostSummary = new BoardPostSummary();
+        boardPostSummary.setBoardPostID("12345");
+        boardPostSummary.setNumberOfTimesOpened(2);
+
+        expectedBoardPost.setNumberOfReplies(2);
+
+        when(disBoardRepo.getBoardPost(BoardListTypes.SOCIAL, "12345", true)).thenReturn(
+                Observable.just(expectedBoardPost));
+        when(disBoardRepo.getBoardPostSummary(BoardListTypes.SOCIAL, "12345"))
+                .thenReturn(Observable.just(boardPostSummary));
+        when(boardPostUI.userHasInteractedWithUI()).thenReturn(false);
+
+        boardPostController.attachUi(boardPostUI);
+
+        boardPostController.loadBoardPost(boardPostUI, BoardListTypes.SOCIAL, "12345", true);
+
+        verify(boardPostUI).showLoadingProgress(true);
+        verify(boardPostUI).showBoardPost(expectedBoardPost);
+
+        ArgumentCaptor<DisBoardsLoadingLayout.ContentShownListener>
+                captor = ArgumentCaptor.forClass(DisBoardsLoadingLayout.ContentShownListener.class);
+        verify(boardPostUI).setOnContentShownListener(captor.capture());
+        verify(boardPostUI).showLoadingProgress(false);
+
+        boardPostController.detachUi(boardPostUI);
+    }
+
+    @Test
+    public void testBoardPostGoToLastCommentOptionNotShown() {
+        BoardPostSummary boardPostSummary = new BoardPostSummary();
+        boardPostSummary.setBoardPostID("12345");
+        boardPostSummary.setNumberOfTimesOpened(1);
+
+        expectedBoardPost.setNumberOfReplies(2);
+
+        when(disBoardRepo.getBoardPost(BoardListTypes.SOCIAL, "12345", true)).thenReturn(
+                Observable.just(expectedBoardPost));
+        when(disBoardRepo.getBoardPostSummary(BoardListTypes.SOCIAL, "12345"))
+                .thenReturn(Observable.just(boardPostSummary));
+        when(boardPostUI.userHasInteractedWithUI()).thenReturn(false);
+
+        boardPostController.attachUi(boardPostUI);
+
+        boardPostController.loadBoardPost(boardPostUI, BoardListTypes.SOCIAL, "12345", true);
+
+        verify(boardPostUI).showLoadingProgress(true);
+        verify(boardPostUI).showBoardPost(expectedBoardPost);
+
+        ArgumentCaptor<DisBoardsLoadingLayout.ContentShownListener>
+                captor = ArgumentCaptor.forClass(DisBoardsLoadingLayout.ContentShownListener.class);
+        verify(boardPostUI, never()).setOnContentShownListener(captor.capture());
+        verify(boardPostUI).showLoadingProgress(false);
+
+        boardPostController.detachUi(boardPostUI);
+    }
+
 
     @Test
     public void testGetBoardPostError() {

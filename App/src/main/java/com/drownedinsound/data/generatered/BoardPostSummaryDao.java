@@ -30,7 +30,8 @@ public class BoardPostSummaryDao extends AbstractDao<BoardPostSummary, String> {
         public final static Property IsSticky = new Property(4, boolean.class, "isSticky", false, "IS_STICKY");
         public final static Property LastUpdatedTime = new Property(5, long.class, "lastUpdatedTime", false, "LAST_UPDATED_TIME");
         public final static Property LastViewedTime = new Property(6, long.class, "lastViewedTime", false, "LAST_VIEWED_TIME");
-        public final static Property BoardListTypeID = new Property(7, String.class, "boardListTypeID", false, "BOARD_LIST_TYPE_ID");
+        public final static Property NumberOfTimesOpened = new Property(7, int.class, "numberOfTimesOpened", false, "NUMBER_OF_TIMES_OPENED");
+        public final static Property BoardListTypeID = new Property(8, String.class, "boardListTypeID", false, "BOARD_LIST_TYPE_ID");
     };
 
 
@@ -53,7 +54,8 @@ public class BoardPostSummaryDao extends AbstractDao<BoardPostSummary, String> {
                 "\"IS_STICKY\" INTEGER NOT NULL ," + // 4: isSticky
                 "\"LAST_UPDATED_TIME\" INTEGER NOT NULL ," + // 5: lastUpdatedTime
                 "\"LAST_VIEWED_TIME\" INTEGER NOT NULL ," + // 6: lastViewedTime
-                "\"BOARD_LIST_TYPE_ID\" TEXT NOT NULL );"); // 7: boardListTypeID
+                "\"NUMBER_OF_TIMES_OPENED\" INTEGER NOT NULL ," + // 7: numberOfTimesOpened
+                "\"BOARD_LIST_TYPE_ID\" TEXT NOT NULL );"); // 8: boardListTypeID
     }
 
     /** Drops the underlying database table. */
@@ -89,7 +91,8 @@ public class BoardPostSummaryDao extends AbstractDao<BoardPostSummary, String> {
         stmt.bindLong(5, entity.getIsSticky() ? 1L: 0L);
         stmt.bindLong(6, entity.getLastUpdatedTime());
         stmt.bindLong(7, entity.getLastViewedTime());
-        stmt.bindString(8, entity.getBoardListTypeID());
+        stmt.bindLong(8, entity.getNumberOfTimesOpened());
+        stmt.bindString(9, entity.getBoardListTypeID());
     }
 
     /** @inheritdoc */
@@ -109,7 +112,8 @@ public class BoardPostSummaryDao extends AbstractDao<BoardPostSummary, String> {
             cursor.getShort(offset + 4) != 0, // isSticky
             cursor.getLong(offset + 5), // lastUpdatedTime
             cursor.getLong(offset + 6), // lastViewedTime
-            cursor.getString(offset + 7) // boardListTypeID
+            cursor.getInt(offset + 7), // numberOfTimesOpened
+            cursor.getString(offset + 8) // boardListTypeID
         );
         return entity;
     }
@@ -124,7 +128,8 @@ public class BoardPostSummaryDao extends AbstractDao<BoardPostSummary, String> {
         entity.setIsSticky(cursor.getShort(offset + 4) != 0);
         entity.setLastUpdatedTime(cursor.getLong(offset + 5));
         entity.setLastViewedTime(cursor.getLong(offset + 6));
-        entity.setBoardListTypeID(cursor.getString(offset + 7));
+        entity.setNumberOfTimesOpened(cursor.getInt(offset + 7));
+        entity.setBoardListTypeID(cursor.getString(offset + 8));
      }
     
     /** @inheritdoc */

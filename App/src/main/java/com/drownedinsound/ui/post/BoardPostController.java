@@ -4,6 +4,7 @@ import com.drownedinsound.R;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.ui.base.BaseUIController;
@@ -15,6 +16,7 @@ import javax.inject.Singleton;
 
 import rx.Observable;
 import rx.Scheduler;
+import rx.functions.Func2;
 import timber.log.Timber;
 
 /**
@@ -34,14 +36,26 @@ public class BoardPostController extends BaseUIController {
     }
 
     public void loadBoardPost(BoardPostUI boardPostUI, @BoardPostList.BoardPostListType String boardListType,
-            String boardPostId, boolean force) {
+            final String boardPostId, boolean force) {
         int uiID = getId(boardPostUI);
         if(!hasSubscription(boardPostUI,boardPostId)) {
             boardPostUI.showLoadingProgress(true);
 
-            Observable<BoardPost> getBoardPostObservable = disBoardRepo
-                    .getBoardPost(boardListType,boardPostId,force)
-                    .compose(this.<BoardPost>defaultTransformer());
+            Observable<BoardPost> getBoardPostObservable =
+                    Observable.zip(disBoardRepo.getBoardPost(boardListType, boardPostId, force),
+                disBoardRepo.getBoardPostSummary(boardListType, boardPostId),
+                    new Func2<BoardPost, BoardPostSummary, BoardPost>() {
+                        @Override
+                        public BoardPost call(BoardPost boardPost,
+                                BoardPostSummary boardPostSummary) {
+                            if (boardPostSummary != null) {
+                                boardPost.setNumberOfTimesOpened(
+                                        boardPostSummary.getNumberOfTimesOpened());
+                            }
+
+                            return boardPost;
+                        }
+                    }).compose(this.<BoardPost>defaultTransformer());
 
             BaseObserver<BoardPost,BoardPostUI> getBoardPostObserver = new BaseObserver<BoardPost,BoardPostUI>(uiID) {
                 @Override
@@ -55,8 +69,8 @@ public class BoardPostController extends BaseUIController {
                     final BoardPostUI postUI = getUI();
                     postUI.showBoardPost(boardPost);
 
-                    Timber.d("Number of times read "+boardPost.getNumberOfTimesRead());
-                    if (boardPost.getNumberOfTimesRead() > 1
+                    Timber.d("Number of times opened "+boardPost.getNumberOfTimesOpened());
+                    if (boardPost.getNumberOfTimesOpened() > 1
                             && boardPost.getNumberOfReplies() > 0
                             && !postUI.userHasInteractedWithUI()) {
                         postUI.setOnContentShownListener(

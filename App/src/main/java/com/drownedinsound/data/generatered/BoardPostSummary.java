@@ -7,9 +7,7 @@ package com.drownedinsound.data.generatered;
 import android.text.format.DateUtils;
 
 import java.util.Comparator;
-
 // KEEP INCLUDES END
-
 /**
  * Entity mapped to table "BOARD_POST_SUMMARY".
  */
@@ -22,13 +20,13 @@ public class BoardPostSummary {
     private boolean isSticky;
     private long lastUpdatedTime;
     private long lastViewedTime;
+    private int numberOfTimesOpened;
     /** Not-null value. */
     private String boardListTypeID;
 
     // KEEP FIELDS - put your custom fields here
 
     public static final BoardPostSummaryComparator COMPARATOR = new BoardPostSummaryComparator();
-
     // KEEP FIELDS END
 
     public BoardPostSummary() {
@@ -38,7 +36,7 @@ public class BoardPostSummary {
         this.boardPostID = boardPostID;
     }
 
-    public BoardPostSummary(String boardPostID, String title, String authorUsername, Integer numberOfReplies, boolean isSticky, long lastUpdatedTime, long lastViewedTime, String boardListTypeID) {
+    public BoardPostSummary(String boardPostID, String title, String authorUsername, Integer numberOfReplies, boolean isSticky, long lastUpdatedTime, long lastViewedTime, int numberOfTimesOpened, String boardListTypeID) {
         this.boardPostID = boardPostID;
         this.title = title;
         this.authorUsername = authorUsername;
@@ -46,6 +44,7 @@ public class BoardPostSummary {
         this.isSticky = isSticky;
         this.lastUpdatedTime = lastUpdatedTime;
         this.lastViewedTime = lastViewedTime;
+        this.numberOfTimesOpened = numberOfTimesOpened;
         this.boardListTypeID = boardListTypeID;
     }
 
@@ -103,6 +102,14 @@ public class BoardPostSummary {
 
     public void setLastViewedTime(long lastViewedTime) {
         this.lastViewedTime = lastViewedTime;
+    }
+
+    public int getNumberOfTimesOpened() {
+        return numberOfTimesOpened;
+    }
+
+    public void setNumberOfTimesOpened(int numberOfTimesOpened) {
+        this.numberOfTimesOpened = numberOfTimesOpened;
     }
 
     /** Not-null value. */

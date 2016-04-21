@@ -23,10 +23,13 @@ import timber.log.Timber;
 public class DisBoardRepoImpl implements DisBoardRepo {
 
     private static final long MAX_BOARD_POST_LIST_AGE_MINUTES = 15;
+
     private static final long MAX_BOARD_POST_AGE_MINUTES = 15;
 
     private DisBoardsApi disApi;
+
     private DisBoardsLocalRepo disBoardsLocalRepo;
+
     private UserSessionRepo userSessionRepo;
 
     public DisBoardRepoImpl(DisBoardsApi disApi,
@@ -50,7 +53,8 @@ public class DisBoardRepoImpl implements DisBoardRepo {
     }
 
     @Override
-    public Observable<List<BoardPostSummary>> getBoardPostSummaryList(final @BoardPostList.BoardPostListType String boardListType,
+    public Observable<List<BoardPostSummary>> getBoardPostSummaryList(
+            final @BoardPostList.BoardPostListType String boardListType,
             final int pageNumber, final boolean forceUpdate) {
 
         return disBoardsLocalRepo.getBoardPostList(boardListType).flatMap(
@@ -108,72 +112,64 @@ public class DisBoardRepoImpl implements DisBoardRepo {
     }
 
     @Override
-    public Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType final String boardListType,
-            final String boardPostId,boolean forceUpdate) {
-        if(forceUpdate) {
-            return getBoardPostFromNetwork(boardListType,boardPostId).doOnNext(
+    public Observable<BoardPost> getBoardPost(
+            @BoardPostList.BoardPostListType final String boardListType,
+            final String boardPostId, boolean forceUpdate) {
+        if (forceUpdate) {
+            return getBoardPostFromNetwork(boardListType, boardPostId).doOnNext(
                     new Action1<BoardPost>() {
                         @Override
                         public void call(BoardPost boardPost) {
-                            int numberOfTimesRead = boardPost.getNumberOfTimesRead() != null ?
-                                    boardPost.getNumberOfTimesRead() : 0;
-                            boardPost.setNumberOfTimesRead(++numberOfTimesRead);
-                            try {
-                                disBoardsLocalRepo.setBoardPost(boardPost);
-                            } catch (Exception e) {
-                                Timber.e(e,"Error saving board post");
-                            }
+                            saveBoardPost(boardPost);
                         }
                     });
-        } else  {
+        } else {
             return disBoardsLocalRepo.getBoardPost(boardPostId).flatMap(
                     new Func1<BoardPost, Observable<BoardPost>>() {
                         @Override
                         public Observable<BoardPost> call(BoardPost boardPost) {
-                                     long lastFetchedTime = boardPost != null ? boardPost.getLastFetchedTime()
+                            long lastFetchedTime = boardPost != null ? boardPost
+                                    .getLastFetchedTime()
                                     : 0l;
                             long fiveMinutesAgo = System.currentTimeMillis()
                                     - (DateUtils.MINUTE_IN_MILLIS
                                     * MAX_BOARD_POST_AGE_MINUTES);
 
                             boolean recentlyFetched = lastFetchedTime > fiveMinutesAgo;
-                            if(recentlyFetched) {
+                            if (recentlyFetched) {
                                 return Observable.just(boardPost);
                             } else {
-                                return getBoardPostFromNetwork(boardListType,boardPostId);
+                                return getBoardPostFromNetwork(boardListType, boardPostId);
                             }
                         }
                     }).doOnNext(new Action1<BoardPost>() {
                 @Override
                 public void call(BoardPost boardPost) {
-                    int numberOfTimesRead =  boardPost.getNumberOfTimesRead() != null ?
-                            boardPost.getNumberOfTimesRead() : 0;
-                    boardPost.setNumberOfTimesRead(++numberOfTimesRead);
-                    try {
-                        disBoardsLocalRepo.setBoardPost(boardPost);
-                    } catch (Exception e) {
-                        Timber.e(e,"Error saving board post");
-                    }
+                        saveBoardPost(boardPost);
                 }
             });
         }
     }
 
-    private Observable<BoardPost> getBoardPostFromNetwork(@BoardPostList.BoardPostListType final String
-            boardListType, final String boardPostId) {
-        return disApi.getBoardPost(boardListType,boardPostId)
+    private void saveBoardPost(BoardPost boardPost) {
+        try {
+            disBoardsLocalRepo.setBoardPost(boardPost);
+        } catch (Exception e) {
+            Timber.d("Could not cache board post " + boardPost.getBoardPostID() + " exception " + e
+                    .getMessage());
+        }
+    }
+
+    private Observable<BoardPost> getBoardPostFromNetwork(
+            @BoardPostList.BoardPostListType final String
+                    boardListType, final String boardPostId) {
+        return disApi.getBoardPost(boardListType, boardPostId)
                 .onErrorResumeNext(disBoardsLocalRepo.getBoardPost(boardPostId))
                 .doOnNext(new Action1<BoardPost>() {
                     @Override
                     public void call(BoardPost boardPost) {
-
-                        try {
-                            disBoardsLocalRepo.setBoardPost(boardPost);
-                        } catch (Exception e) {
-                            Timber.d("Could not cache board post "+boardPostId + " exception "+e.getMessage());
-                        }
-                    }
-                });
+                        saveBoardPost(boardPost);
+                    }});
     }
 
 
@@ -185,12 +181,7 @@ public class DisBoardRepoImpl implements DisBoardRepo {
                 .doOnNext(new Action1<BoardPost>() {
                     @Override
                     public void call(BoardPost boardPost) {
-                        try {
-                            disBoardsLocalRepo.setBoardPost(boardPost);
-                        } catch (Exception e) {
-                            Timber.d("Could not cache board post " + boardPostId + " exception " + e
-                                    .getMessage());
-                        }
+                        saveBoardPost(boardPost);
                     }
                 });
     }
@@ -203,12 +194,7 @@ public class DisBoardRepoImpl implements DisBoardRepo {
                 .doOnNext(new Action1<BoardPost>() {
                     @Override
                     public void call(BoardPost boardPost) {
-                        try {
-                            disBoardsLocalRepo.setBoardPost(boardPost);
-                        } catch (Exception e) {
-                            Timber.d("Could not cache board post " + boardPostId + " exception " + e
-                                    .getMessage());
-                        }
+                        saveBoardPost(boardPost);
                     }
                 });
     }
@@ -248,6 +234,23 @@ public class DisBoardRepoImpl implements DisBoardRepo {
     }
 
     @Override
+    public Observable<BoardPostSummary> getBoardPostSummary(@BoardPostList.BoardPostListType final String boardListType,
+                final String boardPostId) {
+        return disBoardsLocalRepo.getBoardPostSummaryListObservable(boardListType).flatMap(
+                new Func1<List<BoardPostSummary>, Observable<BoardPostSummary>>() {
+                    @Override
+                    public Observable<BoardPostSummary> call(List<BoardPostSummary> boardPostSummaries) {
+                        for(BoardPostSummary boardPostSummary : boardPostSummaries) {
+                            if(boardPostId.equals(boardPostSummary.getBoardPostID())) {
+                                return Observable.just(boardPostSummary);
+                            }
+                        }
+                        return Observable.just(null);
+                    }
+                });
+    }
+
+    @Override
     public Observable<Void> setBoardPostSummary(BoardPostSummary boardPostSummary) {
         return disBoardsLocalRepo.setBoardPostSummary(boardPostSummary);
     }
@@ -271,7 +274,6 @@ public class DisBoardRepoImpl implements DisBoardRepo {
     public void clearUserSession() {
         userSessionRepo.clearSession();
     }
-
 
 
 }

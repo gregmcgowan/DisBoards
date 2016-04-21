@@ -68,6 +68,12 @@ public class DisBoardsLocalRepoImpl implements DisBoardsLocalRepo {
                 @Override
                 public Boolean call() throws Exception {
                     if(boardPost != null) {
+                        //Horrible we want to keep this local value
+                        BoardPost existingBoardPost = boardPostDao.load(boardPost.getBoardPostID());
+                        if(existingBoardPost != null) {
+                            boardPost.setNumberOfTimesOpened(existingBoardPost.getNumberOfTimesOpened());
+                        }
+
                         boardPostDao.insertOrReplace(boardPost);
                         List<BoardPostComment> boardPostComments = boardPost.getComments();
                         boardPostCommentDao.insertOrReplaceInTx(boardPostComments);

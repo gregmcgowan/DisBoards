@@ -47,6 +47,7 @@ public class DisBoardsDaoGenerator {
         boardPostSummaryEntity.addBooleanProperty("isSticky").notNull();
         boardPostSummaryEntity.addLongProperty("lastUpdatedTime").notNull();
         boardPostSummaryEntity.addLongProperty("lastViewedTime").notNull();
+        boardPostSummaryEntity.addIntProperty("numberOfTimesOpened").notNull();
         boardPostSummaryEntity.addStringProperty("boardListTypeID").notNull();
 
         boardPostEntity = schema.addEntity("BoardPost");
@@ -62,7 +63,7 @@ public class DisBoardsDaoGenerator {
         boardPostEntity.addLongProperty("lastUpdatedTime").notNull();
         boardPostEntity.addLongProperty("lastFetchedTime").notNull();
         boardPostEntity.addStringProperty("latestCommentID");
-        boardPostEntity.addIntProperty("numberOfTimesRead");
+        boardPostEntity.addIntProperty("numberOfTimesOpened");
         boardPostEntity.addBooleanProperty("isFavourite").notNull();
         boardPostEntity.addBooleanProperty("isSticky").notNull();
         boardPostEntity.addStringProperty("boardListTypeID").notNull();

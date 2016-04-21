@@ -174,6 +174,7 @@ public class BoardPostListController extends BaseUIController {
         @BoardPostList.BoardPostListType String boardListType
                 = boardPostSummary.getBoardListTypeID();
         boardPostSummary.setLastViewedTime(new Date().getTime());
+        boardPostSummary.setNumberOfTimesOpened(boardPostSummary.getNumberOfTimesOpened() + 1);
 
         Observable<Void> observable = disBoardRepo.setBoardPostSummary(boardPostSummary)
                 .subscribeOn(getBackgroundThreadScheduler());

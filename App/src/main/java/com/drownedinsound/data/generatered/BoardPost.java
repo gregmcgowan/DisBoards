@@ -29,7 +29,7 @@ public class BoardPost {
     private long lastUpdatedTime;
     private long lastFetchedTime;
     private String latestCommentID;
-    private Integer numberOfTimesRead;
+    private Integer numberOfTimesOpened;
     private boolean isFavourite;
     private boolean isSticky;
     /** Not-null value. */
@@ -47,7 +47,7 @@ public class BoardPost {
         this.boardPostID = boardPostID;
     }
 
-    public BoardPost(String boardPostID, String title, String summary, String content, String authorUsername, String dateOfPost, Integer numberOfReplies, long lastViewedTime, long createdTime, long lastUpdatedTime, long lastFetchedTime, String latestCommentID, Integer numberOfTimesRead, boolean isFavourite, boolean isSticky, String boardListTypeID) {
+    public BoardPost(String boardPostID, String title, String summary, String content, String authorUsername, String dateOfPost, Integer numberOfReplies, long lastViewedTime, long createdTime, long lastUpdatedTime, long lastFetchedTime, String latestCommentID, Integer numberOfTimesOpened, boolean isFavourite, boolean isSticky, String boardListTypeID) {
         this.boardPostID = boardPostID;
         this.title = title;
         this.summary = summary;
@@ -60,7 +60,7 @@ public class BoardPost {
         this.lastUpdatedTime = lastUpdatedTime;
         this.lastFetchedTime = lastFetchedTime;
         this.latestCommentID = latestCommentID;
-        this.numberOfTimesRead = numberOfTimesRead;
+        this.numberOfTimesOpened = numberOfTimesOpened;
         this.isFavourite = isFavourite;
         this.isSticky = isSticky;
         this.boardListTypeID = boardListTypeID;
@@ -162,12 +162,12 @@ public class BoardPost {
         this.latestCommentID = latestCommentID;
     }
 
-    public Integer getNumberOfTimesRead() {
-        return numberOfTimesRead;
+    public Integer getNumberOfTimesOpened() {
+        return numberOfTimesOpened;
     }
 
-    public void setNumberOfTimesRead(Integer numberOfTimesRead) {
-        this.numberOfTimesRead = numberOfTimesRead;
+    public void setNumberOfTimesOpened(Integer numberOfTimesOpened) {
+        this.numberOfTimesOpened = numberOfTimesOpened;
     }
 
     public boolean getIsFavourite() {

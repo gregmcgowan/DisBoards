@@ -25,6 +25,9 @@ public interface DisBoardRepo {
             @BoardPostList.BoardPostListType String boardListType, int pageNumber,
             boolean forceUpdate);
 
+    Observable<BoardPostSummary> getBoardPostSummary(@BoardPostList.BoardPostListType final String boardListType,
+            String boardPostId);
+
     Observable<BoardPost> postComment(@BoardPostList.BoardPostListType String boardListType,
             String boardPostId, String commentId, String title, String content);
 
