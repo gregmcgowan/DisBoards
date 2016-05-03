@@ -3,6 +3,7 @@ package com.drownedinsound.ui.favourites;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
+import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.ui.base.BaseFragment;
 import com.drownedinsound.ui.post.BoardPostActivity;
@@ -78,6 +79,11 @@ public class FavouritesListFragment extends BaseFragment {
         View rootView = inflater.inflate(R.layout.board_list_layout, container, false);
         ButterKnife.inject(this, rootView);
         return rootView;
+    }
+
+    @Override
+    protected void onSessionComponentCreated(SessionComponent sessionComponent) {
+
     }
 
     @Override

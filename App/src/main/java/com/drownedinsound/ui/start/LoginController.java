@@ -1,6 +1,7 @@
 package com.drownedinsound.ui.start;
 
 import com.drownedinsound.R;
+import com.drownedinsound.core.SingleIn;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.network.LoginResponse;
 import com.drownedinsound.qualifiers.ForIoScheduler;
@@ -20,7 +21,7 @@ import rx.Subscriber;
 /**
  * Created by gregmcgowan on 01/11/15.
  */
-@Singleton
+@SingleIn(LoginComponent.class)
 public class LoginController extends BaseUIController {
 
     private DisBoardRepo disBoardRepo;

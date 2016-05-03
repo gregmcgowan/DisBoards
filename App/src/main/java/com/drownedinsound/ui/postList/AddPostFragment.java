@@ -2,6 +2,7 @@ package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
+import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
@@ -67,6 +68,10 @@ public class AddPostFragment extends BaseControllerFragment<BoardPostListControl
         this.boardListType = arguments.getString(DisBoardsConstants.BOARD_TYPE);
     }
 
+    @Override
+    protected void onSessionComponentCreated(SessionComponent sessionComponent) {
+        sessionComponent.boardPostListComponent().inject(this);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

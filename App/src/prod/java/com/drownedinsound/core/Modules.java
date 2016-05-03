@@ -6,7 +6,7 @@ package com.drownedinsound.core;
 public class Modules {
 
     public static Object[] list(DisBoardsApp disBoardsApp) {
-        return new Object[]{new DisBoardsModule(disBoardsApp)};
+        return new Object[]{new DisBoardsAppModule(disBoardsApp)};
     }
 
 }

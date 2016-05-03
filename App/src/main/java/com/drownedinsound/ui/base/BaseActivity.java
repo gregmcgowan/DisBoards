@@ -2,6 +2,7 @@ package com.drownedinsound.ui.base;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsApp;
+import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.utils.EspressoIdlingResource;
 
 import android.app.FragmentManager;
@@ -35,8 +36,10 @@ public abstract class BaseActivity extends AppCompatActivity implements Ui {
 
         fragmentManager = getFragmentManager();
 
-        DisBoardsApp.getApplication(this).inject(this);
+        onSessionComponentCreated(DisBoardsApp.getApplication(this).getSessionComponent());
     }
+
+    protected abstract void onSessionComponentCreated(SessionComponent sessionComponent);
 
     protected abstract int getLayoutResource();
 

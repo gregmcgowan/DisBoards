@@ -2,7 +2,9 @@ package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
+import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.ui.base.BaseActivity;
 import com.drownedinsound.ui.base.BaseControllerActivity;
 import com.drownedinsound.utils.UiUtils;
 
@@ -23,7 +25,7 @@ import butterknife.OnClick;
  *
  * @author Greg
  */
-public class BoardPostActivity extends BaseControllerActivity<BoardPostController>
+public class BoardPostActivity extends BaseActivity
         implements BoardPostParentUi {
 
     private BoardPostFragment boardPostFragment;
@@ -64,10 +66,9 @@ public class BoardPostActivity extends BaseControllerActivity<BoardPostControlle
 
     }
 
-
     @Override
-    protected BoardPostController getController() {
-        return boardPostController;
+    protected void onSessionComponentCreated(SessionComponent sessionComponent) {
+
     }
 
     @Override

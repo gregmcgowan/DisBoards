@@ -1,6 +1,7 @@
 package com.drownedinsound.ui.favourites;
 
 import com.drownedinsound.R;
+import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.ui.base.BaseActivity;
 
 import android.os.Bundle;
@@ -31,5 +32,8 @@ public class FavouritesActivity extends BaseActivity {
         return R.layout.community_layout;
     }
 
+    @Override
+    protected void onSessionComponentCreated(SessionComponent sessionComponent) {
 
+    }
 }

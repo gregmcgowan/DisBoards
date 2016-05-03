@@ -17,6 +17,7 @@ import java.util.List;
 public class BoardPostListFragmentAdapter extends FragmentPagerAdapter {
 
     private List<BoardPostList> boardPostLists = new ArrayList<>();
+    private List<BoardPostListFragment> listFragments = new ArrayList<>();
 
     public BoardPostListFragmentAdapter(FragmentManager fm) {
         super(fm);
@@ -32,7 +33,13 @@ public class BoardPostListFragmentAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int item) {
         BoardPostList boardPostListInfoInfo = boardPostLists.get(item);
         @BoardPostList.BoardPostListType String listType = boardPostListInfoInfo.getBoardListTypeID();
-        return BoardPostListFragment.newInstance(listType, item);
+        BoardPostListFragment boardPostListFragment = BoardPostListFragment.newInstance(listType, item);
+        listFragments.add(boardPostListFragment);
+        return boardPostListFragment;
+    }
+
+    public BoardPostListFragment getBoardPostListFragment(int position) {
+        return listFragments.get(position);
     }
 
     @Override

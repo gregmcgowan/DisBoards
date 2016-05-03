@@ -2,6 +2,7 @@ package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
+import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
@@ -85,6 +86,11 @@ public class AddCommentFragment extends BaseControllerFragment<BoardPostControll
         this.boardListType = arguments.getString(DisBoardsConstants.BOARD_TYPE);
         this.boardPostId = arguments.getString(DisBoardsConstants.BOARD_POST_ID);
         this.replyToAuthor = arguments.getString(DisBoardsConstants.REPLY_TO_AUTHOR);
+    }
+
+    @Override
+    protected void onSessionComponentCreated(SessionComponent sessionComponent) {
+        sessionComponent.boardPostComponent().inject(this);
     }
 
     @Nullable

@@ -3,6 +3,7 @@ package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
+import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostComment;
 import com.drownedinsound.data.generatered.BoardPostList;
@@ -159,6 +160,11 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
         });
 
         return rootView;
+    }
+
+    @Override
+    protected void onSessionComponentCreated(SessionComponent sessionComponent) {
+        sessionComponent.boardPostComponent().inject(this);
     }
 
     private void displayReplyDialog(BoardPostComment boardPostComment) {

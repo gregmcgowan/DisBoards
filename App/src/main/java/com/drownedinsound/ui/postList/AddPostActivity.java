@@ -2,6 +2,7 @@ package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
+import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.BaseControllerActivity;
 
@@ -47,6 +48,11 @@ public class AddPostActivity extends BaseControllerActivity<BoardPostListControl
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.container, newPostFragment, "NEW_POST_FRAGMENT");
         fragmentTransaction.commit();
+    }
+
+    @Override
+    protected void onSessionComponentCreated(SessionComponent sessionComponent) {
+        sessionComponent.boardPostListComponent().inject(this);
     }
 
     @Override

@@ -27,4 +27,8 @@ public interface BoardPostListUi extends Ui {
     int getPageIndex();
 
     void scrollToPostAt(int position);
+
+    void onDisplay();
+
+    boolean isDisplayed();
 }

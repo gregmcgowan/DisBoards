@@ -2,30 +2,32 @@ package com.drownedinsound.core;
 
 import com.crashlytics.android.Crashlytics;
 import com.drownedinsound.BuildConfig;
+import com.drownedinsound.data.DataModule;
 import com.drownedinsound.utils.CrashlyticsTree;
 import com.facebook.stetho.Stetho;
 
 import android.app.Application;
 import android.content.Context;
 
-import dagger.ObjectGraph;
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 public class DisBoardsApp extends Application {
 
-    private ObjectGraph objectGraph;
-
     public static DisBoardsApp getApplication(Context context) {
         return (DisBoardsApp) context.getApplicationContext();
     }
 
+    private AppComponent appComponent;
+
+    private SessionComponent sessionComponent;
+
     @Override
     public void onCreate() {
         super.onCreate();
-        buildObjectGraphAndInject();
         initialiseLogging();
         initialiseDebuggingSettings();
+        createAppComponent();
 
         if (BuildConfig.BUILD_TYPE.equals("beta")
                 || BuildConfig.BUILD_TYPE.equals("release")) {
@@ -54,14 +56,16 @@ public class DisBoardsApp extends Application {
         }
     }
 
-
-    public void buildObjectGraphAndInject() {
-        objectGraph = ObjectGraph.create(Modules.list(this));
-        objectGraph.inject(this);
+    public AppComponent getAppComponent() {
+        return appComponent;
     }
 
-    public void inject(Object o) {
-        objectGraph.inject(o);
+    private void createAppComponent() {
+        this.appComponent = AppComponent.Initialiser.init(this);
+        this.sessionComponent = appComponent.provideSessionComponent(new DataModule());
     }
 
+    public SessionComponent getSessionComponent() {
+        return sessionComponent;
+    }
 }

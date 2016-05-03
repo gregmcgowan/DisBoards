@@ -1,6 +1,8 @@
 package com.drownedinsound.ui.start;
 
-import com.drownedinsound.data.UserSessionManager;
+
+import com.drownedinsound.core.SessionComponent;
+import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.ui.base.BaseActivity;
 import com.drownedinsound.ui.postList.BoardPostListParentActivity;
 
@@ -13,7 +15,7 @@ import javax.inject.Inject;
 public class StartActivity extends BaseActivity {
 
     @Inject
-    UserSessionManager userSessionManager;
+    UserSessionRepo userSessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,11 @@ public class StartActivity extends BaseActivity {
             goToLoginActivity();
         }
         finish();
+    }
+
+    @Override
+    protected void onSessionComponentCreated(SessionComponent sessionComponent) {
+        sessionComponent.inject(this);
     }
 
     private void goToLoginActivity() {

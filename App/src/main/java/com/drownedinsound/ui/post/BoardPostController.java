@@ -1,6 +1,7 @@
 package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
+import com.drownedinsound.core.SingleIn;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
@@ -22,7 +23,7 @@ import timber.log.Timber;
 /**
  * Created by gregmcgowan on 02/10/15.
  */
-@Singleton
+@SingleIn(BoardPostComponent.class)
 public class BoardPostController extends BaseUIController {
 
     private DisBoardRepo disBoardRepo;

@@ -1,6 +1,7 @@
 package com.drownedinsound.ui.base;
 
 import com.drownedinsound.core.DisBoardsApp;
+import com.drownedinsound.core.SessionComponent;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -11,7 +12,7 @@ import java.lang.ref.WeakReference;
 
 import timber.log.Timber;
 
-public class BaseFragment extends Fragment implements Ui {
+public abstract class BaseFragment extends Fragment implements Ui {
 
     private static final long WAIT_TIME_FOR_LOADING_VIEW = 500;
 
@@ -39,9 +40,10 @@ public class BaseFragment extends Fragment implements Ui {
         loadingViewHandler = new LoadingViewHandler(new WeakReference<>(this));
         fragmentHander = new Handler();
 
-        DisBoardsApp.getApplication(getActivity()).inject(this);
-
+        onSessionComponentCreated(DisBoardsApp.getApplication(getActivity()).getSessionComponent());
     }
+
+    protected abstract void onSessionComponentCreated(SessionComponent sessionComponent);
 
     @Override
     public void onDestroy() {

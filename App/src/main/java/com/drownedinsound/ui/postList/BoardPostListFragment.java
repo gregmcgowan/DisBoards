@@ -2,6 +2,7 @@ package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
+import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.ui.base.BaseControllerFragment;
@@ -105,6 +106,11 @@ public class BoardPostListFragment
 
         boardListType =  getArguments().getString(DisBoardsConstants.BOARD_TYPE);
         pageIndex = getArguments().getInt("pageIndex");
+    }
+
+    @Override
+    protected void onSessionComponentCreated(SessionComponent sessionComponent) {
+        sessionComponent.boardPostListComponent().inject(this);
     }
 
     @Override
@@ -286,5 +292,15 @@ public class BoardPostListFragment
     @Override
     public void scrollToPostAt(int position) {
         getLinearLayoutManager().smoothScrollToPosition(listView,null,position);
+    }
+
+    @Override
+    public void onDisplay() {
+        requestBoardSummaryPage(1, true);
+    }
+
+    @Override
+    public boolean isDisplayed() {
+        return getUserVisibleHint();
     }
 }

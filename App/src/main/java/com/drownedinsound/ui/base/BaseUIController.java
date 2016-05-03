@@ -1,6 +1,7 @@
 package com.drownedinsound.ui.base;
 
 import com.drownedinsound.BuildConfig;
+import com.drownedinsound.ui.postList.BoardPostListFragment;
 import com.fernandocejas.frodo.annotation.RxLogSubscriber;
 
 import android.support.annotation.NonNull;
@@ -38,7 +39,7 @@ public abstract class BaseUIController {
 
     private Display display;
 
-    private long observerableTimeoutSeconds = 10l;
+    private long observerableTimeoutSeconds = 10L;
 
     public BaseUIController(Scheduler mainThreadScheduler, Scheduler backgroundThreadScheduler) {
         mUis = new CopyOnWriteArraySet<>();
@@ -291,6 +292,8 @@ public abstract class BaseUIController {
     public Display getDisplay() {
         return display;
     }
+
+
 
     /**
      * Base class for UI observers. Provides method to get the UI element it is

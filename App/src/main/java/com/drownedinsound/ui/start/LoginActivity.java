@@ -1,6 +1,7 @@
 package com.drownedinsound.ui.start;
 
 import com.drownedinsound.R;
+import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.ui.base.BaseControllerActivity;
 import com.drownedinsound.utils.StringUtils;
 import com.drownedinsound.utils.UiUtils;
@@ -56,6 +57,11 @@ public class LoginActivity extends BaseControllerActivity<LoginController> imple
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ButterKnife.inject(this);
+    }
+
+    @Override
+    protected void onSessionComponentCreated(SessionComponent sessionComponent) {
+        sessionComponent.loginComponent().inject(this);
     }
 
     @Override

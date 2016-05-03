@@ -1,6 +1,7 @@
 package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
+import com.drownedinsound.core.SingleIn;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
@@ -16,10 +17,8 @@ import android.support.annotation.NonNull;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import rx.Observable;
 import rx.Scheduler;
@@ -28,7 +27,7 @@ import timber.log.Timber;
 /**
  * Created by gregmcgowan on 22/03/15.
  */
-@Singleton
+@SingleIn(BoardPostListFragmentComponent.class)
 public class BoardPostListController extends BaseUIController {
 
     private DisBoardRepo disBoardRepo;
@@ -42,38 +41,10 @@ public class BoardPostListController extends BaseUIController {
     }
 
     @Override
-    public void onUiCreated(Ui ui) {
-        if (ui instanceof BoardPostListParentUi) {
-            BoardPostListParentUi boardPostListParentUi
-                    = (BoardPostListParentUi) ui;
-            int id = getId(boardPostListParentUi);
-            Observable<List<BoardPostList>>
-                    getBoardPostListInfoObservable = disBoardRepo.getAllBoardPostLists()
-                    .compose(this.<List<BoardPostList>>defaultTransformer());
-
-            BaseObserver<List<BoardPostList>, BoardPostListParentUi>
-                    getBoardPostListInfoObserever
-                    = new BaseObserver<List<BoardPostList>, BoardPostListParentUi>(id) {
-                @Override
-                public void onError(Throwable e) {
-
-                }
-
-                @Override
-                public void onNext(List<BoardPostList> boardPostListInfos) {
-                    getUI().setBoardPostLists(boardPostListInfos);
-                }
-            };
-            subscribeAndCache(boardPostListParentUi, "INFO", getBoardPostListInfoObserever,
-                    getBoardPostListInfoObservable);
-        }
-    }
-
-    @Override
     public void onUiAttached(Ui ui) {
         if (ui instanceof BoardPostListUi) {
             BoardPostListUi boardPostListUi = (BoardPostListUi) ui;
-            if (boardPostCurrentShow(boardPostListUi)) {
+            if (boardPostListUi.isDisplayed()) {
                 requestBoardSummaryPage(boardPostListUi,
                         boardPostListUi.getBoardListType(), 1, false);
             } else {
@@ -81,43 +52,6 @@ public class BoardPostListController extends BaseUIController {
                         + "upadting");
             }
         }
-    }
-
-    private boolean boardPostCurrentShow(BoardPostListUi boardPostListUi) {
-        BoardPostListParentUi boardPostListParentUi = findUi(BoardPostListParentUi.class);
-        if (boardPostListParentUi != null) {
-            int currentPage = boardPostListParentUi.getCurrentPageShow();
-            Timber.d("Current page " + currentPage + " list page index " +
-                    boardPostListUi.getPageIndex());
-            return currentPage == boardPostListUi.getPageIndex();
-        } else {
-            Timber.d("Current board post list parent UI is not attached");
-        }
-        return false;
-    }
-
-    public void loadListAt(int position) {
-        BoardPostListUi boardPostList = findListAt(position);
-        if (boardPostList != null) {
-            requestBoardSummaryPage(boardPostList,
-                    boardPostList.getBoardListType(), 1, false);
-        }
-    }
-
-    private BoardPostListUi findListAt(int position) {
-        Set<Ui> uis = getUis();
-        for (Ui ui : uis) {
-            if (ui instanceof BoardPostListUi) {
-                BoardPostListUi boardPostListUi
-                        = (BoardPostListUi) ui;
-
-                if (boardPostListUi.getPageIndex()
-                        == position) {
-                    return boardPostListUi;
-                }
-            }
-        }
-        return null;
     }
 
     public void requestBoardSummaryPage(@NonNull BoardPostListUi boardPostListUi,
@@ -198,17 +132,6 @@ public class BoardPostListController extends BaseUIController {
     }
 
 
-    public void doNewNewPostAction(int currentSelectedPage) {
-        if (disBoardRepo.isUserLoggedIn()) {
-            BoardPostListUi boardPostListUi = findListAt(currentSelectedPage);
-            if (boardPostListUi != null) {
-                getDisplay().showNewPostUI(boardPostListUi.getBoardListType());
-            }
-        } else {
-            getDisplay().showNotLoggedInUI();
-        }
-    }
-
     public void addNewPost(AddPostUI newPostUI,
             @BoardPostList.BoardPostListType String boardListType,
             String title, String content) {
@@ -249,17 +172,6 @@ public class BoardPostListController extends BaseUIController {
             getDisplay().showErrorMessageDialog(R.string.please_enter_a_subject);
         } else {
             getDisplay().showErrorMessageDialog(R.string.please_enter_both_some_content_and_subject);
-        }
-    }
-
-    public void moveToTopOfCurrentList() {
-        BoardPostListParentUi boardPostListParentUi = findUi(BoardPostListParentUi.class);
-        if (boardPostListParentUi != null) {
-            int currentPage = boardPostListParentUi.getCurrentPageShow();
-            BoardPostListUi boardPostListUi = findListAt(currentPage);
-            if (boardPostListUi != null) {
-                boardPostListUi.scrollToPostAt(0);
-            }
         }
     }
 }

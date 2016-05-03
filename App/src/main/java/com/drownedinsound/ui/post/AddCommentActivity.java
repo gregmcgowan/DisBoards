@@ -2,9 +2,9 @@ package com.drownedinsound.ui.post;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
+import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.BaseControllerActivity;
-import com.drownedinsound.ui.postList.BoardPostListController;
 
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -18,6 +18,8 @@ import butterknife.OnClick;
 
 public class AddCommentActivity extends BaseControllerActivity<BoardPostController> {
 
+    @Inject
+    BoardPostController boardPostController;
 
     public static Intent getIntent(Context context,
             @BoardPostList.BoardPostListType String boardListType,
@@ -36,9 +38,6 @@ public class AddCommentActivity extends BaseControllerActivity<BoardPostControll
 
         return intent;
     }
-
-    @Inject
-    BoardPostController boardPostController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +59,11 @@ public class AddCommentActivity extends BaseControllerActivity<BoardPostControll
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.container, postReplyFragment, "POST_REPLY_FRAGMENT");
         fragmentTransaction.commit();
+    }
+
+    @Override
+    protected void onSessionComponentCreated(SessionComponent sessionComponent) {
+        sessionComponent.boardPostComponent().inject(this);
     }
 
     @Override

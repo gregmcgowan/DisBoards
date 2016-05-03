@@ -1,6 +1,7 @@
 package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
+import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.BaseControllerActivity;
@@ -25,6 +26,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 /**
  * This allows the user to move between the different message boards that are
@@ -33,7 +35,7 @@ import butterknife.OnClick;
  *
  * @author Greg
  */
-public class BoardPostListParentActivity extends BaseControllerActivity<BoardPostListController>
+public class BoardPostListParentActivity extends BaseControllerActivity<BoardPostListParentController>
         implements BoardPostListParentUi {
 
     private static final String LOGOUT_DIALOG = "LOGOUT_DIALOG";
@@ -54,7 +56,7 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
     FloatingActionButton floatingAddButton;
 
     @Inject
-    BoardPostListController boardPostListController;
+    BoardPostListParentController boardPostListController;
 
     private BoardPostListFragmentAdapter boardPostListFragmentAdapter;
 
@@ -72,6 +74,12 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
             currentSelectedPage = savedInstanceState.getInt(SAVED_TAB,-1);
         }
         ButterKnife.inject(this);
+    }
+
+    @Override
+    protected void onSessionComponentCreated(SessionComponent sessionComponent) {
+        sessionComponent.boardPostListParentComponent().inject(this);
+        //sessionComponent.bo
     }
 
     @Override
@@ -96,7 +104,9 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                boardPostListController.moveToTopOfCurrentList();
+                BoardPostListFragment boardPostListFragment = boardPostListFragmentAdapter
+                        .getBoardPostListFragment(tab.getPosition());
+                boardPostListController.moveToTopOfCurrentList(boardPostListFragment);
             }
         });
         viewPager.addOnPageChangeListener(new OnPageChangeListener() {
@@ -122,8 +132,11 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
             }
 
             public void onPageSelected(int position) {
+                Timber.d("Page selected " + position);
                 currentSelectedPage = position;
-                boardPostListController.loadListAt(position);
+                BoardPostListFragment boardPostListFragment = boardPostListFragmentAdapter
+                        .getBoardPostListFragment(position);
+                boardPostListController.loadList(boardPostListFragment);
             }
 
         });
@@ -158,6 +171,8 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
         }
     }
 
+
+
     @Override
     public void setBoardPostLists(List<BoardPostList> boardPostListInfos) {
         boardPostListFragmentAdapter = new BoardPostListFragmentAdapter(getFragmentManager());
@@ -183,7 +198,7 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
     }
 
     @Override
-    protected BoardPostListController getController() {
+    protected BoardPostListParentController getController() {
         return boardPostListController;
     }
 
