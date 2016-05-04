@@ -1,6 +1,5 @@
-package com.drownedinsound.test.login;
+package com.drownedinsound.data;
 
-import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
@@ -19,7 +18,7 @@ import rx.functions.Func1;
 /**
  * Created by gregmcgowan on 06/12/15.
  */
-public class FakeDisRepo implements DisBoardRepo {
+public class MockDisRepo implements DisBoardRepo {
 
 
     private static List<BoardPostSummary> boardPosts;
@@ -140,5 +139,11 @@ public class FakeDisRepo implements DisBoardRepo {
     @Override
     public void setUserSelectedLurk(boolean lurk) {
 
+    }
+
+    @Override
+    public Observable<BoardPostSummary> getBoardPostSummary(
+            @BoardPostList.BoardPostListType String boardListType, String boardPostId) {
+        return null;
     }
 }

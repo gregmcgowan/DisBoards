@@ -5,12 +5,9 @@ import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.BaseActivity;
-import com.drownedinsound.ui.base.BaseControllerActivity;
-import com.drownedinsound.utils.UiUtils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 
 import javax.inject.Inject;

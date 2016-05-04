@@ -11,7 +11,6 @@ import com.drownedinsound.data.network.UrlConstants;
 import com.drownedinsound.ui.base.BaseControllerFragment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 import com.drownedinsound.ui.controls.ActiveTextView;
-import com.drownedinsound.ui.controls.AutoScrollListView;
 import com.drownedinsound.utils.UiUtils;
 
 import android.content.Intent;
@@ -30,7 +29,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 

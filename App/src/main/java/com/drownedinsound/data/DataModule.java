@@ -11,7 +11,6 @@ import com.drownedinsound.data.network.NetworkUtil;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.data.parser.streaming.BoardPostSummaryListParser;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
-import com.drownedinsound.data.parser.streaming.DisWebPagerParserImpl;
 import com.squareup.okhttp.OkHttpClient;
 
 import android.content.SharedPreferences;
@@ -21,8 +20,12 @@ import javax.inject.Named;
 import dagger.Module;
 import dagger.Provides;
 
+/**
+ * Created by gregmcgowan on 04/05/2016.
+ */
 @Module(includes = {})
 public class DataModule {
+
 
     @Provides
     @SingleIn(SessionComponent.class)
@@ -49,25 +52,10 @@ public class DataModule {
     BoardPostParser provideBoardPostParser(UserSessionRepo userSessionRepo) {
         return new BoardPostParser(userSessionRepo);
     }
-
-    @Provides
-    @SingleIn(SessionComponent.class)
-    DisWebPageParser disWebPageParser(BoardPostParser boardPostParser,
-            BoardPostSummaryListParser boardPostSummaryListParser) {
-        return new DisWebPagerParserImpl(boardPostParser, boardPostSummaryListParser);
-    }
-
     @Provides
     @SingleIn(SessionComponent.class)
     DisBoardsLocalRepo disBoardsLocalRepo(DaoMaster daoMaster) {
         return new DisBoardsLocalRepoImpl(daoMaster.newSession());
-    }
-
-    @Provides
-    @SingleIn(SessionComponent.class)
-    DisBoardRepo provideDisBoardRepo(DisApiClient disApiClient,
-            DisBoardsLocalRepo disBoardsLocalRepo, UserSessionRepo userSessionRepo) {
-        return new DisBoardRepoImpl(disApiClient, disBoardsLocalRepo, userSessionRepo);
     }
 
     @Provides

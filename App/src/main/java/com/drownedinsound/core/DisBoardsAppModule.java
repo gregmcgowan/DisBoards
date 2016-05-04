@@ -1,6 +1,5 @@
 package com.drownedinsound.core;
 
-import com.drownedinsound.data.DataModule;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 

@@ -1,4 +1,4 @@
-package com.drownedinsound.test.login;
+package com.drownedinsound.data;
 
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by gregmcgowan on 12/12/15.
  */
-public class FakeDisWebPageParser implements DisWebPageParser {
+public class MockDisWebPageParser implements DisWebPageParser {
 
     public static String authToken;
 
