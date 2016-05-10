@@ -13,7 +13,7 @@
 
         <activity android:name=".ui.start.LoginActivity" android:label=""/>
         <activity android:name=".ui.postList.BoardPostListParentActivity" android:label=""/>
-        <activity android:name=".ui.postList.AddPostActivity" android:label=""/>
+        <activity android:name=".ui.addPost.AddPostActivity" android:label=""/>
         <activity android:name=".ui.post.BoardPostActivity" android:label=""/>
         <activity android:name=".ui.post.AddCommentActivity" android:label=""/>
         <activity android:name=".ui.favourites.FavouritesActivity" android:label="Favourite Posts"

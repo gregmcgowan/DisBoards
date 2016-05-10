@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.postList;
+package com.drownedinsound.ui.addPost;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
@@ -24,7 +24,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 
-public class AddPostFragment extends BaseControllerFragment<BoardPostListController> implements
+public class AddPostFragment extends BaseControllerFragment<AddPostController> implements
         AddPostUI {
 
     @InjectView(R.id.loading_layout)
@@ -43,7 +43,7 @@ public class AddPostFragment extends BaseControllerFragment<BoardPostListControl
     EditText newPostContentEditText;
 
     @Inject
-    BoardPostListController boardPostListController;
+    AddPostController addPostController;
 
     private String boardListType;
 
@@ -70,7 +70,7 @@ public class AddPostFragment extends BaseControllerFragment<BoardPostListControl
 
     @Override
     protected void onSessionComponentCreated(SessionComponent sessionComponent) {
-        sessionComponent.boardPostListComponent().inject(this);
+        sessionComponent.addPostComponent().inject(this);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class AddPostFragment extends BaseControllerFragment<BoardPostListControl
         String title = newPostTitleEditText.getText().toString();
         String content = newPostContentEditText.getText().toString();
 
-        boardPostListController.addNewPost(this, boardListType, title, content);
+        addPostController.addNewPost(this, boardListType, title, content);
     }
 
 
@@ -161,7 +161,7 @@ public class AddPostFragment extends BaseControllerFragment<BoardPostListControl
     }
 
     @Override
-    protected BoardPostListController getController() {
-        return boardPostListController;
+    protected AddPostController getController() {
+        return addPostController;
     }
 }

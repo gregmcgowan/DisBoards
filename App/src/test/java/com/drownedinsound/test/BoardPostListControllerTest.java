@@ -1,6 +1,5 @@
 package com.drownedinsound.test;
 
-import com.drownedinsound.R;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
@@ -9,7 +8,7 @@ import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.UrlConstants;
 import com.drownedinsound.ui.base.Display;
-import com.drownedinsound.ui.postList.AddPostUI;
+import com.drownedinsound.ui.addPost.AddPostUI;
 import com.drownedinsound.ui.postList.BoardPostListController;
 import com.drownedinsound.ui.postList.BoardPostListParentUi;
 import com.drownedinsound.ui.postList.BoardPostListUi;
@@ -187,79 +186,6 @@ public class BoardPostListControllerTest {
         boardPostListController.detachUi(boardPostListParentUi);
     }
 
-    @Test
-    public void testNewPostValidationEmptyStrings() {
-        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
-
-        boardPostListController.attachDisplay(display);
-        boardPostListController.attachUi(newPostUI);
-        boardPostListController.addNewPost(newPostUI, BoardListTypes.SOCIAL,
-                "", "");
-
-        verify(display).showErrorMessageDialog(R.string.please_enter_both_some_content_and_subject);
-    }
-
-    @Test
-    public void testNewPostValidationEmptyTitle() {
-        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
-
-        boardPostListController.attachDisplay(display);
-        boardPostListController.attachUi(newPostUI);
-        boardPostListController.addNewPost(newPostUI, BoardListTypes.SOCIAL,
-                "", "Some content");
-
-        verify(display).showErrorMessageDialog(R.string.please_enter_a_subject);
-    }
-
-    @Test
-    public void testNewPostValidationEmptyContent() {
-        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
-
-        boardPostListController.attachDisplay(display);
-        boardPostListController.attachUi(newPostUI);
-        boardPostListController.addNewPost(newPostUI, BoardListTypes.SOCIAL,
-                "Title", "");
-
-        verify(display).showErrorMessageDialog(R.string.please_enter_some_content);
-    }
-
-
-    @Test
-    public void testNewPostFails() {
-        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
-        when(disBoardRepo.addNewPost(BoardListTypes.SOCIAL, "New title", "New content"))
-                .thenReturn(Observable.create(new Observable.OnSubscribe<BoardPost>() {
-                    @Override
-                    public void call(Subscriber<? super BoardPost> subscriber) {
-                        subscriber.onError(new Exception());
-                    }
-                }));
-
-        boardPostListController.attachDisplay(display);
-        boardPostListController.attachUi(newPostUI);
-        boardPostListController.addNewPost(newPostUI, BoardListTypes.SOCIAL,
-                "New title", "New content");
-
-        verify(newPostUI).showLoadingProgress(true);
-        verify(newPostUI).showLoadingProgress(false);
-        verify(newPostUI).handleNewPostFailure();
-    }
-
-    @Test
-    public void testNewPostSucceeds(){
-        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
-        when(disBoardRepo.addNewPost(BoardListTypes.SOCIAL, "New title", "New content"))
-                .thenReturn(Observable.just(expectedBoardPost));
-
-        boardPostListController.attachDisplay(display);
-        boardPostListController.attachUi(newPostUI);
-        boardPostListController.addNewPost(newPostUI, BoardListTypes.SOCIAL, "New title",
-                "New content");
-
-        verify(newPostUI).showLoadingProgress(true);
-        verify(display).hideCurrentScreen();
-        verify(display).showBoardPost(BoardListTypes.SOCIAL, expectedBoardPost.getBoardPostID());
-    }
 
     @Test
     public void testBoardPostSelected() {

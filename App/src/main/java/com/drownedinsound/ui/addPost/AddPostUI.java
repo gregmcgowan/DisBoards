@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.postList;
+package com.drownedinsound.ui.addPost;
 
 import com.drownedinsound.ui.base.Ui;
 

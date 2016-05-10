@@ -1,17 +1,15 @@
-package com.drownedinsound.ui.postList;
+package com.drownedinsound.ui.addPost;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPostList;
-import com.drownedinsound.ui.base.BaseControllerActivity;
+import com.drownedinsound.ui.base.BaseActivity;
 
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -19,7 +17,7 @@ import butterknife.OnClick;
 /**
  * Created by gregmcgowan on 31/01/16.
  */
-public class AddPostActivity extends BaseControllerActivity<BoardPostListController> {
+public class AddPostActivity extends BaseActivity {
 
 
     public static Intent getIntent(Context context,
@@ -28,10 +26,6 @@ public class AddPostActivity extends BaseControllerActivity<BoardPostListControl
         intent.putExtra(DisBoardsConstants.BOARD_TYPE, boardListType);
         return intent;
     }
-
-    @Inject
-    BoardPostListController boardPostListController;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +46,6 @@ public class AddPostActivity extends BaseControllerActivity<BoardPostListControl
 
     @Override
     protected void onSessionComponentCreated(SessionComponent sessionComponent) {
-        sessionComponent.boardPostListComponent().inject(this);
     }
 
     @Override
@@ -75,8 +68,4 @@ public class AddPostActivity extends BaseControllerActivity<BoardPostListControl
         finish();
     }
 
-    @Override
-    protected BoardPostListController getController() {
-        return boardPostListController;
-    }
 }
