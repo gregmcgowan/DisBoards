@@ -2,7 +2,7 @@ package com.drownedinsound.ui.base;
 
 import com.drownedinsound.R;
 import com.drownedinsound.data.generatered.BoardPostList;
-import com.drownedinsound.ui.post.AddCommentActivity;
+import com.drownedinsound.ui.addComment.AddCommentActivity;
 import com.drownedinsound.ui.post.BoardPostActivity;
 import com.drownedinsound.ui.addPost.AddPostActivity;
 import com.drownedinsound.ui.postList.BoardPostListParentActivity;

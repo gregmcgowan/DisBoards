@@ -1,6 +1,7 @@
 package com.drownedinsound.ui.addPost;
 
 import com.drownedinsound.R;
+import com.drownedinsound.core.SingleIn;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
@@ -18,6 +19,7 @@ import rx.Scheduler;
 /**
  * Created by gregmcgowan on 10/05/2016.
  */
+@SingleIn(AddPostComponent.class)
 public class AddPostController extends BaseUIController {
 
     private DisBoardRepo disBoardRepo;

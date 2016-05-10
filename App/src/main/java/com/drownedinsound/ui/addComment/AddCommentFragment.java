@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.post;
+package com.drownedinsound.ui.addComment;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
@@ -26,7 +26,8 @@ import butterknife.InjectView;
 /**
  * Created by gregmcgowan on 14/11/15.
  */
-public class AddCommentFragment extends BaseControllerFragment<BoardPostController> implements ReplyToCommentUi {
+public class AddCommentFragment extends BaseControllerFragment<AddCommentController> implements
+        AddCommentUi {
 
     @InjectView(R.id.loading_layout)
     DisBoardsLoadingLayout loadingLayout;
@@ -52,7 +53,7 @@ public class AddCommentFragment extends BaseControllerFragment<BoardPostControll
     private String replyToAuthor;
 
     @Inject
-    BoardPostController boardPostController;
+    AddCommentController addCommentController;
 
     public static AddCommentFragment newInstance(@BoardPostList.BoardPostListType String boardListType,
             String postId, String replyToAuthor, String replyToCommentId ) {
@@ -72,8 +73,8 @@ public class AddCommentFragment extends BaseControllerFragment<BoardPostControll
     }
 
     @Override
-    protected BoardPostController getController() {
-        return boardPostController;
+    protected AddCommentController getController() {
+        return addCommentController;
     }
 
     @Override
@@ -90,7 +91,7 @@ public class AddCommentFragment extends BaseControllerFragment<BoardPostControll
 
     @Override
     protected void onSessionComponentCreated(SessionComponent sessionComponent) {
-        sessionComponent.boardPostComponent().inject(this);
+        sessionComponent.addCommentComponent().inject(this);
     }
 
     @Nullable
@@ -136,7 +137,7 @@ public class AddCommentFragment extends BaseControllerFragment<BoardPostControll
         String commentTitle = commentTitleEditView.getText().toString();
         String commentContent = commentContentEditView.getText().toString();
 
-        boardPostController
+        addCommentController
                 .replyToComment(this, boardListType, boardPostId, replyToCommentID, commentTitle,
                         commentContent);
     }

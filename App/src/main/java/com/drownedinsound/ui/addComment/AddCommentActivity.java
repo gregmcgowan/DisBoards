@@ -1,25 +1,20 @@
-package com.drownedinsound.ui.post;
+package com.drownedinsound.ui.addComment;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPostList;
-import com.drownedinsound.ui.base.BaseControllerActivity;
+import com.drownedinsound.ui.base.BaseActivity;
 
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import javax.inject.Inject;
-
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class AddCommentActivity extends BaseControllerActivity<BoardPostController> {
-
-    @Inject
-    BoardPostController boardPostController;
+public class AddCommentActivity extends BaseActivity {
 
     public static Intent getIntent(Context context,
             @BoardPostList.BoardPostListType String boardListType,
@@ -63,7 +58,6 @@ public class AddCommentActivity extends BaseControllerActivity<BoardPostControll
 
     @Override
     protected void onSessionComponentCreated(SessionComponent sessionComponent) {
-        sessionComponent.boardPostComponent().inject(this);
     }
 
     @Override
@@ -86,9 +80,4 @@ public class AddCommentActivity extends BaseControllerActivity<BoardPostControll
         finish();
     }
 
-
-    @Override
-    protected BoardPostController getController() {
-        return boardPostController;
-    }
 }

@@ -7,7 +7,7 @@ import dagger.Subcomponent;
 /**
  * Created by gregmcgowan on 10/05/2016.
  */
-@SingleIn(AddPostFragment.class)
+@SingleIn(AddPostComponent.class)
 @Subcomponent()
 public interface AddPostComponent {
 

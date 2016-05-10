@@ -1,6 +1,5 @@
 package com.drownedinsound.test;
 
-import com.drownedinsound.R;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostSummary;
@@ -9,7 +8,6 @@ import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 import com.drownedinsound.ui.base.Display;
 import com.drownedinsound.ui.post.BoardPostController;
 import com.drownedinsound.ui.post.BoardPostUI;
-import com.drownedinsound.ui.post.ReplyToCommentUi;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,9 +36,6 @@ public class BoardPostControllerTest {
 
     @Mock
     Display display;
-
-    @Mock
-    ReplyToCommentUi replyToCommentUi;
 
     BoardPostController boardPostController;
 
@@ -178,83 +173,6 @@ public class BoardPostControllerTest {
         boardPostController.showReplyUI(BoardListTypes.SOCIAL, "Author", "12345", "1224");
 
         verify(display).showNotLoggedInUI();
-    }
-
-    @Test
-    public void testEmptyTitleAndContentReply() {
-        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
-
-        boardPostController.attachDisplay(display);
-        boardPostController.attachUi(replyToCommentUi);
-        boardPostController.replyToComment(replyToCommentUi, BoardListTypes.SOCIAL, "12345", null,
-                "", "");
-
-        verify(display).showErrorMessageDialog(R.string.please_enter_some_content);
-    }
-
-    @Test
-    public void testEmptyTitleReply() {
-        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
-        when(disBoardRepo.postComment(BoardListTypes.SOCIAL, "12345", "12345", "", "Content"))
-                .thenReturn(Observable.just(expectedBoardPost));
-
-        boardPostController.attachDisplay(display);
-        boardPostController.attachUi(replyToCommentUi);
-        boardPostController.replyToComment(replyToCommentUi, BoardListTypes.SOCIAL, "12345", "12345",
-                "", "Content");
-
-        verify(replyToCommentUi).showLoadingProgress(true);
-        verify(display).hideCurrentScreen();
-    }
-
-    @Test
-    public void testEmptyContentReply() {
-        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
-        when(disBoardRepo.postComment(BoardListTypes.SOCIAL, "12345", "12345", "Title", ""))
-                .thenReturn(Observable.just(expectedBoardPost));
-
-        boardPostController.attachDisplay(display);
-        boardPostController.attachUi(replyToCommentUi);
-        boardPostController.replyToComment(replyToCommentUi, BoardListTypes.SOCIAL, "12345", "12345",
-                "Title", "");
-
-        verify(replyToCommentUi).showLoadingProgress(true);
-        verify(display).hideCurrentScreen();
-    }
-
-    @Test
-    public void testReplyToCommentSucceeds() {
-        when(disBoardRepo.postComment(BoardListTypes.SOCIAL,"12345","12345", "Title", "Content"))
-                .thenReturn(Observable.just(expectedBoardPost));
-
-        boardPostController.attachDisplay(display);
-        boardPostController.attachUi(replyToCommentUi);
-        boardPostController.replyToComment(replyToCommentUi,
-                BoardListTypes.SOCIAL, "12345", "12345", "Title", "Content");
-
-        verify(replyToCommentUi).showLoadingProgress(true);
-        verify(display).hideCurrentScreen();
-    }
-
-
-    @Test
-    public void testReplyToCommentFails() {
-        when(disBoardRepo.postComment(BoardListTypes.SOCIAL,"12345","12345", "Title", "Content"))
-                .thenReturn(Observable.create(new Observable.OnSubscribe<BoardPost>() {
-                    @Override
-                    public void call(Subscriber<? super BoardPost> subscriber) {
-                        subscriber.onError(new Exception());
-                    }
-                }));
-
-        boardPostController.attachDisplay(display);
-        boardPostController.attachUi(replyToCommentUi);
-        boardPostController.replyToComment(replyToCommentUi,
-                BoardListTypes.SOCIAL, "12345", "12345", "Title", "Content");
-
-        verify(replyToCommentUi).showLoadingProgress(true);
-        verify(replyToCommentUi).showLoadingProgress(false);
-        verify(replyToCommentUi).handlePostCommentFailure();
     }
 
     @Test

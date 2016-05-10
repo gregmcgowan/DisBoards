@@ -1,6 +1,5 @@
 package com.drownedinsound.ui.post;
 
-import com.drownedinsound.R;
 import com.drownedinsound.core.SingleIn;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPost;
@@ -10,10 +9,8 @@ import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.ui.base.BaseUIController;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
-import com.drownedinsound.utils.StringUtils;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import rx.Observable;
 import rx.Scheduler;
@@ -104,42 +101,6 @@ public class BoardPostController extends BaseUIController {
         }
     }
 
-    public void replyToComment(ReplyToCommentUi replyToCommentUi,
-            @BoardPostList.BoardPostListType String boardListType,
-            String boardPostId, String commentId, String title, String content) {
-
-        //TODO validation. Max lengths
-        //Cannot be empty
-        boolean valid = !StringUtils.isEmpty(title) || !StringUtils.isEmpty(content);
-        if(valid) {
-            int uiID = getId(replyToCommentUi);
-            replyToCommentUi.showLoadingProgress(true);
-
-            Observable<BoardPost> postCommentObservable = disBoardRepo.
-                    postComment(boardListType, boardPostId, commentId, title, content)
-                    .compose(this.<BoardPost>defaultTransformer());
-
-            BaseObserver<BoardPost, ReplyToCommentUi> postCommentObserver
-                    = new BaseObserver<BoardPost, ReplyToCommentUi>(uiID) {
-                @Override
-                public void onError(Throwable e) {
-                    getUI().showLoadingProgress(false);
-                    getUI().handlePostCommentFailure();
-                }
-
-                @Override
-                public void onNext(BoardPost boardPost) {
-                    if(getDisplay() != null) {
-                        getDisplay().hideCurrentScreen();
-                    }
-                }
-            };
-            subscribeAndCache(replyToCommentUi, boardPostId, postCommentObserver,
-                    postCommentObservable);
-        } else {
-            getDisplay().showErrorMessageDialog(R.string.please_enter_some_content);
-        }
-    }
 
     public void thisAComment(BoardPostUI boardPostUI, @BoardPostList.BoardPostListType String boardListType,
             String postID, String commentID) {

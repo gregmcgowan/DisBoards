@@ -1,5 +1,6 @@
 package com.drownedinsound.core;
 
+import com.drownedinsound.ui.addComment.AddCommentComponent;
 import com.drownedinsound.ui.addPost.AddPostComponent;
 import com.drownedinsound.ui.post.BoardPostComponent;
 import com.drownedinsound.ui.postList.BoardPostListFragmentComponent;
@@ -21,6 +22,8 @@ public interface BaseSessionComponet {
     BoardPostComponent boardPostComponent();
 
     AddPostComponent addPostComponent();
+
+    AddCommentComponent addCommentComponent();
 
     void inject(StartActivity startActivity);
 }

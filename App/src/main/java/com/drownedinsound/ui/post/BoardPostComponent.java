@@ -1,6 +1,8 @@
 package com.drownedinsound.ui.post;
 
 import com.drownedinsound.core.SingleIn;
+import com.drownedinsound.ui.addComment.AddCommentActivity;
+import com.drownedinsound.ui.addComment.AddCommentFragment;
 
 import dagger.Subcomponent;
 
@@ -13,7 +15,4 @@ public interface BoardPostComponent {
 
     void inject(BoardPostFragment boardPostFragment);
 
-    //TODO move to own controller
-    void inject(AddCommentActivity addCommentActivity);
-    void inject(AddCommentFragment addCommentFragment);
 }
