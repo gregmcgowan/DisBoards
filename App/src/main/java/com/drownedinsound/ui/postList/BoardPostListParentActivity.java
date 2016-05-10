@@ -79,7 +79,6 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
     @Override
     protected void onSessionComponentCreated(SessionComponent sessionComponent) {
         sessionComponent.boardPostListParentComponent().inject(this);
-        //sessionComponent.bo
     }
 
     @Override
@@ -194,7 +193,10 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
 
     @OnClick(R.id.floating_add_button)
     public void doNewPostAction() {
-        boardPostListController.doNewNewPostAction(currentSelectedPage);
+        BoardPostListFragment boardPostListFragment = boardPostListFragmentAdapter
+                .getBoardPostListFragment(viewPager.getCurrentItem());
+
+        boardPostListController.doNewNewPostAction(boardPostListFragment.getBoardListType());
     }
 
     @Override

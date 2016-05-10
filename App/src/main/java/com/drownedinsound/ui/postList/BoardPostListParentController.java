@@ -66,34 +66,15 @@ public class BoardPostListParentController extends BaseUIController {
         }
     }
 
-    private BoardPostListUi findListAt(int position) {
-        Set<Ui> uis = getUis();
-        for (Ui ui : uis) {
-            if (ui instanceof BoardPostListUi) {
-                BoardPostListUi boardPostListUi
-                        = (BoardPostListUi) ui;
-
-                if (boardPostListUi.getPageIndex()
-                        == position) {
-                    return boardPostListUi;
-                }
-            }
-        }
-        return null;
-    }
-
     public void loadList(BoardPostListUi boardPostList) {
         if (boardPostList != null) {
             boardPostList.onDisplay();
         }
     }
 
-    public void doNewNewPostAction(int currentSelectedPage) {
+    public void doNewNewPostAction(String boardPostListType) {
         if (disBoardRepo.isUserLoggedIn()) {
-            BoardPostListUi boardPostListUi = findListAt(currentSelectedPage);
-            if (boardPostListUi != null) {
-                getDisplay().showNewPostUI(boardPostListUi.getBoardListType());
-            }
+                getDisplay().showNewPostUI(boardPostListType);
         } else {
             getDisplay().showNotLoggedInUI();
         }

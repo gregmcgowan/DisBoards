@@ -26,14 +26,13 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
 
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
  * Created by gregmcgowan on 12/12/15.
  */
-public class BoardPostListPostListControllerTest {
+public class BoardPostListControllerTest {
 
     @Mock
     BoardPostListUi boardPostListUi;
@@ -161,12 +160,12 @@ public class BoardPostListPostListControllerTest {
 
     @Test
     public void testLoadListOnAttachToParent() {
-        when(boardPostListParentUi.getCurrentPageShow()).thenReturn(1);
-        when(boardPostListUi.getPageIndex()).thenReturn(1);
         when(boardPostListUi.getBoardListType()).thenReturn(BoardListTypes.MUSIC);
 
         when(boardPostListUi.getID()).thenReturn(1);
         when(boardPostListParentUi.getID()).thenReturn(2);
+
+        when(boardPostListUi.isDisplayed()).thenReturn(true);
 
         when(disBoardRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 1, false))
                 .thenReturn(Observable.just(boardPosts));
@@ -186,53 +185,6 @@ public class BoardPostListPostListControllerTest {
 
         boardPostListController.detachUi(boardPostListUi);
         boardPostListController.detachUi(boardPostListParentUi);
-    }
-
-    @Test
-    public void testGetListInfo() {
-        List<BoardPostList> boardPostListInfos = new ArrayList<>();
-        boardPostListInfos.add(boardPostListInfo);
-
-        when(disBoardRepo.getAllBoardPostLists())
-                .thenReturn(Observable.just(boardPostListInfos));
-
-        when(boardPostListParentUi.getID()).thenReturn(1);
-
-        boardPostListController.uiCreated(boardPostListParentUi);
-        boardPostListController.attachUi(boardPostListParentUi);
-        boardPostListController.detachUi(boardPostListParentUi);
-        boardPostListController.attachUi(boardPostListParentUi);
-
-        verify(disBoardRepo).getAllBoardPostLists();
-        verify(boardPostListParentUi,times(1)).setBoardPostLists(boardPostListInfos);
-
-    }
-    @Test
-    public void testAddNewPostNotLoggedIn() {
-        when(disBoardRepo.isUserLoggedIn()).thenReturn(false);
-
-        when(boardPostListParentUi.getID()).thenReturn(1);
-        when(boardPostListUi.getPageIndex()).thenReturn(1);
-
-        boardPostListController.attachDisplay(display);
-        boardPostListController.attachUi(boardPostListUi);
-        boardPostListController.doNewNewPostAction(1);
-
-        verify(display).showNotLoggedInUI();
-    }
-
-    @Test
-    public void testAddNewPostLoggedIn() {
-        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
-
-        when(boardPostListParentUi.getID()).thenReturn(1);
-        when(boardPostListUi.getPageIndex()).thenReturn(1);
-
-        boardPostListController.attachDisplay(display);
-        boardPostListController.attachUi(boardPostListUi);
-        boardPostListController.doNewNewPostAction(1);
-
-        verify(display).showNewPostUI(boardPostListUi.getBoardListType());
     }
 
     @Test
@@ -332,23 +284,7 @@ public class BoardPostListPostListControllerTest {
         verify(disBoardRepo).setBoardPostSummary(boardPostSummary);
     }
 
-    @Test
-    public void testScrollCurrentListToPosition() {
-        boardPostListController.attachUi(boardPostListUi);
-        boardPostListController.attachUi(boardPostListParentUi);
 
-        when(boardPostListUi.getID()).thenReturn(1);
-        when(boardPostListParentUi.getID()).thenReturn(2);
-
-
-        when(boardPostListParentUi.getCurrentPageShow()).thenReturn(1);
-        when(boardPostListUi.getPageIndex()).thenReturn(1);
-        when(boardPostListUi.getBoardListType()).thenReturn(BoardListTypes.MUSIC);
-
-        boardPostListController.moveToTopOfCurrentList();
-
-        verify(boardPostListUi).scrollToPostAt(0);
-    }
 
 
 }
