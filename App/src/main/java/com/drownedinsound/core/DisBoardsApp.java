@@ -5,6 +5,7 @@ import com.drownedinsound.BuildConfig;
 import com.drownedinsound.data.DataModule;
 import com.drownedinsound.utils.CrashlyticsTree;
 import com.facebook.stetho.Stetho;
+import com.squareup.leakcanary.LeakCanary;
 
 import android.app.Application;
 import android.content.Context;
@@ -45,6 +46,7 @@ public class DisBoardsApp extends Application {
                                     Stetho.defaultInspectorModulesProvider(this))
                             .build());
         }
+        LeakCanary.install(this);
     }
 
     private void initialiseLogging() {
