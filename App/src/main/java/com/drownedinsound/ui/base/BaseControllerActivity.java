@@ -36,6 +36,7 @@ public abstract class BaseControllerActivity<C extends BaseUIController> extends
     @Override
     public void onDestroy() {
         super.onDestroy();
+        display = null;
         getController().onDestroy();
     }
 

@@ -35,6 +35,7 @@ public abstract class BaseControllerFragment<C extends BaseUIController> extends
     @Override
     public void onDestroy() {
         super.onDestroy();
+        display = null;
         getController().onDestroy();
     }
 
