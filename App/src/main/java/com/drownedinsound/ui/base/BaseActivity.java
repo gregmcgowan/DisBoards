@@ -5,10 +5,10 @@ import com.drownedinsound.core.DisBoardsApp;
 import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.utils.EspressoIdlingResource;
 
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 import android.support.test.espresso.IdlingResource;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -34,7 +34,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Ui {
             setSupportActionBar(toolbar);
         }
 
-        fragmentManager = getFragmentManager();
+        fragmentManager = getSupportFragmentManager();
 
         onSessionComponentCreated(DisBoardsApp.getApplication(this).getSessionComponent());
     }

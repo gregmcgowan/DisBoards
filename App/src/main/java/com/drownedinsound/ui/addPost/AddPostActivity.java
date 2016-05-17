@@ -6,10 +6,10 @@ import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.BaseActivity;
 
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -39,7 +39,7 @@ public class AddPostActivity extends BaseActivity {
                 .getStringExtra(DisBoardsConstants.BOARD_TYPE);
 
         AddPostFragment newPostFragment = AddPostFragment.newInstance(boardListType);
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.container, newPostFragment, "NEW_POST_FRAGMENT");
         fragmentTransaction.commit();
     }
@@ -57,7 +57,7 @@ public class AddPostActivity extends BaseActivity {
     @OnClick(R.id.send_button)
     public void handleSendButtonPressed() {
         AddPostFragment newPostFragment =
-                (AddPostFragment) getFragmentManager().findFragmentByTag("NEW_POST_FRAGMENT");
+                (AddPostFragment) fragmentManager.findFragmentByTag("NEW_POST_FRAGMENT");
         if (newPostFragment != null) {
             newPostFragment.doNewPostAction();
         }

@@ -9,13 +9,13 @@ import com.drownedinsound.ui.base.SimpleDialogFragment;
 import com.drownedinsound.ui.favourites.FavouritesActivity;
 import com.drownedinsound.ui.start.LoginActivity;
 
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 
@@ -174,7 +174,7 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
 
     @Override
     public void setBoardPostLists(List<BoardPostList> boardPostListInfos) {
-        boardPostListFragmentAdapter = new BoardPostListFragmentAdapter(getFragmentManager());
+        boardPostListFragmentAdapter = new BoardPostListFragmentAdapter(getSupportFragmentManager());
         boardPostListFragmentAdapter.setBoardPostListInfos(boardPostListInfos);
         viewPager.setAdapter(boardPostListFragmentAdapter);
         initialiseViewPager();

@@ -3,10 +3,10 @@ package com.drownedinsound.ui.base;
 import com.drownedinsound.core.DisBoardsApp;
 import com.drownedinsound.core.SessionComponent;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.Fragment;
 
 import java.lang.ref.WeakReference;
 

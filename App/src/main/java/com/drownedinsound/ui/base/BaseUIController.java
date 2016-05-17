@@ -25,7 +25,7 @@ import timber.log.Timber;
  */
 public abstract class BaseUIController {
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private final Set<Ui> mUis;
 
