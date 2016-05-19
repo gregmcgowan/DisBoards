@@ -1,8 +1,6 @@
 package com.drownedinsound.ui.base;
 
 import com.drownedinsound.BuildConfig;
-import com.drownedinsound.ui.postList.BoardPostListFragment;
-import com.fernandocejas.frodo.annotation.RxLogSubscriber;
 
 import android.support.annotation.NonNull;
 
