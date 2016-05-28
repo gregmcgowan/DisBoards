@@ -140,8 +140,6 @@ public class BoardPostAdapter extends RecyclerView.Adapter<BaseBoardPostHolder> 
                     .findViewById(R.id.board_post_comment_this_view);
             boardPostCommentHolder.whitespaceLayout = (LinearLayout) rowView
                     .findViewById(R.id.board_post_comment_whitespace_section);
-            boardPostCommentHolder.actionRelativeLayout = (RelativeLayout) rowView
-                    .findViewById(R.id.board_post_comment_action_section);
             boardPostCommentHolder.replyTextView = (TextView) rowView
                     .findViewById(R.id.board_post_comment_reply);
             boardPostCommentHolder.thisTextView = (TextView) rowView
@@ -239,7 +237,9 @@ public class BoardPostAdapter extends RecyclerView.Adapter<BaseBoardPostHolder> 
 
             boardPostCommentHolder.itemView.setOnClickListener(
                             new AllCommentClickListener(
-                                    boardPostCommentHolder.actionRelativeLayout,
+                                    (ViewGroup) boardPostCommentHolder.itemView,
+                                    boardPostCommentHolder.thisTextView,
+                                    boardPostCommentHolder.replyTextView,
                                     comment));
             boardPostCommentHolder.thisTextView.setOnClickListener(
                     new ThisACommentClickListener(comment, thisACommentActionListener));
@@ -251,11 +251,16 @@ public class BoardPostAdapter extends RecyclerView.Adapter<BaseBoardPostHolder> 
             boolean actionSectionVisible = comment
                     .isActionSectionVisible();
             if (actionSectionVisible) {
-                boardPostCommentHolder.actionRelativeLayout
+                boardPostCommentHolder.thisTextView
+                        .setVisibility(View.VISIBLE);
+                boardPostCommentHolder.replyTextView
                         .setVisibility(View.VISIBLE);
             } else {
-                boardPostCommentHolder.actionRelativeLayout
+                boardPostCommentHolder.thisTextView
                         .setVisibility(View.GONE);
+                boardPostCommentHolder.replyTextView
+                        .setVisibility(View.GONE);
+
             }
 
             if (comment.isDoHighlightedAnimation()) {

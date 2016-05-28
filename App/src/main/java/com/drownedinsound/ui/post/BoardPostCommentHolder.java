@@ -28,8 +28,6 @@ class BoardPostCommentHolder extends BaseBoardPostHolder{
 
     public LinearLayout whitespaceLayout;
 
-    public RelativeLayout actionRelativeLayout;
-
     public TextView thisTextView;
 
     public TextView replyTextView;

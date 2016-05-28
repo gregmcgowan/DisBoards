@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical"
-              android:paddingBottom="@dimen/margin_large">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/margin_large">
 
     <LinearLayout
             android:id="@+id/board_post_comment_comment_section"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:layout_marginLeft="@dimen/margin_medium"
             android:layout_marginRight="@dimen/margin_medium"
             android:orientation="horizontal">
@@ -23,6 +23,8 @@
                 android:id="@+id/board_post_comment_content_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:elevation="4dp"
+                android:clipToPadding="false"
                 android:background="@drawable/comment_background_transition"
                 android:orientation="vertical">
 
@@ -134,49 +136,44 @@
         </LinearLayout>
     </LinearLayout>
 
-    <RelativeLayout
-            android:id="@+id/board_post_comment_action_section"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="visible">
 
-        <TextView
-                android:id="@+id/board_post_comment_reply"
-                android:layout_width="@dimen/comment_button_width"
-                android:layout_height="@dimen/comment_button_height"
-                android:layout_alignParentRight="true"
-                android:layout_centerInParent="true"
-                android:layout_marginBottom="@dimen/margin_medium"
-                android:layout_marginLeft="@dimen/margin_medium"
-                android:layout_marginRight="@dimen/margin_medium"
-                android:layout_marginTop="@dimen/margin_medium"
-                android:background="@color/very_dark_grey"
-                android:gravity="center"
-                android:padding="@dimen/comment_text_padding"
-                android:text="@string/reply_text"
-                android:textColor="@color/darkest_grey"
-                android:textSize="@dimen/text_micro"
-                android:textStyle="bold"/>
+    <TextView
+            android:id="@+id/board_post_comment_reply"
+            android:layout_width="@dimen/comment_button_width"
+            android:layout_height="@dimen/comment_button_height"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/board_post_comment_comment_section"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:background="@color/very_dark_grey"
+            android:gravity="center"
+            android:padding="@dimen/comment_text_padding"
+            android:text="@string/reply_text"
+            android:textColor="@color/darkest_grey"
+            android:textSize="@dimen/text_micro"
+            android:textStyle="bold"
+            android:visibility="gone"/>
 
-        <TextView
-                android:layout_centerInParent="true"
-                android:id="@+id/board_post_comment_this"
-                android:layout_width="@dimen/comment_button_width"
-                android:layout_height="@dimen/comment_button_height"
-                android:layout_marginBottom="@dimen/margin_medium"
-                android:layout_marginLeft="@dimen/margin_medium"
-                android:layout_marginRight="@dimen/margin_medium"
-                android:layout_marginTop="@dimen/margin_medium"
-                android:layout_toLeftOf="@id/board_post_comment_reply"
-                android:background="@color/very_dark_grey"
-                android:gravity="center"
-                android:padding="@dimen/comment_text_padding"
-                android:text="@string/this_text"
-                android:textColor="@color/darkest_grey"
-                android:textSize="@dimen/text_micro"
-                android:textStyle="bold"/>
-    </RelativeLayout>
+    <TextView
+            android:id="@+id/board_post_comment_this"
+            android:layout_width="@dimen/comment_button_width"
+            android:layout_height="@dimen/comment_button_height"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_below="@id/board_post_comment_comment_section"
+            android:layout_toLeftOf="@id/board_post_comment_reply"
+            android:background="@color/very_dark_grey"
+            android:gravity="center"
+            android:padding="@dimen/comment_text_padding"
+            android:text="@string/this_text"
+            android:textColor="@color/darkest_grey"
+            android:textSize="@dimen/text_micro"
+            android:textStyle="bold"
+            android:visibility="gone"/>
 
 
-</LinearLayout>
+</RelativeLayout>
