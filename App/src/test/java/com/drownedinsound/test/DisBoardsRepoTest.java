@@ -90,8 +90,7 @@ public class DisBoardsRepoTest {
 
     @Test
     public void testLogin() throws Exception {
-        LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setAuthenticationToken("token");
+        LoginResponse loginResponse = new LoginResponse("token");
 
         when(disApiClient.loginUser("username", "password"))
                 .thenReturn(Observable.just(loginResponse));

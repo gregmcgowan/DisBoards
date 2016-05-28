@@ -29,4 +29,12 @@ public class ProdDataModule {
             DisBoardsLocalRepo disBoardsLocalRepo, UserSessionRepo userSessionRepo) {
         return new DisBoardRepoImpl(disApiClient, disBoardsLocalRepo, userSessionRepo);
     }
+
+    @Provides
+    @SingleIn(SessionComponent.class)
+    DisRepo2 provideDisBoardRepo2(DisApiClient disApiClient,
+            DisBoardsLocalRepo disBoardsLocalRepo, UserSessionRepo userSessionRepo) {
+        return new DisBoardRepoImpl2(disApiClient, disBoardsLocalRepo, userSessionRepo);
+
+    }
 }
