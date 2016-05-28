@@ -7,6 +7,10 @@ public class LoginResponse {
 
     private String authenticationToken;
 
+    public LoginResponse(String authenticationToken) {
+        this.authenticationToken = authenticationToken;
+    }
+
     public String getAuthenticationToken() {
         return authenticationToken;
     }

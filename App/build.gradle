@@ -140,6 +140,7 @@ dependencies {
 
     compile 'io.reactivex:rxandroid:1.0.1'
     compile 'io.reactivex:rxjava:1.1.0'
+    compile 'com.jakewharton.rxrelay:rxrelay:1.1.0'
 
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
     betaCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'

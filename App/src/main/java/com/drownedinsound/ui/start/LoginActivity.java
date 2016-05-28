@@ -3,6 +3,7 @@ package com.drownedinsound.ui.start;
 import com.drownedinsound.R;
 import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.ui.base.BaseControllerActivity;
+import com.drownedinsound.ui.base.BasePresenterActivity;
 import com.drownedinsound.utils.StringUtils;
 import com.drownedinsound.utils.UiUtils;
 
@@ -28,10 +29,10 @@ import butterknife.OnClick;
  * @author Greg
  */
 
-public class LoginActivity extends BaseControllerActivity<LoginController> implements LoginUi {
+public class LoginActivity extends BasePresenterActivity<LoginPresenter> implements LoginUi {
 
     @Inject
-    LoginController loginController;
+    LoginPresenter loginPresenter;
 
     @InjectView(R.id.login_button)
     Button loginButton;
@@ -70,14 +71,15 @@ public class LoginActivity extends BaseControllerActivity<LoginController> imple
     }
 
     @Override
-    protected LoginController getController() {
-        return loginController;
+    protected LoginPresenter getPresenter() {
+        return loginPresenter;
     }
 
     @Override
     public void showLoadingProgress(boolean visible) {
         int progressBarVisibility = visible ? View.VISIBLE : View.INVISIBLE;
         int otherFieldsVisibility = visible ? View.INVISIBLE : View.VISIBLE;
+
         progressBar.setVisibility(progressBarVisibility);
         usernameField.setVisibility(otherFieldsVisibility);
         passwordField.setVisibility(otherFieldsVisibility);
@@ -91,7 +93,7 @@ public class LoginActivity extends BaseControllerActivity<LoginController> imple
 
     @OnClick(R.id.lurk_button)
     protected void doLurkAction() {
-        loginController.doLurkAction(this);
+        loginPresenter.lurk();
     }
 
     @OnClick(R.id.login_button)
@@ -99,7 +101,7 @@ public class LoginActivity extends BaseControllerActivity<LoginController> imple
         String username = usernameField.getText().toString();
         String password = passwordField.getText().toString();
 
-        loginController.loginButtonPressed(this,username, password);
+        loginPresenter.login(this,username, password);
     }
 
     @Override
