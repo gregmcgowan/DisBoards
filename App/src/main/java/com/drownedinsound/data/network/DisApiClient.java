@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
@@ -119,7 +118,9 @@ public class DisApiClient implements DisBoardsApi {
             String authToken = disWebPageParser.getAuthenticationToken(
                     getInputStreamFromResponse(response));
             if (authToken != null && authToken.length() > 0) {
-                return new LoginResponse(authToken);
+                LoginResponse loginResponse = new LoginResponse();
+                loginResponse.setAuthenticationToken(authToken);
+                return loginResponse;
             } else {
                 throw new LoginException();
             }
@@ -339,7 +340,7 @@ public class DisApiClient implements DisBoardsApi {
                     subscriber.onError(new NoInternetConnectionException());
                 }
             }
-        }).timeout(10, TimeUnit.SECONDS);
+        });
     }
 
     protected Headers.Builder addMandatoryHeaders(Headers.Builder headers) {

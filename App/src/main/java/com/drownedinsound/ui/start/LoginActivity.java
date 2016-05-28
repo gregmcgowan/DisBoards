@@ -3,7 +3,6 @@ package com.drownedinsound.ui.start;
 import com.drownedinsound.R;
 import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.ui.base.BaseControllerActivity;
-import com.drownedinsound.ui.base.BasePresenterActivity;
 import com.drownedinsound.utils.StringUtils;
 import com.drownedinsound.utils.UiUtils;
 
@@ -29,10 +28,10 @@ import butterknife.OnClick;
  * @author Greg
  */
 
-public class LoginActivity extends BasePresenterActivity<LoginPresenter> implements LoginUi {
+public class LoginActivity extends BaseControllerActivity<LoginController> implements LoginUi {
 
     @Inject
-    LoginPresenter loginPresenter;
+    LoginController loginController;
 
     @InjectView(R.id.login_button)
     Button loginButton;
@@ -71,15 +70,14 @@ public class LoginActivity extends BasePresenterActivity<LoginPresenter> impleme
     }
 
     @Override
-    protected LoginPresenter getPresenter() {
-        return loginPresenter;
+    protected LoginController getController() {
+        return loginController;
     }
 
     @Override
     public void showLoadingProgress(boolean visible) {
         int progressBarVisibility = visible ? View.VISIBLE : View.INVISIBLE;
         int otherFieldsVisibility = visible ? View.INVISIBLE : View.VISIBLE;
-
         progressBar.setVisibility(progressBarVisibility);
         usernameField.setVisibility(otherFieldsVisibility);
         passwordField.setVisibility(otherFieldsVisibility);
@@ -93,7 +91,7 @@ public class LoginActivity extends BasePresenterActivity<LoginPresenter> impleme
 
     @OnClick(R.id.lurk_button)
     protected void doLurkAction() {
-        loginPresenter.lurk();
+        loginController.doLurkAction(this);
     }
 
     @OnClick(R.id.login_button)
@@ -101,7 +99,7 @@ public class LoginActivity extends BasePresenterActivity<LoginPresenter> impleme
         String username = usernameField.getText().toString();
         String password = passwordField.getText().toString();
 
-        loginPresenter.login(this,username, password);
+        loginController.loginButtonPressed(this,username, password);
     }
 
     @Override
