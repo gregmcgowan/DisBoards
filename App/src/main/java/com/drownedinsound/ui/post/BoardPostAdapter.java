@@ -130,7 +130,7 @@ public class BoardPostAdapter extends RecyclerView.Adapter<BaseBoardPostHolder> 
             BoardPostCommentHolder boardPostCommentHolder = new BoardPostCommentHolder(rowView);
             boardPostCommentHolder.commentTitleTextView = (TextView) rowView
                     .findViewById(R.id.board_post_comment_content_title);
-            boardPostCommentHolder.commentContentTextView = (ActiveTextView) rowView
+            boardPostCommentHolder.commentContentTextView = (TextView) rowView
                     .findViewById(R.id.board_post_comment_content);
             boardPostCommentHolder.commentAuthorTextView = (TextView) rowView
                     .findViewById(R.id.board_post_comment_author_text_view);
@@ -283,8 +283,8 @@ public class BoardPostAdapter extends RecyclerView.Adapter<BaseBoardPostHolder> 
                         }, HIGHLIGHTED_COMMENT_ANIMATION_LENGTH / 2);
                 comment.setDoHighlightedAnimation(false);
             }
-            boardPostCommentHolder.commentContentTextView
-                    .setLinkClickedListener(onLinkClickedListener);
+            //boardPostCommentHolder.commentContentTextView
+              //      .setLinkClickedListener(onLinkClickedListener);
         }
     }
 

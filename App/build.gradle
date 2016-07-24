@@ -20,7 +20,7 @@ repositories {
     mavenCentral()
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://repo.commonsware.com.s3.amazonaws.com" }
-}
+}   
 
 def versionMajor = 0
 def versionMinor = 5
@@ -132,6 +132,8 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true
     }
+
+    compile 'uk.co.chrisjenx:calligraphy:2.2.0'
 
     compile 'de.greenrobot:greendao:2.1.0'
 

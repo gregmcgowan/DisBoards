@@ -18,7 +18,7 @@ class BoardPostCommentHolder extends BaseBoardPostHolder{
 
     public TextView commentTitleTextView;
 
-    public ActiveTextView commentContentTextView;
+    public TextView commentContentTextView;
 
     public TextView commentAuthorTextView;
 
