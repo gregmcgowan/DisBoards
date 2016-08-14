@@ -7,12 +7,10 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
-import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
@@ -22,6 +20,7 @@ import android.widget.TextView;
 public class AllCommentClickListener  implements View.OnClickListener{
 
     private ViewGroup itemViewGroup;
+
     private TextView thisTextView;
 
     private TextView replyTextView;
@@ -114,7 +113,7 @@ public class AllCommentClickListener  implements View.OnClickListener{
             });
             showHideReplyAndThis.playTogether(replyAnimator,thisAnimator);
             showHideReplyAndThis.start();
-       }
+        }
     }
 
 }

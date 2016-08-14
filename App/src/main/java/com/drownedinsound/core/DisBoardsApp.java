@@ -2,6 +2,7 @@ package com.drownedinsound.core;
 
 import com.crashlytics.android.Crashlytics;
 import com.drownedinsound.BuildConfig;
+import com.drownedinsound.R;
 import com.drownedinsound.data.DataModule;
 import com.drownedinsound.utils.CrashlyticsTree;
 import com.facebook.stetho.Stetho;
@@ -12,6 +13,7 @@ import android.content.Context;
 
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 public class DisBoardsApp extends Application {
 
@@ -34,6 +36,10 @@ public class DisBoardsApp extends Application {
                 || BuildConfig.BUILD_TYPE.equals("release")) {
             Fabric.with(this,new Crashlytics());
         }
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setFontAttrId(R.attr.fontPath)
+                .build()
+        );
     }
 
     private void initialiseDebuggingSettings() {
