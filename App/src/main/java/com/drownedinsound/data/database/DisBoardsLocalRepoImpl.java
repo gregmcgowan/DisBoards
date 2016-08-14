@@ -126,6 +126,7 @@ public class DisBoardsLocalRepoImpl implements DisBoardsLocalRepo {
                     //We don't want to overrite this
                     if(matchingNewSummary != null) {
                         matchingNewSummary.setLastViewedTime(existingSummary.getLastViewedTime());
+                        matchingNewSummary.setNumberOfTimesOpened(existingSummary.getNumberOfTimesOpened());
                     }
                 }
 
