@@ -1,3 +1,5 @@
+DEPRECATED : the forums now use discourse which is much better
+
 # DisBoards [![Build Status](https://travis-ci.org/gregmcgowan/DisBoards.svg?branch=master)](https://travis-ci.org/gregmcgowan/DisBoards)
 This is a project that I have been working on and off for a few years. It was borne out of frustration of using the forums on www.drownedinsound.com on a mobile browser.
 
