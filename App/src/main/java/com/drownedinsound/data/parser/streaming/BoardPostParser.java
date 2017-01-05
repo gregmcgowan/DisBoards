@@ -1,14 +1,12 @@
 package com.drownedinsound.data.parser.streaming;
 
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostComment;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.utils.DateUtils;
 import com.drownedinsound.utils.StringUtils;
 
-import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.EndTag;
 import net.htmlparser.jericho.Segment;
 import net.htmlparser.jericho.StartTag;
@@ -44,13 +42,6 @@ public class BoardPostParser {
     private static final String THREAD_CLASS = "thread";
 
     private static final String THIS_CLASS = "this";
-
-    private UserSessionRepo userSessionManager;
-
-    public BoardPostParser(UserSessionRepo userSessionManager) {
-        this.userSessionManager = userSessionManager;
-
-    }
 
     private enum PageState {
         INITIAL_CONTENT_DIV, EDITIORIAL_DIV, COMMENT_DIV, COMMENT_CONTENT_DIV, COMMENT_FOOTER_DIV, COMMENT_THIS_DIV, COMMENT_LIST_DIV
@@ -332,15 +323,6 @@ public class BoardPostParser {
                                 && PageState.COMMENT_LIST_DIV
                                 .equals(baseDivState)) {
                             boardPostCommentLevel--;
-                        }
-                    } else if (HtmlConstants.META.equals(tagName)) {
-                        String metaString = tag.toString();
-                        if (metaString.contains(HtmlConstants.AUTHENTICITY_TOKEN_NAME)) {
-                            Attributes attributes = tag.parseAttributes();
-                            if (attributes != null) {
-                                String authToken = attributes.getValue("content");
-                                userSessionManager.setAuthenticityToken(authToken);
-                            }
                         }
                     }
 

@@ -23,14 +23,10 @@ public class DisBoardRepoImpl2 implements DisRepo2 {
 
     private DisBoardsLocalRepo disBoardsLocalRepo;
 
-    private UserSessionRepo userSessionRepo;
-
     public DisBoardRepoImpl2(DisBoardsApi disApi,
-            DisBoardsLocalRepo disBoardsDatabase,
-            UserSessionRepo userSessionRepo) {
+            DisBoardsLocalRepo disBoardsDatabase) {
         this.disApi = disApi;
         this.disBoardsLocalRepo = disBoardsDatabase;
-        this.userSessionRepo = userSessionRepo;
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.drownedinsound.ui.postList;
 
 import com.drownedinsound.R;
 import com.drownedinsound.core.SessionComponent;
-import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.BaseControllerActivity;
 
@@ -43,9 +42,6 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
 
     @InjectView(R.id.board_tabs)
     TabLayout tabLayout;
-
-    @Inject
-    UserSessionManager userSessionManager;
 
     @InjectView(R.id.floating_add_button)
     FloatingActionButton floatingAddButton;
@@ -147,12 +143,6 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
         boardPostListFragmentAdapter.setBoardPostListInfos(boardPostListInfos);
         viewPager.setAdapter(boardPostListFragmentAdapter);
         initialiseViewPager();
-    }
-
-
-    public void doLogoutAction() {
-        //TODO Might need to do a proper logout
-        userSessionManager.clearSession();
     }
 
     @OnClick(R.id.floating_add_button)

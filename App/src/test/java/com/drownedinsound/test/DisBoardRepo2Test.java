@@ -2,7 +2,6 @@ package com.drownedinsound.test;
 
 import com.drownedinsound.data.DisBoardRepoImpl2;
 import com.drownedinsound.data.DisRepo2;
-import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.database.DisBoardsLocalRepo;
 import com.drownedinsound.data.network.DisApiClient;
 
@@ -24,16 +23,13 @@ public class DisBoardRepo2Test {
     @Mock
     DisBoardsLocalRepo disBoardsLocalRepo;
 
-    @Mock
-    UserSessionRepo userSessionRepo;
-
     private DisRepo2 disRepo2;
 
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        disRepo2 = new DisBoardRepoImpl2(disApiClient,disBoardsLocalRepo,userSessionRepo);
+        disRepo2 = new DisBoardRepoImpl2(disApiClient,disBoardsLocalRepo);
     }
 
 }

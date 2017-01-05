@@ -1,7 +1,6 @@
 package com.drownedinsound.data.parser.streaming;
 
 import com.drownedinsound.core.DisBoardsConstants;
-import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.utils.DateUtils;
@@ -41,12 +40,6 @@ public class BoardPostSummaryListParser  {
 
     private static final boolean DEBUG_PARSER = false;
 
-    private UserSessionRepo userSessionRepo;
-
-    public BoardPostSummaryListParser(UserSessionRepo userSessionRepo) {
-        this.userSessionRepo = userSessionRepo;
-    }
-
     public  List<BoardPostSummary> parse(@BoardPostList.BoardPostListType String boardListType,InputStream inputStream) {
         boolean inBoardPostTable = false;
         int tableRowCell= 0;
@@ -69,16 +62,7 @@ public class BoardPostSummaryListParser  {
                     String tagName = tag.getName();
                     if (tagName.equals(HtmlConstants.TABLE)) {
                         inBoardPostTable = tag instanceof StartTag;
-                    } else if (HtmlConstants.META.equals(tagName)) {
-                        String metaString = tag.toString();
-                        if (metaString.contains(HtmlConstants.AUTHENTICITY_TOKEN_NAME)) {
-                            Attributes attributes = tag.parseAttributes();
-                            if (attributes != null) {
-                                String authToken = attributes.getValue("content");
-                                userSessionRepo.setAuthenticityToken(authToken);
-                            }
-                        }
-                    } else if (tagName.equals(HtmlConstants.TABLE_ROW)) {
+                    }  else if (tagName.equals(HtmlConstants.TABLE_ROW)) {
                         if (tag instanceof StartTag) {
                             String trString = tag.toString();
                             if (isStartOfNewPostTr(trString)) {
@@ -182,15 +166,6 @@ public class BoardPostSummaryListParser  {
                                     currentBoardPostSummary
                                             .setIsSticky(HtmlConstants.STICKY.equalsIgnoreCase(buffer.toString().trim()));
                                 }
-                            }
-                        }
-                    } else if (HtmlConstants.META.equals(tagName)) {
-                        String metaString = tag.toString();
-                        if (metaString.contains(HtmlConstants.AUTHENTICITY_TOKEN_NAME)) {
-                            Attributes attributes = tag.parseAttributes();
-                            if (attributes != null) {
-                                String authToken = attributes.getValue("content");
-                                userSessionRepo.setAuthenticityToken(authToken);
                             }
                         }
                     }

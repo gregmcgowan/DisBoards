@@ -1,6 +1,5 @@
 package com.drownedinsound.test;
 
-import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostComment;
 import com.drownedinsound.data.generatered.BoardPostList;
@@ -42,9 +41,6 @@ import static org.mockito.Mockito.when;
  * Created by gregmcgowan on 09/12/15.
  */
 public class DisApiTest {
-
-    @Mock
-    UserSessionRepo userSessionRepo;
 
     @Mock
     DisWebPageParser disWebPageParser;
