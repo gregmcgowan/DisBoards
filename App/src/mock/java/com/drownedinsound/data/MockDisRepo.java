@@ -5,7 +5,6 @@ import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
-import com.drownedinsound.data.network.LoginResponse;
 import com.drownedinsound.data.network.UrlConstants;
 
 import java.util.ArrayList;

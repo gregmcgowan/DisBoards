@@ -350,12 +350,6 @@ public class BoardPostFragment extends BaseControllerFragment<BoardPostControlle
 
     }
 
-    private void updateFavouriteMenuItemStatus() {
-        if (!UiUtils.isDualPaneMode(getActivity())) {
-            ((BoardPostActivity) (getActivity())).refreshMenu();
-        }
-    }
-
     private void handleLinkClicked(String url) {
         Log.d(TAG, "URL CLICKED " + url);
         if (!TextUtils.isEmpty(url)) {

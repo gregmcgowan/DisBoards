@@ -1,7 +1,6 @@
 package com.drownedinsound.test;
 
 import com.drownedinsound.data.DisBoardRepoImpl;
-import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.database.DisBoardsLocalRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
@@ -9,7 +8,6 @@ import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.DisApiClient;
-import com.drownedinsound.data.network.LoginResponse;
 import com.drownedinsound.data.network.UrlConstants;
 
 import org.junit.Before;
@@ -46,9 +44,6 @@ public class DisBoardsRepoTest {
     @Mock
     DisBoardsLocalRepo disBoardsLocalRepo;
 
-    @Mock
-    UserSessionRepo userSessionRepo;
-
     DisBoardRepoImpl disBoardRepo;
 
     private List<BoardPostSummary> testBoardPostSummaries;
@@ -63,8 +58,7 @@ public class DisBoardsRepoTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        disBoardRepo = new DisBoardRepoImpl(disApiClient, disBoardsLocalRepo,
-                userSessionRepo);
+        disBoardRepo = new DisBoardRepoImpl(disApiClient, disBoardsLocalRepo);
 
         boardPostList = new BoardPostList(BoardListTypes.MUSIC,
                 BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 0, 19, 0);
@@ -85,27 +79,6 @@ public class DisBoardsRepoTest {
         expectedBoardPost.setDateOfPost("22:55, 30 December '15");
         expectedBoardPost.setBoardListTypeID(BoardListTypes.SOCIAL);
         expectedBoardPost.setNumberOfReplies(5);
-    }
-
-
-    @Test
-    public void testLogin() throws Exception {
-        LoginResponse loginResponse = new LoginResponse("token");
-
-        when(disApiClient.loginUser("username", "password"))
-                .thenReturn(Observable.just(loginResponse));
-
-        disBoardRepo.loginUser("username", "password")
-                .subscribeOn(Schedulers.immediate())
-                .subscribe(new Action1<LoginResponse>() {
-                    @Override
-                    public void call(LoginResponse loginResponse) {
-
-                    }
-                });
-
-        verify(disApiClient).loginUser("username", "password");
-        verify(userSessionRepo).setAuthenticityToken("token");
     }
 
     @Test
@@ -341,69 +314,6 @@ public class DisBoardsRepoTest {
         countDownLatch.await();
         verify(disApiClient, times(1)).getBoardPost(BoardListTypes.SOCIAL, BOARD_POST_ID);
         verify(disBoardsLocalRepo, times(2)).getBoardPost(BOARD_POST_ID);
-
-    }
-
-    //TODO test post a comment
-
-
-    @Test
-    public void testThisAComment() throws Exception {
-        when(disApiClient
-                .thisAComment(BoardListTypes.SOCIAL, BOARD_POST_ID, "COMMENTID", AUTH_TOKEN))
-                .thenReturn(Observable.just(expectedBoardPost));
-        when(userSessionRepo.getAuthenticityToken()).thenReturn(AUTH_TOKEN);
-
-        countDownLatch = new CountDownLatch(1);
-
-        disBoardRepo.thisAComment(BoardListTypes.SOCIAL, BOARD_POST_ID, "COMMENTID")
-                .subscribeOn(Schedulers.immediate())
-                .observeOn(Schedulers.immediate())
-                .subscribe(new Action1<BoardPost>() {
-                    @Override
-                    public void call(BoardPost boardPost) {
-                        AssertUtils.assertBoardPost(expectedBoardPost, boardPost);
-                        countDownLatch.countDown();
-                    }
-                });
-        countDownLatch.await();
-
-        verify(disApiClient, times(1)).thisAComment(BoardListTypes.SOCIAL, BOARD_POST_ID,
-                "COMMENTID", AUTH_TOKEN);
-        verify(userSessionRepo, times(1)).getAuthenticityToken();
-        verify(disBoardsLocalRepo, times(1)).setBoardPost(expectedBoardPost);
-
-    }
-
-    @Test
-    public void testAddANewPost() throws Exception {
-        when(disApiClient.addNewPost(BoardListTypes.MUSIC, "New title", "New Content", AUTH_TOKEN,
-                String.valueOf(boardPostList.getSectionId())))
-                .thenReturn(Observable.just(expectedBoardPost));
-        when(disBoardsLocalRepo.getBoardPostList(BoardListTypes.MUSIC))
-                .thenReturn(Observable.just(boardPostList));
-        when(userSessionRepo.getAuthenticityToken()).thenReturn(AUTH_TOKEN);
-
-        countDownLatch = new CountDownLatch(1);
-
-        disBoardRepo.addNewPost(BoardListTypes.MUSIC, "New title", "New Content")
-                .subscribeOn(Schedulers.immediate())
-                .observeOn(Schedulers.immediate())
-                .subscribe(new Action1<BoardPost>() {
-                    @Override
-                    public void call(BoardPost boardPost) {
-                        AssertUtils.assertBoardPost(expectedBoardPost, boardPost);
-                        countDownLatch.countDown();
-                    }
-                });
-        countDownLatch.await();
-
-        verify(disApiClient,times(1)).addNewPost(BoardListTypes.MUSIC, "New title", "New Content",
-                AUTH_TOKEN, String.valueOf(boardPostList.getSectionId()));
-        verify(userSessionRepo, times(1)).getAuthenticityToken();
-        verify(disBoardsLocalRepo, times(1)).getBoardPostList(BoardListTypes.MUSIC);
-        verify(disBoardsLocalRepo, times(1)).setBoardPost(expectedBoardPost);
-        verify(disBoardsLocalRepo, times(1)).setBoardPostList(boardPostList);
 
     }
 

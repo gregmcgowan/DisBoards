@@ -56,34 +56,6 @@ public class BoardPostListParentControllerTest {
                 BoardTypeConstants.MUSIC_DISPLAY_NAME, UrlConstants.MUSIC_URL, 0, 19,0);
 
     }
-    
-    @Test
-    public void testAddNewPostNotLoggedIn() {
-        when(disBoardRepo.isUserLoggedIn()).thenReturn(false);
-
-        when(boardPostListParentUi.getID()).thenReturn(1);
-        when(boardPostListUi.getPageIndex()).thenReturn(1);
-
-        boardPostListParentController.attachDisplay(display);
-        boardPostListParentController.attachUi(boardPostListUi);
-        boardPostListParentController.doNewNewPostAction(BoardListTypes.MUSIC);
-
-        verify(display).showNotLoggedInUI();
-    }
-
-    @Test
-    public void testAddNewPostLoggedIn() {
-        when(disBoardRepo.isUserLoggedIn()).thenReturn(true);
-
-        when(boardPostListParentUi.getID()).thenReturn(1);
-        when(boardPostListUi.getPageIndex()).thenReturn(1);
-
-        boardPostListParentController.attachDisplay(display);
-        boardPostListParentController.attachUi(boardPostListUi);
-        boardPostListParentController.doNewNewPostAction(BoardListTypes.MUSIC);
-
-        verify(display).showNewPostUI(BoardListTypes.MUSIC);
-    }
 
     @Test
     public void testScrollCurrentListToPosition() {

@@ -1,8 +1,6 @@
 package com.drownedinsound.ui.post;
 
 import com.drownedinsound.core.SingleIn;
-import com.drownedinsound.ui.addComment.AddCommentActivity;
-import com.drownedinsound.ui.addComment.AddCommentFragment;
 
 import dagger.Subcomponent;
 

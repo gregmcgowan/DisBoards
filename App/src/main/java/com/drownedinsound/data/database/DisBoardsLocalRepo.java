@@ -17,16 +17,11 @@ public interface DisBoardsLocalRepo {
 
     void setBoardPost(BoardPost boardPost) throws Exception;
 
-    Observable<Void> setBoardPostObservable(BoardPost boardPost);
-
     Observable<Void> setBoardPostSummary(BoardPostSummary boardPostSummary);
 
     Observable<List<BoardPostSummary>> getBoardPostSummaryListObservable(@BoardPostList.BoardPostListType String boardListType);
 
     List<BoardPostSummary> getBoardPostSummaryList(@BoardPostList.BoardPostListType String boardListType);
-
-    //Observable<Void> set(List<BoardPost> boardPosts);
-
     /**
      * Cannot be called from the main thread or will throw a run time expcetion
      *

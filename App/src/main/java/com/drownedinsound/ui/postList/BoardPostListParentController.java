@@ -73,10 +73,6 @@ public class BoardPostListParentController extends BaseUIController {
     }
 
     public void doNewNewPostAction(String boardPostListType) {
-        if (disBoardRepo.isUserLoggedIn()) {
-                getDisplay().showNewPostUI(boardPostListType);
-        } else {
-            getDisplay().showNotLoggedInUI();
-        }
+        getDisplay().showFeatureExpiredUI();
     }
 }

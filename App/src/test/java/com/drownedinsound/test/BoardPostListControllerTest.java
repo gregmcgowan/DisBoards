@@ -8,7 +8,6 @@ import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.UrlConstants;
 import com.drownedinsound.ui.base.Display;
-import com.drownedinsound.ui.addPost.AddPostUI;
 import com.drownedinsound.ui.postList.BoardPostListController;
 import com.drownedinsound.ui.postList.BoardPostListParentUi;
 import com.drownedinsound.ui.postList.BoardPostListUi;
@@ -44,9 +43,6 @@ public class BoardPostListControllerTest {
 
     @Mock
     Display display;
-
-    @Mock
-    AddPostUI newPostUI;
 
     private BoardPostListController boardPostListController;
 

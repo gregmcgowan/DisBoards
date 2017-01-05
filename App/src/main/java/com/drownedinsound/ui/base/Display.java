@@ -11,16 +11,11 @@ public interface Display {
 
     void showBoardPost(@BoardPostList.BoardPostListType String boardListType , String boardPostId);
 
-    void showNewPostUI(@BoardPostList.BoardPostListType String boardListType);
-
-    void showReplyUI(@BoardPostList.BoardPostListType String boardListType, String postId, String replyToAuthor,
-            String replyToCommentId);
-
     void showNotLoggedInUI();
 
     void hideCurrentScreen();
 
     void showErrorMessageDialog(int stringID);
 
-    void showLoginUi();
+    void showFeatureExpiredUI();
 }

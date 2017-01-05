@@ -5,17 +5,12 @@ import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.UserSessionManager;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.BaseControllerActivity;
-import com.drownedinsound.ui.base.SimpleDialogFragment;
-import com.drownedinsound.ui.favourites.FavouritesActivity;
-import com.drownedinsound.ui.start.LoginActivity;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 
@@ -143,34 +138,8 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
 
     @OnClick(R.id.profile_button)
     public void profileButtonPressed() {
-        if (userSessionManager.isUserLoggedIn()) {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            SimpleDialogFragment existingLogoutDialog =
-                    (SimpleDialogFragment) fragmentManager.findFragmentByTag(LOGOUT_DIALOG);
-            if (existingLogoutDialog != null) {
-                fragmentTransaction.remove(existingLogoutDialog);
-            }
-
-            SimpleDialogFragment logoutDialog =
-                    SimpleDialogFragment.newInstance(new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (which == DialogInterface.BUTTON_POSITIVE) {
-                                doLogoutAction();
-                            }
-                        }
-                    }, "", "Do you want to logout?", "Yes", "No");
-
-            logoutDialog.show(fragmentTransaction, LOGOUT_DIALOG);
-
-        } else {
-            Intent startLoginActivity = new Intent(this,
-                    LoginActivity.class);
-            startActivity(startLoginActivity);
-        }
+        //TODO remove
     }
-
-
 
     @Override
     public void setBoardPostLists(List<BoardPostList> boardPostListInfos) {
@@ -184,11 +153,6 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
     public void doLogoutAction() {
         //TODO Might need to do a proper logout
         userSessionManager.clearSession();
-    }
-
-    public void doViewFavouritesAction() {
-        Intent displayFavouritesIntent = new Intent(this, FavouritesActivity.class);
-        startActivity(displayFavouritesIntent);
     }
 
     @OnClick(R.id.floating_add_button)

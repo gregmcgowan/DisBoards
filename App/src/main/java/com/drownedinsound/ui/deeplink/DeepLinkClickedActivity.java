@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.start;
+package com.drownedinsound.ui.deeplink;
 
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.network.UrlConstants;

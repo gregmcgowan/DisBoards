@@ -2,7 +2,6 @@ package com.downedinsound.test.login;
 
 import com.drownedinsound.R;
 import com.drownedinsound.test.login.FakeDisRepo;
-import com.drownedinsound.ui.start.LoginActivity;
 
 import org.junit.After;
 import org.junit.Before;

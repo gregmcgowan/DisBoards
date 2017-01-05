@@ -11,15 +11,17 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.Dis_boards">
 
-        <activity android:name=".ui.start.LoginActivity" android:label=""/>
-        <activity android:name=".ui.postList.BoardPostListParentActivity" android:label=""/>
-        <activity android:name=".ui.addPost.AddPostActivity" android:label=""/>
-        <activity android:name=".ui.post.BoardPostActivity" android:label=""/>
-        <activity android:name=".ui.addComment.AddCommentActivity" android:label=""/>
-        <activity android:name=".ui.favourites.FavouritesActivity" android:label="Favourite Posts"
-                  android:icon="@null"/>
+        <activity android:name=".ui.postList.BoardPostListParentActivity"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
 
-        <activity android:name=".ui.start.DeepLinkClickedActivity" android:label="">
+        </activity>
+        <activity android:name=".ui.post.BoardPostActivity" android:label=""/>
+
+        <activity android:name=".ui.deeplink.DeepLinkClickedActivity" android:label="">
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -33,14 +35,6 @@
                 <data android:scheme="http"
                       android:host="drownedinsound.com"
                       android:pathPrefix="/community/boards"/>
-            </intent-filter>
-        </activity>
-
-        <activity
-                android:name=".ui.start.StartActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 

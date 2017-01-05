@@ -94,45 +94,13 @@ public class BoardPostController extends BaseUIController {
 
     public void showReplyUI(@BoardPostList.BoardPostListType String boardListType,
             String postId, String replyToAuthor, String replyToCommentId) {
-        if(disBoardRepo.isUserLoggedIn()) {
-            getDisplay().showReplyUI(boardListType, postId, replyToAuthor, replyToCommentId);
-        } else {
-            getDisplay().showNotLoggedInUI();
-        }
+        getDisplay().showFeatureExpiredUI();
     }
 
 
     public void thisAComment(BoardPostUI boardPostUI, @BoardPostList.BoardPostListType String boardListType,
             String postID, String commentID) {
-        if(disBoardRepo.isUserLoggedIn()) {
-            boardPostUI.showLoadingProgress(true);
-            int id = getId(boardPostUI);
-
-            Observable<BoardPost> thisACommentObservable = disBoardRepo
-                    .thisAComment(boardListType,postID, commentID)
-                    .compose(this.<BoardPost>defaultTransformer());
-
-            BaseObserver<BoardPost,BoardPostUI> thisACommentObserver
-                    = new BaseObserver<BoardPost, BoardPostUI>(id) {
-                @Override
-                public void onError(Throwable e) {
-                    getUI().showLoadingProgress(false);
-                    getUI().showThisACommentFailed();
-                }
-
-                @Override
-                public void onNext(BoardPost boardPost) {
-                    getUI().showBoardPost(boardPost);
-                    getUI().showLoadingProgress(false);
-                }
-            };
-            subscribeAndCache(boardPostUI, "THIS" + commentID, thisACommentObserver,
-                    thisACommentObservable);
-        } else {
-            if(getDisplay() != null) {
-                getDisplay().showNotLoggedInUI();
-            }
-        }
+        getDisplay().showFeatureExpiredUI();
     }
 
 

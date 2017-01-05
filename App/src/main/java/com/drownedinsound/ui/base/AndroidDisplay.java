@@ -2,11 +2,8 @@ package com.drownedinsound.ui.base;
 
 import com.drownedinsound.R;
 import com.drownedinsound.data.generatered.BoardPostList;
-import com.drownedinsound.ui.addComment.AddCommentActivity;
 import com.drownedinsound.ui.post.BoardPostActivity;
-import com.drownedinsound.ui.addPost.AddPostActivity;
 import com.drownedinsound.ui.postList.BoardPostListParentActivity;
-import com.drownedinsound.ui.start.LoginActivity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -19,16 +16,12 @@ import android.widget.Toast;
  */
 public class AndroidDisplay implements Display {
 
-    public Activity activity;
+    private final Activity activity;
 
-    public AndroidDisplay(Activity activity){
+    AndroidDisplay(Activity activity){
         this.activity = activity;
     }
 
-    @Override
-    public void showNewPostUI(@BoardPostList.BoardPostListType String boardListType) {
-        activity.startActivity(AddPostActivity.getIntent(activity, boardListType));
-    }
 
     @Override
     public void showBoardPost(@BoardPostList.BoardPostListType String boardListType,
@@ -37,45 +30,35 @@ public class AndroidDisplay implements Display {
     }
 
     @Override
-    public void showReplyUI(@BoardPostList.BoardPostListType String boardListType,
-            String postId, String replyToAuthor, String replyToCommentId) {
-        activity.startActivity(AddCommentActivity
-                .getIntent(activity, boardListType, postId, replyToAuthor, replyToCommentId));
-    }
-
-    @Override
     public void showNotLoggedInUI() {
         if (activity != null) {
-            //TODO improve this. Maybe only have a single activity
-            View parentView = activity.findViewById(R.id.parent_layout);
-            if (parentView == null) {
-                parentView = activity.findViewById(R.id.board_post_container);
-            }
-
-            if (parentView != null) {
-                Snackbar snackbar = Snackbar
-                        .make(parentView, R.string.not_logged_in,
-                                Snackbar.LENGTH_LONG);
-
-                snackbar.getView().setBackgroundColor(
-                        activity.getResources().getColor(R.color.yellow_1));
-                snackbar.setAction(R.string.login, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        showLoginUi();
-                    }
-                });
-                snackbar.show();
-            }
-
+            String notLoggedInMessage = activity.getString(R.string.not_logged_in);
+            showSnackbar(notLoggedInMessage);
         }
     }
 
-    @Override
-    public void showLoginUi() {
-        if(activity != null) {
-            activity.startActivity(LoginActivity.getIntent(activity));
+    private void showSnackbar(String message) {
+        //TODO improve this. Maybe only have a single activity
+        View parentView = activity.findViewById(R.id.parent_layout);
+        if (parentView == null) {
+            parentView = activity.findViewById(R.id.board_post_container);
         }
+
+        if (parentView != null) {
+            Snackbar snackbar = Snackbar
+                    .make(parentView, R.string.not_logged_in,
+                            Snackbar.LENGTH_LONG);
+
+            snackbar.getView().setBackgroundColor(
+                    activity.getResources().getColor(R.color.yellow_1));
+            snackbar.show();
+        }
+    }
+
+
+    @Override
+    public void showFeatureExpiredUI() {
+        showSnackbar(activity.getString(R.string.cannot_use_this_feature_now));
     }
 
     @Override
