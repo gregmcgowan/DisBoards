@@ -15,9 +15,6 @@ import com.squareup.okhttp.OkHttpClient;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Created by gregmcgowan on 04/05/2016.
- */
 @Module(includes = {})
 public class DataModule {
 

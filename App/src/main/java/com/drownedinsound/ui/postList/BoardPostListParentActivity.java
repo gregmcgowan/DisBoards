@@ -64,6 +64,10 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
         if(savedInstanceState != null) {
             currentSelectedPage = savedInstanceState.getInt(SAVED_TAB,-1);
         }
+
+        boardPostListFragmentAdapter = new BoardPostListFragmentAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(boardPostListFragmentAdapter);
+
         ButterKnife.inject(this);
     }
 
@@ -84,7 +88,6 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 currentSelectedPage = tab.getPosition();
-                viewPager.setCurrentItem(tab.getPosition());
             }
 
             @Override
@@ -139,9 +142,7 @@ public class BoardPostListParentActivity extends BaseControllerActivity<BoardPos
 
     @Override
     public void setBoardPostLists(List<BoardPostList> boardPostListInfos) {
-        boardPostListFragmentAdapter = new BoardPostListFragmentAdapter(getSupportFragmentManager());
         boardPostListFragmentAdapter.setBoardPostListInfos(boardPostListInfos);
-        viewPager.setAdapter(boardPostListFragmentAdapter);
         initialiseViewPager();
     }
 
