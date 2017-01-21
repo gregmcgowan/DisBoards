@@ -29,9 +29,9 @@ public class BoardPostListPresenter implements BoardPostListContract.Presenter {
 
     private final Scheduler backgroundThreadScheduler;
 
-    private Subscription loadingSubscription;
-
     private final Navigator navigator;
+
+    private Subscription loadingSubscription;
 
     public BoardPostListPresenter(
             BoardPostListContract.View boardListView,

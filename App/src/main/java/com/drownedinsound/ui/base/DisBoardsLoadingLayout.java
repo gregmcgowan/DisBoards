@@ -120,11 +120,6 @@ public class DisBoardsLoadingLayout extends FrameLayout {
 
     }
 
-    public void stopAnimation(){
-        animatedLogo.stopAnimation();
-    }
-
-
     public interface ContentShownListener {
 
         void onContentShown();

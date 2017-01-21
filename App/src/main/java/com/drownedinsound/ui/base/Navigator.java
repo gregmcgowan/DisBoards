@@ -7,7 +7,7 @@ public interface Navigator {
 
     void showMainScreen();
 
-    void showBoardPostScreen(@BoardPostList.BoardPostListType String boardListType , String boardPostId);
+    void showBoardPostScreen(String boardListType , String boardPostId);
 
     void showNotLoggedInUI();
 
