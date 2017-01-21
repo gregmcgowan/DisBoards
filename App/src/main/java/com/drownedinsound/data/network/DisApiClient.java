@@ -4,16 +4,6 @@ import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
-import com.drownedinsound.data.parser.streaming.LoginException;
-import com.drownedinsound.utils.StringUtils;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-
-import android.text.TextUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,10 +15,14 @@ import java.util.zip.GZIPInputStream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
-import timber.log.Timber;
 
 /**
  * A service that will handle all the requests to the website

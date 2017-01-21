@@ -10,10 +10,11 @@ import com.drownedinsound.data.network.NetworkUtil;
 import com.drownedinsound.data.parser.streaming.BoardPostParser;
 import com.drownedinsound.data.parser.streaming.BoardPostSummaryListParser;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
-import com.squareup.okhttp.OkHttpClient;
+
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.OkHttpClient;
 
 @Module(includes = {})
 public class DataModule {
