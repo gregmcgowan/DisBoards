@@ -114,6 +114,9 @@ android {
 }
 
 dependencies {
+    compile files('libs/jericho-html-3.3.jar')
+    compile files('libs/androidsvg-1.2.0.jar')
+
     compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
     compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     compile "com.android.support:design:$rootProject.supportLibraryVersion"
@@ -152,10 +155,12 @@ dependencies {
 
     compile "com.android.support.test.espresso:espresso-idling-resource:$rootProject.ext.espressoVersion"
 
-    // Android Testing Support Library's runner and rules
     androidTestCompile "com.android.support.test:runner:$rootProject.ext.runnerVersion"
     androidTestCompile "com.android.support.test:rules:$rootProject.ext.runnerVersion"
     androidTestCompile 'com.squareup:javawriter:2.5.1'
+    androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-contrib:$rootProject.ext.espressoVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-intents:$rootProject.ext.espressoVersion"
 
     testCompile 'com.squareup.okhttp3:mockwebserver:3.5.0'
     testCompile "junit:junit:$rootProject.ext.junitVersion"
@@ -164,14 +169,6 @@ dependencies {
     testCompile "org.powermock:powermock-module-junit4:$rootProject.ext.powerMockito"
     testCompile "org.powermock:powermock-api-mockito:$rootProject.ext.powerMockito"
     testCompile 'com.flextrade.jfixture:jfixture:2.6.3'
-
-    // Espresso UI Testing dependencies.
-    androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion"
-    androidTestCompile "com.android.support.test.espresso:espresso-contrib:$rootProject.ext.espressoVersion"
-    androidTestCompile "com.android.support.test.espresso:espresso-intents:$rootProject.ext.espressoVersion"
-
-    compile files('libs/jericho-html-3.3.jar')
-    compile files('libs/androidsvg-1.2.0.jar')
 
 }
 
