@@ -12,12 +12,6 @@ public interface HomeScreenContract {
 
         void onViewCreated();
 
-        void onViewDisplayed();
-
-        void onViewHidden();
-
-        void onViewDestroyed();
-
         void handleListDisplayed(String type);
 
         void handlePageTabReselected(int position);
@@ -28,8 +22,6 @@ public interface HomeScreenContract {
     }
 
     interface View {
-
-        int getCurrentPageShown();
 
         void showBoardPostLists(List<BoardPostList> boardPostLists);
     }

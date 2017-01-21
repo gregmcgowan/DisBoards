@@ -84,21 +84,6 @@ public class HomeScreenPresenter implements HomeScreenContract.Presenter {
     }
 
     @Override
-    public void onViewDisplayed() {
-
-    }
-
-    @Override
-    public void onViewHidden() {
-
-    }
-
-    @Override
-    public void onViewDestroyed() {
-
-    }
-
-    @Override
     public void handleListDisplayed(String type) {
         BoardPostListPresenter boardPostListPresenter = boardPostListPresenterMap.get(type);
         boardPostListPresenter.onViewDisplayed();

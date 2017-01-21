@@ -135,11 +135,6 @@ public class HomeScreenActivity extends BaseActivity implements HomeScreenContra
     }
 
     @Override
-    public int getCurrentPageShown() {
-        return currentSelectedPage;
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         currentSelectedPage = viewPager.getCurrentItem();
