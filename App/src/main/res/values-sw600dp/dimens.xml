@@ -1,6 +1,3 @@
 <resources>
 
-    <dimen name="reply_dialog_min_width">400dip</dimen>
-    <dimen name="reply_dialog_min_height">300dip</dimen>
-
 </resources>
