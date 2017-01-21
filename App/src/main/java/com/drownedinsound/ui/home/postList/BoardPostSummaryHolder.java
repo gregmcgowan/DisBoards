@@ -1,15 +1,11 @@
-package com.drownedinsound.ui.postList;
+package com.drownedinsound.ui.home.postList;
 
-import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-/**
- * Created by gregmcgowan on 23/10/2013.
- */
 public class BoardPostSummaryHolder extends RecyclerView.ViewHolder {
 
     public BoardPostSummaryHolder(View itemView) {

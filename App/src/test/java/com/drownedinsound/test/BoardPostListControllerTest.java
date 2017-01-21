@@ -8,9 +8,6 @@ import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.UrlConstants;
 import com.drownedinsound.ui.base.Display;
-import com.drownedinsound.ui.postList.BoardPostListController;
-import com.drownedinsound.ui.postList.BoardPostListParentUi;
-import com.drownedinsound.ui.postList.BoardPostListUi;
 
 import org.junit.Before;
 import org.junit.Test;

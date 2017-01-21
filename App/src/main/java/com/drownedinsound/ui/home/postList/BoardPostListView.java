@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.postList;
+package com.drownedinsound.ui.home.postList;
 
 import com.drownedinsound.R;
 import com.drownedinsound.data.generatered.BoardPostList;
@@ -7,6 +7,7 @@ import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,9 +19,6 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Created by gregmcgowan on 07/01/2017.
- */
 
 public class BoardPostListView implements BoardPostListContract.View {
 
@@ -58,6 +56,8 @@ public class BoardPostListView implements BoardPostListContract.View {
 
     private final @BoardPostList.BoardPostListType String boardListType;
 
+    private BoardPostListContract.Presenter presenter;
+
     public BoardPostListView(View rootView, String boardListType) {
         this.boardListType = boardListType;
         ButterKnife.inject(this, rootView);
@@ -72,40 +72,52 @@ public class BoardPostListView implements BoardPostListContract.View {
             }
         });
         Context context = rootView.getContext();
-        readDrawable = context.getResources().getDrawable(
+
+        readDrawable = ContextCompat.getDrawable(context,
                 R.drawable.white_circle_blue_outline);
-        unreadDrawable = context.getResources().getDrawable(
+        unreadDrawable = ContextCompat.getDrawable(context,
                 R.drawable.filled_blue_circle);
 
         adapter = new BoardPostListAdapter(context);
-        //adapter.setBoardPostListListner(this);
 
         listView.setLayoutManager(new LinearLayoutManager(listView.getContext()));
         listView.setAdapter(adapter);
+    }
 
+    @Override
+    public void setPresenter(BoardPostListContract.Presenter presenter) {
+        this.presenter = presenter;
     }
 
     private void doRefreshAction() {
+        presenter.handleRefresh();
     }
 
     @Override
     public String getBoardListType() {
-        return null;
+        return boardListType;
     }
 
     @Override
     public void showBoardPostSummaries(List<BoardPostSummary> boardPostsSummaries) {
-
+        adapter.setBoardPosts(boardPostsSummaries);
     }
 
     @Override
     public void showLoadingProgress(boolean show) {
-
+        if(show) {
+            loadingLayout.showAnimatedViewAndHideContent();
+        } else {
+            swipeRefreshLayout.setRefreshing(false);
+            loadingLayout.hideAnimatedViewAndShowContent();
+        }
     }
 
     @Override
     public void showErrorView() {
-
+        connectionErrorTextView.setVisibility(View.VISIBLE);
+        listView.setVisibility(View.GONE);
+        loadingLayout.setVisibility(View.GONE);
     }
 
 

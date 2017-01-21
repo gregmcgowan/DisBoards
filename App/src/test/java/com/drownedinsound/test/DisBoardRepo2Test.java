@@ -1,7 +1,5 @@
 package com.drownedinsound.test;
 
-import com.drownedinsound.data.DisBoardRepoImpl2;
-import com.drownedinsound.data.DisRepo2;
 import com.drownedinsound.data.database.DisBoardsLocalRepo;
 import com.drownedinsound.data.network.DisApiClient;
 

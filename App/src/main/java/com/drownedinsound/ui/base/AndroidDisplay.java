@@ -3,7 +3,7 @@ package com.drownedinsound.ui.base;
 import com.drownedinsound.R;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.post.BoardPostActivity;
-import com.drownedinsound.ui.postList.BoardPostListParentActivity;
+import com.drownedinsound.ui.home.HomeScreenActivity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -76,7 +76,7 @@ public class AndroidDisplay implements Display {
     @Override
     public void showMainScreen() {
         if(activity != null) {
-            Intent intent = BoardPostListParentActivity.getIntent(activity);
+            Intent intent = HomeScreenActivity.getIntent(activity);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             activity.startActivity(intent);
         }

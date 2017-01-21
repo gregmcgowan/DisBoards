@@ -1,11 +1,16 @@
-package com.drownedinsound.ui.postList;
+package com.drownedinsound.ui.home;
 
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
+import com.drownedinsound.ui.home.postList.BoardPostListContract;
+import com.drownedinsound.ui.home.postList.BoardPostListPresenter;
+import com.drownedinsound.ui.home.postList.BoardPostListPresenterFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import rx.Observer;
 import rx.Scheduler;
@@ -14,21 +19,22 @@ public class HomeScreenPresenter implements HomeScreenContract.Presenter {
 
     private final HomeScreenContract.View homeScreenView;
     private final DisBoardRepo disBoardRepo;
-    private final HomeScreenAdapterContract.Presenter homeScreenAdapterPresenter;
     private final Scheduler mainThreadScheduler;
     private final Scheduler backgroundThreadScheduler;
+    private final BoardPostListPresenterFactory boardPostListPresenterFactory;
+    private final Map<String,BoardPostListPresenter> boardPostListPresenterMap = new HashMap<>();
 
     public HomeScreenPresenter(
             HomeScreenContract.View homeScreenView,
-            HomeScreenAdapterContract.Presenter homeScreenAdapterPresenter,
             DisBoardRepo disBoardRepo,
             @ForMainThreadScheduler Scheduler mainThreadScheduler,
-            @ForIoScheduler Scheduler backgroundThreadScheduler) {
+            @ForIoScheduler Scheduler backgroundThreadScheduler,
+            BoardPostListPresenterFactory boardPostListPresenterFactory) {
         this.homeScreenView = homeScreenView;
         this.disBoardRepo = disBoardRepo;
-        this.homeScreenAdapterPresenter = homeScreenAdapterPresenter;
         this.mainThreadScheduler = mainThreadScheduler;
         this.backgroundThreadScheduler = backgroundThreadScheduler;
+        this.boardPostListPresenterFactory = boardPostListPresenterFactory;
     }
 
     @Override
@@ -59,6 +65,19 @@ public class HomeScreenPresenter implements HomeScreenContract.Presenter {
     }
 
     @Override
+    public void addBoardPostListView(BoardPostListContract.View view, String type) {
+        BoardPostListPresenter boardPostListPresenter = boardPostListPresenterFactory.create(view);
+        boardPostListPresenterMap.put(type,boardPostListPresenter);
+        boardPostListPresenter.onViewCreated();
+    }
+
+    @Override
+    public void removeBoardPostListView(String type) {
+        BoardPostListPresenter removedListPresenter = boardPostListPresenterMap.remove(type);
+        removedListPresenter.onViewDestroyed();
+    }
+
+    @Override
     public void onViewDisplayed() {
 
     }
@@ -74,8 +93,9 @@ public class HomeScreenPresenter implements HomeScreenContract.Presenter {
     }
 
     @Override
-    public void handleListDisplayed(int pageIndex) {
-
+    public void handleListDisplayed(String type) {
+        BoardPostListPresenter boardPostListPresenter = boardPostListPresenterMap.get(type);
+        boardPostListPresenter.onViewDisplayed();
     }
 
     @Override

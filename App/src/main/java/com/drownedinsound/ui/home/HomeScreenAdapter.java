@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.postList;
+package com.drownedinsound.ui.home;
 
 import com.drownedinsound.R;
 import com.drownedinsound.data.generatered.BoardPostList;
@@ -9,27 +9,21 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import javax.inject.Inject;
-
-public class HomeScreenAdapter extends PagerAdapter implements HomeScreenAdapterContract.Adapter {
+public class HomeScreenAdapter extends PagerAdapter {
 
     private List<BoardPostList> boardPostLists = new ArrayList<>();
 
-    private HashMap<String, BoardPostListContract.View> boardPostListViewMap = new HashMap<>();
+    private HomeScreenAdapterListener homeScreenAdapterListener;
 
-    @Inject
-    HomeScreenAdapterContract.Presenter presenter;
-
-    @Inject
-    BoardPostListPresenterFactory boardPostListPresenterFactory;
-
-    @Override
     public void setBoardPostLists(List<BoardPostList> boardPostLists) {
         this.boardPostLists = boardPostLists;
         notifyDataSetChanged();
+    }
+
+    public void setHomeScreenAdapterListener(HomeScreenAdapterListener homeScreenAdapterListener) {
+        this.homeScreenAdapterListener = homeScreenAdapterListener;
     }
 
     @Override
@@ -51,16 +45,11 @@ public class HomeScreenAdapter extends PagerAdapter implements HomeScreenAdapter
         container.addView(view);
 
         String boardListType = boardPostList.getBoardListTypeID();
-        BoardPostListView boardPostListView
-                = new BoardPostListView(view, boardListType);
-
-        boardPostListViewMap.put(boardListType, boardPostListView);
-
-        BoardPostListPresenter boardPostListPresenter = boardPostListPresenterFactory
-                .create(boardPostListView);
-
-
         view.setTag(boardListType);
+
+        if (homeScreenAdapterListener != null) {
+            homeScreenAdapterListener.onBoardPostListAdded(view, boardListType);
+        }
 
         return view;
     }
@@ -68,19 +57,29 @@ public class HomeScreenAdapter extends PagerAdapter implements HomeScreenAdapter
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         View view = (View) object;
+        String boardListType = (String) view.getTag();
         container.removeView(view);
-        boardPostListViewMap.remove((String)(view.getTag()));
-    }
 
-    @Override
-    public BoardPostListContract.View provideBoardPostListView(String listTypeId) {
-        return boardPostListViewMap.get(listTypeId);
+        if (homeScreenAdapterListener != null) {
+            homeScreenAdapterListener.onBoardPostListRemoved(view, boardListType);
+        }
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
         BoardPostList boardPostListInfoInfo = boardPostLists.get(position);
         return boardPostListInfoInfo.getDisplayName();
+    }
+
+    public String getListTypeAt(int postion){
+        return boardPostLists.get(postion).getBoardListTypeID();
+    }
+
+    interface HomeScreenAdapterListener {
+
+        void onBoardPostListAdded(View view, String type);
+
+        void onBoardPostListRemoved(View view, String type);
     }
 
 }

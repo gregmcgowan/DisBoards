@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.postList;
+package com.drownedinsound.ui.home.postList;
 
 import com.drownedinsound.R;
 import com.drownedinsound.data.generatered.BoardPostSummary;
@@ -17,9 +17,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by gregmcgowan on 23/10/2013.
- */
+
 public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryHolder> {
 
     private List<BoardPostSummary> boardPosts;

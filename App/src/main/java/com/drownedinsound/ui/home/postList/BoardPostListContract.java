@@ -1,4 +1,4 @@
-package com.drownedinsound.ui.postList;
+package com.drownedinsound.ui.home.postList;
 
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
@@ -17,9 +17,13 @@ public interface BoardPostListContract {
 
         void onViewDestroyed();
 
+        void handleRefresh();
     }
 
     interface View {
+
+        void setPresenter(Presenter presenter);
+
         @BoardPostList.BoardPostListType String getBoardListType();
 
         void showBoardPostSummaries(List<BoardPostSummary> boardPostsSummaries);
