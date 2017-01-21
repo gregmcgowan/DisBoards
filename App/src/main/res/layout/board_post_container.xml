@@ -24,6 +24,16 @@
             android:layout_height="match_parent"
             tools:visibility="gone"/>
 
+    <TextView
+            android:id="@+id/board_post_connection_error_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/connection_error_text"
+            android:textSize="@dimen/text_medium"
+            android:visibility="gone"/>
+
     <android.support.v7.widget.RecyclerView
             android:id="@+id/board_post_comment_list"
             android:layout_width="match_parent"
@@ -35,16 +45,6 @@
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             tools:visibility="visible"
             tools:listitem="@layout/board_list_row"/>
-
-    <TextView
-            android:id="@+id/board_post_connection_error_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="@string/connection_error_text"
-            android:textSize="@dimen/text_medium"
-            android:visibility="gone"/>
 
 </android.support.design.widget.CoordinatorLayout>
 
