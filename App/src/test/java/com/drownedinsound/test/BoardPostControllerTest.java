@@ -6,8 +6,6 @@ import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 import com.drownedinsound.ui.base.Navigator;
-import com.drownedinsound.ui.post.BoardPostController;
-import com.drownedinsound.ui.post.BoardPostUI;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -4,13 +4,11 @@ import com.drownedinsound.core.SingleIn;
 
 import dagger.Subcomponent;
 
-/**
- * Created by gregmcgowan on 28/04/2016.
- */
+
 @SingleIn(BoardPostComponent.class)
-@Subcomponent()
+@Subcomponent(modules = BoardPostModule.class)
 public interface BoardPostComponent {
 
-    void inject(BoardPostFragment boardPostFragment);
+    void inject(BoardPostActivity boardPostActivity);
 
 }
