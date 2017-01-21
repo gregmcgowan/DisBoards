@@ -9,12 +9,12 @@ public abstract class BaseControllerActivity<C extends BaseUIController> extends
 
     protected abstract C getController();
 
-    private AndroidDisplay display;
+    private AndroidNavigator display;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        display = new AndroidDisplay(this);
+        display = new AndroidNavigator(this);
         getController().onUiCreated(this);
     }
 

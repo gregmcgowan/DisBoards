@@ -5,7 +5,7 @@ import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.UrlConstants;
-import com.drownedinsound.ui.base.Display;
+import com.drownedinsound.ui.base.Navigator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class BoardPostListParentControllerTest {
     DisBoardRepo disBoardRepo;
 
     @Mock
-    Display display;
+    Navigator display;
 
     private BoardPostListParentController boardPostListParentController;
 

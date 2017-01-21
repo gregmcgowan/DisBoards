@@ -7,7 +7,7 @@ import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.UrlConstants;
-import com.drownedinsound.ui.base.Display;
+import com.drownedinsound.ui.base.Navigator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +39,7 @@ public class BoardPostListControllerTest {
     DisBoardRepo disBoardRepo;
 
     @Mock
-    Display display;
+    Navigator display;
 
     private BoardPostListController boardPostListController;
 
@@ -198,7 +198,7 @@ public class BoardPostListControllerTest {
         boardPostListController.handleBoardPostSummarySelected(boardPostListUi, boardPostSummary);
 
         @BoardPostList.BoardPostListType String boardListType = boardPostSummary.getBoardListTypeID();
-        verify(display).showBoardPost(boardListType,
+        verify(display).showBoardPostScreen(boardListType,
                 boardPostSummary.getBoardPostID());
         verify(disBoardRepo).setBoardPostSummary(boardPostSummary);
     }

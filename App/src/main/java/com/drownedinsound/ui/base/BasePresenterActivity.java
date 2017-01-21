@@ -9,12 +9,12 @@ public abstract class BasePresenterActivity <P extends BasePresenter> extends Ba
 
     protected abstract P getPresenter();
 
-    private AndroidDisplay display;
+    private AndroidNavigator display;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        display = new AndroidDisplay(this);
+        display = new AndroidNavigator(this);
         getPresenter().onUiCreated(this);
     }
 

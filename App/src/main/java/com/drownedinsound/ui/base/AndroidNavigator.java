@@ -14,17 +14,17 @@ import android.widget.Toast;
 /**
  * Created by gregmcgowan on 17/01/16.
  */
-public class AndroidDisplay implements Display {
+public class AndroidNavigator implements Navigator {
 
     private final Activity activity;
 
-    public AndroidDisplay(Activity activity){
+    public AndroidNavigator(Activity activity){
         this.activity = activity;
     }
 
 
     @Override
-    public void showBoardPost(@BoardPostList.BoardPostListType String boardListType,
+    public void showBoardPostScreen(@BoardPostList.BoardPostListType String boardListType,
             String boardPostId) {
         activity.startActivity(BoardPostActivity.getIntent(activity,boardPostId,boardListType));
     }

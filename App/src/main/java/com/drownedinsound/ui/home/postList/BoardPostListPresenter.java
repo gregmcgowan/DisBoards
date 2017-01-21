@@ -9,7 +9,7 @@ import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
-import com.drownedinsound.ui.base.Display;
+import com.drownedinsound.ui.base.Navigator;
 
 import java.util.Date;
 import java.util.List;
@@ -31,16 +31,16 @@ public class BoardPostListPresenter implements BoardPostListContract.Presenter {
 
     private Subscription loadingSubscription;
 
-    private final Display display;
+    private final Navigator navigator;
 
     public BoardPostListPresenter(
             BoardPostListContract.View boardListView,
-            Display display,
+            Navigator navigator,
             @Provided DisBoardRepo disBoardRepo,
             @Provided @ForMainThreadScheduler Scheduler mainThreadScheduler,
             @Provided @ForIoScheduler Scheduler backgroundThreadScheduler) {
         this.boardListView = boardListView;
-        this.display = display;
+        this.navigator = navigator;
         this.disBoardRepo = disBoardRepo;
         this.mainThreadScheduler = mainThreadScheduler;
         this.backgroundThreadScheduler = backgroundThreadScheduler;
@@ -122,7 +122,7 @@ public class BoardPostListPresenter implements BoardPostListContract.Presenter {
                 .subscribeOn(backgroundThreadScheduler)
                 .subscribe();
 
-        display.showBoardPost(boardListType,boardPostSummary.getBoardPostID());
+        navigator.showBoardPostScreen(boardListType,boardPostSummary.getBoardPostID());
     }
 
 

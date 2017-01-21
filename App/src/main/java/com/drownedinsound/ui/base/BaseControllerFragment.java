@@ -7,14 +7,14 @@ import android.os.Bundle;
  */
 public abstract class BaseControllerFragment<C extends BaseUIController> extends BaseFragment {
 
-    private AndroidDisplay display;
+    private AndroidNavigator display;
 
     protected abstract C getController();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        display = new AndroidDisplay(getActivity());
+        display = new AndroidNavigator(getActivity());
     }
 
     @Override

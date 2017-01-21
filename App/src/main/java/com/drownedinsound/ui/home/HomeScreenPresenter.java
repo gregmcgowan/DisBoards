@@ -4,7 +4,7 @@ import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
-import com.drownedinsound.ui.base.Display;
+import com.drownedinsound.ui.base.Navigator;
 import com.drownedinsound.ui.home.postList.BoardPostListContract;
 import com.drownedinsound.ui.home.postList.BoardPostListPresenter;
 import com.drownedinsound.ui.home.postList.BoardPostListPresenterFactory;
@@ -69,8 +69,10 @@ public class HomeScreenPresenter implements HomeScreenContract.Presenter {
     }
 
     @Override
-    public void addBoardPostListView(BoardPostListContract.View view, Display display, String type) {
-        BoardPostListPresenter boardPostListPresenter = boardPostListPresenterFactory.create(view,display);
+    public void addBoardPostListView(BoardPostListContract.View view, Navigator navigator,
+            String type) {
+        BoardPostListPresenter boardPostListPresenter = boardPostListPresenterFactory
+                .create(view, navigator);
         boardPostListPresenterMap.put(type,boardPostListPresenter);
         boardPostListPresenter.onViewCreated();
     }

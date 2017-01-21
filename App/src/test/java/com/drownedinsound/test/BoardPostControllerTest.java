@@ -5,7 +5,7 @@ import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
-import com.drownedinsound.ui.base.Display;
+import com.drownedinsound.ui.base.Navigator;
 import com.drownedinsound.ui.post.BoardPostController;
 import com.drownedinsound.ui.post.BoardPostUI;
 
@@ -35,7 +35,7 @@ public class BoardPostControllerTest {
     DisBoardRepo disBoardRepo;
 
     @Mock
-    Display display;
+    Navigator display;
 
     BoardPostController boardPostController;
 

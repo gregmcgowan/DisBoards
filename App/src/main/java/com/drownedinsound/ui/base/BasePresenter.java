@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Scheduler;
@@ -23,7 +22,7 @@ public class BasePresenter {
 
     private Scheduler backgroundThreadScheduler;
 
-    private Display display;
+    private Navigator display;
 
     private long observerableTimeoutSeconds = 10L;
 
@@ -126,15 +125,15 @@ public class BasePresenter {
 
     }
 
-    public void attachDisplay(Display display) {
+    public void attachDisplay(Navigator display) {
         this.display = display;
     }
 
-    public void detachDisplay(Display display){
+    public void detachDisplay(Navigator display){
         this.display = null;
     }
 
-    public Display getDisplay() {
+    public Navigator getDisplay() {
         return display;
     }
 

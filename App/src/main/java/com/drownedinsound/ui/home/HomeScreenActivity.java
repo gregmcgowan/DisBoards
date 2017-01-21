@@ -3,7 +3,7 @@ package com.drownedinsound.ui.home;
 import com.drownedinsound.R;
 import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPostList;
-import com.drownedinsound.ui.base.AndroidDisplay;
+import com.drownedinsound.ui.base.AndroidNavigator;
 import com.drownedinsound.ui.base.BaseActivity;
 import com.drownedinsound.ui.home.postList.BoardPostListView;
 
@@ -47,7 +47,7 @@ public class HomeScreenActivity extends BaseActivity implements HomeScreenContra
 
     private int currentSelectedPage;
 
-    private AndroidDisplay androidDisplay = new AndroidDisplay(this);
+    private AndroidNavigator androidNavigator = new AndroidNavigator(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +64,8 @@ public class HomeScreenActivity extends BaseActivity implements HomeScreenContra
                     @Override
                     public void onBoardPostListAdded(View view, String type) {
                         homeScreenPresenter
-                                .addBoardPostListView(new BoardPostListView(view, type), androidDisplay, type);
+                                .addBoardPostListView(new BoardPostListView(view, type),
+                                        androidNavigator, type);
                     }
 
                     @Override
@@ -161,6 +162,6 @@ public class HomeScreenActivity extends BaseActivity implements HomeScreenContra
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        androidDisplay = null;
+        androidNavigator = null;
     }
 }

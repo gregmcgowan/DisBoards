@@ -35,7 +35,7 @@ public abstract class BaseUIController {
 
     private Scheduler backgroundThreadScheduler;
 
-    private Display display;
+    private Navigator display;
 
     private long observerableTimeoutSeconds = 10L;
 
@@ -279,15 +279,15 @@ public abstract class BaseUIController {
         Timber.d((removed ? "Removed" : "Did not remove") + " observable for " +tag);
     }
 
-    public void attachDisplay(Display display) {
+    public void attachDisplay(Navigator display) {
         this.display = display;
     }
 
-    public void detachDisplay(Display display){
+    public void detachDisplay(Navigator display){
         this.display = null;
     }
 
-    public Display getDisplay() {
+    public Navigator getDisplay() {
         return display;
     }
 
