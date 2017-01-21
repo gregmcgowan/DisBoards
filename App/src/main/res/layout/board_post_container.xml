@@ -1,20 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.design.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/board_post_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:background="@color/background_colour_light">
 
-    <include
-            android:id="@+id/toolbar"
-            layout="@layout/board_post_toolbar_layout"/>
 
-    <LinearLayout
-            android:id="@+id/board_post_fragment_holder"
+    <android.support.design.widget.AppBarLayout
+            android:id="@+id/board_post_appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <include
+                android:id="@+id/board_post_appbar_toolbar"
+                layout="@layout/board_post_toolbar_layout"/>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <com.drownedinsound.ui.base.DisBoardsLoadingLayout
+            android:id="@+id/loading_layout"
+            android:layout_marginTop="?attr/actionBarSize"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-    </LinearLayout>
+            tools:visibility="visible"/>
+
+    <android.support.v7.widget.RecyclerView
+            android:id="@+id/board_post_comment_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0px"
+            android:smoothScrollbar="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            tools:visibility="gone"
+            tools:listitem="@layout/board_list_row"/>
+
+    <TextView
+            android:id="@+id/board_post_connection_error_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/connection_error_text"
+            android:textSize="@dimen/text_medium"
+            android:visibility="gone"/>
+
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/floating_reply_button"
+            android:src="@drawable/ic_reply_white_24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:layout_anchor="@id/board_post_container"
+            app:layout_anchorGravity="bottom|right"
+            app:borderWidth="0dp"/>
+
+</android.support.design.widget.CoordinatorLayout>
 
 
-</LinearLayout>
+

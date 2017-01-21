@@ -16,10 +16,7 @@ import android.support.v7.widget.Toolbar;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
-/**
- * Created by gregmcgowan on 19/10/2014.
- */
-public abstract class BaseActivity extends AppCompatActivity implements Ui {
+public abstract class BaseActivity extends AppCompatActivity {
 
     protected Toolbar toolbar;
 
@@ -60,13 +57,4 @@ public abstract class BaseActivity extends AppCompatActivity implements Ui {
         return EspressoIdlingResource.getIdlingResource();
     }
 
-    @Override
-    public boolean isBeingDestroyed() {
-        return isFinishing();
-    }
-
-    @Override
-    public int getID() {
-        return hashCode();
-    }
 }

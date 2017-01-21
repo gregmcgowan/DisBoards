@@ -13,23 +13,12 @@ import rx.Observable;
  */
 public interface DisBoardsApi {
 
-    Observable<LoginResponse> loginUser(String username, String password);
-
     Observable<BoardPost> getBoardPost(@BoardPostList.BoardPostListType String boardListType,
             String boardPostId);
 
     Observable<List<BoardPostSummary>> getBoardPostSummaryList(
             @BoardPostList.BoardPostListType String boardListType, String boardPostUrl,
             int pageNumber);
-
-    Observable<BoardPost> postComment(@BoardPostList.BoardPostListType String boardListType,
-            String boardPostId, String commentId, String title, String content, String authToken);
-
-    Observable<BoardPost> thisAComment(@BoardPostList.BoardPostListType String boardListType,
-            String boardPostId, String commentId, String authToken);
-
-    Observable<BoardPost> addNewPost(@BoardPostList.BoardPostListType String boardListType,
-            String title, String content, String authToken, String sectionID);
 
 
     boolean requestInProgress(Object tag);

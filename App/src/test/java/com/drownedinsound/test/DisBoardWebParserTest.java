@@ -1,6 +1,5 @@
 package com.drownedinsound.test;
 
-import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostComment;
 import com.drownedinsound.data.generatered.BoardPostSummary;
@@ -14,10 +13,9 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.*;
+
 import org.mockito.MockitoAnnotations;
 
 
@@ -32,16 +30,12 @@ public class DisBoardWebParserTest {
 
     private DisWebPageParser disWebPageParser;
 
-    @Mock
-    UserSessionRepo userSessionRepo;
-
-
     @Before
     public void setup(){
         MockitoAnnotations.initMocks(this);
 
-        BoardPostSummaryListParser boardPostSummaryListParser = new BoardPostSummaryListParser(userSessionRepo);
-        BoardPostParser boardPostParser = new BoardPostParser(userSessionRepo);
+        BoardPostSummaryListParser boardPostSummaryListParser = new BoardPostSummaryListParser();
+        BoardPostParser boardPostParser = new BoardPostParser();
         disWebPageParser = new DisWebPagerParserImpl(boardPostParser, boardPostSummaryListParser);
     }
 
@@ -77,8 +71,6 @@ public class DisBoardWebParserTest {
 
         List<BoardPostSummary> actualBoardPosts = disWebPageParser.parseBoardPostSummaryList(BoardListTypes.SOCIAL,
                 inputStream);
-
-        verify(userSessionRepo, atLeastOnce()).setAuthenticityToken(anyString());;
 
         Assert.assertEquals(42, actualBoardPosts.size());
 
@@ -149,7 +141,6 @@ public class DisBoardWebParserTest {
         InputStream inputStream = getInputStream("board_post.html");
 
         BoardPost actual = disWebPageParser.parseBoardPost(BoardListTypes.SOCIAL,inputStream);
-        verify(userSessionRepo, atLeastOnce()).setAuthenticityToken(anyString());
 
         AssertUtils.assertBoardPost(expectedBoardPost,actual);
     }

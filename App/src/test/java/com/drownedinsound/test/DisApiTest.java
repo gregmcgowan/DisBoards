@@ -1,6 +1,5 @@
 package com.drownedinsound.test;
 
-import com.drownedinsound.data.UserSessionRepo;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostComment;
 import com.drownedinsound.data.generatered.BoardPostList;
@@ -8,9 +7,7 @@ import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.data.model.BoardTypeConstants;
 import com.drownedinsound.data.network.DisApiClient;
-import com.drownedinsound.data.network.LoginResponse;
 import com.drownedinsound.data.network.NetworkUtil;
-import com.drownedinsound.data.network.NoInternetConnectionException;
 import com.drownedinsound.data.network.UrlConstants;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
 import com.squareup.okhttp.HttpUrl;
@@ -32,7 +29,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import rx.Observer;
-import rx.Subscriber;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -45,9 +41,6 @@ import static org.mockito.Mockito.when;
  * Created by gregmcgowan on 09/12/15.
  */
 public class DisApiTest {
-
-    @Mock
-    UserSessionRepo userSessionRepo;
 
     @Mock
     DisWebPageParser disWebPageParser;
@@ -152,40 +145,6 @@ public class DisApiTest {
     }
 
     @Test
-    public void testSuccessfulLogin() throws Exception {
-        final String token = "test";
-        when(disWebPageParser.getAuthenticationToken(any(InputStream.class))).thenReturn(token);
-        when(networkUtil.isConnected()).thenReturn(true);
-
-        MockWebServer mockWebServer = new MockWebServer();
-        mockWebServer.start();
-
-        HttpUrl base = mockWebServer.url("");
-
-        mockWebServer.enqueue(new MockResponse().setBody("blah blah").addHeader("Location",
-                base + UrlConstants.BOARD_BASE_PATH
-                        + UrlConstants.SOCIAL_BOARD_NAME).setResponseCode(302));
-
-        mockWebServer.enqueue(new MockResponse().setBody("blah blah"));
-
-        disApiClient.setBaseUrl(base.toString());
-
-        countDownLatch = new CountDownLatch(1);
-
-        disApiClient.loginUser("username", "password")
-                .subscribeOn(Schedulers.immediate())
-                .subscribe(new Action1<LoginResponse>() {
-                    @Override
-                    public void call(LoginResponse loginResponse) {
-                        Assert.assertEquals(token, loginResponse.getAuthenticationToken());
-                        countDownLatch.countDown();
-                    }
-                });
-        countDownLatch.await();
-        mockWebServer.shutdown();
-    }
-
-    @Test
     public void testGetList() throws Exception {
         when(disWebPageParser.parseBoardPostSummaryList(eq(BoardListTypes.MUSIC),
                 any(InputStream.class))).thenReturn(
@@ -266,100 +225,7 @@ public class DisApiTest {
 
     }
 
-    @Test
-    public void addNewPost()  throws Exception {
-        when(disWebPageParser.parseBoardPost(eq(BoardListTypes.SOCIAL),
-                any(InputStream.class))).thenReturn(
-                expectedBoardPost);
-        when(networkUtil.isConnected()).thenReturn(true);
 
-        MockWebServer mockWebServer = new MockWebServer();
-        mockWebServer.enqueue(new MockResponse().setBody("blah blah").setResponseCode(302));
-        mockWebServer.enqueue(new MockResponse().setBody("blah blah").setResponseCode(200));
-        mockWebServer.start();
-
-        HttpUrl base = mockWebServer.url("");
-
-        countDownLatch = new CountDownLatch(1);
-
-        TestSubscriber<BoardPost> testSubscriber = new TestSubscriber<>(
-                new Observer<BoardPost>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(BoardPost actual) {
-                        AssertUtils.assertBoardPost(expectedBoardPost, actual);
-                        countDownLatch.countDown();
-                    }
-                }
-        );
-
-        disApiClient.setBaseUrl(base.toString());
-        disApiClient.addNewPost(BoardListTypes.SOCIAL, "Test New Post", "A really interesting post",
-                "authtoken", "1")
-                .subscribeOn(Schedulers.immediate())
-                .observeOn(Schedulers.immediate())
-                .subscribe(testSubscriber);
-        countDownLatch.await();
-        testSubscriber.assertCompleted();
-        testSubscriber.assertNoErrors();
-
-        mockWebServer.shutdown();
-    }
-
-    @Test
-    public void testNoConnectivity() throws Exception {
-        when(networkUtil.isConnected()).thenReturn(false);
-
-        MockWebServer mockWebServer = new MockWebServer();
-        mockWebServer.start();
-
-        HttpUrl base = mockWebServer.url("");
-
-        mockWebServer.enqueue(new MockResponse().setBody("blah blah").addHeader("Location",
-                base + UrlConstants.BOARD_BASE_PATH
-                        + UrlConstants.SOCIAL_BOARD_NAME).setResponseCode(302));
-
-        mockWebServer.enqueue(new MockResponse().setBody("blah blah"));
-
-        disApiClient.setBaseUrl(base.toString());
-
-        countDownLatch = new CountDownLatch(1);
-
-        disApiClient.loginUser("username", "password")
-                .subscribeOn(Schedulers.immediate())
-                .subscribe(new Subscriber<LoginResponse>() {
-                    @Override
-                    public void onCompleted() {
-                        countDownLatch.countDown();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if(e instanceof NoInternetConnectionException) {
-                            countDownLatch.countDown();
-                        } else {
-                            Assert.fail("Wrong exception");
-                        }
-                    }
-
-                    @Override
-                    public void onNext(LoginResponse loginResponse) {
-                        countDownLatch.countDown();
-                        Assert.fail("Call should have failed");
-                    }
-                });
-        countDownLatch.await();
-        mockWebServer.shutdown();
-    }
 
 
 }

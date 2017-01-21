@@ -27,7 +27,7 @@ public class MockDataModule {
     @Provides
     @SingleIn(SessionComponent.class)
     DisBoardRepo provideDisBoardRepo(DisApiClient disApiClient,
-            DisBoardsLocalRepo disBoardsLocalRepo, UserSessionRepo userSessionRepo) {
+            DisBoardsLocalRepo disBoardsLocalRepo) {
         return new MockDisRepo();
     }
 

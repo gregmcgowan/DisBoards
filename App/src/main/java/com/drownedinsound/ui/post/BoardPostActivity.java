@@ -4,6 +4,7 @@ import com.drownedinsound.R;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPostList;
+import com.drownedinsound.ui.base.AndroidNavigator;
 import com.drownedinsound.ui.base.BaseActivity;
 
 import android.content.Context;
@@ -12,23 +13,14 @@ import android.os.Bundle;
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-/**
- * This will contain a board post fragment. A board post will be made of the
- * original post and comments. This activity will not do much apart from load
- * the fragment
- *
- * @author Greg
- */
-public class BoardPostActivity extends BaseActivity
-        implements BoardPostParentUi {
-
-    private BoardPostFragment boardPostFragment;
+public class BoardPostActivity extends BaseActivity {
 
     @Inject
-    protected BoardPostController boardPostController;
+    protected BoardPostContract.Presenter boardPostPresenter;
+
+    private SessionComponent sessionComponent;
+
+    private AndroidNavigator androidNavigator = new AndroidNavigator(this);
 
     public static Intent getIntent(Context context, String postID,
             @BoardPostList.BoardPostListType String boardListType) {
@@ -48,46 +40,32 @@ public class BoardPostActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ButterKnife.inject(this);
+        String postId = getIntent().getStringExtra(DisBoardsConstants.BOARD_POST_ID);
+        String boardPostType = getIntent().getStringExtra(DisBoardsConstants.BOARD_TYPE);
 
-        if (savedInstanceState == null) {
-            // During initial setup, plug in the details fragment.
-            String postID = getIntent().getStringExtra(DisBoardsConstants.BOARD_POST_ID);
-            @BoardPostList.BoardPostListType String boardListType  = getIntent()
-                    .getStringExtra(DisBoardsConstants.BOARD_TYPE);
+        sessionComponent.boardPostComponent(
+                new BoardPostModule(androidNavigator,
+                        new BoardPostView(findViewById(R.id.board_post_container)),
+                        postId, boardPostType)).inject(this);
 
-            boardPostFragment = BoardPostFragment.newInstance(postID, false, boardListType);
-            fragmentManager.beginTransaction()
-                    .add(R.id.board_post_fragment_holder, boardPostFragment).commit();
-        }
+        boardPostPresenter.onViewCreated();
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        boardPostPresenter.onViewDestroyed();
+        androidNavigator = null;
     }
 
     @Override
     protected void onSessionComponentCreated(SessionComponent sessionComponent) {
-
+        this.sessionComponent = sessionComponent;
     }
 
     @Override
     protected int getLayoutResource() {
         return R.layout.board_post_container;
-    }
-
-
-    @OnClick(R.id.back_button)
-    public void backAction() {
-        finish();
-    }
-
-    @OnClick(R.id.refresh_board_posts_button)
-    public void refreshButtonAction() {
-        if (boardPostFragment != null) {
-            boardPostFragment.doRefreshAction();
-        }
-    }
-
-    public void refreshMenu() {
-        this.supportInvalidateOptionsMenu();
     }
 
 }

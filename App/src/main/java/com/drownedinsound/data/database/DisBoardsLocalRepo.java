@@ -6,6 +6,7 @@ import com.drownedinsound.data.generatered.BoardPostSummary;
 
 import java.util.List;
 
+import rx.Completable;
 import rx.Observable;
 
 /**
@@ -17,16 +18,13 @@ public interface DisBoardsLocalRepo {
 
     void setBoardPost(BoardPost boardPost) throws Exception;
 
-    Observable<Void> setBoardPostObservable(BoardPost boardPost);
+    Completable setBoardPostSummary(BoardPostSummary boardPostSummary);
 
-    Observable<Void> setBoardPostSummary(BoardPostSummary boardPostSummary);
+    Observable<Void> setBoardPostObservable(BoardPost boardPost);
 
     Observable<List<BoardPostSummary>> getBoardPostSummaryListObservable(@BoardPostList.BoardPostListType String boardListType);
 
     List<BoardPostSummary> getBoardPostSummaryList(@BoardPostList.BoardPostListType String boardListType);
-
-    //Observable<Void> set(List<BoardPost> boardPosts);
-
     /**
      * Cannot be called from the main thread or will throw a run time expcetion
      *

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
@@ -50,13 +51,6 @@ public class DisApiClient implements DisBoardsApi {
         }
     }
 
-
-    public enum REQUEST_TYPE {
-        GET_LIST,
-        NEW_POST
-    }
-
-
     private OkHttpClient httpClient;;
 
     private CopyOnWriteArrayList<Object> inProgressRequests;
@@ -81,52 +75,6 @@ public class DisApiClient implements DisBoardsApi {
 
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
-    }
-
-    @Override
-    public Observable<LoginResponse> loginUser(String username, String password) {
-        RequestBody requestBody = new FormEncodingBuilder().add("user_session[username]", username)
-                .add("user_session[password]", password)
-                .add("user_session[remember_me]", "1")
-                .add("return_to", UrlConstants.SOCIAL_URL)
-                .add("commit", "Go!*").build();
-
-        String url = baseUrl + UrlConstants.LOGIN_PATH;
-
-        return makeRequest(RequestMethod.POST, url, requestBody, "LOGIN")
-                .flatMap(new Func1<Response, Observable<LoginResponse>>() {
-                    @Override
-                    public Observable<LoginResponse> call(Response response) {
-                        try {
-                            LoginResponse loginResponse = parseResponse(response);
-                            return Observable.just(loginResponse);
-                        } catch (IOException | LoginException e) {
-                            return Observable.error(e);
-                        }
-                    }
-                });
-    }
-
-    private LoginResponse parseResponse(Response response) throws IOException, LoginException {
-        String url = response.priorResponse().header("Location");
-        String expected = baseUrl + UrlConstants.BOARD_BASE_PATH
-                + UrlConstants.SOCIAL_BOARD_NAME;
-        System.out.println("Login response url " + url + " expected " + expected);
-
-        boolean logInSuccess = expected.equals(url);
-        if (logInSuccess) {
-            String authToken = disWebPageParser.getAuthenticationToken(
-                    getInputStreamFromResponse(response));
-            if (authToken != null && authToken.length() > 0) {
-                LoginResponse loginResponse = new LoginResponse();
-                loginResponse.setAuthenticationToken(authToken);
-                return loginResponse;
-            } else {
-                throw new LoginException();
-            }
-        } else {
-            throw new LoginException();
-        }
     }
 
     @Override
@@ -182,104 +130,6 @@ public class DisApiClient implements DisBoardsApi {
                         } catch (IOException e) {
                             return Observable.error(e);
                         }
-                    }
-                });
-    }
-
-    @Override
-    public Observable<BoardPost> postComment(
-            @BoardPostList.BoardPostListType final String boardListType,
-            final String boardPostId, String commentId, String title, String content,
-            String authToken) {
-        if (StringUtils.isEmpty(authToken)) {
-            throw new IllegalArgumentException("Auth token cannot be null");
-        }
-
-        if (StringUtils.isEmpty(boardPostId)) {
-            throw new IllegalArgumentException("BoardPostId cannot be null");
-        }
-
-        if (commentId == null) {
-            commentId = "";
-        }
-
-        RequestBody requestBody = new FormEncodingBuilder()
-                .add("comment[commentable_id]", boardPostId)
-                .add("comment[title]", title)
-                .add("comment[commentable_type]", "Topic")
-                .add("comment[content_raw]", content)
-                .add("parent_id", commentId)
-                .add("authenticity_token", authToken)
-                .add("commit", "Post reply").build();
-
-        String tag = boardPostId + "COMMENT" + commentId;
-        return makeRequest(RequestMethod.POST, UrlConstants.COMMENTS_URL, requestBody, null, tag)
-                .flatMap(new Func1<Response, Observable<BoardPost>>() {
-                            @Override
-                            public Observable<BoardPost> call(Response response) {
-                                return parseBoardPost(boardListType, response);
-                            }
-                        });
-    }
-
-    @Override
-    public Observable<BoardPost> thisAComment(@BoardPostList.BoardPostListType final String boardListType,
-            final String boardPostId, String commentId, String authToken) {
-        if (StringUtils.isEmpty(authToken)) {
-            throw new IllegalArgumentException("Auth token cannot be null");
-        }
-
-        if (StringUtils.isEmpty(boardPostId)) {
-            throw new IllegalArgumentException("BoardPostId cannot be null");
-        }
-
-        if (StringUtils.isEmpty(commentId)) {
-            throw new IllegalArgumentException("CommentID cannot be null");
-        }
-
-        String boardPostUrl = UrlConstants.getBoardPostUrl(baseUrl, boardListType, boardPostId);
-        String fullUrl = boardPostUrl + "/" + commentId + "/this";
-        Timber.d("Going to this with  =" + fullUrl);
-
-        String tag = "THIS" + boardPostId;
-        return makeRequest(RequestMethod.GET, fullUrl, tag)
-                .flatMap(new Func1<Response, Observable<BoardPost>>() {
-                    @Override
-                    public Observable<BoardPost> call(Response response) {
-                        return parseBoardPost(boardListType, response);
-                    }
-                });
-    }
-
-
-    @Override
-    public Observable<BoardPost> addNewPost(@BoardPostList.BoardPostListType final String boardListType,
-            String title, String content, String authToken, String sectionId) {
-
-        if (StringUtils.isEmpty(authToken)) {
-            throw new IllegalArgumentException("Auth token cannot be null");
-        }
-
-        if (StringUtils.isEmpty(sectionId)) {
-            throw new IllegalArgumentException("sectionId cannot be null");
-        }
-
-        String boardPostUrl = UrlConstants.getBoardPostListUrl(baseUrl,boardListType);
-
-        Headers.Builder extraHeaders = new Headers.Builder();
-        extraHeaders.add("Referer", boardPostUrl);
-
-        RequestBody requestBody = new FormEncodingBuilder().add("section_id", sectionId)
-                .add("topic[title]", title)
-                .add("topic[content_raw]", content)
-                .add("topic[sticky]", "0")
-                .add("authenticity_token", authToken).build();
-
-        return makeRequest(RequestMethod.POST, UrlConstants.NEW_POST_URL, requestBody, extraHeaders,REQUEST_TYPE.NEW_POST)
-                .flatMap(new Func1<Response, Observable<BoardPost>>() {
-                    @Override
-                    public Observable<BoardPost> call(Response response) {
-                        return parseBoardPost(boardListType, response);
                     }
                 });
     }
@@ -340,7 +190,7 @@ public class DisApiClient implements DisBoardsApi {
                     subscriber.onError(new NoInternetConnectionException());
                 }
             }
-        });
+        }).timeout(10, TimeUnit.SECONDS);
     }
 
     protected Headers.Builder addMandatoryHeaders(Headers.Builder headers) {

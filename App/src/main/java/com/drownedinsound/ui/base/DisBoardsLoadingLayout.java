@@ -14,9 +14,7 @@ import android.widget.FrameLayout;
 
 import timber.log.Timber;
 
-/**
- * Created by gregmcgowan on 14/11/15.
- */
+
 public class DisBoardsLoadingLayout extends FrameLayout {
 
     SvgAnimatePathView animatedLogo;
@@ -121,11 +119,6 @@ public class DisBoardsLoadingLayout extends FrameLayout {
         }
 
     }
-
-    public void stopAnimation(){
-        animatedLogo.stopAnimation();
-    }
-
 
     public interface ContentShownListener {
 

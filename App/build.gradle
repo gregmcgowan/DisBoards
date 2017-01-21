@@ -5,7 +5,7 @@ buildscript {
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath 'com.android.tools.build:gradle:2.2.3'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'io.fabric.tools:gradle:1.21.2'
         classpath "com.fernandocejas.frodo:frodo-plugin:0.8.2"
@@ -19,7 +19,7 @@ apply plugin: 'com.fernandocejas.frodo'
 repositories {
     mavenCentral()
     maven { url 'https://maven.fabric.io/public' }
-    maven { url "https://repo.commonsware.com.s3.amazonaws.com" }
+    maven { url "http://repo.commonsware.com.s3.amazonaws.com" }
 }   
 
 def versionMajor = 0
@@ -121,8 +121,10 @@ dependencies {
     compile "com.android.support:design:$rootProject.supportLibraryVersion"
     compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
 
-    compile 'com.google.dagger:dagger:2.0.1'
-    apt 'com.google.dagger:dagger-compiler:2.0.1'
+    compile 'com.google.auto:auto-common:0.8'
+    compile 'com.google.auto.factory:auto-factory:1.0-beta3'
+    compile 'com.google.dagger:dagger:2.5'
+    apt 'com.google.dagger:dagger-compiler:2.5'
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
     compile 'com.squareup.okhttp:okhttp:2.6.0'
@@ -142,6 +144,7 @@ dependencies {
 
     compile 'io.reactivex:rxandroid:1.0.1'
     compile 'io.reactivex:rxjava:1.1.0'
+    compile 'com.jakewharton.rxrelay:rxrelay:1.1.0'
 
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
     betaCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
@@ -153,6 +156,7 @@ dependencies {
     // Android Testing Support Library's runner and rules
     androidTestCompile "com.android.support.test:runner:$rootProject.ext.runnerVersion"
     androidTestCompile "com.android.support.test:rules:$rootProject.ext.runnerVersion"
+    androidTestCompile 'com.squareup:javawriter:2.5.1'
 
 
     // Dependencies for local unit tests
@@ -162,6 +166,7 @@ dependencies {
     testCompile "org.hamcrest:hamcrest-all:$rootProject.ext.hamcrestVersion"
     testCompile "org.powermock:powermock-module-junit4:$rootProject.ext.powerMockito"
     testCompile "org.powermock:powermock-api-mockito:$rootProject.ext.powerMockito"
+    testCompile 'com.flextrade.jfixture:jfixture:2.6.3'
 
     // Espresso UI Testing dependencies.
     androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion"

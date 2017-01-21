@@ -1,29 +1,14 @@
 package com.drownedinsound.core;
 
-import com.drownedinsound.ui.addComment.AddCommentComponent;
-import com.drownedinsound.ui.addPost.AddPostComponent;
 import com.drownedinsound.ui.post.BoardPostComponent;
-import com.drownedinsound.ui.postList.BoardPostListFragmentComponent;
-import com.drownedinsound.ui.postList.BoardPostListParentComponent;
-import com.drownedinsound.ui.start.LoginComponent;
-import com.drownedinsound.ui.start.StartActivity;
+import com.drownedinsound.ui.home.HomeScreenComponent;
+import com.drownedinsound.ui.home.HomeScreenModule;
+import com.drownedinsound.ui.post.BoardPostModule;
 
-/**
- * Created by gregmcgowan on 04/05/2016.
- */
+
 public interface BaseSessionComponet {
 
-    LoginComponent loginComponent();
+    HomeScreenComponent homeScreenComponent(HomeScreenModule homeScreenModule);
 
-    BoardPostListParentComponent boardPostListParentComponent();
-
-    BoardPostListFragmentComponent boardPostListComponent();
-
-    BoardPostComponent boardPostComponent();
-
-    AddPostComponent addPostComponent();
-
-    AddCommentComponent addCommentComponent();
-
-    void inject(StartActivity startActivity);
+    BoardPostComponent boardPostComponent(BoardPostModule boardPostModule);
 }

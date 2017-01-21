@@ -5,13 +5,13 @@ import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.network.DisBoardsApi;
-import com.drownedinsound.data.network.LoginResponse;
 
 import android.text.format.DateUtils;
 
 import java.util.Collections;
 import java.util.List;
 
+import rx.Completable;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -30,26 +30,10 @@ public class DisBoardRepoImpl implements DisBoardRepo {
 
     private DisBoardsLocalRepo disBoardsLocalRepo;
 
-    private UserSessionRepo userSessionRepo;
-
     public DisBoardRepoImpl(DisBoardsApi disApi,
-            DisBoardsLocalRepo disBoardsDatabase,
-            UserSessionRepo userSessionRepo) {
+            DisBoardsLocalRepo disBoardsDatabase) {
         this.disApi = disApi;
         this.disBoardsLocalRepo = disBoardsDatabase;
-        this.userSessionRepo = userSessionRepo;
-    }
-
-    @Override
-    public Observable<LoginResponse> loginUser(String username, String password) {
-        return disApi.loginUser(username, password)
-                .doOnNext(new Action1<LoginResponse>() {
-                    @Override
-                    public void call(LoginResponse loginResponse) {
-                        userSessionRepo
-                                .setAuthenticityToken(loginResponse.getAuthenticationToken());
-                    }
-                });
     }
 
     @Override
@@ -172,67 +156,6 @@ public class DisBoardRepoImpl implements DisBoardRepo {
                     }});
     }
 
-
-    @Override
-    public Observable<BoardPost> postComment(@BoardPostList.BoardPostListType String boardListType,
-            final String boardPostId, String commentId, String title, String content) {
-        return disApi.postComment(boardListType, boardPostId, commentId, title, content,
-                userSessionRepo.getAuthenticityToken())
-                .doOnNext(new Action1<BoardPost>() {
-                    @Override
-                    public void call(BoardPost boardPost) {
-                        saveBoardPost(boardPost);
-                    }
-                });
-    }
-
-    @Override
-    public Observable<BoardPost> thisAComment(@BoardPostList.BoardPostListType String boardListType,
-            final String boardPostId, String commentId) {
-        return disApi.thisAComment(boardListType, boardPostId, commentId,
-                userSessionRepo.getAuthenticityToken())
-                .doOnNext(new Action1<BoardPost>() {
-                    @Override
-                    public void call(BoardPost boardPost) {
-                        saveBoardPost(boardPost);
-                    }
-                });
-    }
-
-
-    @Override
-    public Observable<BoardPost> addNewPost(
-            @BoardPostList.BoardPostListType final String boardListType,
-            final String title, final String content) {
-        return disBoardsLocalRepo.getBoardPostList(boardListType)
-                .flatMap(new Func1<BoardPostList, Observable<BoardPost>>() {
-                    @Override
-                    public Observable<BoardPost> call(final BoardPostList boardPostList) {
-                        String sectionId = String.valueOf(boardPostList.getSectionId());
-                        String authToken = userSessionRepo.getAuthenticityToken();
-
-                        return disApi
-                                .addNewPost(boardListType, title, content, authToken, sectionId)
-                                .doOnNext(new Action1<BoardPost>() {
-                                    @Override
-                                    public void call(BoardPost boardPost) {
-
-                                        boardPostList.setLastFetchedMs(0);
-                                        disBoardsLocalRepo.setBoardPostList(boardPostList);
-
-                                        try {
-                                            disBoardsLocalRepo.setBoardPost(boardPost);
-                                        } catch (Exception e) {
-                                            Timber.d("Could not cache board post " + boardPost
-                                                    .getBoardPostID() + " exception " + e
-                                                    .getMessage());
-                                        }
-                                    }
-                                });
-                    }
-                });
-    }
-
     @Override
     public Observable<BoardPostSummary> getBoardPostSummary(@BoardPostList.BoardPostListType final String boardListType,
                 final String boardPostId) {
@@ -251,29 +174,10 @@ public class DisBoardRepoImpl implements DisBoardRepo {
     }
 
     @Override
-    public Observable<Void> setBoardPostSummary(BoardPostSummary boardPostSummary) {
+    public Completable setBoardPostSummary(BoardPostSummary boardPostSummary) {
         return disBoardsLocalRepo.setBoardPostSummary(boardPostSummary);
     }
 
-    @Override
-    public boolean isUserLoggedIn() {
-        return userSessionRepo.isUserLoggedIn();
-    }
-
-    @Override
-    public boolean userSelectedLurk() {
-        return userSessionRepo.userSelectedLurk();
-    }
-
-    @Override
-    public void setUserSelectedLurk(boolean lurk) {
-        userSessionRepo.setUserSelectedLurk(lurk);
-    }
-
-    @Override
-    public void clearUserSession() {
-        userSessionRepo.clearSession();
-    }
 
 
 }

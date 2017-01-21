@@ -16,8 +16,10 @@ import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func0;
 
 /**
  * Created by gregmcgowan on 29/12/15.
@@ -136,11 +138,12 @@ public class DisBoardsLocalRepoImpl implements DisBoardsLocalRepo {
     }
 
     @Override
-    public Observable<Void> setBoardPostSummary(final BoardPostSummary boardPostSummary) {
-        return Observable.create(new Observable.OnSubscribe<Void>() {
+    public Completable setBoardPostSummary(final BoardPostSummary boardPostSummary) {
+        return Completable.defer(new Func0<Completable>() {
             @Override
-            public void call(Subscriber<? super Void> subscriber) {
+            public Completable call() {
                 boardPostSummaryDao.insertOrReplace(boardPostSummary);
+                return Completable.complete();
             }
         });
     }

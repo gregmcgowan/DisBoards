@@ -36,5 +36,6 @@
     <string name="please_enter_a_subject">Please enter a subject</string>
     <string name="please_enter_some_content">Please enter some content</string>
     <string name="please_enter_both_some_content_and_subject">Please enter both a comment and subject</string>
+    <string name="cannot_use_this_feature_now">Cannot use this feature now</string>
 
 </resources>
