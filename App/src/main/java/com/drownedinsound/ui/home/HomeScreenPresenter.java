@@ -4,10 +4,7 @@ import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
-import com.drownedinsound.ui.base.Navigator;
 import com.drownedinsound.ui.home.postList.BoardPostListContract;
-import com.drownedinsound.ui.home.postList.BoardPostListPresenter;
-import com.drownedinsound.ui.home.postList.BoardPostListPresenterFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,22 +20,21 @@ public class HomeScreenPresenter implements HomeScreenContract.Presenter {
     private final DisBoardRepo disBoardRepo;
 
     private final Scheduler mainThreadScheduler;
+
     private final Scheduler backgroundThreadScheduler;
 
-    private final BoardPostListPresenterFactory boardPostListPresenterFactory;
-    private final Map<String,BoardPostListPresenter> boardPostListPresenterMap = new HashMap<>();
+    private final Map<String, BoardPostListContract.Presenter> boardPostListPresenterMap
+            = new HashMap<>();
 
     public HomeScreenPresenter(
             HomeScreenContract.View homeScreenView,
             DisBoardRepo disBoardRepo,
             @ForMainThreadScheduler Scheduler mainThreadScheduler,
-            @ForIoScheduler Scheduler backgroundThreadScheduler,
-            BoardPostListPresenterFactory boardPostListPresenterFactory) {
+            @ForIoScheduler Scheduler backgroundThreadScheduler) {
         this.homeScreenView = homeScreenView;
         this.disBoardRepo = disBoardRepo;
         this.mainThreadScheduler = mainThreadScheduler;
         this.backgroundThreadScheduler = backgroundThreadScheduler;
-        this.boardPostListPresenterFactory = boardPostListPresenterFactory;
     }
 
     @Override
@@ -69,23 +65,22 @@ public class HomeScreenPresenter implements HomeScreenContract.Presenter {
     }
 
     @Override
-    public void addBoardPostListView(BoardPostListContract.View view, Navigator navigator,
-            String type) {
-        BoardPostListPresenter boardPostListPresenter = boardPostListPresenterFactory
-                .create(view, navigator);
-        boardPostListPresenterMap.put(type,boardPostListPresenter);
-        boardPostListPresenter.onViewCreated();
+    public void addBoardListPresenter(String type, BoardPostListContract.Presenter presenter) {
+        boardPostListPresenterMap.put(type, presenter);
+        presenter.onViewCreated();
     }
 
     @Override
     public void removeBoardPostListView(String type) {
-        BoardPostListPresenter removedListPresenter = boardPostListPresenterMap.remove(type);
+        BoardPostListContract.Presenter removedListPresenter = boardPostListPresenterMap
+                .remove(type);
         removedListPresenter.onViewDestroyed();
     }
 
     @Override
     public void handleListDisplayed(String type) {
-        BoardPostListPresenter boardPostListPresenter = boardPostListPresenterMap.get(type);
+        BoardPostListContract.Presenter boardPostListPresenter = boardPostListPresenterMap
+                .get(type);
         boardPostListPresenter.onViewDisplayed();
     }
 

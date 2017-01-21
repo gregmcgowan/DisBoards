@@ -3,7 +3,6 @@ package com.drownedinsound.ui.home;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
-import com.drownedinsound.ui.home.postList.BoardPostListPresenterFactory;
 
 import dagger.Module;
 import dagger.Provides;
@@ -23,10 +22,9 @@ public class HomeScreenModule {
     @Provides
     HomeScreenContract.Presenter providePresenter(
             @ForMainThreadScheduler Scheduler mainThreadScheduler,
-            @ForIoScheduler Scheduler backgroundThreadScheduler,
-            DisBoardRepo disBoardRepo, BoardPostListPresenterFactory boardPostListPresenterFactory) {
+            @ForIoScheduler Scheduler backgroundThreadScheduler, DisBoardRepo disBoardRepo) {
         return new HomeScreenPresenter(homeScreenView, disBoardRepo,
-                mainThreadScheduler, backgroundThreadScheduler, boardPostListPresenterFactory);
+                mainThreadScheduler, backgroundThreadScheduler);
     }
 
 

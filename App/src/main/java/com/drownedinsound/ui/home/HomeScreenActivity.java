@@ -5,6 +5,8 @@ import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.AndroidNavigator;
 import com.drownedinsound.ui.base.BaseActivity;
+import com.drownedinsound.ui.home.postList.BoardPostListPresenter;
+import com.drownedinsound.ui.home.postList.BoardPostListPresenterFactory;
 import com.drownedinsound.ui.home.postList.BoardPostListView;
 
 import android.content.Context;
@@ -43,6 +45,9 @@ public class HomeScreenActivity extends BaseActivity implements HomeScreenContra
     @Inject
     HomeScreenContract.Presenter homeScreenPresenter;
 
+    @Inject
+    BoardPostListPresenterFactory boardPostListPresenterFactory;
+
     private HomeScreenAdapter homeScreenAdapter = new HomeScreenAdapter();
 
     private int currentSelectedPage;
@@ -63,9 +68,10 @@ public class HomeScreenActivity extends BaseActivity implements HomeScreenContra
                 new HomeScreenAdapter.HomeScreenAdapterListener() {
                     @Override
                     public void onBoardPostListAdded(View view, String type) {
-                        homeScreenPresenter
-                                .addBoardPostListView(new BoardPostListView(view, type),
-                                        androidNavigator, type);
+                        BoardPostListPresenter boardPostListPresenter
+                                = boardPostListPresenterFactory
+                                .create(new BoardPostListView(view, type), androidNavigator);
+                        homeScreenPresenter.addBoardListPresenter(type, boardPostListPresenter);
                     }
 
                     @Override
