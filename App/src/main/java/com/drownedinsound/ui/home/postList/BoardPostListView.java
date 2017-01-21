@@ -20,7 +20,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 
-public class BoardPostListView implements BoardPostListContract.View {
+public class BoardPostListView implements BoardPostListContract.View,
+        BoardPostListAdapter.BoardPostListListener {
 
     @InjectView(R.id.loading_layout)
     DisBoardsLoadingLayout loadingLayout;
@@ -82,6 +83,7 @@ public class BoardPostListView implements BoardPostListContract.View {
 
         listView.setLayoutManager(new LinearLayoutManager(listView.getContext()));
         listView.setAdapter(adapter);
+        adapter.setBoardPostListListner(this);
     }
 
     @Override
@@ -124,5 +126,10 @@ public class BoardPostListView implements BoardPostListContract.View {
     @Override
     public void scrollToPostAt(int position) {
 
+    }
+
+    @Override
+    public void boardPostSelected(int position, BoardPostSummary boardPostSummary) {
+        presenter.handleBoardPostSelected(boardPostSummary);
     }
 }

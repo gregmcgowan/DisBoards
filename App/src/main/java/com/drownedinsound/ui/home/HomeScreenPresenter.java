@@ -4,6 +4,7 @@ import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
+import com.drownedinsound.ui.base.Display;
 import com.drownedinsound.ui.home.postList.BoardPostListContract;
 import com.drownedinsound.ui.home.postList.BoardPostListPresenter;
 import com.drownedinsound.ui.home.postList.BoardPostListPresenterFactory;
@@ -18,9 +19,12 @@ import rx.Scheduler;
 public class HomeScreenPresenter implements HomeScreenContract.Presenter {
 
     private final HomeScreenContract.View homeScreenView;
+
     private final DisBoardRepo disBoardRepo;
+
     private final Scheduler mainThreadScheduler;
     private final Scheduler backgroundThreadScheduler;
+
     private final BoardPostListPresenterFactory boardPostListPresenterFactory;
     private final Map<String,BoardPostListPresenter> boardPostListPresenterMap = new HashMap<>();
 
@@ -65,8 +69,8 @@ public class HomeScreenPresenter implements HomeScreenContract.Presenter {
     }
 
     @Override
-    public void addBoardPostListView(BoardPostListContract.View view, String type) {
-        BoardPostListPresenter boardPostListPresenter = boardPostListPresenterFactory.create(view);
+    public void addBoardPostListView(BoardPostListContract.View view, Display display, String type) {
+        BoardPostListPresenter boardPostListPresenter = boardPostListPresenterFactory.create(view,display);
         boardPostListPresenterMap.put(type,boardPostListPresenter);
         boardPostListPresenter.onViewCreated();
     }

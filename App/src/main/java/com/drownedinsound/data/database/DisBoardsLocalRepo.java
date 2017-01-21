@@ -6,6 +6,7 @@ import com.drownedinsound.data.generatered.BoardPostSummary;
 
 import java.util.List;
 
+import rx.Completable;
 import rx.Observable;
 
 /**
@@ -17,7 +18,7 @@ public interface DisBoardsLocalRepo {
 
     void setBoardPost(BoardPost boardPost) throws Exception;
 
-    Observable<Void> setBoardPostSummary(BoardPostSummary boardPostSummary);
+    Completable setBoardPostSummary(BoardPostSummary boardPostSummary);
 
     Observable<Void> setBoardPostObservable(BoardPost boardPost);
 

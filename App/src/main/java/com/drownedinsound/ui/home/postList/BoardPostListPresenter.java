@@ -5,10 +5,13 @@ import com.google.auto.factory.AutoFactory;
 import com.google.auto.factory.Provided;
 
 import com.drownedinsound.data.DisBoardRepo;
+import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
+import com.drownedinsound.ui.base.Display;
 
+import java.util.Date;
 import java.util.List;
 
 import rx.Observer;
@@ -28,12 +31,16 @@ public class BoardPostListPresenter implements BoardPostListContract.Presenter {
 
     private Subscription loadingSubscription;
 
+    private final Display display;
+
     public BoardPostListPresenter(
             BoardPostListContract.View boardListView,
+            Display display,
             @Provided DisBoardRepo disBoardRepo,
             @Provided @ForMainThreadScheduler Scheduler mainThreadScheduler,
             @Provided @ForIoScheduler Scheduler backgroundThreadScheduler) {
         this.boardListView = boardListView;
+        this.display = display;
         this.disBoardRepo = disBoardRepo;
         this.mainThreadScheduler = mainThreadScheduler;
         this.backgroundThreadScheduler = backgroundThreadScheduler;
@@ -102,6 +109,20 @@ public class BoardPostListPresenter implements BoardPostListContract.Presenter {
     @Override
     public void handleRefresh() {
         loadList(true);
+    }
+
+    @Override
+    public void handleBoardPostSelected(BoardPostSummary boardPostSummary) {
+        @BoardPostList.BoardPostListType String boardListType
+                = boardPostSummary.getBoardListTypeID();
+        boardPostSummary.setLastViewedTime(new Date().getTime());
+        boardPostSummary.setNumberOfTimesOpened(boardPostSummary.getNumberOfTimesOpened() + 1);
+
+        disBoardRepo.setBoardPostSummary(boardPostSummary)
+                .subscribeOn(backgroundThreadScheduler)
+                .subscribe();
+
+        display.showBoardPost(boardListType,boardPostSummary.getBoardPostID());
     }
 
 

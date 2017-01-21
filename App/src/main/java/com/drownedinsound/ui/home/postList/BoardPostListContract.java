@@ -18,6 +18,8 @@ public interface BoardPostListContract {
         void onViewDestroyed();
 
         void handleRefresh();
+
+        void handleBoardPostSelected(BoardPostSummary boardPostSummary);
     }
 
     interface View {

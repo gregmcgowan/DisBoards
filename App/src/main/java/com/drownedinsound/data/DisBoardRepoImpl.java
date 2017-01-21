@@ -11,6 +11,7 @@ import android.text.format.DateUtils;
 import java.util.Collections;
 import java.util.List;
 
+import rx.Completable;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -173,7 +174,7 @@ public class DisBoardRepoImpl implements DisBoardRepo {
     }
 
     @Override
-    public Observable<Void> setBoardPostSummary(BoardPostSummary boardPostSummary) {
+    public Completable setBoardPostSummary(BoardPostSummary boardPostSummary) {
         return disBoardsLocalRepo.setBoardPostSummary(boardPostSummary);
     }
 

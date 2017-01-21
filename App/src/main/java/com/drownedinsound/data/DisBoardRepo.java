@@ -6,6 +6,7 @@ import com.drownedinsound.data.generatered.BoardPostSummary;
 
 import java.util.List;
 
+import rx.Completable;
 import rx.Observable;
 
 /**
@@ -25,6 +26,6 @@ public interface DisBoardRepo {
     Observable<BoardPostSummary> getBoardPostSummary(@BoardPostList.BoardPostListType final String boardListType,
             String boardPostId);
 
-    Observable<Void> setBoardPostSummary(BoardPostSummary boardPostSummary);
+    Completable setBoardPostSummary(BoardPostSummary boardPostSummary);
 
 }

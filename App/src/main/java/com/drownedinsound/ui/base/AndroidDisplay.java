@@ -18,7 +18,7 @@ public class AndroidDisplay implements Display {
 
     private final Activity activity;
 
-    AndroidDisplay(Activity activity){
+    public AndroidDisplay(Activity activity){
         this.activity = activity;
     }
 
