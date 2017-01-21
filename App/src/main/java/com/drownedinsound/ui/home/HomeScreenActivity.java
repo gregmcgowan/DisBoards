@@ -12,7 +12,6 @@ import com.drownedinsound.ui.home.postList.BoardPostListView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -38,9 +37,6 @@ public class HomeScreenActivity extends BaseActivity implements HomeScreenContra
 
     @InjectView(R.id.board_tabs)
     TabLayout tabLayout;
-
-    @InjectView(R.id.floating_add_button)
-    FloatingActionButton floatingAddButton;
 
     @Inject
     HomeScreenContract.Presenter homeScreenPresenter;
@@ -137,7 +133,7 @@ public class HomeScreenActivity extends BaseActivity implements HomeScreenContra
 
     @Override
     protected int getLayoutResource() {
-        return R.layout.community_layout;
+        return R.layout.home_screen_layout;
     }
 
     @Override

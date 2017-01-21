@@ -5,8 +5,6 @@ import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostComment;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -24,17 +22,14 @@ public class BoardPostView implements BoardPostContract.View {
     @InjectView(R.id.loading_layout)
     DisBoardsLoadingLayout loadingLayout;
 
-
     @InjectView(R.id.board_post_connection_error_text_view)
     TextView connectionErrorTextView;
 
     @InjectView(R.id.board_post_comment_list)
     RecyclerView commentsList;
 
-    @InjectView(R.id.floating_reply_button)
-    FloatingActionButton floatingReplyButton;
-
     private BoardPost boardPost;
+
     private String boardPostId;
 
     public BoardPostView(View view) {
@@ -51,13 +46,12 @@ public class BoardPostView implements BoardPostContract.View {
         } else {
             //loadingLayout.setContentShownListener(onContentShownListener);
             loadingLayout.hideAnimatedViewAndShowContent();
-
         }
     }
 
     @Override
     public void showBoardPost(BoardPost boardPost) {
-        //TODO rewrite
+        //TODO this is crap. rewrite
         this.boardPost = boardPost;
         connectionErrorTextView.setVisibility(View.GONE);
         adapter.setBoardPost(boardPost);

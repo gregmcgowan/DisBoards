@@ -9,7 +9,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -80,10 +79,9 @@ public class BoardPostListView implements BoardPostListContract.View,
                 R.drawable.filled_blue_circle);
 
         adapter = new BoardPostListAdapter(context);
-
-        listView.setLayoutManager(new LinearLayoutManager(listView.getContext()));
-        listView.setAdapter(adapter);
         adapter.setBoardPostListListner(this);
+
+        listView.setAdapter(adapter);
     }
 
     @Override

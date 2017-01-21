@@ -67,7 +67,6 @@
             <include layout="@layout/dotted_divider_grey"/>
 
             <RelativeLayout
-                    android:id="@+id/board_post_comment_info_section"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/margin_small"
@@ -76,7 +75,6 @@
                     android:layout_marginTop="@dimen/margin_small">
 
                 <RelativeLayout
-                        android:id="@+id/board_post_comment_author_section"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
