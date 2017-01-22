@@ -53,6 +53,7 @@ public class BoardPostPresenter implements BoardPostContract.Presenter {
 
     @Override
     public void onViewCreated() {
+        boardPostView.setPresenter(this);
         loadBoardPost(false);
     }
 
@@ -104,6 +105,18 @@ public class BoardPostPresenter implements BoardPostContract.Presenter {
     public void onViewDestroyed() {
         if(loadBoardPostSubscription != null) {
             loadBoardPostSubscription.unsubscribe();
+        }
+    }
+
+    @Override
+    public void handleBackAction() {
+        navigator.hideCurrentScreen();
+    }
+
+    @Override
+    public void handleRefreshAction() {
+        if(loadBoardPostSubscription == null || loadBoardPostSubscription.isUnsubscribed()) {
+            loadBoardPost(true);
         }
     }
 }

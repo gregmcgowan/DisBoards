@@ -32,11 +32,18 @@ public class BoardPostView implements BoardPostContract.View {
 
     private String boardPostId;
 
+    private BoardPostContract.Presenter presenter;
+
     public BoardPostView(View view) {
         ButterKnife.inject(this, view);
         adapter = new BoardPostAdapter(view.getContext());
         commentsList.setAdapter(adapter);
         loadingLayout.setContentView(commentsList);
+    }
+
+    @Override
+    public void setPresenter(BoardPostContract.Presenter presenter) {
+        this.presenter = presenter;
     }
 
     @Override
@@ -78,28 +85,28 @@ public class BoardPostView implements BoardPostContract.View {
 
     @OnClick(R.id.back_button)
     public void backAction() {
-
-
+        presenter.handleBackAction();
     }
 
     @OnClick(R.id.refresh_board_posts_button)
     public void refreshButtonAction() {
+        presenter.handleRefreshAction();
     }
 
 
     @Override
     public void showErrorView() {
-
+        //TODO
     }
 
     @Override
     public void showThisACommentFailed() {
-
+        //TODO
     }
 
     @Override
     public void showGoToLatestCommentOption() {
-
+        //TODO
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 public interface BoardPostContract {
 
     interface View {
+        
         void showLoadingProgress(boolean show);
 
         void showBoardPost(BoardPost boardPost);
@@ -21,12 +22,19 @@ public interface BoardPostContract {
         boolean lastCommentIsVisible();
 
         boolean userHasInteractedWithUI();
+
+        void setPresenter(Presenter presenter);
     }
 
     interface Presenter {
+
         void onViewCreated();
 
         void onViewDestroyed();
+
+        void handleBackAction();
+
+        void handleRefreshAction();
     }
 
 }

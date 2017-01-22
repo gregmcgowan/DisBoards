@@ -85,5 +85,26 @@ public class BoardPostPresenterTest {
         verify(mockBoardPostView).showErrorView();
     }
 
+    @Test
+    public void refresh() {
+        when(disBoardRepo.getBoardPost(boardType, boardPostId, true)).thenReturn(
+                Observable.just(expectedBoardPost));
+
+        when(disBoardRepo.getBoardPostSummary(boardType, boardPostId))
+                .thenReturn(Observable.just(boardPostSummary));
+
+        boardPostPresenter.handleRefreshAction();
+
+        verify(mockBoardPostView).showLoadingProgress(true);
+        verify(mockBoardPostView).showBoardPost(expectedBoardPost);
+        verify(mockBoardPostView).showLoadingProgress(false);
+    }
+
+    @Test
+    public void handleBack() {
+        boardPostPresenter.handleBackAction();
+
+        verify(navigator).hideCurrentScreen();
+    }
 
 }
