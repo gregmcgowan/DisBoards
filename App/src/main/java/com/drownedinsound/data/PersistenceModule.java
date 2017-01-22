@@ -25,12 +25,6 @@ public class PersistenceModule {
     public static final String DIS_DB = "dis.db";
 
     @Provides
-    @Named("Cookies") @Singleton
-    SharedPreferences provideCookieSharedPreference(Application app) {
-        return app.getSharedPreferences("DisBoardsCookies", MODE_PRIVATE);
-    }
-
-    @Provides
     @Named("AppState") @Singleton
     SharedPreferences provideAppSharedPreferences(Application app) {
         return app.getSharedPreferences("DisBoardsAppPreferences", MODE_PRIVATE);
