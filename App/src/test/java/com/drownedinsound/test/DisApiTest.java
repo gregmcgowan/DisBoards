@@ -10,11 +10,7 @@ import com.drownedinsound.data.network.DisApiClient;
 import com.drownedinsound.data.network.NetworkUtil;
 import com.drownedinsound.data.network.UrlConstants;
 import com.drownedinsound.data.parser.streaming.DisWebPageParser;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
-import com.squareup.okhttp.mockwebserver.RecordedRequest;
+
 
 import junit.framework.Assert;
 
@@ -28,6 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import rx.Observer;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
