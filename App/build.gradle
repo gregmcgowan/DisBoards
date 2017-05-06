@@ -1,18 +1,24 @@
+apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+apply plugin: 'com.fernandocejas.frodo'
+apply plugin: 'kotlin-android'
+
 buildscript {
+
     repositories {
         jcenter()
         mavenCentral()
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
-        classpath 'io.fabric.tools:gradle:1.21.2'
+        classpath 'com.android.tools.build:gradle:2.3.2'
+        classpath 'io.fabric.tools:gradle:1.21.6'
         classpath "com.fernandocejas.frodo:frodo-plugin:0.8.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
-apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
-apply plugin: 'com.fernandocejas.frodo'
+
+
 
 repositories {
     mavenCentral()
@@ -30,7 +36,6 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 
-
     defaultConfig {
 
         minSdkVersion rootProject.ext.minSdkVersion
@@ -43,6 +48,10 @@ android {
         buildConfigField 'String', 'RELEASE_BUILD_TYPE', '"release"'
 
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+    }
+
+    sourceSets {
+        test.java.srcDirs += 'src/test/kotlin'
     }
 
     compileOptions {
@@ -111,6 +120,7 @@ android {
             events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
         }
     }
+
 }
 
 dependencies {
@@ -165,12 +175,25 @@ dependencies {
 
     testCompile 'com.squareup.okhttp3:mockwebserver:3.5.0'
     testCompile "junit:junit:$rootProject.ext.junitVersion"
-    testCompile "org.mockito:mockito-all:$rootProject.ext.mockitoVersion"
+    testCompile "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
     testCompile "org.hamcrest:hamcrest-all:$rootProject.ext.hamcrestVersion"
-    testCompile "org.powermock:powermock-module-junit4:$rootProject.ext.powerMockito"
-    testCompile "org.powermock:powermock-api-mockito:$rootProject.ext.powerMockito"
     testCompile 'com.flextrade.jfixture:jfixture:2.6.3'
+    testCompile 'junit:junit:4.12'
+    testCompile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    testCompile "com.nhaarman:mockito-kotlin:1.1.0"
 
+}
+// Don't allow Kotlin to be used in the production app by
+// setting the list of Kotlin source directories to an empty
+// list for all source sets except the test ones
+afterEvaluate {
+    android.sourceSets.all { sourceSet ->
+        if (!sourceSet.name.startsWith("test"))
+        {
+            sourceSet.kotlin.setSrcDirs([])
+        }
+    }
 }
 
 configurations.all {
