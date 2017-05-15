@@ -35,7 +35,6 @@ public class BoardPostActivity extends BaseActivity {
         return boardPostActivityIntent;
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +44,8 @@ public class BoardPostActivity extends BaseActivity {
 
         sessionComponent.boardPostComponent(
                 new BoardPostModule(androidNavigator,
-                        new BoardPostView(findViewById(R.id.board_post_container)),
+                        new BoardPostView(findViewById(R.id.board_post_container),
+                                new BoardPostTypeFactory()),
                         postId, boardPostType)).inject(this);
 
         boardPostPresenter.onViewCreated();

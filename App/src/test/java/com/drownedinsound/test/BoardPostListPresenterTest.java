@@ -1,11 +1,12 @@
 package com.drownedinsound.test;
 
+import com.drownedinsound.BoardPostListModel;
+import com.drownedinsound.ui.home.postList.BoardPostListModelMapper;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.ui.base.Navigator;
 import com.drownedinsound.ui.home.postList.BoardPostListContract;
-import com.drownedinsound.ui.home.postList.BoardPostListPresenter;
 import com.flextrade.jfixture.FixtureAnnotations;
 import com.flextrade.jfixture.annotations.Fixture;
 
@@ -16,11 +17,11 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
-import rx.Completable;
 import rx.Observable;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
+import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,8 +37,11 @@ public class BoardPostListPresenterTest {
     @Mock
     Navigator display;
 
+    @Mock
+    BoardPostListModelMapper mockBoardPostListMapper;
+
     @Fixture
-    List<BoardPostSummary> boardPosts;
+    List<BoardPostListModel> boardPosts;
 
     private BoardPostListPresenter boardPostListPresenter;
 
@@ -49,6 +53,7 @@ public class BoardPostListPresenterTest {
         FixtureAnnotations.initFixtures(this);
 
         boardPostListPresenter = new BoardPostListPresenter(mockBoardPostList, display,
+                mockBoardPostListMapper,
                 disBoardRepo,
                 testScheduler, testScheduler);
 
@@ -57,14 +62,16 @@ public class BoardPostListPresenterTest {
 
     @Test
     public void getSummariesSuccess() {
-        when(disBoardRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 0, false))
-                .thenReturn(Observable.just(boardPosts));
+//        when(disBoardRepo.getBoardPostSummaryList(BoardListTypes.MUSIC, 0, false))
+//                .thenReturn(Observable.just(boardPosts));
+//
+//        boardPostListPresenter.onViewCreated();
+//
+//        verify(mockBoardPostList).showLoadingProgress(true);
+//        verify(mockBoardPostList).showBoardPostSummaries(boardPosts);
+//        verify(mockBoardPostList).showLoadingProgress(false);
 
-        boardPostListPresenter.onViewCreated();
-
-        verify(mockBoardPostList).showLoadingProgress(true);
-        verify(mockBoardPostList).showBoardPostSummaries(boardPosts);
-        verify(mockBoardPostList).showLoadingProgress(false);
+        fail();
     }
 
     @Test
@@ -88,15 +95,16 @@ public class BoardPostListPresenterTest {
 
     @Test
     public void boardPostSelected() {
-        BoardPostSummary boardPostSummary = boardPosts.get(0);
-
-        when(disBoardRepo.setBoardPostSummary(any(BoardPostSummary.class)))
-                .thenReturn(Completable.complete());
-
-        boardPostListPresenter.handleBoardPostSelected(boardPostSummary);
-
-        verify(display).showBoardPostScreen(boardPostSummary.getBoardListTypeID(),
-                boardPostSummary.getBoardPostID());
+//        BoardPostListModel boardPostSummary = boardPosts.get(0);
+//
+//        when(disBoardRepo.setBoardPostSummary(any(Bo.class)))
+//                .thenReturn(Completable.complete());
+//
+//        boardPostListPresenter.handleBoardPostSelected(boardPostSummary);
+        fail();
+//
+//        verify(display).showBoardPostScreen(boardPostSummary.getBoardListTypeID(),
+//                boardPostSummary.getBoardPostID());
     }
 
 

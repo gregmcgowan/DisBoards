@@ -1,7 +1,7 @@
 package com.drownedinsound.ui.home.postList;
 
+import com.drownedinsound.BoardPostListModel;
 import com.drownedinsound.R;
-import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.utils.CollectionUtils;
 import com.drownedinsound.utils.UiUtils;
 
@@ -17,10 +17,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryHolder> {
 
-public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryHolder> {
-
-    private List<BoardPostSummary> boardPosts;
+    private List<BoardPostListModel> boardPosts;
 
     private Context context;
 
@@ -34,7 +33,7 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
 
     private BoardPostListListener boardPostListListner;
 
-    public BoardPostListAdapter(Context context) {
+    BoardPostListAdapter(Context context) {
         this.context = context;
         this.boardPosts = new ArrayList<>();
         this.readDrawable = context.getResources().getDrawable(
@@ -52,7 +51,7 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
         return position;
     }
 
-    public void setBoardPosts(List<BoardPostSummary> newPosts) {
+    public void setBoardPosts(List<BoardPostListModel> newPosts) {
         if (!CollectionUtils.equals(newPosts, boardPosts)) {
             boardPosts = newPosts;
             notifyDataSetChanged();
@@ -62,10 +61,6 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
     public void setBoardPostListListner(
             BoardPostListListener boardPostListListner) {
         this.boardPostListListner = boardPostListListner;
-    }
-
-    public void appendSummaries(List<BoardPostSummary> boardPosts) {
-        this.boardPosts.addAll(boardPosts);
     }
 
     @Override
@@ -94,36 +89,17 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
 
     @Override
     public void onBindViewHolder(final BoardPostSummaryHolder holder, final int position) {
-        final BoardPostSummary boardPostSummary = (BoardPostSummary) getItem(position);
-        if (boardPostSummary != null) {
-            String title = boardPostSummary.getTitle();
-            String authorusername = "by " + boardPostSummary.getAuthorUsername();
-            int numberOfReplies = boardPostSummary.getNumberOfReplies();
-            String numberOfRepliesText;
-            if (numberOfReplies > 0) {
-                numberOfRepliesText = numberOfReplies
-                        + (numberOfReplies > 1 ? " replies " : "  reply");
-            } else {
-                numberOfRepliesText = "No replies";
-            }
-            String lastUpdatedText = boardPostSummary
-                    .getLastUpdatedInReadableString();
-            int stickyVisible = boardPostSummary.getIsSticky() ? View.VISIBLE
-                    : View.GONE;
+        final BoardPostListModel boardPostModel = (BoardPostListModel) getItem(position);
+        if (boardPostModel != null) {
+            holder.boardPost = boardPostModel;
+            holder.titleTextView.setText(Html.fromHtml(boardPostModel.getTitle()));
+            holder.authorTextView.setText(boardPostModel.getAuthorUsername());
+            holder.numberOfRepliesTextView.setText(boardPostModel.getAuthorUsername());
+            holder.lastUpdatedTextView.setText(boardPostModel.getLastUpdatedText());
+            holder.stickyTextView
+                    .setVisibility(boardPostModel.isSticky() ? View.VISIBLE : View.GONE);
 
-            long lastViewedTime = boardPostSummary.getLastViewedTime();
-            long lastUpdatedTime = boardPostSummary.getLastUpdatedTime();
-            boolean markAsRead = lastViewedTime > 0
-                    && lastViewedTime >= lastUpdatedTime;
-
-            holder.boardPost = boardPostSummary;
-            holder.titleTextView.setText(Html.fromHtml(title));
-            holder.authorTextView.setText(authorusername);
-            holder.numberOfRepliesTextView.setText(numberOfRepliesText);
-            holder.lastUpdatedTextView.setText(lastUpdatedText);
-            holder.stickyTextView.setVisibility(stickyVisible);
-
-            if (markAsRead) {
+            if (boardPostModel.getMarkAsRead()) {
                 UiUtils.setBackgroundDrawable(holder.postReadMarkerView, readDrawable);
             } else {
                 UiUtils.setBackgroundDrawable(holder.postReadMarkerView, unreadDrawable);
@@ -146,7 +122,7 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
                 public void onClick(View v) {
                     UiUtils.setBackgroundDrawable(holder.postReadMarkerView, readDrawable);
                     if (boardPostListListner != null) {
-                        boardPostListListner.boardPostSelected(position, boardPostSummary);
+                        boardPostListListner.boardPostSelected(position, boardPostModel);
                     }
                 }
             });
@@ -159,17 +135,13 @@ public class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryH
         return boardPosts.size();
     }
 
-    public Object getItem(int position) {
+    Object getItem(int position) {
         return boardPosts.get(position);
     }
 
-    public int getNumberOfPosts() {
-        return boardPosts.size();
-    }
+    interface BoardPostListListener {
 
-    public interface BoardPostListListener {
-
-        void boardPostSelected(int position, BoardPostSummary boardPostSummary);
+        void boardPostSelected(int position, BoardPostListModel boardPostSummary);
     }
 
 }

@@ -1,13 +1,12 @@
 package com.drownedinsound.ui.home.postList;
 
+import com.drownedinsound.BoardPostListModel;
 import com.drownedinsound.R;
 import com.drownedinsound.data.generatered.BoardPostList;
-import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -15,44 +14,26 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 
 public class BoardPostListView implements BoardPostListContract.View,
         BoardPostListAdapter.BoardPostListListener {
 
-    @InjectView(R.id.loading_layout)
+    @BindView(R.id.loading_layout)
     DisBoardsLoadingLayout loadingLayout;
 
-    @InjectView(R.id.board_list_connection_error_text_view)
+    @BindView(R.id.board_list_connection_error_text_view)
     TextView connectionErrorTextView;
 
-    @InjectView(R.id.board_post_summary_list)
+    @BindView(R.id.board_post_summary_list)
     RecyclerView listView;
 
-    @InjectView(R.id.swipeToRefreshLayout)
+    @BindView(R.id.swipeToRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    private Drawable readDrawable;
-
-    private Drawable unreadDrawable;
-
     private BoardPostListAdapter adapter;
-
-    private boolean dualPaneMode;
-
-    private boolean wasInDualPaneMode;
-
-    private int currentlySelectedPost;
-
-    private String postId;
-
-    private int lastPageFetched;
-
-    private int pageIndex;
-
-    private int firstVisiblePosition;
 
     private final @BoardPostList.BoardPostListType String boardListType;
 
@@ -60,7 +41,7 @@ public class BoardPostListView implements BoardPostListContract.View,
 
     public BoardPostListView(View rootView, String boardListType) {
         this.boardListType = boardListType;
-        ButterKnife.inject(this, rootView);
+        ButterKnife.bind(this, rootView);
 
         loadingLayout.setContentView(listView);
 
@@ -72,11 +53,6 @@ public class BoardPostListView implements BoardPostListContract.View,
             }
         });
         Context context = rootView.getContext();
-
-        readDrawable = ContextCompat.getDrawable(context,
-                R.drawable.white_circle_blue_outline);
-        unreadDrawable = ContextCompat.getDrawable(context,
-                R.drawable.filled_blue_circle);
 
         adapter = new BoardPostListAdapter(context);
         adapter.setBoardPostListListner(this);
@@ -99,7 +75,7 @@ public class BoardPostListView implements BoardPostListContract.View,
     }
 
     @Override
-    public void showBoardPostSummaries(List<BoardPostSummary> boardPostsSummaries) {
+    public void showBoardPostSummaries(@NonNull List<BoardPostListModel> boardPostsSummaries) {
         adapter.setBoardPosts(boardPostsSummaries);
     }
 
@@ -122,12 +98,7 @@ public class BoardPostListView implements BoardPostListContract.View,
 
 
     @Override
-    public void scrollToPostAt(int position) {
-
-    }
-
-    @Override
-    public void boardPostSelected(int position, BoardPostSummary boardPostSummary) {
-        presenter.handleBoardPostSelected(boardPostSummary);
+    public void boardPostSelected(int position, BoardPostListModel boardPostSummary) {
+       presenter.handleBoardPostSelected(boardPostSummary);
     }
 }

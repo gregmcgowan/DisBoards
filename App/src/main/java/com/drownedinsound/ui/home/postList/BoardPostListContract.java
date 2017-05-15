@@ -1,7 +1,9 @@
 package com.drownedinsound.ui.home.postList;
 
+import com.drownedinsound.BoardPostListModel;
 import com.drownedinsound.data.generatered.BoardPostList;
-import com.drownedinsound.data.generatered.BoardPostSummary;
+
+import android.support.annotation.NonNull;
 
 import java.util.List;
 
@@ -13,13 +15,11 @@ public interface BoardPostListContract {
 
         void onViewDisplayed();
 
-        void onViewHidden();
-
         void onViewDestroyed();
 
         void handleRefresh();
 
-        void handleBoardPostSelected(BoardPostSummary boardPostSummary);
+        void handleBoardPostSelected(BoardPostListModel boardPostListModel);
     }
 
     interface View {
@@ -28,13 +28,11 @@ public interface BoardPostListContract {
 
         @BoardPostList.BoardPostListType String getBoardListType();
 
-        void showBoardPostSummaries(List<BoardPostSummary> boardPostsSummaries);
+        void showBoardPostSummaries(@NonNull List<BoardPostListModel> boardPostsSummaries);
 
         void showLoadingProgress(boolean show);
 
         void showErrorView();
-
-        void scrollToPostAt(int position);
     }
 
 }

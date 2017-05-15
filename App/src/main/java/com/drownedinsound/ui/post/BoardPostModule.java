@@ -5,6 +5,8 @@ import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 import com.drownedinsound.ui.base.Navigator;
 
+import android.support.annotation.NonNull;
+
 import dagger.Module;
 import dagger.Provides;
 import rx.Scheduler;
@@ -20,11 +22,11 @@ public class BoardPostModule {
 
     private final Navigator navigator;
 
-    public BoardPostModule(
-            Navigator navigator,
-            BoardPostContract.View boardPostView,
-            String postId,
-            String boardPostType) {
+    BoardPostModule(
+            @NonNull Navigator navigator,
+            @NonNull BoardPostContract.View boardPostView,
+            @NonNull String postId,
+            @NonNull String boardPostType) {
         this.navigator = navigator;
         this.boardPostView = boardPostView;
         this.postId = postId;
@@ -34,9 +36,14 @@ public class BoardPostModule {
     @Provides
     BoardPostContract.Presenter providePresenter(
             @ForMainThreadScheduler Scheduler mainThreadScheduler,
-            @ForIoScheduler Scheduler backgroundThreadScheduler, DisBoardRepo disBoardRepo) {
-        return new BoardPostPresenter(postId, boardPostType, boardPostView, navigator,
+            @ForIoScheduler Scheduler backgroundThreadScheduler,
+            @NonNull DisBoardRepo disBoardRepo,
+            @NonNull BoardPostModelMapper boardPostModelMapper) {
+        return new BoardPostPresenter(postId,
+                boardPostType,
+                boardPostView,
+                navigator,
                 mainThreadScheduler,
-                backgroundThreadScheduler, disBoardRepo);
+                backgroundThreadScheduler, disBoardRepo, boardPostModelMapper);
     }
 }

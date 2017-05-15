@@ -5,7 +5,6 @@ import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.ui.base.Navigator;
 import com.drownedinsound.ui.post.BoardPostContract;
-import com.drownedinsound.ui.post.BoardPostPresenter;
 import com.flextrade.jfixture.FixtureAnnotations;
 import com.flextrade.jfixture.annotations.Fixture;
 

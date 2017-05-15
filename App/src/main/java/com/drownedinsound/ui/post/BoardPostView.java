@@ -1,42 +1,38 @@
 package com.drownedinsound.ui.post;
 
+import com.drownedinsound.BoardPostItem;
 import com.drownedinsound.R;
-import com.drownedinsound.data.generatered.BoardPost;
-import com.drownedinsound.data.generatered.BoardPostComment;
+import com.drownedinsound.TypeFactory;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 
-public class BoardPostView implements BoardPostContract.View {
+class BoardPostView implements BoardPostContract.View {
 
     private BoardPostAdapter adapter;
 
-    @InjectView(R.id.loading_layout)
+    @BindView(R.id.loading_layout)
     DisBoardsLoadingLayout loadingLayout;
 
-    @InjectView(R.id.board_post_connection_error_text_view)
+    @BindView(R.id.board_post_connection_error_text_view)
     TextView connectionErrorTextView;
 
-    @InjectView(R.id.board_post_comment_list)
+    @BindView(R.id.board_post_comment_list)
     RecyclerView commentsList;
-
-    private BoardPost boardPost;
-
-    private String boardPostId;
 
     private BoardPostContract.Presenter presenter;
 
-    public BoardPostView(View view) {
-        ButterKnife.inject(this, view);
-        adapter = new BoardPostAdapter(view.getContext());
+    BoardPostView(View view, TypeFactory typeFactory) {
+        ButterKnife.bind(this, view);
+        adapter = new BoardPostAdapter(typeFactory);
         commentsList.setAdapter(adapter);
         loadingLayout.setContentView(commentsList);
     }
@@ -51,77 +47,29 @@ public class BoardPostView implements BoardPostContract.View {
         if(show) {
             loadingLayout.showAnimatedViewAndHideContent();
         } else {
-            //loadingLayout.setContentShownListener(onContentShownListener);
             loadingLayout.hideAnimatedViewAndShowContent();
         }
     }
 
     @Override
-    public void showBoardPost(BoardPost boardPost) {
-        //TODO this is crap. rewrite
-        this.boardPost = boardPost;
-        connectionErrorTextView.setVisibility(View.GONE);
-        adapter.setBoardPost(boardPost);
-
-        BoardPostComment initialPost = new BoardPostComment();
-        initialPost.setBoardPostID(boardPostId);
-        initialPost
-                .setAuthorUsername(boardPost
-                        .getAuthorUsername());
-        initialPost
-                .setDateAndTime(boardPost
-                        .getDateOfPost());
-        initialPost.setContent(boardPost.getContent());
-        initialPost.setTitle(boardPost
-                .getTitle());
-        initialPost.setBoardPost(boardPost);
-
-        ArrayList<BoardPostComment> commentList = new ArrayList<>();
-        commentList.add(initialPost);
-        commentList.addAll(boardPost.getComments());
-
-        adapter.setComments(commentList);
+    public void showBoardPostItems(List<BoardPostItem> items) {
+        adapter.setComments(items);
     }
 
     @OnClick(R.id.back_button)
-    public void backAction() {
+    void backAction() {
         presenter.handleBackAction();
     }
 
     @OnClick(R.id.refresh_board_posts_button)
-    public void refreshButtonAction() {
+    void refreshButtonAction() {
         presenter.handleRefreshAction();
     }
 
 
     @Override
     public void showErrorView() {
-        //TODO
+        connectionErrorTextView.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void showThisACommentFailed() {
-        //TODO
-    }
-
-    @Override
-    public void showGoToLatestCommentOption() {
-        //TODO
-    }
-
-    @Override
-    public void setOnContentShownListener(
-            DisBoardsLoadingLayout.ContentShownListener contentShownListener) {
-
-    }
-
-    @Override
-    public boolean lastCommentIsVisible() {
-        return false;
-    }
-
-    @Override
-    public boolean userHasInteractedWithUI() {
-        return false;
-    }
 }

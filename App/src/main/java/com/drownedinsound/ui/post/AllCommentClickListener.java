@@ -1,7 +1,5 @@
 package com.drownedinsound.ui.post;
 
-import com.drownedinsound.data.generatered.BoardPostComment;
-
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -13,11 +11,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.TextView;
 
-
-/**
- * Created by gregmcgowan on 13/08/15.
- */
-public class AllCommentClickListener  implements View.OnClickListener{
+class AllCommentClickListener  implements View.OnClickListener{
 
     private ViewGroup itemViewGroup;
 
@@ -25,18 +19,14 @@ public class AllCommentClickListener  implements View.OnClickListener{
 
     private TextView replyTextView;
 
-    private BoardPostComment boardPostComment;
 
-
-    public AllCommentClickListener(
+    AllCommentClickListener(
             ViewGroup itemViewGroup,
             TextView thisTextView,
-            TextView replyTextView,
-            BoardPostComment boardPostComment) {
+            TextView replyTextView) {
         this.replyTextView = replyTextView;
         this.thisTextView = thisTextView;
         this.itemViewGroup = itemViewGroup;
-        this.boardPostComment = boardPostComment;
     }
 
     @Override
@@ -76,8 +66,6 @@ public class AllCommentClickListener  implements View.OnClickListener{
                     } else {
                         thisTextView.setVisibility(View.GONE);
                     }
-                    boardPostComment.setActionSectionVisible(setVisible);
-
                 }
 
                 public void onAnimationCancel(Animator animation) {
@@ -102,7 +90,6 @@ public class AllCommentClickListener  implements View.OnClickListener{
                     } else {
                         replyTextView.setVisibility(View.GONE);
                     }
-                    boardPostComment.setActionSectionVisible(setVisible);
                 }
 
                 public void onAnimationCancel(Animator animation) {

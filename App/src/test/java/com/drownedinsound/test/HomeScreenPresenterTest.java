@@ -4,7 +4,6 @@ import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.ui.home.HomeScreenContract;
-import com.drownedinsound.ui.home.HomeScreenPresenter;
 import com.drownedinsound.ui.home.postList.BoardPostListContract;
 import com.flextrade.jfixture.FixtureAnnotations;
 import com.flextrade.jfixture.annotations.Fixture;

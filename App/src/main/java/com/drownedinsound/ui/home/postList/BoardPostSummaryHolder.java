@@ -1,31 +1,31 @@
 package com.drownedinsound.ui.home.postList;
 
-import com.drownedinsound.data.generatered.BoardPostSummary;
+import com.drownedinsound.BoardPostListModel;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-public class BoardPostSummaryHolder extends RecyclerView.ViewHolder {
+class BoardPostSummaryHolder extends RecyclerView.ViewHolder {
 
-    public BoardPostSummaryHolder(View itemView) {
+    BoardPostSummaryHolder(View itemView) {
         super(itemView);
     }
 
-    public View backgroundView;
+     View backgroundView;
 
-    public View postReadMarkerView;
+     View postReadMarkerView;
 
-    public TextView titleTextView;
+     TextView titleTextView;
 
-    public TextView authorTextView;
+     TextView authorTextView;
 
-    public TextView stickyTextView;
+     TextView stickyTextView;
 
-    public TextView numberOfRepliesTextView;
+     TextView numberOfRepliesTextView;
 
-    public TextView lastUpdatedTextView;
+     TextView lastUpdatedTextView;
 
-    public BoardPostSummary boardPost;
+     BoardPostListModel boardPost;
 
 }

@@ -1,7 +1,10 @@
 package com.drownedinsound.ui.post;
 
-import com.drownedinsound.data.generatered.BoardPost;
-import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
+import com.drownedinsound.BoardPostItem;
+
+import android.support.annotation.NonNull;
+
+import java.util.List;
 
 public interface BoardPostContract {
 
@@ -9,19 +12,9 @@ public interface BoardPostContract {
         
         void showLoadingProgress(boolean show);
 
-        void showBoardPost(BoardPost boardPost);
+        void showBoardPostItems(@NonNull List<BoardPostItem> items);
 
         void showErrorView();
-
-        void showThisACommentFailed();
-
-        void showGoToLatestCommentOption();
-
-        void setOnContentShownListener(DisBoardsLoadingLayout.ContentShownListener contentShownListener);
-
-        boolean lastCommentIsVisible();
-
-        boolean userHasInteractedWithUI();
 
         void setPresenter(Presenter presenter);
     }
