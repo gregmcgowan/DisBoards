@@ -4,6 +4,8 @@ import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.qualifiers.ForIoScheduler;
 import com.drownedinsound.qualifiers.ForMainThreadScheduler;
 
+import android.support.annotation.NonNull;
+
 import dagger.Module;
 import dagger.Provides;
 import rx.Scheduler;
@@ -13,8 +15,8 @@ public class HomeScreenModule {
 
     private final HomeScreenContract.View homeScreenView;
 
-    public HomeScreenModule(
-            HomeScreenContract.View homeScreenView) {
+    HomeScreenModule(
+            @NonNull HomeScreenContract.View homeScreenView) {
         this.homeScreenView = homeScreenView;
     }
 

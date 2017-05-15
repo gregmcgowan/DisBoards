@@ -1,11 +1,12 @@
 package com.drownedinsound.ui.home;
 
+
 import com.drownedinsound.R;
 import com.drownedinsound.core.SessionComponent;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.AndroidNavigator;
 import com.drownedinsound.ui.base.BaseActivity;
-import com.drownedinsound.ui.home.postList.BoardPostListPresenter;
+import com.drownedinsound.ui.home.postList.BoardPostListContract;
 import com.drownedinsound.ui.home.postList.BoardPostListPresenterFactory;
 import com.drownedinsound.ui.home.postList.BoardPostListView;
 
@@ -20,8 +21,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 
 public class HomeScreenActivity extends BaseActivity implements HomeScreenContract.View {
@@ -32,10 +33,10 @@ public class HomeScreenActivity extends BaseActivity implements HomeScreenContra
 
     private static final String SAVED_TAB = "SAVED_TAB";
 
-    @InjectView(R.id.boards_pager)
+    @BindView(R.id.boards_pager)
     ViewPager viewPager;
 
-    @InjectView(R.id.board_tabs)
+    @BindView(R.id.board_tabs)
     TabLayout tabLayout;
 
     @Inject
@@ -58,15 +59,16 @@ public class HomeScreenActivity extends BaseActivity implements HomeScreenContra
             currentSelectedPage = savedInstanceState.getInt(SAVED_TAB, -1);
         }
 
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         homeScreenAdapter.setHomeScreenAdapterListener(
                 new HomeScreenAdapter.HomeScreenAdapterListener() {
                     @Override
                     public void onBoardPostListAdded(View view, String type) {
-                        BoardPostListPresenter boardPostListPresenter
+                        BoardPostListContract.Presenter boardPostListPresenter
                                 = boardPostListPresenterFactory
                                 .create(new BoardPostListView(view, type), androidNavigator);
+
                         homeScreenPresenter.addBoardListPresenter(type, boardPostListPresenter);
                     }
 

@@ -11,18 +11,18 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeScreenAdapter extends PagerAdapter {
+class HomeScreenAdapter extends PagerAdapter {
 
     private List<BoardPostList> boardPostLists = new ArrayList<>();
 
     private HomeScreenAdapterListener homeScreenAdapterListener;
 
-    public void setBoardPostLists(List<BoardPostList> boardPostLists) {
+    void setBoardPostLists(List<BoardPostList> boardPostLists) {
         this.boardPostLists = boardPostLists;
         notifyDataSetChanged();
     }
 
-    public void setHomeScreenAdapterListener(HomeScreenAdapterListener homeScreenAdapterListener) {
+    void setHomeScreenAdapterListener(HomeScreenAdapterListener homeScreenAdapterListener) {
         this.homeScreenAdapterListener = homeScreenAdapterListener;
     }
 
@@ -71,7 +71,7 @@ public class HomeScreenAdapter extends PagerAdapter {
         return boardPostListInfoInfo.getDisplayName();
     }
 
-    public String getListTypeAt(int postion){
+    String getListTypeAt(int postion){
         return boardPostLists.get(postion).getBoardListTypeID();
     }
 
