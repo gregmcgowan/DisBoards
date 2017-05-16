@@ -1,6 +1,6 @@
 package com.drownedinsound.ui.home.postList
 
-import com.drownedinsound.BoardPostListModel
+import com.drownedinsound.BoardPostSummaryModel
 import com.drownedinsound.data.DisBoardRepo
 import com.drownedinsound.data.generatered.BoardPostList
 import com.drownedinsound.data.generatered.BoardPostSummary
@@ -47,8 +47,8 @@ import java.util.*
         }
     }
 
-    private fun handleItems(boardPostLists: List<BoardPostListModel>) {
-        boardListView.showBoardPostSummaries(boardPostLists)
+    private fun handleItems(boardPostSummaries: List<BoardPostSummaryModel>) {
+        boardListView.showBoardPostSummaries(boardPostSummaries)
         boardListView.showLoadingProgress(false)
     }
 
@@ -58,7 +58,7 @@ import java.util.*
         boardListView.showErrorView()
     }
 
-    private fun storeAndMap(boardPostSummaries: MutableList<BoardPostSummary>): List<BoardPostListModel> {
+    private fun storeAndMap(boardPostSummaries: MutableList<BoardPostSummary>): List<BoardPostSummaryModel> {
         this.boardPostSummaries = boardPostSummaries
         return boardPostMapper.map(boardPostSummaries)
     }
@@ -73,8 +73,8 @@ import java.util.*
 
     override fun handleRefresh() = loadList(true)
 
-    override fun handleBoardPostSelected(boardPostListModel: BoardPostListModel) {
-        val summary = boardPostSummaries[boardPostListModel.index]
+    override fun handleBoardPostSelected(boardPostSummaryModel: BoardPostSummaryModel) {
+        val summary = boardPostSummaries[boardPostSummaryModel.index]
         @BoardPostList.BoardPostListType val boardListType = summary.boardListTypeID
         summary.lastViewedTime = Date().time
         summary.numberOfTimesOpened = summary.numberOfTimesOpened + 1

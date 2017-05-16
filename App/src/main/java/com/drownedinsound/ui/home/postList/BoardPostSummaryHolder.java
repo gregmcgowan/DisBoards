@@ -1,6 +1,6 @@
 package com.drownedinsound.ui.home.postList;
 
-import com.drownedinsound.BoardPostListModel;
+import com.drownedinsound.BoardPostSummaryModel;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -26,6 +26,6 @@ class BoardPostSummaryHolder extends RecyclerView.ViewHolder {
 
      TextView lastUpdatedTextView;
 
-     BoardPostListModel boardPost;
+     BoardPostSummaryModel boardPost;
 
 }

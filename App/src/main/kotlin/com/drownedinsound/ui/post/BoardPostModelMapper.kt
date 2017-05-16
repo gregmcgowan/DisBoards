@@ -14,16 +14,16 @@ class BoardPostModelMapper @Inject constructor() {
 
         boardPostItems.add(createInitialPostModel(boardPost))
 
-        return (0..boardPost.comments.size - 1)
-                .mapTo(boardPostItems) { createReplyCommentModel(boardPost.comments[it]) }
+        return boardPost.comments.mapTo(boardPostItems) { createReplyCommentModel(it) }
                 .toImmutableList()
     }
 
     private fun createInitialPostModel(boardPost: BoardPost): InitialComment {
-        val content = boardPost.content?.fromHtml() ?: ""
-        val commentInfo = CommentInfo(boardPost.title,
-                boardPost.authorUsername.trim(),
-                content, boardPost.dateOfPost)
+        val commentInfo = Comment(
+                title = boardPost.title,
+                author = boardPost.authorUsername.trim(),
+                content = boardPost.content?.fromHtml() ?: "",
+                dateAndTime = boardPost.dateOfPost)
 
         val numberOfRepliesText: String
         val numberOfReplies = boardPost.numberOfReplies
@@ -40,18 +40,16 @@ class BoardPostModelMapper @Inject constructor() {
     }
 
     private fun createReplyCommentModel(comment: BoardPostComment): ReplyComment {
-        val title = comment.title?.fromHtml()
-        val content = comment.content?.fromHtml() ?: ""
         var author = comment.authorUsername
         val replyTo = comment.replyToUsername
         if (!TextUtils.isEmpty(replyTo)) {
             author = author + "\n" + "@ " + replyTo
         }
         val replyComment = ReplyComment(
-                CommentInfo(title,
-                        author,
-                        content,
-                        comment.dateAndTime ?: "unknown"),
+                Comment(title = comment.title?.fromHtml(),
+                        author = author,
+                        content = comment.content?.fromHtml() ?: "",
+                        dateAndTime = comment.dateAndTime),
                 comment.usersWhoHaveThissed,
                 comment.commentLevel);
         return replyComment

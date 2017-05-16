@@ -28,11 +28,10 @@ class BoardPostPresenter(
         boardPostView.showLoadingProgress(true)
         loadBoardPostSubscription =
                 disBoardRepo.getBoardPost(boardListType, boardPostId, forceUpdate)
-                        .map({ boardPost -> boardPostModelMapper.map(boardPost) })
+                        .map(boardPostModelMapper::map)
                         .subscribeOn(backgroundThreadScheduler)
                         .observeOn(mainThreadScheduler)
-                        .subscribe({ items -> showItems(items) },
-                                { error -> handleError(error) })
+                        .subscribe(this::displayItems, this::handleError)
     }
 
     private fun handleError(throwable: Throwable) {
@@ -41,23 +40,20 @@ class BoardPostPresenter(
         boardPostView.showLoadingProgress(false)
     }
 
-    private fun showItems(items: List<BoardPostItem>) {
+    private fun displayItems(items: List<BoardPostItem>) {
         boardPostView.showBoardPostItems(items)
         boardPostView.showLoadingProgress(false)
     }
 
     override fun onViewDestroyed() {
-        if (loadBoardPostSubscription != null) {
-            loadBoardPostSubscription!!.unsubscribe()
-        }
+        loadBoardPostSubscription?.unsubscribe()
     }
 
-    override fun handleBackAction() {
-        navigator.hideCurrentScreen()
-    }
+    override fun handleBackAction() = navigator.hideCurrentScreen()
 
     override fun handleRefreshAction() {
-        if (loadBoardPostSubscription == null || loadBoardPostSubscription!!.isUnsubscribed) {
+        if(loadBoardPostSubscription ==  null
+                || loadBoardPostSubscription!!.isUnsubscribed) {
             loadBoardPost(true)
         }
     }

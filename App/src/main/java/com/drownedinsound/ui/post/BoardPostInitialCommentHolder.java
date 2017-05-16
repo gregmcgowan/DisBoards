@@ -1,7 +1,7 @@
 package com.drownedinsound.ui.post;
 
 
-import com.drownedinsound.CommentInfo;
+import com.drownedinsound.Comment;
 import com.drownedinsound.InitialComment;
 import com.drownedinsound.R;
 
@@ -33,11 +33,11 @@ class BoardPostInitialCommentHolder extends BaseBoardPostHolder<InitialComment> 
 
     @Override
     void bind(InitialComment item) {
-        CommentInfo commentInfo = item.getCommentInfo();
-        commentAuthorTextView.setText(commentInfo.getAuthor());
-        commentTitleTextView.setText(commentInfo.getTitle());
-        commentContentTextView.setText(commentInfo.getContent());
-        commentDateTimeTextView.setText(commentInfo.getDateAndTime());
+        Comment comment = item.getComment();
+        commentAuthorTextView.setText(comment.getAuthor());
+        commentTitleTextView.setText(comment.getTitle());
+        commentContentTextView.setText(comment.getContent());
+        commentDateTimeTextView.setText(comment.getDateAndTime());
         noOfCommentsTextView.setText(item.getNumberOfRepliesText());
     }
 }

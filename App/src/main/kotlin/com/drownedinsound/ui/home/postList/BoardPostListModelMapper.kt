@@ -1,22 +1,19 @@
 package com.drownedinsound.ui.home.postList
 
-import com.drownedinsound.BoardPostListModel
+import com.drownedinsound.BoardPostSummaryModel
 import com.drownedinsound.data.generatered.BoardPostSummary
 import kotlinx.collections.immutable.toImmutableList
 import javax.inject.Inject
 
 class BoardPostListModelMapper @Inject constructor() {
 
-    fun map(boardPostSummaries: List<BoardPostSummary>): List<BoardPostListModel> {
+    fun map(boardPostSummaries: List<BoardPostSummary>): List<BoardPostSummaryModel> {
         return boardPostSummaries
                 .mapIndexedTo(mutableListOf()) { index, summary -> boardPostListModel(summary, index) }
                 .toImmutableList()
     }
 
-    private fun boardPostListModel(summary: BoardPostSummary, index: Int): BoardPostListModel {
-        val title = summary.title
-        val username = summary.authorUsername
-        val authorise = "by $username"
+    private fun boardPostListModel(summary: BoardPostSummary, index: Int): BoardPostSummaryModel {
         val numberOfReplies = summary.numberOfReplies
         val numberOfRepliesText: String
         if (numberOfReplies > 0) {
@@ -29,14 +26,16 @@ class BoardPostListModelMapper @Inject constructor() {
         } else {
             numberOfRepliesText = "No replies"
         }
-        val lastUpdatedText = summary.lastUpdatedInReadableString
-        val lastViewedTime = summary.lastViewedTime
-        val lastUpdatedTime = summary.lastUpdatedTime
-        val isSticky = summary.isSticky
-        val markAsRead = lastViewedTime > 0 && lastViewedTime >= lastUpdatedTime
 
-        return BoardPostListModel(index, title, authorise,
-                numberOfRepliesText, lastUpdatedText, markAsRead, isSticky)
+
+        return BoardPostSummaryModel(
+                index = index,
+                title = summary.title,
+                authorUsername = "by $summary.authorUsername",
+                numberOfRepliesText = numberOfRepliesText,
+                lastUpdatedText = summary.lastUpdatedInReadableString,
+                markAsRead = summary.lastViewedTime > 0 && summary.lastViewedTime >= summary.lastUpdatedTime,
+                isSticky = summary.isSticky)
 
     }
 

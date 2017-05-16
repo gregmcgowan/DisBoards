@@ -1,6 +1,6 @@
 package com.drownedinsound.ui.post;
 
-import com.drownedinsound.CommentInfo;
+import com.drownedinsound.Comment;
 import com.drownedinsound.R;
 import com.drownedinsound.ReplyComment;
 import com.drownedinsound.utils.UiUtils;
@@ -48,13 +48,14 @@ class BoardPostCommentHolder extends BaseBoardPostHolder<ReplyComment> {
 
     @Override
     void bind(ReplyComment replyComment) {
-        CommentInfo commentInfo = replyComment.getCommentInfo();
+        Comment comment = replyComment.getComment();
 
         commentAuthorTextView
-                .setText(commentInfo.getAuthor());
-        commentTitleTextView.setText(commentInfo.getTitle());
+                .setText(comment.getAuthor());
 
-        commentContentTextView.setText(commentInfo.getContent());
+        commentTitleTextView.setText(comment.getTitle());
+
+        commentContentTextView.setText(comment.getContent());
 
         String usersWhoThised = replyComment.getUsersWhoHaveThisdThis();
         if (!TextUtils.isEmpty(usersWhoThised)) {
@@ -68,7 +69,7 @@ class BoardPostCommentHolder extends BaseBoardPostHolder<ReplyComment> {
         }
 
         commentDateTimeTextView
-                .setText(commentInfo.getDateAndTime());
+                .setText(comment.getDateAndTime());
 
         int level = replyComment.getCommentLevel();
         whitespaceLayout.removeAllViews();

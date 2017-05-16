@@ -1,12 +1,13 @@
 package com.drownedinsound.test;
 
-import com.drownedinsound.BoardPostListModel;
+import com.drownedinsound.BoardPostSummaryModel;
 import com.drownedinsound.ui.home.postList.BoardPostListModelMapper;
 import com.drownedinsound.data.DisBoardRepo;
 import com.drownedinsound.data.generatered.BoardPostSummary;
 import com.drownedinsound.data.model.BoardListTypes;
 import com.drownedinsound.ui.base.Navigator;
 import com.drownedinsound.ui.home.postList.BoardPostListContract;
+import com.drownedinsound.ui.home.postList.BoardPostListPresenter;
 import com.flextrade.jfixture.FixtureAnnotations;
 import com.flextrade.jfixture.annotations.Fixture;
 
@@ -41,7 +42,7 @@ public class BoardPostListPresenterTest {
     BoardPostListModelMapper mockBoardPostListMapper;
 
     @Fixture
-    List<BoardPostListModel> boardPosts;
+    List<BoardPostSummaryModel> boardPosts;
 
     private BoardPostListPresenter boardPostListPresenter;
 

@@ -1,6 +1,6 @@
 package com.drownedinsound.ui.home.postList;
 
-import com.drownedinsound.BoardPostListModel;
+import com.drownedinsound.BoardPostSummaryModel;
 import com.drownedinsound.R;
 import com.drownedinsound.utils.CollectionUtils;
 import com.drownedinsound.utils.UiUtils;
@@ -19,7 +19,7 @@ import java.util.List;
 
 class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryHolder> {
 
-    private List<BoardPostListModel> boardPosts;
+    private List<BoardPostSummaryModel> boardPosts;
 
     private Context context;
 
@@ -51,7 +51,7 @@ class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryHolder> 
         return position;
     }
 
-    public void setBoardPosts(List<BoardPostListModel> newPosts) {
+    public void setBoardPosts(List<BoardPostSummaryModel> newPosts) {
         if (!CollectionUtils.equals(newPosts, boardPosts)) {
             boardPosts = newPosts;
             notifyDataSetChanged();
@@ -89,7 +89,7 @@ class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryHolder> 
 
     @Override
     public void onBindViewHolder(final BoardPostSummaryHolder holder, final int position) {
-        final BoardPostListModel boardPostModel = (BoardPostListModel) getItem(position);
+        final BoardPostSummaryModel boardPostModel = (BoardPostSummaryModel) getItem(position);
         if (boardPostModel != null) {
             holder.boardPost = boardPostModel;
             holder.titleTextView.setText(Html.fromHtml(boardPostModel.getTitle()));
@@ -141,7 +141,7 @@ class BoardPostListAdapter extends RecyclerView.Adapter<BoardPostSummaryHolder> 
 
     interface BoardPostListListener {
 
-        void boardPostSelected(int position, BoardPostListModel boardPostSummary);
+        void boardPostSelected(int position, BoardPostSummaryModel boardPostSummary);
     }
 
 }

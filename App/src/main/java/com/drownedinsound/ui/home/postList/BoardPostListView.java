@@ -1,6 +1,6 @@
 package com.drownedinsound.ui.home.postList;
 
-import com.drownedinsound.BoardPostListModel;
+import com.drownedinsound.BoardPostSummaryModel;
 import com.drownedinsound.R;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
@@ -75,7 +75,7 @@ public class BoardPostListView implements BoardPostListContract.View,
     }
 
     @Override
-    public void showBoardPostSummaries(@NonNull List<BoardPostListModel> boardPostsSummaries) {
+    public void showBoardPostSummaries(@NonNull List<BoardPostSummaryModel> boardPostsSummaries) {
         adapter.setBoardPosts(boardPostsSummaries);
     }
 
@@ -98,7 +98,7 @@ public class BoardPostListView implements BoardPostListContract.View,
 
 
     @Override
-    public void boardPostSelected(int position, BoardPostListModel boardPostSummary) {
+    public void boardPostSelected(int position, BoardPostSummaryModel boardPostSummary) {
        presenter.handleBoardPostSelected(boardPostSummary);
     }
 }

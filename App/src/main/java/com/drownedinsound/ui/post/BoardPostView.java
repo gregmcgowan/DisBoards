@@ -5,6 +5,7 @@ import com.drownedinsound.R;
 import com.drownedinsound.TypeFactory;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -52,7 +53,7 @@ class BoardPostView implements BoardPostContract.View {
     }
 
     @Override
-    public void showBoardPostItems(List<BoardPostItem> items) {
+    public void showBoardPostItems(@NonNull List<BoardPostItem> items) {
         adapter.setComments(items);
     }
 

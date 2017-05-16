@@ -23,7 +23,7 @@ class HomeScreenPresenter(
         disBoardRepo.allBoardPostLists
                 .subscribeOn(backgroundThreadScheduler)
                 .observeOn(mainThreadScheduler)
-                .subscribe({boardPostLists -> homeScreenView.showBoardPostLists(boardPostLists)})
+                .subscribe(homeScreenView::showBoardPostLists)
     }
 
     override fun addBoardListPresenter(type: String, presenter: BoardPostListContract.Presenter) {
@@ -39,5 +39,7 @@ class HomeScreenPresenter(
         listPresenterMap[type]?.onViewDisplayed()
     }
 
-    override fun handlePageTabReselected(position: Int) = Unit
+    override fun handlePageTabReselected(position: Int) {
+
+    }
 }
