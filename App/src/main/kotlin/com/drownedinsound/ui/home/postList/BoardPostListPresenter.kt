@@ -85,6 +85,4 @@ import java.util.*
 
         navigator.showBoardPostScreen(boardListType, summary.boardPostID)
     }
-
-
 }

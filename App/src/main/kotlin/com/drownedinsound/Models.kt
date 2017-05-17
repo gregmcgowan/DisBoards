@@ -5,7 +5,7 @@ import com.drownedinsound.ui.post.BaseBoardPostHolder
 
 data class BoardPostSummaryModel(
         val index: Int,
-        val title: String,
+        val title: String? = "No title",
         val authorUsername: String,
         val numberOfRepliesText: String,
         val lastUpdatedText: String,
