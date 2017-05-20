@@ -5,7 +5,6 @@ import com.drownedinsound.R;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
@@ -52,10 +51,9 @@ public class BoardPostListView implements BoardPostListContract.View,
                 doRefreshAction();
             }
         });
-        Context context = rootView.getContext();
 
-        adapter = new BoardPostListAdapter(context);
-        adapter.setBoardPostListListner(this);
+        adapter = new BoardPostListAdapter();
+        adapter.setBoardPostListListener(this);
 
         listView.setAdapter(adapter);
     }
@@ -95,7 +93,6 @@ public class BoardPostListView implements BoardPostListContract.View,
         listView.setVisibility(View.GONE);
         loadingLayout.setVisibility(View.GONE);
     }
-
 
     @Override
     public void boardPostSelected(int position, BoardPostSummaryModel boardPostSummary) {
