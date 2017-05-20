@@ -10,6 +10,6 @@ import dagger.Subcomponent;
  */
 @SingleIn(SessionComponent.class)
 @Subcomponent(modules = {DataModule.class, ProdDataModule.class})
-public interface SessionComponent extends BaseSessionComponet {
+public interface SessionComponent extends BaseSessionComponent {
 
 }

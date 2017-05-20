@@ -1,10 +1,8 @@
 package com.drownedinsound.core;
 
-import com.drownedinsound.qualifiers.ForIoScheduler;
-import com.drownedinsound.qualifiers.ForMainThreadScheduler;
-
 import android.app.Application;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -13,11 +11,11 @@ import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-/**
- * Created by gregmcgowan on 20/07/2014.
- */
 @Module()
 public class DisBoardsAppModule {
+
+    public static final String MAIN_THREAD_SCHEDULER = "MAIN_THREAD_SCHEDULER";
+    public static final String BACKGROUND_THREAD_SCHEDULER = "BACKGROUND_THREAD_SCHEDULER";
 
     private final DisBoardsApp app;
 
@@ -33,7 +31,7 @@ public class DisBoardsAppModule {
 
     @Provides
     @Singleton
-    @ForMainThreadScheduler
+    @Named(MAIN_THREAD_SCHEDULER)
     Scheduler mainThreadScheduler() {
         return AndroidSchedulers.mainThread();
     }
@@ -41,7 +39,7 @@ public class DisBoardsAppModule {
 
     @Provides
     @Singleton
-    @ForIoScheduler
+    @Named(BACKGROUND_THREAD_SCHEDULER)
     Scheduler ioThreadScheduler() {
         return Schedulers.io();
     }

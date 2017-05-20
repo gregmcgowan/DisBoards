@@ -13,18 +13,18 @@ data class BoardPostSummaryModel(
         val isSticky: Boolean)
 
 interface BoardPostItem {
-    fun getType(typeFactory: TypeFactory) : Int
+    fun getType(bordPostCommentListTypeFactory: BordPostCommentListTypeFactory) : Int
 }
 
 data class InitialComment(val comment: Comment,
                           val numberOfRepliesText: String) : BoardPostItem {
-    override fun getType(typeFactory: TypeFactory): Int = typeFactory.getType(this)
+    override fun getType(bordPostCommentListTypeFactory: BordPostCommentListTypeFactory): Int = bordPostCommentListTypeFactory.getType(this)
 }
 
 data class ReplyComment(val comment: Comment,
                         val usersWhoHaveThisdThis : String?,
                         val commentLevel: Int) : BoardPostItem {
-    override fun getType(typeFactory: TypeFactory) : Int  = typeFactory.getType(this)
+    override fun getType(bordPostCommentListTypeFactory: BordPostCommentListTypeFactory) : Int  = bordPostCommentListTypeFactory.getType(this)
 }
 
 data class Comment(
@@ -33,7 +33,7 @@ data class Comment(
         val content: String,
         val dateAndTime: String? = "unknown")
 
-interface TypeFactory {
+interface BordPostCommentListTypeFactory {
     fun getType(initialComment: InitialComment) : Int
     fun getType(replyComment: ReplyComment) : Int
     fun createViewHolder(view: View, viewType: Int): BaseBoardPostHolder<*>

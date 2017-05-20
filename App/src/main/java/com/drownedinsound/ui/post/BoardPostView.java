@@ -2,7 +2,7 @@ package com.drownedinsound.ui.post;
 
 import com.drownedinsound.BoardPostItem;
 import com.drownedinsound.R;
-import com.drownedinsound.TypeFactory;
+import com.drownedinsound.BordPostCommentListTypeFactory;
 import com.drownedinsound.ui.base.DisBoardsLoadingLayout;
 
 import android.support.annotation.NonNull;
@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,9 +33,10 @@ class BoardPostView implements BoardPostContract.View {
 
     private BoardPostContract.Presenter presenter;
 
-    BoardPostView(View view, TypeFactory typeFactory) {
+    @Inject
+    BoardPostView(View view, BordPostCommentListTypeFactory bordPostCommentListTypeFactory) {
         ButterKnife.bind(this, view);
-        adapter = new BoardPostAdapter(typeFactory);
+        adapter = new BoardPostAdapter(bordPostCommentListTypeFactory);
         commentsList.setAdapter(adapter);
         loadingLayout.setContentView(commentsList);
     }
@@ -66,7 +69,6 @@ class BoardPostView implements BoardPostContract.View {
     void refreshButtonAction() {
         presenter.handleRefreshAction();
     }
-
 
     @Override
     public void showErrorView() {

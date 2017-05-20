@@ -1,19 +1,22 @@
 package com.drownedinsound.ui.post
 
 import com.drownedinsound.BoardPostItem
+import com.drownedinsound.core.DisBoardsAppModule
 import com.drownedinsound.data.DisBoardRepo
 import com.drownedinsound.ui.base.Navigator
 import rx.Scheduler
 import rx.Subscription
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Named
 
-class BoardPostPresenter(
-        private val boardPostId: String,
-        private val boardListType: String,
+class BoardPostPresenter @Inject constructor(
+        @param:Named("postId") private val boardPostId: String,
+        @param:Named("boardPostType") private val boardListType: String,
         private val boardPostView: BoardPostContract.View,
         private val navigator: Navigator,
-        private val mainThreadScheduler: Scheduler,
-        private val backgroundThreadScheduler: Scheduler,
+        @param:Named(DisBoardsAppModule.MAIN_THREAD_SCHEDULER) private val mainThreadScheduler: Scheduler,
+        @param:Named(DisBoardsAppModule.BACKGROUND_THREAD_SCHEDULER) private val backgroundThreadScheduler: Scheduler,
         private val disBoardRepo: DisBoardRepo,
         private val boardPostModelMapper: BoardPostModelMapper) : BoardPostContract.Presenter {
 

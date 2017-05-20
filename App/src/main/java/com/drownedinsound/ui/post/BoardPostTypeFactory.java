@@ -3,13 +3,19 @@ package com.drownedinsound.ui.post;
 import com.drownedinsound.InitialComment;
 import com.drownedinsound.R;
 import com.drownedinsound.ReplyComment;
-import com.drownedinsound.TypeFactory;
+import com.drownedinsound.BordPostCommentListTypeFactory;
 
 import org.jetbrains.annotations.NotNull;
 
 import android.view.View;
 
-class BoardPostTypeFactory implements TypeFactory {
+import javax.inject.Inject;
+
+class BoardPostTypeFactory implements BordPostCommentListTypeFactory {
+
+    @Inject
+    BoardPostTypeFactory() {
+    }
 
     @Override
     public int getType(@NotNull InitialComment initialComment) {

@@ -1,5 +1,6 @@
 package com.drownedinsound.data.parser.streaming;
 
+import com.drownedinsound.BuildConfig;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.generatered.BoardPostList;
 import com.drownedinsound.data.generatered.BoardPostSummary;
@@ -182,11 +183,11 @@ public class BoardPostSummaryListParser  {
             streamedSource.close();
 
         } catch (IOException ioe) {
-            if (DisBoardsConstants.DEBUG) {
+            if (BuildConfig.DEBUG) {
                 ioe.printStackTrace();
             }
         }
-        if (DisBoardsConstants.DEBUG && DEBUG_PARSER) {
+        if (BuildConfig.DEBUG && DEBUG_PARSER) {
             Timber.d( "Parsed " + boardPostSummaries.size() + " board posts in "
                     + (System.currentTimeMillis() - start) + " ms");
             for (BoardPostSummary boardPost : boardPostSummaries) {

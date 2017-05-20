@@ -19,7 +19,6 @@ class AllCommentClickListener  implements View.OnClickListener{
 
     private TextView replyTextView;
 
-
     AllCommentClickListener(
             ViewGroup itemViewGroup,
             TextView thisTextView,

@@ -1,5 +1,6 @@
 package com.drownedinsound.data.parser.streaming;
 
+import com.drownedinsound.BuildConfig;
 import com.drownedinsound.core.DisBoardsConstants;
 import com.drownedinsound.data.generatered.BoardPost;
 import com.drownedinsound.data.generatered.BoardPostComment;
@@ -353,11 +354,11 @@ public class BoardPostParser {
 
             streamedSource.close();
         } catch (IOException e) {
-            if (DisBoardsConstants.DEBUG) {
+            if (BuildConfig.DEBUG) {
                 e.printStackTrace();
             }
         }
-        if (DisBoardsConstants.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Timber.d( "Parsed board post in "
                     + (System.currentTimeMillis() - start) + " ms");
             if (DEBUG_PARSER) {

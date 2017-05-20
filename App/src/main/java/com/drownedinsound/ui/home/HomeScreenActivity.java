@@ -80,10 +80,9 @@ public class HomeScreenActivity extends BaseActivity implements HomeScreenContra
 
         viewPager.setAdapter(homeScreenAdapter);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                //currentSelectedPage = tab.getPosition();
             }
 
             @Override
@@ -121,11 +120,12 @@ public class HomeScreenActivity extends BaseActivity implements HomeScreenContra
 
     @Override
     protected void onSessionComponentCreated(SessionComponent sessionComponent) {
-        HomeScreenComponent homeScreenComponent = sessionComponent
-                .homeScreenComponent(new HomeScreenModule(this));
-        homeScreenComponent.inject(this);
+        sessionComponent
+                .provideHomeScreenBuilder()
+                .homeScreenView(this)
+                .build()
+                .inject(this);
     }
-
 
     @Override
     public void showBoardPostLists(List<BoardPostList> boardPostLists) {

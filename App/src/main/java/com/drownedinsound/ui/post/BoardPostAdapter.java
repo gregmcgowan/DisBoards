@@ -1,7 +1,7 @@
 package com.drownedinsound.ui.post;
 
 import com.drownedinsound.BoardPostItem;
-import com.drownedinsound.TypeFactory;
+import com.drownedinsound.BordPostCommentListTypeFactory;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,10 +15,10 @@ class BoardPostAdapter extends RecyclerView.Adapter<BaseBoardPostHolder> {
 
     private List<BoardPostItem> boardPostItems;
 
-    private final TypeFactory typeFactory;
+    private final BordPostCommentListTypeFactory bordPostCommentListTypeFactory;
 
-    BoardPostAdapter(TypeFactory typeFactory) {
-        this.typeFactory = typeFactory;
+    BoardPostAdapter(BordPostCommentListTypeFactory bordPostCommentListTypeFactory) {
+        this.bordPostCommentListTypeFactory = bordPostCommentListTypeFactory;
         this.boardPostItems = new ArrayList<>();
     }
 
@@ -39,14 +39,14 @@ class BoardPostAdapter extends RecyclerView.Adapter<BaseBoardPostHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        return boardPostItems.get(position).getType(typeFactory);
+        return boardPostItems.get(position).getType(bordPostCommentListTypeFactory);
     }
 
     @Override
     public BaseBoardPostHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(viewType, parent, false);
-        return typeFactory.createViewHolder(view, viewType);
+        return bordPostCommentListTypeFactory.createViewHolder(view, viewType);
     }
 
     @Override

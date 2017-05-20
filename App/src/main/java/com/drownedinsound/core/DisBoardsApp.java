@@ -21,8 +21,6 @@ public class DisBoardsApp extends Application {
         return (DisBoardsApp) context.getApplicationContext();
     }
 
-    private AppComponent appComponent;
-
     private SessionComponent sessionComponent;
 
     @Override
@@ -64,12 +62,8 @@ public class DisBoardsApp extends Application {
         }
     }
 
-    public AppComponent getAppComponent() {
-        return appComponent;
-    }
-
     private void createAppComponent() {
-        this.appComponent = AppComponent.Initialiser.init(this);
+        AppComponent appComponent = AppComponent.Initialiser.init(this);
         this.sessionComponent = appComponent.provideSessionComponent(new DataModule());
     }
 

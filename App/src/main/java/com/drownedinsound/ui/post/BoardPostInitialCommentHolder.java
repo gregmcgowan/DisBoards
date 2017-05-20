@@ -1,6 +1,5 @@
 package com.drownedinsound.ui.post;
 
-
 import com.drownedinsound.Comment;
 import com.drownedinsound.InitialComment;
 import com.drownedinsound.R;

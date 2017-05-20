@@ -18,8 +18,6 @@ public class BoardPostActivity extends BaseActivity {
     @Inject
     protected BoardPostContract.Presenter boardPostPresenter;
 
-    private SessionComponent sessionComponent;
-
     private AndroidNavigator androidNavigator = new AndroidNavigator(this);
 
     public static Intent getIntent(Context context, String postID,
@@ -38,16 +36,6 @@ public class BoardPostActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        String postId = getIntent().getStringExtra(DisBoardsConstants.BOARD_POST_ID);
-        String boardPostType = getIntent().getStringExtra(DisBoardsConstants.BOARD_TYPE);
-
-        sessionComponent.boardPostComponent(
-                new BoardPostModule(androidNavigator,
-                        new BoardPostView(findViewById(R.id.board_post_container),
-                                new BoardPostTypeFactory()),
-                        postId, boardPostType)).inject(this);
-
         boardPostPresenter.onViewCreated();
     }
 
@@ -60,7 +48,15 @@ public class BoardPostActivity extends BaseActivity {
 
     @Override
     protected void onSessionComponentCreated(SessionComponent sessionComponent) {
-        this.sessionComponent = sessionComponent;
+        String postId = getIntent().getStringExtra(DisBoardsConstants.BOARD_POST_ID);
+        String boardPostType = getIntent().getStringExtra(DisBoardsConstants.BOARD_TYPE);
+
+        sessionComponent.provideBoardPostBuilder()
+                .view(findViewById(R.id.board_post_container))
+                .boardPostType(boardPostType)
+                .postId(postId)
+                .navigator(androidNavigator)
+                .build().inject(this);
     }
 
     @Override

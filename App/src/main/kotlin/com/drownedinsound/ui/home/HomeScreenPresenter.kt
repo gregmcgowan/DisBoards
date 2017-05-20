@@ -1,17 +1,18 @@
 package com.drownedinsound.ui.home
 
+import com.drownedinsound.core.DisBoardsAppModule
 import com.drownedinsound.data.DisBoardRepo
-import com.drownedinsound.qualifiers.ForIoScheduler
-import com.drownedinsound.qualifiers.ForMainThreadScheduler
 import com.drownedinsound.ui.home.postList.BoardPostListContract
 import rx.Scheduler
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Named
 
-class HomeScreenPresenter(
+class HomeScreenPresenter @Inject constructor(
         private val homeScreenView: HomeScreenContract.View,
         private val disBoardRepo: DisBoardRepo,
-        @param:ForMainThreadScheduler private val mainThreadScheduler: Scheduler,
-        @param:ForIoScheduler private val backgroundThreadScheduler: Scheduler) : HomeScreenContract.Presenter {
+        @param:Named(DisBoardsAppModule.MAIN_THREAD_SCHEDULER) private val mainThreadScheduler: Scheduler,
+        @param:Named(DisBoardsAppModule.BACKGROUND_THREAD_SCHEDULER) private val backgroundThreadScheduler: Scheduler) : HomeScreenContract.Presenter {
 
     private val listPresenterMap = HashMap<String, BoardPostListContract.Presenter>()
 

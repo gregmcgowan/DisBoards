@@ -1,11 +1,10 @@
 package com.drownedinsound.ui.home.postList
 
 import com.drownedinsound.BoardPostSummaryModel
+import com.drownedinsound.core.DisBoardsAppModule
 import com.drownedinsound.data.DisBoardRepo
 import com.drownedinsound.data.generatered.BoardPostList
 import com.drownedinsound.data.generatered.BoardPostSummary
-import com.drownedinsound.qualifiers.ForIoScheduler
-import com.drownedinsound.qualifiers.ForMainThreadScheduler
 import com.drownedinsound.ui.base.Navigator
 import com.google.auto.factory.AutoFactory
 import com.google.auto.factory.Provided
@@ -13,14 +12,15 @@ import rx.Scheduler
 import rx.Subscription
 import timber.log.Timber
 import java.util.*
+import javax.inject.Named
 
 @AutoFactory class BoardPostListPresenter(
         private val boardListView: BoardPostListContract.View,
         private val navigator: Navigator,
         @param:Provided private val boardPostMapper: BoardPostListModelMapper,
         @param:Provided private val disBoardRepo: DisBoardRepo,
-        @param:Provided @param:ForMainThreadScheduler private val mainThreadScheduler: Scheduler,
-        @param:Provided @param:ForIoScheduler private val backgroundThreadScheduler: Scheduler)
+        @param:Provided @param:Named(DisBoardsAppModule.MAIN_THREAD_SCHEDULER) private val mainThreadScheduler: Scheduler,
+        @param:Provided @param:Named(DisBoardsAppModule.BACKGROUND_THREAD_SCHEDULER) private val backgroundThreadScheduler: Scheduler)
     : BoardPostListContract.Presenter {
 
     private var loadingSubscription: Subscription? = null
